@@ -14,6 +14,8 @@ from typing import Any
 from flask import current_app
 
 from config import Config
+from engine.events import EventEngine
+from engine.live import LiveFeed
 from espn.cache import TTLCache
 from espn.client import EspnClient, LeagueRepository
 from espn.models import LeagueSnapshot
@@ -27,6 +29,22 @@ class PuntState:
     cfg: Config
     client: EspnClient
     repo: LeagueRepository
+    live: LiveFeed | None = None
+
+    def start_live(self) -> LiveFeed:
+        """Begin polling in the background.
+
+        The feed goes through the same TTL cache every request uses, so the
+        poller and the phones share one upstream call rather than adding one.
+        """
+        if self.live is None:
+            self.live = LiveFeed(
+                fetch=lambda: self.repo.snapshot(live=True),
+                poll_seconds=self.cfg.poll_seconds,
+                engine=EventEngine(),
+            )
+        self.live.start()
+        return self.live
 
     @property
     def replay(self) -> ReplayTransport | None:
@@ -46,6 +64,8 @@ class PuntState:
         out: dict[str, Any] = {"mode": self.mode, "config": self.cfg.redacted(), **self.client.stats()}
         if self.replay is not None:
             out["replay"] = self.replay.describe()
+        if self.live is not None:
+            out["live"] = self.live.stats()
         return out
 
 

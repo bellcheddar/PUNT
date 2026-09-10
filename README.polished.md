@@ -2,7 +2,7 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-56%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-1%20of%206%20complete-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-120%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-2%20of%206%20complete-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -14,7 +14,7 @@
 
 ---
 
-![The Today tab on a phone: five live matchups, each team on its own full-width row with a running score, a projection and how many starters are still in play](docs/screenshots/today.png)
+![The Today tab on a phone: five live matchups with running scores, a table of who is in trouble with live win probabilities, and a commentary feed of detected Moments](docs/screenshots/today.png)
 
 The ESPN app is a spreadsheet with a logo. PUNT is the opposite: a mobile-first companion for a
 ten-team bar league that exists to make a Sunday afternoon louder. It reads the same undocumented
@@ -33,12 +33,78 @@ undocumented fantasy endpoints without a browser extension.
 
 ## 📸 What it looks like
 
-| The album | The receipts | The bar screen |
+| The album | The swing | The receipts |
 |---|---|---|
-| ![Ten manager cards in a two-by-five grid, each tinted in that team's deterministic colour and tiered epic, rare, common or cursed by this week's score](docs/screenshots/album.png) | ![Every manager ranked by points left on the bench, with this week's score alongside](docs/screenshots/receipts.png) | ![The Big Board in TV mode: navigation dropped, type scaled up, the whole slate on one screen](docs/screenshots/big-board.png) |
+| ![Ten manager cards in a two-by-five grid, each tinted in that team's deterministic colour and tiered epic, rare, common or cursed by this week's score](docs/screenshots/album.png) | ![Every manager sorted by live Monte Carlo win probability, with the deficit and how many starters are still in play](docs/screenshots/swing.png) | ![Every manager ranked by points left on the bench, each row naming the exact swap that cost them](docs/screenshots/receipts.png) |
+
+![The Big Board in TV mode: navigation dropped, type scaled up, the whole slate on one screen](docs/screenshots/big-board.png)
 
 Everything above is the synthetic Sunday that ships with the repository. No real athlete, franchise
 or person appears in it.
+
+## ⚡ The engine
+
+Polls produce state. Nobody cheers at "Dax Ashgrove now has 18.4 points". `engine/`
+turns consecutive polls into **Moments**, which is what the audio, the commentary and
+the cards all consume.
+
+```bash
+python3 tools/timeline.py                       # the whole Sunday, moment by moment
+python3 tools/timeline.py --kinds DOOM,BENCH_DISASTER
+python3 tools/timeline.py --summary
+```
+
+The demo Sunday produces 241 Moments across 10.9 hours:
+
+```
+16:10  DOOM            0.85  Wren       2.1% with 59.1 to find
+16:30  CLINCH          0.75  Sam        61.9 up, 98% safe
+17:05  BENCH_DISASTER  0.76  Priya      Delroy Marchbank (21.4) benched, Ash Greenhalgh (0.0) in the FLEX
+18:32  LEAD_CHANGE     0.78  Noor       in front by 1.2
+19:02  BENCH_DISASTER  0.92  Priya      Wilder Braithwaite (41.2) benched, Yusuf Marchbank (9.9) in the WR
+19:05  GOOSE_EGG       0.70  Gus        Silas Stonebridge finished on nothing, projected 11.5
+22:01  LEAD_CHANGE     0.52  Bex        in front by 1.6
+```
+
+Three properties are design constraints rather than niceties:
+
+- **Idempotent, including across a restart.** A Moment's id is a hash of the play's own
+  facts (the player, and his cumulative total after it), never of the poll or the process
+  that observed it. Two processes a week apart agree on the id. A crash at 4pm therefore
+  does not replay the afternoon through a bar's PA.
+- **Magnitude-scaled.** Every Moment carries a 0 to 1 magnitude that the audio and
+  animation layers scale off, so a two-point reception and a sixty-yard touchdown do not
+  get the same horn.
+- **Bench-aware.** `BENCH_DISASTER` is invisible in the score, so it has its own detection
+  path off the optimal lineup rather than falling out of a points delta.
+
+### Optimal lineup, and why greedy is wrong
+
+Bench regret is the optimal legal lineup minus what was actually started, and everything
+else on the Receipts tab depends on it. Taking the highest scorer first does not work: it
+can consume the only FLEX seat and strand two running backs who between them were worth
+more. It is a maximum-weight bipartite matching, solved by processing players in
+descending order of points and adding each with an augmenting path. That is exact rather
+than heuristic (the seatable sets form a transversal matroid, and greedy is optimal on a
+matroid), and it needs no dependency. It is checked against an exhaustive oracle on thirty
+random rosters and against an independent bitmask DP on every team in the fixture.
+
+The swaps it names have to be legal, not merely arithmetically suggestive. The first
+version sorted the worst starters and the best bench players and zipped them, which
+produced "you should have started your backup quarterback instead of your running back" --
+impossible, and the commentary would have said it out loud.
+
+### Win probability
+
+Monte Carlo, re-run every poll, seeded from the matchup and the current scores so two
+identical polls return an identical number (a probability that flickers by a point every
+thirty seconds is indistinguishable, to somebody watching, from something happening).
+
+Simulation rather than a closed form because the tails are what the product uses. Fantasy
+scoring is lumpy -- a touchdown is a six-point step -- so a manager needing 22 points from
+a player projected for 8 is a long shot rather than a zero. A normal approximation puts
+almost no weight there, which would make the Legendary card (a win from under 10%)
+impossible to mint and would fire DOOM far too early.
 
 ## 🚀 Quick start
 
@@ -189,19 +255,34 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                # 56 tests, no network, no cookies
+python3 -m pytest                       # 120 tests, no network, no cookies
+python3 tools/screenshot.py --check-overflow   # needs the app running
 ```
 
 Every test runs against the committed recording with sockets disabled by a fixture, so "replays with
 no network access" is an assertion rather than a claim. The Phase 1 gate is a single test:
 `test_full_sunday_replays_at_60x_with_no_network_and_no_cookies`.
 
-Two of the more useful ones are there because they caught something real. A test asserting that team
-totals never decrease failed immediately on a `-2.0` turnover in the fixture: fantasy scores are not
-monotonic, the test was wrong and the fixture was right, and the event engine has to survive the same
-thing. A test asserting that every rostered player has a game on the NFL scoreboard caught a
-nineteen-team early window, where the odd team out had no game, so every player on it had an unknown
-game state, never settled, and told their manager all night that somebody was still to play.
+The Phase 2 gate is a golden file: the whole Sunday's Moment timeline, regenerated on every run and
+compared byte for byte. Regenerate it deliberately with `python3 -m tests.golden_regen` and read the
+diff, because a change to detection that alters the afternoon is exactly the kind of thing somebody
+should have to look at.
+
+Several tests are there because they caught something real:
+
+- Asserting team totals never decrease failed immediately on a `-2.0` turnover in the fixture.
+  Fantasy scores are not monotonic; the test was wrong and the fixture was right, and the event
+  engine has to survive the same thing.
+- Asserting every rostered player has a game on the NFL scoreboard caught a nineteen-team early
+  window. The odd team out had no game, so every player on it had an unknown game state, never
+  settled, and told their manager all night that somebody was still to play.
+- Asserting a finished game reads finished within a poll caught the two feeds being coupled in the
+  fixture generator: a minute in which nobody scored also dropped the game-state change in the same
+  minute, so the last game of the night stayed "in progress" for ten minutes after it ended and a
+  settled matchup came back from the simulator at 91% instead of 100%.
+- A test claiming "needing 22 points from one player" was a long shot got 53% back, and was wrong:
+  the player was projected for 22. The simulator was right. It now checks the coin-flip case
+  explicitly so the tail test is measuring something.
 
 ## 📱 Mobile and the installed-app illusion
 
@@ -214,6 +295,12 @@ and `100vh` changes mid-scroll on both platforms (use `100dvh`).
 Capturing screenshots at a phone width needs `tools/screenshot.py` rather than `--window-size`:
 Chrome's window has a 500 px platform minimum on macOS, so a 390 px capture is silently a crop of a
 500 px layout. Everything looks broken and none of it is.
+
+The same tool runs `--check-overflow`, which loads every route in a 390 px iframe and reports any
+element wider than the viewport. Horizontal overflow is the failure this project keeps producing and
+cannot see: a table column pushed past the right edge is simply not drawn, with no scrollbar and
+nothing to suggest it exists. It has happened twice, both times found by looking at a screenshot
+rather than by the code being read.
 
 ## ✅ To Do
 
@@ -244,31 +331,42 @@ before its predecessor's acceptance criteria pass.
       every panel
 - [x] **56 tests, offline.** Including the acceptance criterion as a single test
 
-### Phase 2 — The engine
+### Phase 2 — The engine ✅
 
 *Acceptance: replaying a recorded Sunday emits a plausible Moment timeline, and bench regret figures
 reconcile by hand against the ESPN box score for two known weeks.*
 
-- [ ] **`engine/events.py`.** Poll diffing into discrete Moments, idempotent across a restart via a
-      stable hash, and magnitude-scaled so a two-point reception and a sixty-yard touchdown do not get
-      the same horn. Deltas are signed: the fixture contains a turnover
-- [ ] **`engine/scoring.py`.** Optimal lineup under the league's real slot eligibility, bench regret,
-      all-play record and luck index. Replaces the lower-bound placeholders in `views/viewmodels.py`,
-      every one of which is marked `PHASE2`
-- [ ] **`engine/simulate.py`.** Monte Carlo win probability, which is what the Swing tab and the DOOM
-      event are both waiting on
-- [ ] **Moments onto the SSE stream.** `/stream` is currently a working heartbeat, which is not
-      busywork: it proves the proxy buffering is right before there is anything to push
-- [ ] **Golden-file timeline test.** A recorded week produces a byte-identical Moment timeline, so a
-      change to detection has to be acknowledged deliberately
+- [x] **`engine/events.py`.** Poll diffing into nine kinds of Moment, idempotent across a restart via
+      a hash of the play's own facts, magnitude-scaled, with `BENCH_DISASTER` on its own detection
+      path. Three kinds of false firing were found and fixed by watching a whole Sunday go past: six
+      lead changes in the opening eleven minutes when nobody had twenty points, a bench disaster
+      re-firing because the *starter* in the worst swap changed while the benched player stood still,
+      and `CLINCH` never firing at all because its condition required the clinching side to have
+      finished too
+- [x] **`engine/scoring.py`.** Exact optimal lineup by maximum-weight bipartite matching, bench
+      regret, all-play and luck index. Checked against an exhaustive oracle and an independent
+      bitmask DP, because a greedy bug shows up on the awkward roster nobody writes a fixture for
+- [x] **`engine/simulate.py`.** Monte Carlo win probability with a lumpy per-player distribution, so
+      the tails the product actually uses (5% for DOOM, 10% for Legendary) carry real weight
+- [x] **`engine/live.py`.** One background poller feeding the event engine and fanning Moments out to
+      every SSE listener. Detecting lazily inside a request would mean "whenever somebody's phone
+      happens to ask", which is the twenty-five second lag the stream exists to remove
+- [x] **Moments onto the SSE stream**, with a 30 s htmx poll of the same feed as the fallback for a
+      phone whose connection has dropped, so the commentary never simply goes silent
+- [x] **Golden-file timeline test.** 241 Moments across 10.9 hours, compared byte for byte
+- [x] **Every Phase 1 placeholder replaced.** Bench regret, win probability, all-play and luck are
+      now the real figures, and the Swing tab is real
+- [ ] **Reconcile bench regret against two real ESPN box scores.** The remaining half of the gate.
+      Blocked on league credentials; the test exists and is skipped, naming why
 
 ### Phase 3 — The sticker album, silent
 
 *Acceptance: 60 fps on a real iPhone and a mid-range Android with ten cards on screen, and the pack
 rip is genuinely satisfying.*
 
-- [ ] **Card component, five rarity tiers.** Common, Rare, Epic, Legendary and Cursed. Cursed cards
-      are the point and must look as considered as Legendary ones
+- [ ] **Card component, five rarity tiers.** Common, Rare, Epic, Legendary and Cursed. The tier logic
+      exists and Legendary now mints on a live sub-10% win; the *treatments* are Phase 3. Cursed
+      cards are the point and must look as considered as Legendary ones
 - [ ] **Foil sheen and gyro tilt.** One rotated gradient pseudo-element on `transform` only: no
       filters, no blend modes, both are frame-rate killers on mobile. iOS needs
       `DeviceOrientationEvent.requestPermission()` from inside a gesture
@@ -279,6 +377,9 @@ rip is genuinely satisfying.*
       stale from a service worker
 - [ ] **Self-host the fonts.** A third-party font origin costs a second of first paint on exactly the
       shared wifi this app is designed for
+- [ ] **Keep the running minimum win probability per week.** Legendary is currently checked at render
+      time, so a manager who was under 10% earlier and is comfortable now does not qualify. The spec
+      wants the week's low-water mark
 
 ### Phase 4 — Audio and commentary
 
@@ -311,6 +412,8 @@ user, and `?tv=1` is readable from twelve feet.*
       magic numbers
 - [ ] **The Big Board carousel.** Auto-rotating matchups, which is what makes the larger TV type scale
       workable: at 2.2x a 720p screen fits two and a half of five matchups, so it currently runs at 1.6
+- [ ] **Season all-play and luck.** Both are this week only until the `mSchedule` grid is wired in,
+      which is the same feed the playoff odds need
 
 ### Phase 6 — Bar hardening
 

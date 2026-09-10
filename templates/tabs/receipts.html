@@ -5,24 +5,47 @@
   <h2 class="panel-title">Bench regret</h2>
   {% if receipts.rows %}
     <table class="rows">
-      <thead><tr><th>Manager</th><th class="num">Score</th><th class="num">Left on the bench</th></tr></thead>
+      <thead><tr><th>Manager</th><th class="num">Score</th><th class="num">Left</th></tr></thead>
       <tbody>
       {% for row in receipts.rows %}
         <tr>
-          <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}</td>
-          <td class="num">{{ row.score | points }}</td>
-          <td class="num">{{ row.bench_regret | points }}</td>
+          <td>
+            <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}
+            {% if row.worst_swap %}<span class="sub">{{ row.worst_swap }}</span>{% endif %}
+          </td>
+          <td class="num">{{ row.score | points }}<span class="sub">best {{ row.optimal | points }}</span></td>
+          <td class="num {% if row.bench_regret > 25 %}neg{% endif %}">{{ row.bench_regret | points }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
-    <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
-      A lower bound until Phase 2: this is the best bench score minus the worst
-      starter, not the true optimal lineup under slot eligibility. All-play, luck
-      index and the fines ledger land with it.
-    </p>
   {% else %}
     <div class="empty"><strong>No receipts yet</strong>Nobody has done anything regrettable.</div>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">All-play &middot; week {{ snap.scoring_period }}</h2>
+  {% if receipts.rows %}
+  <table class="rows">
+    <thead><tr><th>Manager</th><th class="num">All-play</th><th class="num">Luck</th></tr></thead>
+    <tbody>
+      {% for row in receipts.rows | sort(attribute='all_play_pct', reverse=true) %}
+      <tr>
+        <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}</td>
+        <td class="num">{{ row.all_play }}</td>
+        <td class="num {% if row.luck and row.luck > 0 %}pos{% elif row.luck and row.luck < 0 %}neg{% endif %}">
+          {{ row.luck | signed }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
+    All-play is this week only: a season grid needs the schedule feed, which lands
+    with the Multiverse tab. Luck is wins minus what an all-play record deserved,
+    in wins, so positive means the fixture list has been kind.
+  </p>
   {% endif %}
 </section>
 {% endblock %}

@@ -27,9 +27,13 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 #: (filename stem, path, viewport width, viewport height, alt text)
 SHOTS = [
-    ("today", "/", 390, 844, "The Today tab on a phone: five live matchups with running scores"),
+    # Taller than a phone on purpose: the Today tab is three panels and a 844 px
+    # capture shows only the first, which makes the README's hero image an
+    # advert for a scoreboard rather than for the app.
+    ("today", "/", 390, 1560, "The Today tab on a phone: five live matchups, who is in trouble, and the live commentary feed"),
     ("album", "/album", 390, 844, "The Album tab: ten manager cards, one per team, tiered by this week's score"),
-    ("receipts", "/receipts", 390, 844, "The Receipts tab: every manager ranked by points left on the bench"),
+    ("swing", "/swing", 390, 844, "The Swing tab: live Monte Carlo win probability and the day's biggest swings"),
+    ("receipts", "/receipts", 390, 844, "The Receipts tab: every manager ranked by points left on the bench, with the exact swap that cost them"),
     ("big-board", "/big-board?tv=1", 1280, 720, "The Big Board in TV mode: the whole slate on the bar screen"),
 ]
 
@@ -81,6 +85,78 @@ def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Pat
     return out
 
 
+def check_overflow(base: str, width: int = 390) -> int:
+    """Report any element wider than the viewport, on every route.
+
+    Horizontal overflow at phone width is the failure this project keeps
+    producing and cannot see: a table column pushed past the right edge simply
+    is not drawn, with no scrollbar and nothing to suggest it exists. It has
+    happened twice, both times found by looking at a screenshot.
+
+    Mechanics, both of which were arrived at the hard way. The routes are loaded
+    into iframes of the intended width, because Chrome will not give a window
+    narrower than 500 px and a 390 px capture of a 500 px layout looks broken in
+    exactly the way real overflow does. And the harness is written into the app's
+    own `static/` directory and fetched over HTTP, because reading an iframe's
+    DOM is same-origin only: a `file://` harness reads nothing, and
+    `--disable-web-security` with a throwaway profile hangs Chrome outright.
+    """
+    routes = [r for _, r, _, _, _ in SHOTS if not r.startswith("/big-board")]
+    frames = "".join(f'<iframe data-route="{r}" src="{r}"></iframe>' for r in routes)
+    probe = f"""<!DOCTYPE html><meta charset="utf-8">
+<style>html,body{{margin:0}}iframe{{width:{width}px;height:1200px;border:0;display:block}}</style>
+{frames}
+<pre id="out">pending</pre>
+<script>
+window.addEventListener('load', () => {{
+  const lines = [...document.querySelectorAll('iframe')].map(f => {{
+    const d = f.contentDocument;
+    if (!d) return f.dataset.route + '  (not readable)';
+    const w = d.documentElement.clientWidth;
+    const wide = [...d.querySelectorAll('body *')]
+      .filter(e => Math.round(e.getBoundingClientRect().right) > w + 1)
+      .map(e => e.tagName + '.' + (e.className || '-').toString().split(' ')[0])
+      .filter((v, i, a) => a.indexOf(v) === i).slice(0, 6);
+    return f.dataset.route.padEnd(12) + ' client=' + w + ' scroll=' + d.documentElement.scrollWidth +
+           (wide.length ? '  OVERFLOW: ' + wide.join(', ') : '  ok');
+  }});
+  document.getElementById('out').textContent = lines.join('\\n');
+}});
+</script>"""
+
+    # Written into static/ so it is same-origin with the routes, and removed
+    # again whatever happens: a probe left in the static tree would ship.
+    harness = Path(__file__).resolve().parent.parent / "static" / "_overflow_probe.html"
+    harness.write_text(probe, encoding="utf-8")
+    try:
+        result = subprocess.run(
+            [CHROME, "--headless=new", "--disable-gpu",
+             f"--window-size={max(520, width + 40)},1000",
+             "--virtual-time-budget=8000", "--dump-dom",
+             f"{base}/static/_overflow_probe.html"],
+            capture_output=True, text=True, timeout=60,
+        )
+    except subprocess.TimeoutExpired:
+        print("FAIL: the overflow probe timed out", file=sys.stderr)
+        return 1
+    finally:
+        harness.unlink(missing_ok=True)
+
+    import html as html_module
+    import re as re_module
+
+    match = re_module.search(r'<pre id="out">(.*?)</pre>', result.stdout, re_module.S)
+    report = html_module.unescape(match.group(1)) if match else "(probe produced nothing)"
+    print(report)
+    # "not readable", "pending" and "nothing" are the probe failing, not the page
+    # passing. A check that reports success when it measured nothing is worse
+    # than no check at all.
+    failed = any(m in report for m in ("OVERFLOW", "pending", "not readable", "nothing"))
+    if failed:
+        print("\nFAIL: see above", file=sys.stderr)
+    return 1 if failed else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--base", default="http://127.0.0.1:8019")
@@ -88,7 +164,12 @@ def main() -> int:
     parser.add_argument("--url", help="capture a single URL instead of the standard set")
     parser.add_argument("--width", type=int, default=390)
     parser.add_argument("--height", type=int, default=844)
+    parser.add_argument("--check-overflow", action="store_true",
+                        help="report elements wider than the viewport instead of capturing")
     args = parser.parse_args()
+
+    if args.check_overflow:
+        return check_overflow(args.base, args.width)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)

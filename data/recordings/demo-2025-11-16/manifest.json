@@ -26,35 +26,35 @@
     },
     {
       "seq": 2,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 0.0,
-      "file": "0002_mMatchupScore.json.gz",
+      "file": "0002_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 3,
-      "feed": "nfl_scoreboard",
-      "offset": 0.0,
-      "file": "0003_nfl_scoreboard.json.gz",
-      "captured_at": "",
-      "scoring_period": null
-    },
-    {
-      "seq": 4,
       "feed": "mMatchupScore",
-      "offset": 900.0,
-      "file": "0004_mMatchupScore.json.gz",
+      "offset": 0.0,
+      "file": "0003_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
     },
     {
-      "seq": 5,
+      "seq": 4,
       "feed": "nfl_scoreboard",
       "offset": 900.0,
-      "file": "0005_nfl_scoreboard.json.gz",
+      "file": "0004_nfl_scoreboard.json.gz",
       "captured_at": "",
       "scoring_period": null
+    },
+    {
+      "seq": 5,
+      "feed": "mMatchupScore",
+      "offset": 900.0,
+      "file": "0005_mMatchupScore.json.gz",
+      "captured_at": "",
+      "scoring_period": 11
     },
     {
       "seq": 6,
@@ -418,19 +418,19 @@
     },
     {
       "seq": 51,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 3780.0,
-      "file": "0051_mMatchupScore.json.gz",
+      "file": "0051_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 52,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 3780.0,
-      "file": "0052_nfl_scoreboard.json.gz",
+      "file": "0052_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 53,
@@ -762,19 +762,19 @@
     },
     {
       "seq": 94,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 6600.0,
-      "file": "0094_mMatchupScore.json.gz",
+      "file": "0094_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 95,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 6600.0,
-      "file": "0095_nfl_scoreboard.json.gz",
+      "file": "0095_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 96,
@@ -1130,19 +1130,19 @@
     },
     {
       "seq": 140,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 9480.0,
-      "file": "0140_mMatchupScore.json.gz",
+      "file": "0140_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 141,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 9480.0,
-      "file": "0141_nfl_scoreboard.json.gz",
+      "file": "0141_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 142,
@@ -1410,19 +1410,19 @@
     },
     {
       "seq": 175,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 12000.0,
-      "file": "0175_mMatchupScore.json.gz",
+      "file": "0175_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 176,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 12000.0,
-      "file": "0176_nfl_scoreboard.json.gz",
+      "file": "0176_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 177,
@@ -1450,19 +1450,19 @@
     },
     {
       "seq": 180,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 12300.0,
-      "file": "0180_mMatchupScore.json.gz",
+      "file": "0180_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 181,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 12300.0,
-      "file": "0181_nfl_scoreboard.json.gz",
+      "file": "0181_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 182,
@@ -1730,19 +1730,19 @@
     },
     {
       "seq": 215,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 14700.0,
-      "file": "0215_mMatchupScore.json.gz",
+      "file": "0215_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 216,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 14700.0,
-      "file": "0216_nfl_scoreboard.json.gz",
+      "file": "0216_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 217,
@@ -2050,19 +2050,19 @@
     },
     {
       "seq": 255,
-      "feed": "mMatchupScore",
+      "feed": "nfl_scoreboard",
       "offset": 17400.0,
-      "file": "0255_mMatchupScore.json.gz",
+      "file": "0255_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 256,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 17400.0,
-      "file": "0256_nfl_scoreboard.json.gz",
+      "file": "0256_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 257,
@@ -2394,19 +2394,19 @@
     },
     {
       "seq": 298,
-      "feed": "mMatchupScore",
-      "offset": 20160.0,
-      "file": "0298_mMatchupScore.json.gz",
+      "feed": "nfl_scoreboard",
+      "offset": 20100.0,
+      "file": "0298_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 299,
-      "feed": "nfl_scoreboard",
+      "feed": "mMatchupScore",
       "offset": 20160.0,
-      "file": "0299_nfl_scoreboard.json.gz",
+      "file": "0299_mMatchupScore.json.gz",
       "captured_at": "",
-      "scoring_period": null
+      "scoring_period": 11
     },
     {
       "seq": 300,
@@ -2722,11 +2722,11 @@
     },
     {
       "seq": 339,
-      "feed": "mMatchupScore",
-      "offset": 27300.0,
-      "file": "0339_mMatchupScore.json.gz",
+      "feed": "nfl_scoreboard",
+      "offset": 22800.0,
+      "file": "0339_nfl_scoreboard.json.gz",
       "captured_at": "",
-      "scoring_period": 11
+      "scoring_period": null
     },
     {
       "seq": 340,
@@ -2739,7 +2739,7 @@
     {
       "seq": 341,
       "feed": "mMatchupScore",
-      "offset": 27420.0,
+      "offset": 27300.0,
       "file": "0341_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2747,7 +2747,7 @@
     {
       "seq": 342,
       "feed": "mMatchupScore",
-      "offset": 27480.0,
+      "offset": 27420.0,
       "file": "0342_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2755,7 +2755,7 @@
     {
       "seq": 343,
       "feed": "mMatchupScore",
-      "offset": 27540.0,
+      "offset": 27480.0,
       "file": "0343_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2763,7 +2763,7 @@
     {
       "seq": 344,
       "feed": "mMatchupScore",
-      "offset": 27660.0,
+      "offset": 27540.0,
       "file": "0344_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2771,7 +2771,7 @@
     {
       "seq": 345,
       "feed": "mMatchupScore",
-      "offset": 27720.0,
+      "offset": 27660.0,
       "file": "0345_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2779,7 +2779,7 @@
     {
       "seq": 346,
       "feed": "mMatchupScore",
-      "offset": 27960.0,
+      "offset": 27720.0,
       "file": "0346_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2787,7 +2787,7 @@
     {
       "seq": 347,
       "feed": "mMatchupScore",
-      "offset": 28020.0,
+      "offset": 27960.0,
       "file": "0347_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2795,7 +2795,7 @@
     {
       "seq": 348,
       "feed": "mMatchupScore",
-      "offset": 28080.0,
+      "offset": 28020.0,
       "file": "0348_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2803,7 +2803,7 @@
     {
       "seq": 349,
       "feed": "mMatchupScore",
-      "offset": 28320.0,
+      "offset": 28080.0,
       "file": "0349_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2811,7 +2811,7 @@
     {
       "seq": 350,
       "feed": "mMatchupScore",
-      "offset": 28500.0,
+      "offset": 28320.0,
       "file": "0350_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2819,7 +2819,7 @@
     {
       "seq": 351,
       "feed": "mMatchupScore",
-      "offset": 28620.0,
+      "offset": 28500.0,
       "file": "0351_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2827,7 +2827,7 @@
     {
       "seq": 352,
       "feed": "mMatchupScore",
-      "offset": 28800.0,
+      "offset": 28620.0,
       "file": "0352_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2835,7 +2835,7 @@
     {
       "seq": 353,
       "feed": "mMatchupScore",
-      "offset": 28920.0,
+      "offset": 28800.0,
       "file": "0353_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2843,7 +2843,7 @@
     {
       "seq": 354,
       "feed": "mMatchupScore",
-      "offset": 28980.0,
+      "offset": 28920.0,
       "file": "0354_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2851,7 +2851,7 @@
     {
       "seq": 355,
       "feed": "mMatchupScore",
-      "offset": 29160.0,
+      "offset": 28980.0,
       "file": "0355_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2859,7 +2859,7 @@
     {
       "seq": 356,
       "feed": "mMatchupScore",
-      "offset": 29460.0,
+      "offset": 29160.0,
       "file": "0356_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2867,7 +2867,7 @@
     {
       "seq": 357,
       "feed": "mMatchupScore",
-      "offset": 29520.0,
+      "offset": 29460.0,
       "file": "0357_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2875,7 +2875,7 @@
     {
       "seq": 358,
       "feed": "mMatchupScore",
-      "offset": 29700.0,
+      "offset": 29520.0,
       "file": "0358_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2883,7 +2883,7 @@
     {
       "seq": 359,
       "feed": "mMatchupScore",
-      "offset": 29820.0,
+      "offset": 29700.0,
       "file": "0359_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2891,7 +2891,7 @@
     {
       "seq": 360,
       "feed": "mMatchupScore",
-      "offset": 29940.0,
+      "offset": 29820.0,
       "file": "0360_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2899,7 +2899,7 @@
     {
       "seq": 361,
       "feed": "mMatchupScore",
-      "offset": 30120.0,
+      "offset": 29940.0,
       "file": "0361_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2907,7 +2907,7 @@
     {
       "seq": 362,
       "feed": "mMatchupScore",
-      "offset": 30180.0,
+      "offset": 30120.0,
       "file": "0362_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2923,7 +2923,7 @@
     {
       "seq": 364,
       "feed": "mMatchupScore",
-      "offset": 30480.0,
+      "offset": 30180.0,
       "file": "0364_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2931,7 +2931,7 @@
     {
       "seq": 365,
       "feed": "mMatchupScore",
-      "offset": 30600.0,
+      "offset": 30480.0,
       "file": "0365_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2939,7 +2939,7 @@
     {
       "seq": 366,
       "feed": "mMatchupScore",
-      "offset": 30720.0,
+      "offset": 30600.0,
       "file": "0366_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2947,7 +2947,7 @@
     {
       "seq": 367,
       "feed": "mMatchupScore",
-      "offset": 30780.0,
+      "offset": 30720.0,
       "file": "0367_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2955,7 +2955,7 @@
     {
       "seq": 368,
       "feed": "mMatchupScore",
-      "offset": 30840.0,
+      "offset": 30780.0,
       "file": "0368_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2963,7 +2963,7 @@
     {
       "seq": 369,
       "feed": "mMatchupScore",
-      "offset": 31080.0,
+      "offset": 30840.0,
       "file": "0369_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2971,7 +2971,7 @@
     {
       "seq": 370,
       "feed": "mMatchupScore",
-      "offset": 31140.0,
+      "offset": 31080.0,
       "file": "0370_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2979,7 +2979,7 @@
     {
       "seq": 371,
       "feed": "mMatchupScore",
-      "offset": 31440.0,
+      "offset": 31140.0,
       "file": "0371_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2987,7 +2987,7 @@
     {
       "seq": 372,
       "feed": "mMatchupScore",
-      "offset": 31500.0,
+      "offset": 31440.0,
       "file": "0372_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -2995,7 +2995,7 @@
     {
       "seq": 373,
       "feed": "mMatchupScore",
-      "offset": 31620.0,
+      "offset": 31500.0,
       "file": "0373_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3003,7 +3003,7 @@
     {
       "seq": 374,
       "feed": "mMatchupScore",
-      "offset": 31680.0,
+      "offset": 31620.0,
       "file": "0374_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3011,7 +3011,7 @@
     {
       "seq": 375,
       "feed": "mMatchupScore",
-      "offset": 31980.0,
+      "offset": 31680.0,
       "file": "0375_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3019,7 +3019,7 @@
     {
       "seq": 376,
       "feed": "mMatchupScore",
-      "offset": 32040.0,
+      "offset": 31980.0,
       "file": "0376_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3027,7 +3027,7 @@
     {
       "seq": 377,
       "feed": "mMatchupScore",
-      "offset": 32100.0,
+      "offset": 32040.0,
       "file": "0377_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3035,7 +3035,7 @@
     {
       "seq": 378,
       "feed": "mMatchupScore",
-      "offset": 32340.0,
+      "offset": 32100.0,
       "file": "0378_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3043,7 +3043,7 @@
     {
       "seq": 379,
       "feed": "mMatchupScore",
-      "offset": 32520.0,
+      "offset": 32340.0,
       "file": "0379_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3051,7 +3051,7 @@
     {
       "seq": 380,
       "feed": "mMatchupScore",
-      "offset": 32580.0,
+      "offset": 32520.0,
       "file": "0380_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3059,7 +3059,7 @@
     {
       "seq": 381,
       "feed": "mMatchupScore",
-      "offset": 32940.0,
+      "offset": 32580.0,
       "file": "0381_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3067,7 +3067,7 @@
     {
       "seq": 382,
       "feed": "mMatchupScore",
-      "offset": 33120.0,
+      "offset": 32940.0,
       "file": "0382_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3075,7 +3075,7 @@
     {
       "seq": 383,
       "feed": "nfl_scoreboard",
-      "offset": 33120.0,
+      "offset": 33000.0,
       "file": "0383_nfl_scoreboard.json.gz",
       "captured_at": "",
       "scoring_period": null
@@ -3083,7 +3083,7 @@
     {
       "seq": 384,
       "feed": "mMatchupScore",
-      "offset": 33240.0,
+      "offset": 33120.0,
       "file": "0384_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3091,7 +3091,7 @@
     {
       "seq": 385,
       "feed": "mMatchupScore",
-      "offset": 33360.0,
+      "offset": 33240.0,
       "file": "0385_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3099,7 +3099,7 @@
     {
       "seq": 386,
       "feed": "mMatchupScore",
-      "offset": 33480.0,
+      "offset": 33360.0,
       "file": "0386_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3107,7 +3107,7 @@
     {
       "seq": 387,
       "feed": "mMatchupScore",
-      "offset": 33600.0,
+      "offset": 33480.0,
       "file": "0387_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3115,7 +3115,7 @@
     {
       "seq": 388,
       "feed": "mMatchupScore",
-      "offset": 33780.0,
+      "offset": 33600.0,
       "file": "0388_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3123,7 +3123,7 @@
     {
       "seq": 389,
       "feed": "mMatchupScore",
-      "offset": 33840.0,
+      "offset": 33780.0,
       "file": "0389_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3131,7 +3131,7 @@
     {
       "seq": 390,
       "feed": "mMatchupScore",
-      "offset": 34080.0,
+      "offset": 33840.0,
       "file": "0390_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3139,7 +3139,7 @@
     {
       "seq": 391,
       "feed": "mMatchupScore",
-      "offset": 34320.0,
+      "offset": 34080.0,
       "file": "0391_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3147,7 +3147,7 @@
     {
       "seq": 392,
       "feed": "mMatchupScore",
-      "offset": 34440.0,
+      "offset": 34320.0,
       "file": "0392_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3155,7 +3155,7 @@
     {
       "seq": 393,
       "feed": "mMatchupScore",
-      "offset": 34560.0,
+      "offset": 34440.0,
       "file": "0393_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3163,7 +3163,7 @@
     {
       "seq": 394,
       "feed": "mMatchupScore",
-      "offset": 34620.0,
+      "offset": 34560.0,
       "file": "0394_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3171,7 +3171,7 @@
     {
       "seq": 395,
       "feed": "mMatchupScore",
-      "offset": 34920.0,
+      "offset": 34620.0,
       "file": "0395_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3179,7 +3179,7 @@
     {
       "seq": 396,
       "feed": "mMatchupScore",
-      "offset": 35280.0,
+      "offset": 34920.0,
       "file": "0396_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3187,7 +3187,7 @@
     {
       "seq": 397,
       "feed": "mMatchupScore",
-      "offset": 35460.0,
+      "offset": 35280.0,
       "file": "0397_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3195,7 +3195,7 @@
     {
       "seq": 398,
       "feed": "mMatchupScore",
-      "offset": 35880.0,
+      "offset": 35460.0,
       "file": "0398_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3211,7 +3211,7 @@
     {
       "seq": 400,
       "feed": "mMatchupScore",
-      "offset": 35940.0,
+      "offset": 35880.0,
       "file": "0400_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3219,7 +3219,7 @@
     {
       "seq": 401,
       "feed": "mMatchupScore",
-      "offset": 36300.0,
+      "offset": 35940.0,
       "file": "0401_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3227,7 +3227,7 @@
     {
       "seq": 402,
       "feed": "mMatchupScore",
-      "offset": 36360.0,
+      "offset": 36300.0,
       "file": "0402_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3235,7 +3235,7 @@
     {
       "seq": 403,
       "feed": "mMatchupScore",
-      "offset": 36720.0,
+      "offset": 36360.0,
       "file": "0403_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3243,7 +3243,7 @@
     {
       "seq": 404,
       "feed": "mMatchupScore",
-      "offset": 37140.0,
+      "offset": 36720.0,
       "file": "0404_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3251,7 +3251,7 @@
     {
       "seq": 405,
       "feed": "mMatchupScore",
-      "offset": 37200.0,
+      "offset": 37140.0,
       "file": "0405_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3259,7 +3259,7 @@
     {
       "seq": 406,
       "feed": "mMatchupScore",
-      "offset": 37260.0,
+      "offset": 37200.0,
       "file": "0406_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3267,7 +3267,7 @@
     {
       "seq": 407,
       "feed": "mMatchupScore",
-      "offset": 37320.0,
+      "offset": 37260.0,
       "file": "0407_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3275,7 +3275,7 @@
     {
       "seq": 408,
       "feed": "mMatchupScore",
-      "offset": 37560.0,
+      "offset": 37320.0,
       "file": "0408_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3283,7 +3283,7 @@
     {
       "seq": 409,
       "feed": "mMatchupScore",
-      "offset": 37800.0,
+      "offset": 37560.0,
       "file": "0409_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3291,7 +3291,7 @@
     {
       "seq": 410,
       "feed": "mMatchupScore",
-      "offset": 37860.0,
+      "offset": 37800.0,
       "file": "0410_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3299,7 +3299,7 @@
     {
       "seq": 411,
       "feed": "mMatchupScore",
-      "offset": 38100.0,
+      "offset": 37860.0,
       "file": "0411_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3307,7 +3307,7 @@
     {
       "seq": 412,
       "feed": "mMatchupScore",
-      "offset": 38340.0,
+      "offset": 38100.0,
       "file": "0412_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3315,7 +3315,7 @@
     {
       "seq": 413,
       "feed": "mMatchupScore",
-      "offset": 38460.0,
+      "offset": 38340.0,
       "file": "0413_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3323,7 +3323,7 @@
     {
       "seq": 414,
       "feed": "mMatchupScore",
-      "offset": 39300.0,
+      "offset": 38460.0,
       "file": "0414_mMatchupScore.json.gz",
       "captured_at": "",
       "scoring_period": 11
@@ -3331,10 +3331,18 @@
     {
       "seq": 415,
       "feed": "nfl_scoreboard",
-      "offset": 39300.0,
+      "offset": 38700.0,
       "file": "0415_nfl_scoreboard.json.gz",
       "captured_at": "",
       "scoring_period": null
+    },
+    {
+      "seq": 416,
+      "feed": "mMatchupScore",
+      "offset": 39300.0,
+      "file": "0416_mMatchupScore.json.gz",
+      "captured_at": "",
+      "scoring_period": 11
     }
   ]
 }

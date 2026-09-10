@@ -1,0 +1,46 @@
+{# The commentary feed.
+
+   Phase 4 replaces these plain descriptions with the phrase bank and hangs the
+   audio off the same Moments; the shape of the feed does not change, which is
+   why it is worth building now rather than leaving the panel empty. #}
+{% if moments %}
+<ul class="feed">
+  {% for m in moments %}
+  <li class="feed-item feed-item--{{ m.kind | lower }}" style="--mag: {{ m.magnitude }}">
+    <span class="feed-kind">{{ m.kind.replace('_', ' ') }}</span>
+    <span class="feed-text">
+      {%- if m.kind == 'BENCH_DISASTER' -%}
+        <b>{{ m.managers | join(', ') }}</b> left {{ m.context.benched }}
+        ({{ m.context.benched_points | points }}) on the bench for
+        {{ m.context.started }} ({{ m.context.started_points | points }}) at {{ m.context.slot }}
+      {%- elif m.kind == 'DOOM' -%}
+        <b>{{ m.managers | join(', ') }}</b> needs {{ m.context.deficit | abs | points }}
+        and is down to {{ m.context.win_prob | pct }}
+      {%- elif m.kind == 'CLINCH' -%}
+        <b>{{ m.managers | join(', ') }}</b> is {{ m.context.lead | points }} clear and safe
+      {%- elif m.kind == 'GOOSE_EGG' -%}
+        {{ m.player }} finished on nothing for <b>{{ m.managers | join(', ') }}</b>,
+        projected {{ m.context.projected | points }}
+      {%- elif m.kind == 'LEAD_CHANGE' -%}
+        <b>{{ m.managers[0] }}</b> is in front of {{ m.managers[1] }} by {{ m.context.margin | points }}
+      {%- elif m.kind == 'MILESTONE' -%}
+        {% if m.context.get('team') %}<b>{{ m.managers | join(', ') }}</b> through
+        {{ m.context.threshold | points }}{% else %}{{ m.player }} through
+        {{ m.context.threshold | points }} for <b>{{ m.managers | join(', ') }}</b>{% endif %}
+      {%- elif m.kind == 'INJURY' -%}
+        {{ m.player }} is {{ m.context.status | lower | replace('_', ' ') }} for
+        <b>{{ m.managers | join(', ') }}</b>
+      {%- else -%}
+        {{ m.player }} <b>+{{ m.delta | points }}</b> for {{ m.managers | join(', ') }}
+      {%- endif -%}
+    </span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="empty">
+  <strong>Nothing has happened yet</strong>
+  The feed fills as the games do. Touchdowns, lead changes and other people's
+  mistakes all land here.
+</div>
+{% endif %}

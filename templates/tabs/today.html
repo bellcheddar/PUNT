@@ -13,19 +13,39 @@
 </section>
 
 <section class="panel">
-  <h2 class="panel-title">Next thing to watch</h2>
-  <div class="empty">
-    <strong>Phase 2</strong>
-    Win probability and the biggest swing of the day arrive with the simulator.
-  </div>
+  <h2 class="panel-title">Who is in trouble</h2>
+  {% if swing.rows %}
+  <table class="rows">
+    <thead><tr><th>Manager</th><th class="num">Score</th><th class="num-narrow">+/-</th><th class="num">Win</th></tr></thead>
+    <tbody>
+      {% for row in swing.rows[:4] %}
+      <tr>
+        <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}</td>
+        <td class="num">{{ row.score | points }}</td>
+        <td class="num-narrow num {% if row.deficit >= 0 %}pos{% else %}neg{% endif %}">{{ row.deficit | signed }}</td>
+        <td class="num">{{ row.win_prob | pct }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty"><strong>Nothing to watch yet</strong>Win probabilities appear once the games start.</div>
+  {% endif %}
 </section>
 
 <section class="panel">
   <h2 class="panel-title">Commentary</h2>
-  <div class="empty">
-    <strong>Phase 4</strong>
-    The phrase bank, the horns and the ducking are not built yet. The feed will
-    stream in here.
+  {# The stream pushes these instantly; the poll is the fallback for a phone
+     whose SSE connection has dropped, so the feed never simply goes silent. #}
+  <div id="feed"
+       hx-get="{{ url_for('api.partial_moments') }}"
+       hx-trigger="every {{ poll_seconds }}s"
+       hx-swap="innerHTML">
+    {% include "partials/moments.html" %}
   </div>
+  <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
+    Phase 4 turns these into spoken play calls with horns. The events themselves
+    are real: they come off the same stream the audio bus will.
+  </p>
 </section>
 {% endblock %}

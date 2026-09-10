@@ -21,7 +21,7 @@ from views.state import PuntState
 log = logging.getLogger(__name__)
 
 
-def create_app(cfg: Config | None = None, client=None) -> Flask:
+def create_app(cfg: Config | None = None, client=None, start_live: bool = True) -> Flask:
     logging.basicConfig(
         level=os.environ.get("LOG_LEVEL", "INFO").upper(),
         format="%(asctime)s %(levelname)-7s %(name)s: %(message)s",
@@ -46,6 +46,11 @@ def create_app(cfg: Config | None = None, client=None) -> Flask:
     app.register_blueprint(api.bp)
     app.register_blueprint(media.bp)
     app.register_blueprint(admin.bp)
+
+    # Off by default in tests: a background thread that polls a replay clock
+    # makes every assertion in the suite a race.
+    if start_live:
+        app.extensions["punt"].start_live()
 
     _register_asset_version(app)
     _register_filters(app)

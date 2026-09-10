@@ -13,6 +13,7 @@ from views.viewmodels import (
     album_view,
     cheer_view,
     matchup_view,
+    moments_view,
     multiverse_view,
     receipts_view,
     swing_view,
@@ -51,7 +52,14 @@ def inject_chrome():
 @bp.route("/")
 def today():
     snap = snapshot()
-    return render_template("tabs/today.html", snap=snap, matchups=matchup_view(snap))
+    live = state().live
+    return render_template(
+        "tabs/today.html",
+        snap=snap,
+        matchups=matchup_view(snap),
+        moments=moments_view(live),
+        swing=swing_view(snap, live),
+    )
 
 
 @bp.route("/album")
@@ -69,7 +77,7 @@ def cheer():
 @bp.route("/swing")
 def swing():
     snap = snapshot()
-    return render_template("tabs/swing.html", snap=snap, swing=swing_view(snap))
+    return render_template("tabs/swing.html", snap=snap, swing=swing_view(snap, state().live))
 
 
 @bp.route("/receipts")

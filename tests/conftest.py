@@ -62,7 +62,7 @@ def app(transport):
 
     cfg = Config(league_id="demo", season=2025, replay=DEMO_RECORDING, replay_speed=0.0)
     client = EspnClient(transport=transport, season=2025, league_id="demo", cache=TTLCache())
-    application = create_app(cfg=cfg, client=client)
+    application = create_app(cfg=cfg, client=client, start_live=False)
     application.config.update(TESTING=True)
     return application
 

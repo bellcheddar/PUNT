@@ -69,7 +69,7 @@ def test_diagnostics_never_leak_a_cookie(app, no_network):
     from app import create_app
 
     transport = ReplayTransport.load(DEMO_RECORDING, speed=0.0)
-    other = create_app(cfg=cfg, client=EspnClient(transport, 2025, "demo", TTLCache()))
+    other = create_app(cfg=cfg, client=EspnClient(transport, 2025, "demo", TTLCache()), start_live=False)
     body = other.test_client().get("/api/diagnostics").get_data(as_text=True)
     assert secret not in body
     assert f"set:{len(secret)}ch" in body, "the fingerprint should still say which cookie is loaded"

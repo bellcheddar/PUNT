@@ -67,7 +67,7 @@ def test_a_fresh_clone_needs_no_configuration_at_all(no_network):
     from app import create_app
 
     cfg = Config()  # nothing set: no league id, no cookies, no replay
-    app = create_app(cfg=cfg)
+    app = create_app(cfg=cfg, start_live=False)
     assert app.extensions["punt"].mode == "demo"
 
     response = app.test_client().get("/")

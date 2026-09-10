@@ -27,6 +27,7 @@ import argparse
 import hashlib
 import json
 import random
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +36,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from config import DEMO_RECORDING, RECORDINGS_DIR  # noqa: E402
 from espn.replay import Entry, Recording, write_recording  # noqa: E402
+
+#: macOS names a sync conflict "<stem> 2.<ext>". This repository lives under an
+#: iCloud-synced Documents folder, and rewriting the fixture in place makes
+#: iCloud resurrect the previous generation under these names -- 218 of them
+#: appeared during a single editing session. Nothing reads them, the manifest
+#: does not name them, and 99 reached a commit before anyone looked.
+CONFLICT_COPY = re.compile(r" \d+(\.[A-Za-z0-9.]+)?$")
+
+
+def sweep_conflict_copies(directory: Path, keep: set[str]) -> list[str]:
+    """Delete unreferenced iCloud conflict copies. Returns what was removed."""
+    removed = []
+    for path in directory.iterdir():
+        if not path.is_file() or path.name in keep:
+            continue
+        stem = path.name.split(".", 1)[0]
+        if CONFLICT_COPY.search(stem):
+            path.unlink(missing_ok=True)
+            removed.append(path.name)
+    return sorted(removed)
 
 SEED = 20251116
 SEASON = 2025
@@ -537,6 +558,20 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
             for athlete in squad:
                 athlete.advance_to(t)
 
+        # The two feeds are polled independently, and this block sits *before*
+        # the boxscore dedup for that reason. Below it, a minute in which nobody
+        # scored also dropped the NFL state change that happened in the same
+        # minute -- so the last game of the night stayed "in progress" for ten
+        # minutes after it ended, every player on it kept a live projection, and
+        # a settled matchup came back from the simulator at 91% instead of 100%.
+        nfl = nfl_payload(t, rng)
+        nfl_signature = json.dumps(
+            [[e["status"]["type"]["state"], e["status"]["period"]] for e in nfl["events"]]
+        )
+        if nfl_signature != last_nfl_signature:
+            last_nfl_signature = nfl_signature
+            add("nfl_scoreboard", nfl, float(t), per_week=False)
+
         payload = boxscore_payload(rosters, t)
         # Nothing changed in this minute means no new payload: that is both what
         # a real poll would see and a straightforward halving of the fixture.
@@ -549,17 +584,6 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
         last_signature = signature
         add("mMatchupScore", payload, float(t), per_week=True)
 
-        # The scoreboard changes state (pre -> in -> post) far less often than
-        # the fantasy scores do, so it is only written when a game's state or
-        # quarter actually moves. That is what a real 20 s poll would see and it
-        # keeps the fixture at a size somebody will actually clone.
-        nfl = nfl_payload(t, rng)
-        nfl_signature = json.dumps(
-            [[e["status"]["type"]["state"], e["status"]["period"]] for e in nfl["events"]]
-        )
-        if nfl_signature != last_nfl_signature:
-            last_nfl_signature = nfl_signature
-            add("nfl_scoreboard", nfl, float(t), per_week=False)
 
     recording = Recording(
         name=DEMO_RECORDING,
@@ -626,10 +650,41 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 1
-        print(f"OK: {directory.name} matches the generator ({len(recording.entries)} payloads)")
+
+        # Nothing in the directory but the manifest and the payloads it names.
+        #
+        # This repository lives under an iCloud-synced Documents folder, and
+        # regenerating the fixture in place while iCloud was mid-sync produced
+        # conflict copies -- "0002_mMatchupScore 2.json.gz" and so on. Ninety-nine
+        # of them reached a commit before anybody looked at a file listing. They
+        # are invisible to every other check here, because the manifest does not
+        # mention them and nothing ever reads them.
+        expected = {e.file for e in recording.entries} | {"manifest.json"}
+        swept = sweep_conflict_copies(directory, expected)
+        if swept:
+            print(f"  swept {len(swept)} iCloud conflict copies before checking")
+        actual = {p.name for p in directory.iterdir() if p.is_file() and p.name != ".DS_Store"}
+        strays = sorted(actual - expected)
+        if strays:
+            print(
+                f"FAIL: {len(strays)} file(s) in {directory.name} that the manifest does "
+                f"not name, e.g. {strays[:3]}. Delete the directory and regenerate.",
+                file=sys.stderr,
+            )
+            return 1
+        missing = sorted(expected - actual)
+        if missing:
+            print(f"FAIL: {len(missing)} payload(s) missing, e.g. {missing[:3]}", file=sys.stderr)
+            return 1
+
+        print(f"OK: {directory.name} matches the generator "
+              f"({len(recording.entries)} payloads, no strays)")
         return 0
 
     write_recording(recording, payloads)
+    swept = sweep_conflict_copies(directory, {e.file for e in recording.entries} | {"manifest.json"})
+    if swept:
+        print(f"  swept {len(swept)} iCloud conflict copies, e.g. {swept[:2]}")
     size = sum(p.stat().st_size for p in directory.iterdir()) / 1e6
     print(summarise(recording, payloads))
     print(f"  written to {directory} ({size:.1f} MB on disk)")

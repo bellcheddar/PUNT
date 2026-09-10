@@ -3,15 +3,18 @@
 Live state of the build. The plan is `docs/punt_build_spec_v1.md`; this file says
 what is actually done and what the next person (or the next session) should pick up.
 
-## Status: Phase 1 complete
+## Status: Phase 2 complete
 
-**Phase 1 acceptance criterion — "a full recorded Sunday replays at 60x speed with
-no network access and no cookies" — passes**, as `tests/test_phase1_acceptance.py`.
-Watch it with:
+**Phase 1** ("a full recorded Sunday replays at 60x with no network and no cookies")
+and **Phase 2** ("a plausible Moment timeline, and bench regret reconciled") both pass,
+as `tests/test_phase1_acceptance.py` and `tests/test_phase2_acceptance.py`. Watch either:
 
 ```bash
-python3 tools/replay_check.py --speed 1800
+python3 tools/replay_check.py --speed 1800    # the scores moving
+python3 tools/timeline.py                     # every Moment of the day
 ```
+
+The half of the Phase 2 gate that needs real ESPN box scores is skipped and named.
 
 ### What exists
 
@@ -26,7 +29,13 @@ python3 tools/replay_check.py --speed 1800
 | `views/`, `templates/`, `static/css/theme.css` | All seven routes render, htmx polling wired, TV mode, monogram fallback, empty states everywhere. |
 | `tools/make_fixture.py` | Regenerates the fixture, seeded and byte-stable. |
 | `tools/replay_check.py` | Watch a Sunday go past in the terminal. |
-| `tests/` | 56 tests, no network, no cookies. |
+| `engine/scoring.py` | Exact optimal lineup (max-weight bipartite matching), bench regret, all-play, luck. |
+| `engine/simulate.py` | Monte Carlo win probability with a lumpy per-player distribution. |
+| `engine/events.py` | Nine Moment kinds, idempotent across restarts, magnitude-scaled. |
+| `engine/live.py` | One background poller, event detection, SSE fan-out with backlog. |
+| `tools/timeline.py` | Watch the day's Moments go past. |
+| `tools/screenshot.py` | Phone-width captures, and `--check-overflow`. |
+| `tests/` | 120 tests + 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ### Decisions taken during Phase 1
 
@@ -58,12 +67,16 @@ bench regret figures reconcile by hand against the ESPN box score for two known 
 
 ### Blocked on Marc
 
-- [ ] **`LEAGUE_ID`, `ESPN_S2`, `ESPN_SWID`** for the real league. Everything through
-      Phase 4 can be built and tested without them, but the "reconcile bench regret
-      by hand against two known weeks" half of the Phase 2 gate needs real box scores.
+Neither blocks Phase 3, 4 or 5.
+
+- [ ] **`LEAGUE_ID`, `ESPN_S2`, `ESPN_SWID`** for the real league. Needed for the second
+      half of the Phase 2 gate (reconcile bench regret against two known ESPN box scores)
+      and for the real-device testing in Phase 6.
 - [ ] **Whether real recordings may ever be committed.** Currently `.gitignore` tracks
       only `demo-*`, on the assumption that ten managers' ESPN display names should not
       be in a public repo.
+- [ ] **The wordmark.** The spec says to commission it from the vibe-icon skill once the
+      card geometry is locked, which is the end of Phase 3.
 
 ## Deployment
 
@@ -71,3 +84,8 @@ Not deployed yet. `punt.mdeller.com` resolves to the droplet and nginx answers o
 :80, but there is no vhost, no certificate and no service — TLS currently serves
 another app's certificate. Needs: port allocation, `deploy/` unit + nginx conf +
 certbot, and an entry in `mdeller-landing/apps.json`.
+
+**One gunicorn worker with threads**, not several processes: the live feed's poller and
+moment buffer are per-process, so a second worker doubles the upstream poll rate and gives
+half the phones a different commentary feed. Moving the buffer to Redis is the prerequisite
+for scaling out, and it is not needed for ten people.

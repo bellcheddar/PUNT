@@ -303,7 +303,15 @@ main { padding: 12px 14px 24px; }
 
 /* ---------- tables ---------- */
 
-.rows { width: 100%; border-collapse: collapse; font-size: 13px; }
+/* `table-layout: fixed` is load-bearing, not tidiness. With auto layout a cell
+ * containing a `white-space: nowrap` sub-line expands the column to fit it, the
+ * table grows past the viewport, and the numeric columns on the right are simply
+ * gone -- with no scrollbar and nothing to suggest they exist. Fixed layout makes
+ * the first column absorb whatever is left and lets the ellipsis do its job. */
+.rows { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
+.rows th.num, .rows td.num { width: 66px; }
+.rows th.num-narrow, .rows td.num-narrow { width: 52px; }
+.rows td:first-child { overflow: hidden; }
 .rows th { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
            text-transform: uppercase; color: var(--ink-faint); text-align: left;
            padding: 0 8px 6px; font-weight: 400; }
@@ -311,6 +319,55 @@ main { padding: 12px 14px 24px; }
 .rows td.num { font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%;
        background: hsl(var(--hue) 62% 52%); margin-right: 7px; vertical-align: baseline; }
+
+/* ---------- commentary feed ---------- */
+
+.feed { list-style: none; margin: 0; padding: 0; }
+.feed-item {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.feed-item:first-child { border-top: 0; }
+.feed-kind {
+  font-family: var(--font-mono);
+  font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-faint);
+  /* Louder moments read louder. `--mag` is the Moment's own 0-1 magnitude, the
+   * same number the audio bus scales its horn off. */
+  opacity: calc(0.55 + var(--mag, 0.5) * 0.45);
+}
+.feed-item--touchdown .feed-kind { color: var(--amber); }
+.feed-item--bench_disaster .feed-kind { color: var(--red); }
+.feed-item--doom .feed-kind { color: var(--red); }
+.feed-item--clinch .feed-kind { color: var(--green); }
+.feed-item--lead_change .feed-kind { color: var(--magenta); }
+.feed-item--goose_egg .feed-kind { color: var(--ink-faint); }
+.feed-text { font-size: 13px; color: var(--ink-dim); }
+.feed-text b { color: var(--ink); font-weight: 600; }
+
+.rows td.num .sub { text-align: right; }
+.rows td .sub {
+  display: block;
+  font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint);
+  margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rows td.pos { color: var(--green); }
+.rows td.neg { color: var(--red); }
+.rows td.dim { color: var(--ink-faint); }
+
+/* A probability reads as a number and a bar at once, without a chart library. */
+.prob {
+  position: relative;
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(0,208,132,.28) var(--p, 0%), transparent var(--p, 0%));
+}
 
 /* ---------- tab bar ---------- */
 

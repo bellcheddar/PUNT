@@ -1,12 +1,12 @@
 """Snapshot -> template data.
 
 Templates get plain dictionaries, never model objects with behaviour on them.
-That keeps the arithmetic testable without a request context, and it means the
-Phase 2 engine can replace a placeholder here (`bench_regret`, `win_prob`)
-without touching a single template.
+That keeps the arithmetic testable without a request context, and it is what let
+the Phase 2 engine replace the Phase 1 placeholders here without touching a
+single template.
 
-Anything marked `PHASE2` is a deliberate placeholder with a correct shape and a
-provisional value, so the tab renders something honest today rather than a
+Anything still marked `PHASE5` is a deliberate placeholder with a correct shape
+and a provisional value, so the tab renders something honest today rather than a
 blank panel waiting for a module that does not exist yet.
 """
 
@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from engine.scoring import all_play, luck_index, optimal_lineup
+from engine.simulate import probabilities_for
 from espn.models import LeagueSnapshot, Matchup, Side, Team
 
 
@@ -63,10 +65,12 @@ def _player(player) -> dict[str, Any]:
 
 def matchup_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
     teams = snap.teams_by_id
+    probabilities = probabilities_for(snap)
     out = []
     for matchup in snap.live_matchups or snap.matchups:
         home = _team_card(teams.get(matchup.home.team_id), matchup.home)
         away = _team_card(teams.get(matchup.away.team_id), matchup.away)
+        probability = probabilities[matchup.id]
         leader = home if home["total"] >= away["total"] else away
         out.append(
             {
@@ -75,69 +79,73 @@ def matchup_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
                 "away": away,
                 "margin": abs(round(home["total"] - away["total"], 2)),
                 "leader": leader["manager"],
-                "settled": matchup.winner not in ("UNDECIDED", ""),
-                # PHASE2: engine/simulate.py replaces this with a Monte Carlo
-                # win probability. Projection share is monotonic in the right
-                # direction and never claims more precision than it has.
-                "win_prob": _projection_share(home["projected"], away["projected"]),
+                "settled": probability.settled or matchup.winner not in ("UNDECIDED", ""),
+                "win_prob": probability.home_win,
+                "away_win_prob": probability.away_win,
+                "projected_home": probability.home_mean,
+                "projected_away": probability.away_mean,
             }
         )
     return out
-
-
-def _projection_share(home: float, away: float) -> float:
-    total = home + away
-    return round(home / total, 3) if total > 0 else 0.5
 
 
 def album_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
     """The ten cards, ordered by this week's score. Rarity is earned, so it can
     only be assigned once every team's score is known -- which is why this is one
     pass over all ten rather than a property on a card."""
+    slots = snap.settings.starting_slots
+    probabilities = probabilities_for(snap)
     cards: list[dict[str, Any]] = []
+
     for team in snap.teams:
         matchup = snap.matchup_for(team.id)
         side = matchup.side_for(team.id) if matchup else None
         card = _team_card(team, side)
-        card["bench_regret"] = _bench_regret(side)
+        lineup = optimal_lineup(side.players, slots) if side else None
+        card["bench_regret"] = lineup.regret if lineup else 0.0
+        card["optimal"] = lineup.total if lineup else 0.0
+        swap = lineup.worst_swap if lineup else None
+        card["worst_swap"] = (
+            {"started": swap[0].name, "started_points": round(swap[0].points, 2),
+             "benched": swap[1].name, "benched_points": round(swap[1].points, 2),
+             "slot": swap[0].slot}
+            if swap else None
+        )
+        card["win_prob"] = (
+            probabilities[matchup.id].for_team(team.id) if matchup and matchup.id in probabilities else None
+        )
         cards.append(card)
 
     cards.sort(key=lambda c: c["total"], reverse=True)
     for rank, card in enumerate(cards):
         card["rank"] = rank + 1
-        card["tier"] = _tier(rank, len(cards), card["bench_regret"])
+        card["tier"] = _tier(rank, len(cards), card["bench_regret"], card["win_prob"])
     return cards
 
 
-def _tier(rank: int, count: int, bench_regret: float) -> str:
+#: A win from below this probability mints a Legendary card. It is checked at
+#: the point the card is rendered, which means a manager who was under it earlier
+#: and is comfortable now does not qualify -- Phase 5 keeps the running minimum
+#: per week, which is the version the spec actually describes.
+LEGENDARY_WIN_PROB = 0.10
+
+
+def _tier(rank: int, count: int, bench_regret: float, win_prob: float | None) -> str:
     """Rarity, per the spec's table.
 
-    Legendary needs a season high or a sub-10% win, both of which need season
-    history and the simulator; until Phase 2 supplies them the top score is
-    Epic, which is the honest tier for what is actually known.
+    Cursed is checked first and deliberately outranks Legendary: a manager who
+    left forty points on the bench does not get a holographic card for it,
+    whatever else happened.
     """
     if rank == count - 1 or bench_regret > 40:
         return "cursed"
+    if win_prob is not None and 0.0 < win_prob < LEGENDARY_WIN_PROB:
+        return "legendary"
     if rank == 0:
         return "epic"
     if rank < 3:
         return "rare"
     return "common"
-
-
-def _bench_regret(side: Side | None) -> float:
-    """Points left on the bench, approximated as best-bench minus worst-starter.
-
-    PHASE2: `engine/scoring.py` replaces this with the real figure -- the optimal
-    lineup under the league's actual slot eligibility, minus what was started.
-    The approximation is always a *lower* bound on the real regret, so a card
-    that says "cursed" today will still say it once the real maths lands.
-    """
-    if side is None or not side.bench or not side.starters:
-        return 0.0
-    best_bench = max(p.points for p in side.bench)
-    worst_starter = min(p.points for p in side.starters)
-    return round(max(0.0, best_bench - worst_starter), 2)
 
 
 def cheer_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
@@ -149,26 +157,92 @@ def cheer_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
     return []
 
 
-def swing_view(snap: LeagueSnapshot) -> dict[str, Any]:
-    """PHASE2: the win probability curve is a simulator output; this is the frame."""
-    return {"curve": [], "biggest_swing": None, "gut_punch": []}
+def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
+    """Win probability now, plus the day's biggest swings from the Moment buffer.
+
+    The curve itself is drawn from Moments rather than kept as a separate time
+    series: every Moment already carries the win-probability change it caused, so
+    the series and the annotations on it cannot drift apart.
+    """
+    teams = snap.teams_by_id
+    rows = []
+    for matchup in snap.live_matchups or snap.matchups:
+        for side, opponent in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
+            team = teams.get(side.team_id)
+            if team is None:
+                continue
+            rows.append({
+                "manager": team.manager,
+                "team": team.name,
+                "hue": team.hue,
+                "score": round(side.total, 2),
+                "deficit": round(side.total - opponent.total, 2),
+                "in_play": side.in_play,
+            })
+
+    probabilities = probabilities_for(snap)
+    by_team = {}
+    for matchup in snap.live_matchups or snap.matchups:
+        probability = probabilities[matchup.id]
+        by_team[matchup.home.team_id] = probability.home_win
+        by_team[matchup.away.team_id] = probability.away_win
+    for row in rows:
+        team_id = next((t.id for t in snap.teams if t.manager == row["manager"]), None)
+        row["win_prob"] = by_team.get(team_id)
+
+    rows.sort(key=lambda r: (r["win_prob"] is None, r["win_prob"] or 0))
+
+    swings = []
+    if live is not None:
+        for moment in live.recent(limit=60):
+            if abs(moment.win_prob_delta) < 0.05:
+                continue
+            swings.append({
+                "kind": moment.kind,
+                "managers": moment.managers,
+                "player": moment.player,
+                "delta": moment.win_prob_delta,
+                "ts": moment.ts.isoformat(timespec="seconds"),
+            })
+        swings.sort(key=lambda s: -abs(s["delta"]))
+
+    return {"rows": rows, "biggest_swing": swings[0] if swings else None, "swings": swings[:8]}
 
 
 def receipts_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    slots = snap.settings.starting_slots
+    scores = {}
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            scores[side.team_id] = round(side.total, 2)
+    records = all_play(scores)
+
     rows = []
     for team in snap.teams:
         matchup = snap.matchup_for(team.id)
         side = matchup.side_for(team.id) if matchup else None
+        lineup = optimal_lineup(side.players, slots) if side else None
+        swap = lineup.worst_swap if lineup else None
+        record = records.get(team.id)
+        weeks = max(1, team.wins + team.losses + team.ties)
         rows.append(
             {
                 "manager": team.manager,
                 "team": team.name,
                 "hue": team.hue,
                 "score": round(side.total, 2) if side else 0.0,
-                "bench_regret": _bench_regret(side),
-                # PHASE2: all-play and luck need the season schedule grid.
-                "all_play": None,
-                "luck": None,
+                "optimal": lineup.total if lineup else 0.0,
+                "bench_regret": lineup.regret if lineup else 0.0,
+                "worst_swap": (
+                    f"{swap[1].name} ({swap[1].points:.1f}) for {swap[0].name} "
+                    f"({swap[0].points:.1f}) at {swap[0].slot}"
+                    if swap else ""
+                ),
+                # All-play is this week only: the season grid needs the mSchedule
+                # feed, which lands with the Multiverse tab in Phase 5.
+                "all_play": record.record if record else "",
+                "all_play_pct": record.win_pct if record else None,
+                "luck": luck_index(team.wins, record.win_pct, weeks) if record else None,
             }
         )
     rows.sort(key=lambda r: r["bench_regret"], reverse=True)
@@ -176,5 +250,29 @@ def receipts_view(snap: LeagueSnapshot) -> dict[str, Any]:
 
 
 def multiverse_view(snap: LeagueSnapshot) -> dict[str, Any]:
-    """PHASE5: playoff odds and magic numbers, from the season simulator."""
+    """PHASE5: playoff odds and magic numbers, from the season simulator.
+
+    Genuinely blocked rather than merely unbuilt: every figure on this tab needs
+    the full season schedule grid from the `mSchedule` feed, and the demo
+    recording is one week.
+    """
     return {"odds": [], "magic_numbers": [], "scenarios": []}
+
+
+def moments_view(live, limit: int = 25) -> list[dict[str, Any]]:
+    """The commentary feed. Phase 4 replaces the plain descriptions with the
+    phrase bank; the shape is the same either way."""
+    if live is None:
+        return []
+    return [
+        {
+            "kind": m.kind,
+            "magnitude": round(m.magnitude, 2),
+            "managers": m.managers,
+            "player": m.player,
+            "delta": round(m.delta_points, 2),
+            "context": m.context,
+            "ts": m.ts.isoformat(timespec="seconds"),
+        }
+        for m in live.recent(limit=limit)
+    ]

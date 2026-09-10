@@ -13,6 +13,17 @@ venv/
 .ruff_cache/
 .mypy_cache/
 
+# iCloud conflict copies. This repository lives under a synced Documents folder,
+# and regenerating a recording in place while iCloud was mid-sync produced 99 of
+# these -- "0002_mMatchupScore 2.json.gz" -- which reached a commit unnoticed
+# because nothing ever reads them. `make_fixture.py --check` also fails on them.
+* [0-9].json
+* [0-9].json.gz
+* [0-9].py
+* [0-9].md
+* [0-9].html
+* [0-9].css
+
 # Recorded upstream payloads captured from the live league. These contain real
 # managers' display names and ESPN account GUIDs, so only the committed synthetic
 # fixture under data/recordings/demo-* is ever tracked. See tools/make_fixture.py.

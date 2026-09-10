@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from espn import feeds
@@ -105,3 +107,55 @@ def test_every_rostered_player_has_a_real_game(transport, recording, no_network)
         if p.pro_team_id not in games
     }
     assert not missing, f"no game on the scoreboard for {sorted(missing)}"
+
+
+def test_game_states_settle_promptly_after_the_last_whistle(transport, recording, no_network):
+    """A finished game must read finished within a poll or two of finishing.
+
+    The two feeds are polled independently, and the fixture generator originally
+    wrote the NFL payload only when the fantasy scores had also changed. A minute
+    in which nobody scored therefore dropped the game-state change in the same
+    minute, so the last game of the night stayed "in progress" for ten minutes
+    after it ended: every player on it kept a live projection, and the simulator
+    returned 91% for a matchup that was arithmetically over.
+    """
+    from espn.models import parse_game_states
+
+    # Five minutes before the recording ends, everything should be settled: the
+    # final whistle is well before that.
+    transport.clock.seek(recording.duration - 300)
+    states = parse_game_states(transport.fetch(feeds.NFL, 2025, "demo", None))
+    unfinished = sorted(g.abbrev for g in states.values() if not g.finished)
+    assert not unfinished, f"still in progress five minutes from the end: {unfinished}"
+
+
+def test_no_unreferenced_file_is_tracked_in_the_fixture(recording):
+    """Git must track the manifest and exactly the payloads it names.
+
+    This repository lives under an iCloud-synced Documents folder. Regenerating
+    the fixture in place makes iCloud resurrect the previous generation as
+    conflict copies -- "0002_mMatchupScore 2.json.gz" -- and 99 of them reached a
+    commit before anybody looked at a file listing. Nothing reads them, the
+    manifest does not mention them, and every other test passed throughout.
+
+    Asserted against the git index rather than the directory on purpose: new
+    conflict copies can appear on disk at any moment (218 did during one editing
+    session) and they are gitignored, so a test of the working tree would fail
+    for a reason that does not matter. What matters is that none is committed.
+    """
+    import subprocess
+
+    result = subprocess.run(
+        ["git", "ls-files", "data/recordings/demo-2025-11-16"],
+        capture_output=True, text=True, cwd=recording.directory.parent.parent.parent,
+    )
+    if result.returncode != 0:
+        pytest.skip("not a git checkout")
+
+    tracked = {Path(line).name for line in result.stdout.splitlines() if line.strip()}
+    expected = {e.file for e in recording.entries} | {"manifest.json"}
+
+    assert tracked, "the fixture is not committed"
+    strays = sorted(tracked - expected)
+    assert not strays, f"{len(strays)} unreferenced file(s) tracked, e.g. {strays[:3]}"
+    assert not sorted(expected - tracked), "a payload named by the manifest is not committed"

@@ -14,7 +14,7 @@ import time
 from flask import Blueprint, Response, jsonify, render_template, request
 
 from views.state import snapshot, state
-from views.viewmodels import album_view, matchup_view
+from views.viewmodels import album_view, matchup_view, moments_view
 
 bp = Blueprint("api", __name__)
 
@@ -40,6 +40,7 @@ def api_state():
             "problems": snap.all_problems()[:20],
             "matchups": matchup_view(snap),
             "album": album_view(snap),
+            "moments": moments_view(state().live),
             "diagnostics": state().diagnostics(),
         }
     )
@@ -68,26 +69,24 @@ def partial_scorebar():
 
 @bp.route("/stream")
 def stream():
-    """Server-Sent Events.
+    """Server-Sent Events: Moments, pushed the instant the poller detects them.
 
-    PHASE2 pushes Moments here as `engine/events.py` detects them. Until then it
-    is a working heartbeat, which is not busywork: it proves the proxy buffering
-    settings are right, and getting those wrong is a silent failure that only
-    shows up as "the horn fires 30 seconds late" once there is something to push.
+    Polling handles scores; this exists so the horn fires when the room sees the
+    play rather than up to thirty seconds later. One-directional, so no websocket
+    stack, and every listener is fed from the single background poller rather
+    than starting one of its own.
     """
     st = state()
+    live = st.start_live()
     interval = max(5.0, st.cfg.poll_seconds / 2)
 
     def events():
         # Tells EventSource to wait this long before reconnecting, which stops a
         # dropped bar wifi connection from becoming a reconnect storm.
         yield f"retry: {int(interval * 1000)}\n\n"
-        while True:
-            payload = {"ts": time.time(), "mode": st.mode}
-            if st.replay is not None:
-                payload["replay"] = st.replay.describe()
-            yield f"event: heartbeat\ndata: {json.dumps(payload)}\n\n"
-            time.sleep(interval)
+        yield f"event: hello\ndata: {json.dumps({'mode': st.mode, 'ts': time.time()})}\n\n"
+        for payload in live.listen():
+            yield f"event: {payload['event']}\ndata: {json.dumps(payload['data'])}\n\n"
 
     return Response(
         events(),
@@ -100,6 +99,15 @@ def stream():
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@bp.route("/partials/moments")
+def partial_moments():
+    """The commentary feed as a fragment.
+
+    A fallback for a phone whose SSE connection has dropped: the feed keeps
+    filling on the 30 s poll rather than going silent until a reload."""
+    return render_template("partials/moments.html", moments=moments_view(state().live))
 
 
 @bp.route("/api/diagnostics")
