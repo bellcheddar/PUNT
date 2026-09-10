@@ -23,6 +23,9 @@ data/recordings/*/
 # it is several hundred megabytes of derived audio.
 static/audio/phrase/
 
-# Session transcripts and macOS detritus
+# Exported session transcripts: /export writes them into the repo, and they are a
+# verbatim record of a conversation rather than anything the project needs. The
+# dated prefix is deliberate: a bare *.txt would quietly untrack requirements.txt.
+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.txt
 *-this-session-is-being-continued-*.txt
 .DS_Store

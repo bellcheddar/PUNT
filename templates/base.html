@@ -16,6 +16,11 @@
    browser's heuristic caching will otherwise pin an old asset URL and make a
    CSS deploy invisible to returning visitors. #}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v={{ asset_version }}">
+{# htmx is vendored rather than pulled from a CDN. The whole app is designed for
+   ten phones on one bar's wifi: a third-party origin is an extra DNS lookup, an
+   extra TLS handshake and a dependency on a host that may be blocked by the
+   venue. 16 kB gzipped, deferred so it never blocks first paint. #}
+<script src="{{ url_for('static', filename='js/htmx.min.js') }}?v={{ asset_version }}" defer></script>
 </head>
 <body>
 
