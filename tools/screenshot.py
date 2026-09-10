@@ -21,24 +21,45 @@ import argparse
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+ROOT = Path(__file__).resolve().parent.parent
 
-#: (filename stem, path, viewport width, viewport height, alt text)
+#: Set by main(); the harness must be fetched over HTTP rather than from file://
+#: so it is same-origin with the app and can seed the iframe's localStorage.
+BASE_FOR_HARNESS = ["http://127.0.0.1:8019"]
+
+#: Most routes are captured with `?punt=steady&team=5`, which skips the first-run
+#: overlays and marks a team, so the captures show the app in use rather than
+#: whichever one-time overlay a fresh browser profile is due. The pack and the
+#: chooser get their own shots without it.
+STEADY = "punt=steady&team=5"
+
+#: (filename stem, path, viewport width, viewport height, alt text, steady?)
 SHOTS = [
     # Taller than a phone on purpose: the Today tab is three panels and a 844 px
     # capture shows only the first, which makes the README's hero image an
     # advert for a scoreboard rather than for the app.
-    ("today", "/", 390, 1560, "The Today tab on a phone: five live matchups, who is in trouble, and the live commentary feed"),
-    ("album", "/album", 390, 844, "The Album tab: ten manager cards, one per team, tiered by this week's score"),
-    ("swing", "/swing", 390, 844, "The Swing tab: live Monte Carlo win probability and the day's biggest swings"),
-    ("receipts", "/receipts", 390, 844, "The Receipts tab: every manager ranked by points left on the bench, with the exact swap that cost them"),
-    ("big-board", "/big-board?tv=1", 1280, 720, "The Big Board in TV mode: the whole slate on the bar screen"),
+    ("today", "/", 390, 1560, "The Today tab on a phone: five live matchups with the phone owner's own team marked, who is in trouble, and the live commentary feed", True),
+    ("album", "/album", 390, 844, "Ten manager cards in a two-by-five grid, tiered epic, rare, common or cursed by this week's score, each tinted in that team's own colour", True),
+    ("pack", "/album", 390, 844, "The weekly pack, sealed: a foil packet with the wordmark, the week and the card count, waiting to be ripped", False),
+    ("chooser", "/", 390, 1000, "First run: pick which of the ten managers is holding this phone. Kept locally, with no account to make", False),
+    ("swing", "/swing", 390, 844, "The Swing tab: live Monte Carlo win probability and the day's biggest swings", True),
+    ("receipts", "/receipts", 390, 844, "The Receipts tab: every manager ranked by points left on the bench, with the exact swap that cost them", True),
+    ("big-board", "/big-board?tv=1", 1280, 720, "The Big Board in TV mode: the whole slate on the bar screen", True),
 ]
 
 
 def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Path:
+    """Render one route at a real phone width and save a PNG.
+
+    The route decides which overlays it shows, via `?punt=steady`, rather than
+    the harness seeding localStorage: a seeded value set by the parent page is
+    not reliably visible to the iframe under `--screenshot`, and every capture
+    came out showing a first-run overlay.
+    """
     harness = f"""<!DOCTYPE html><meta charset="utf-8">
 <style>
   html,body {{ margin:0; padding:0; background:#0d1017; }}
@@ -49,6 +70,7 @@ def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Pat
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as handle:
         handle.write(harness)
         harness_path = handle.name
+    harness_url = f"file://{harness_path}"
 
     # The window has to clear Chrome's 500 px floor and be tall enough for the
     # whole iframe; the crop below discards the rest.
@@ -101,7 +123,7 @@ def check_overflow(base: str, width: int = 390) -> int:
     DOM is same-origin only: a `file://` harness reads nothing, and
     `--disable-web-security` with a throwaway profile hangs Chrome outright.
     """
-    routes = [r for _, r, _, _, _ in SHOTS if not r.startswith("/big-board")]
+    routes = sorted({r for _, r, _, _, _, _ in SHOTS if not r.startswith("/big-board")})
     frames = "".join(f'<iframe data-route="{r}" src="{r}"></iframe>' for r in routes)
     probe = f"""<!DOCTYPE html><meta charset="utf-8">
 <style>html,body{{margin:0}}iframe{{width:{width}px;height:1200px;border:0;display:block}}</style>
@@ -177,13 +199,18 @@ def main() -> int:
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    BASE_FOR_HARNESS[0] = args.base
+
     if args.url:
         path = capture(args.url, args.width, args.height, out_dir / "capture.png")
         print(f"  {path}")
         return 0
 
-    for stem, path, width, height, alt in SHOTS:
-        target = capture(f"{args.base}{path}", width, height, out_dir / f"{stem}.png")
+    for stem, path, width, height, alt, steady in SHOTS:
+        url = f"{args.base}{path}"
+        if steady:
+            url += ("&" if "?" in path else "?") + STEADY
+        target = capture(url, width, height, out_dir / f"{stem}.png")
         size = target.stat().st_size / 1000
         print(f"  {target}  {width}x{height}  {size:.0f} kB  -- {alt}")
     return 0

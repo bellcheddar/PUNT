@@ -43,7 +43,9 @@
   // iOS fires no beforeinstallprompt, so the only way to be installed there is
   // for somebody to be told about the Share menu. Shown once, to iOS Safari
   // visitors who are not already installed.
-  if (isIosSafari && !isStandalone && !localStorage.getItem('punt.installHintSeen')) {
+  const steady = new URLSearchParams(location.search).get('punt') === 'steady';
+
+  if (isIosSafari && !isStandalone && !steady && !localStorage.getItem('punt.installHintSeen')) {
     const hint = document.createElement('div');
     hint.className = 'banner banner--demo';
     hint.innerHTML = '<strong>Put PUNT on your home screen.</strong> '
@@ -62,7 +64,7 @@
   // once, ever.
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
-    if (isStandalone) return;
+    if (isStandalone || steady) return;
 
     const banner = document.createElement('div');
     banner.className = 'banner banner--demo';

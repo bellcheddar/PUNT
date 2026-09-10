@@ -8,9 +8,11 @@
        hx-swap="innerHTML">
     {% include "partials/album_grid.html" %}
   </div>
-  <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
-    Rarity is provisional until Phase 2: Legendary needs season history and a win
-    probability, so this week's best card reads Epic.
+  <p class="album-note">
+    Cards are minted once a week and the pack opens once.
+    <button class="banner-action" type="button" onclick="window.PUNT_PACK &amp;&amp; window.PUNT_PACK.again()">
+      Rip it again
+    </button>
   </p>
 </section>
 {% endblock %}

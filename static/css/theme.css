@@ -270,6 +270,11 @@ main { padding: 12px 14px 24px; }
  * scrolling. That is worth protecting: it means no pagination and no
  * virtualisation anywhere in the album. */
 .album-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+/* While the pack is sealed the cards exist and are face-down, but ten invisible
+ * cards leave a screen-high void under the packet. Collapsed rather than
+ * `display: none` so they keep their layout for the reveal animation. */
+.album-grid--sealed { max-height: 0; overflow: hidden; }
 :root[data-tv='1'] .album-grid { grid-template-columns: repeat(5, 1fr); }
 
 /* A card is a stack of four layers, all of which move only on `transform` and
@@ -299,20 +304,56 @@ main { padding: 12px 14px 24px; }
   overflow: hidden;
   background: linear-gradient(160deg, hsl(var(--hue) 42% 24%), hsl(var(--hue) 46% 13%));
   border: 1px solid var(--tier-colour);
-  /* A shared 3D context so the tilt reads as a tilt rather than a skew, and a
-   * promotion to its own layer so ten of them do not repaint together. */
-  transform: perspective(600px)
-             rotateY(calc(var(--tx) * 9deg))
+  /* A shared 3D context so the tilt reads as a tilt rather than a skew, and so
+   * the two faces can sit back to back for the flip. `--flip` is 0 face-up and
+   * 1 face-down; the pack rip animates it. */
+  --flip: 0;
+  transform-style: preserve-3d;
+  transform: perspective(700px)
+             rotateY(calc(var(--tx) * 9deg + var(--flip) * 180deg))
              rotateX(calc(var(--ty) * -9deg))
-             translateZ(0);
+             scale(var(--pop, 1));
   transition: transform 120ms ease-out;
   will-change: transform;
+}
+
+/* Two faces, back to back. `backface-visibility` is what makes the flip a flip
+ * rather than a mirrored front. */
+.card-face {
+  position: absolute;
+  inset: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 12px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.card-face--back {
+  transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(48deg, rgba(255,255,255,.028) 0 2px, transparent 2px 7px),
+    linear-gradient(150deg, #16203a 0%, #0d1220 100%);
+  display: grid;
+  place-items: center;
+}
+.card-back-mark {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: .07em;
+  background: linear-gradient(92deg, var(--brand-bright), var(--violet) 45%, var(--magenta));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: .82;
 }
 
 /* The foil. One rotated linear gradient, translated on `transform` only: the
  * cheap trick that sells the whole conceit. It tracks the tilt, so on a phone
  * the light moves when the phone does. */
-.card::before {
+.card-face--front::before {
   content: '';
   position: absolute;
   inset: -40%;
@@ -330,7 +371,7 @@ main { padding: 12px 14px 24px; }
   transition: opacity 200ms ease;
 }
 
-.card::after {
+.card-face--front::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -360,7 +401,7 @@ main { padding: 12px 14px 24px; }
 .card-crest img { width: 54%; height: auto; opacity: .5; border-radius: 8px; }
 
 /* Content sits above both pseudo-elements. */
-.card > * { position: relative; z-index: 1; }
+.card-face--front > * { position: relative; z-index: 1; }
 
 /* ---- rarity treatments ---- */
 
@@ -368,19 +409,19 @@ main { padding: 12px 14px 24px; }
 
 /* Rare: a subtle sweep that only appears as the card is tilted. */
 .card--rare { --tier-colour: var(--tier-rare); }
-.card--rare::before { opacity: .5; }
+.card--rare .card-face--front::before { opacity: .5; }
 
 /* Epic: the sweep animates on its own as well as tracking the tilt, and the
  * edge picks up the tier colour. */
 .card--epic { --tier-colour: var(--tier-epic); box-shadow: inset 0 0 0 1px rgba(155, 81, 224, .5); }
-.card--epic::before { opacity: .85; animation: foil-sweep 4.5s ease-in-out infinite; }
+.card--epic .card-face--front::before { opacity: .85; animation: foil-sweep 4.5s ease-in-out infinite; }
 
 /* Legendary: full holographic. Two gradients at different angles, both moving,
  * which is what separates a hologram from a shine. */
 .card--legendary { --tier-colour: var(--tier-legendary);
                    box-shadow: inset 0 0 0 1px rgba(252, 185, 0, .55), 0 0 18px rgba(252, 185, 0, .16); }
-.card--legendary::before { opacity: 1; animation: foil-sweep 3.2s ease-in-out infinite; }
-.card--legendary::after {
+.card--legendary .card-face--front::before { opacity: 1; animation: foil-sweep 3.2s ease-in-out infinite; }
+.card--legendary .card-face--front::after {
   opacity: .38;
   background: repeating-linear-gradient(
     calc(112deg + var(--tx) * 14deg),
@@ -399,11 +440,11 @@ main { padding: 12px 14px 24px; }
  * it on every tilt frame, and with two or three cursed cards on screen that is
  * the frame budget gone. An overlay costs one extra paint of one rectangle. */
 .card--cursed { --tier-colour: var(--tier-cursed); border-style: dashed; }
-.card--cursed::before {
+.card--cursed .card-face--front::before {
   opacity: .22;
   background: linear-gradient(104deg, transparent 40%, rgba(255,255,255,.18) 50%, transparent 60%);
 }
-.card--cursed::after {
+.card--cursed .card-face--front::after {
   opacity: 1;
   background:
     linear-gradient(0deg, rgba(90, 92, 96, .55), rgba(90, 92, 96, .55)),
@@ -421,7 +462,7 @@ main { padding: 12px 14px 24px; }
  * Common one. */
 @media (prefers-reduced-motion: reduce) {
   .card { transition: none; transform: none; }
-  .card::before { animation: none; }
+  .card-face--front::before { animation: none; }
 }
 
 /* ---------- tables ---------- */
@@ -490,6 +531,173 @@ main { padding: 12px 14px 24px; }
   padding: 1px 5px;
   border-radius: 4px;
   background: linear-gradient(90deg, rgba(0,208,132,.28) var(--p, 0%), transparent var(--p, 0%));
+}
+
+/* ---------- this phone's team ---------- */
+
+/* Marked by identity.js on whatever belongs to the manager holding the phone.
+ * Deliberately quiet: a bright treatment on your own row in a list of ten reads
+ * as an alert rather than as orientation. */
+.is-mine { position: relative; }
+.mside.is-mine { background: linear-gradient(90deg, hsl(var(--hue) 60% 50% / .10), transparent 65%); }
+.mside.is-mine .mside-id b::after {
+  content: 'you';
+  font-family: var(--font-mono);
+  font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-left: 7px;
+  vertical-align: 1px;
+}
+.card.is-mine { box-shadow: 0 0 0 2px var(--magenta); }
+
+.chooser {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  overflow-y: auto;
+  background: rgba(9, 11, 16, .96);
+  backdrop-filter: blur(6px);
+  padding: max(28px, env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
+}
+.chooser-inner { max-width: 460px; margin: 0 auto; }
+.chooser-title {
+  font-family: var(--font-display); font-size: 26px; letter-spacing: .03em;
+  margin: 8px 0 6px;
+}
+.chooser-note { margin: 0 0 18px; font-size: 12.5px; color: var(--ink-faint); }
+.chooser-grid { display: grid; gap: 8px; }
+
+.chooser-team {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  /* Well over the 44 px minimum: ten of these are the only thing on screen. */
+  min-height: 58px;
+  padding: 9px 12px;
+  text-align: left;
+  color: var(--ink);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.chooser-team:active { transform: scale(.99); }
+.chooser-crest {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, hsl(var(--hue) 62% 46%), hsl(var(--hue) 58% 28%));
+  font-family: var(--font-display); font-size: 13px;
+  color: rgba(255,255,255,.94);
+}
+.chooser-names { min-width: 0; }
+.chooser-names b { display: block; font-size: 14.5px; }
+.chooser-names span {
+  display: block;
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.chooser-skip {
+  display: block;
+  margin: 16px auto 0;
+  padding: 10px 18px; min-height: 44px;
+  font: inherit; color: var(--ink-faint);
+  background: none; border: 0; cursor: pointer;
+}
+
+/* ---------- the pack ---------- */
+
+.pack {
+  position: relative;
+  /* Tall enough to feel like an object rather than a banner: it is the only
+   * thing on the screen until it is opened. */
+  aspect-ratio: 5 / 6;
+  margin-bottom: 12px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.pack-foil {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  padding-bottom: 52px;
+  text-align: center;
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 3px, transparent 3px 11px),
+    linear-gradient(128deg, #1e73be 0%, #9b51e0 52%, #ff2fd0 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  /* Serrated top and bottom edges, the way a foil packet is sealed. */
+  clip-path: polygon(
+    0% 6%, 4% 0%, 8% 6%, 12% 0%, 16% 6%, 20% 0%, 24% 6%, 28% 0%, 32% 6%, 36% 0%,
+    40% 6%, 44% 0%, 48% 6%, 52% 0%, 56% 6%, 60% 0%, 64% 6%, 68% 0%, 72% 6%,
+    76% 0%, 80% 6%, 84% 0%, 88% 6%, 92% 0%, 96% 6%, 100% 0%, 100% 94%, 96% 100%,
+    92% 94%, 88% 100%, 84% 94%, 80% 100%, 76% 94%, 72% 100%, 68% 94%, 64% 100%,
+    60% 94%, 56% 100%, 52% 94%, 48% 100%, 44% 94%, 40% 100%, 36% 94%, 32% 100%,
+    28% 94%, 24% 100%, 20% 94%, 16% 100%, 12% 94%, 8% 100%, 4% 94%, 0% 100%
+  );
+  transform-origin: 50% 50%;
+  transition: transform 480ms cubic-bezier(.6,-0.2,.8,.6), opacity 480ms ease;
+}
+
+.pack-mark {
+  font-family: var(--font-display); font-size: 46px; line-height: 1;
+  letter-spacing: .06em; color: rgba(255, 255, 255, .96);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+}
+.pack-week, .pack-count {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .22em;
+  color: rgba(255, 255, 255, .8);
+}
+
+.pack-button {
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  margin-bottom: 26px;
+  min-height: 44px;
+  padding: 11px 22px;
+  font-family: var(--font-display); font-size: 14px; letter-spacing: .18em;
+  color: #0d1017;
+  background: rgba(255, 255, 255, .92);
+  border: 0; border-radius: 999px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pack-button:active { transform: scale(.96); }
+
+/* The tear. The foil scales apart and fades; nothing else moves, so the whole
+ * thing stays on the compositor. */
+.pack--ripped .pack-foil { transform: scaleY(1.16) translateY(-8%); opacity: 0; }
+.pack--ripped .pack-button { opacity: 0; transition: opacity 200ms ease; }
+
+.album-note {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 150;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pack-foil { transition: none; }
 }
 
 /* ---------- the unlock gate ---------- */

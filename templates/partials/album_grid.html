@@ -1,25 +1,37 @@
 {% if album %}
-<div class="album-grid">
+<div class="album-grid" data-album data-week="{{ snap.scoring_period }}">
   {% for c in album %}
-  <article class="card card--{{ c.tier }}" style="--hue: {{ c.hue }}">
-    <div>
-      <div class="card-tier">{{ c.tier }}{% if c.rank %} &middot; #{{ c.rank }}{% endif %}</div>
-      <div class="card-name">{{ c.name }}</div>
-    </div>
-    {# The card's own crest, large. Phase 3 fills this space properly with foil,
-       tilt and the pack rip; until then an empty middle third reads as a
-       rendering failure rather than as a card. #}
-    <div class="card-crest" aria-hidden="true">
-      {%- if c.logo %}<img src="{{ c.logo }}" alt="" loading="lazy">
-      {%- else %}{{ c.monogram }}{% endif -%}
-    </div>
-    <div>
-      <div class="card-score">{{ c.total | points }}</div>
-      <div class="card-stats">
-        {{ c.manager }}<br>
-        {{ c.record }} &middot; PROJ {{ c.projected | points }}<br>
-        BENCH {{ c.bench_regret | points }}
+  {# `data-reveal` is the pack-rip order: highest score first, lowest last, so
+     the reveal builds towards the worst week in the league rather than the best.
+     That is the joke, and it is the spec's ordering.
+
+     Cards are face-up in the markup and turned face-down by JavaScript before a
+     rip. With no JavaScript at all the album is simply an album, which is the
+     right failure: the reveal is a flourish, not the content. #}
+  <article class="card card--{{ c.tier }}" style="--hue: {{ c.hue }}"
+           data-reveal="{{ loop.index0 }}" data-tier="{{ c.tier }}"
+           data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points, {{ c.tier }}">
+    <div class="card-face card-face--front">
+      <div>
+        <div class="card-tier">{{ c.tier }}{% if c.rank %} &middot; #{{ c.rank }}{% endif %}</div>
+        <div class="card-name">{{ c.name }}</div>
       </div>
+      <div class="card-crest" aria-hidden="true">
+        {%- if c.logo %}<img src="{{ c.logo }}" alt="" loading="lazy">
+        {%- else %}{{ c.monogram }}{% endif -%}
+      </div>
+      <div>
+        <div class="card-score">{{ c.total | points }}</div>
+        <div class="card-stats">
+          {{ c.manager }}<br>
+          {{ c.record }} &middot; PROJ {{ c.projected | points }}<br>
+          BENCH {{ c.bench_regret | points }}
+        </div>
+      </div>
+    </div>
+    {# The back carries the wordmark and nothing else. #}
+    <div class="card-face card-face--back" aria-hidden="true">
+      <span class="card-back-mark">PUNT</span>
     </div>
   </article>
   {% endfor %}

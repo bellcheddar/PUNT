@@ -10,7 +10,8 @@
 <div class="matchup" id="matchup-{{ m.id }}">
   {% for side in [m.away, m.home] %}
   {% set opponent = m.home if loop.first else m.away %}
-  <div class="mside {% if side.total > opponent.total %}mside--leading{% endif %}" style="--hue: {{ side.hue }}">
+  <div class="mside {% if side.total > opponent.total %}mside--leading{% endif %}"
+       style="--hue: {{ side.hue }}" data-team="{{ side.id }}">
     <span class="crest">
       {%- if side.logo %}<img src="{{ side.logo }}" alt="" loading="lazy" width="34" height="34">
       {%- else %}{{ side.monogram }}{% endif -%}
