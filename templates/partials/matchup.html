@@ -1,29 +1,28 @@
-{# One head-to-head row. Rendered by the page on first paint and by
-   /partials/matchup/<id> on every htmx refresh, so the two cannot diverge. #}
+{# One head-to-head, as two stacked rows.
+
+   Side by side in a 1fr/auto/1fr grid, the two names get about 130 px each on a
+   390 px phone, which truncated "Bench Mob Rule" to "Bench Mob ..." and wrapped
+   a manager's name onto a second line. Stacking gives each side the full width,
+   which is the whole point of designing at 390 px before anything else exists.
+
+   Rendered by the page on first paint and by /partials/matchup/<id> on every
+   htmx refresh, so the two cannot diverge. #}
 <div class="matchup" id="matchup-{{ m.id }}">
-  <div class="side" style="--hue: {{ m.away.hue }}">
+  {% for side in [m.away, m.home] %}
+  {% set opponent = m.home if loop.first else m.away %}
+  <div class="mside {% if side.total > opponent.total %}mside--leading{% endif %}" style="--hue: {{ side.hue }}">
     <span class="crest">
-      {%- if m.away.logo %}<img src="{{ m.away.logo }}" alt="" loading="lazy" width="34" height="34">
-      {%- else %}{{ m.away.monogram }}{% endif -%}
+      {%- if side.logo %}<img src="{{ side.logo }}" alt="" loading="lazy" width="34" height="34">
+      {%- else %}{{ side.monogram }}{% endif -%}
     </span>
-    <span class="side-name">
-      <b>{{ m.away.name }}</b>
-      <span>{{ m.away.manager }} &middot; {{ m.away.record }}</span>
+    <span class="mside-id">
+      <b>{{ side.name }}</b>
+      <span>{{ side.manager }} &middot; {{ side.record }}{% if side.in_play %} &middot; {{ side.in_play }} in play{% endif %}</span>
     </span>
-  </div>
-  <div style="text-align:center">
-    <div class="score {% if m.away.total > m.home.total %}score--leading{% endif %}">{{ m.away.total | points }}</div>
-    <div class="vs">&mdash;</div>
-    <div class="score {% if m.home.total >= m.away.total %}score--leading{% endif %}">{{ m.home.total | points }}</div>
-  </div>
-  <div class="side side--away" style="--hue: {{ m.home.hue }}">
-    <span class="crest">
-      {%- if m.home.logo %}<img src="{{ m.home.logo }}" alt="" loading="lazy" width="34" height="34">
-      {%- else %}{{ m.home.monogram }}{% endif -%}
-    </span>
-    <span class="side-name">
-      <b>{{ m.home.name }}</b>
-      <span>{{ m.home.manager }} &middot; {{ m.home.record }}</span>
+    <span class="mside-score">
+      <b>{{ side.total | points }}</b>
+      <span>proj {{ side.projected | points }}</span>
     </span>
   </div>
+  {% endfor %}
 </div>

@@ -48,6 +48,13 @@ USER_AGENT = "PUNT/1.0 (+https://punt.mdeller.com) ten-team bar league companion
 MAX_BACKOFF = 300.0
 BASE_BACKOFF = 5.0
 
+#: Where an unconfigured app joins the demo Sunday, and how fast it runs. 2.5 h in
+#: is mid-afternoon: the early slate is live and the late one has not kicked off.
+#: 60x turns the remaining eight hours into eight minutes, so somebody clicking
+#: around a fresh clone sees scores actually move.
+DEMO_START_OFFSET = 2.5 * 3600
+DEMO_SPEED = 60.0
+
 
 class UpstreamError(RuntimeError):
     """Any failure to get a usable payload from ESPN."""
@@ -338,11 +345,19 @@ def build_client(cfg, cache: TTLCache | None = None) -> EspnClient:
         else:
             log.info("ESPN transport: live (league %s, season %s)", cfg.league_id, cfg.season)
     else:
-        transport = ReplayTransport.load(DEMO_RECORDING, speed=max(1.0, cfg.replay_speed))
+        # Demo mode starts mid-afternoon rather than at kickoff, and runs fast.
+        # Started at zero and 1x, the first thing anyone evaluating this repo sees
+        # is ten cards reading 0.0, because at 12:45 ET nothing has happened yet --
+        # a correct rendering of a state nobody wants to look at. Two and a half
+        # hours in, the early games are live, scores are real and the day still has
+        # somewhere to go.
+        transport = ReplayTransport.load(
+            DEMO_RECORDING, speed=DEMO_SPEED, start=DEMO_START_OFFSET
+        )
         log.warning(
             "No LEAGUE_ID/ESPN_S2/ESPN_SWID set: falling back to the shipped demo "
-            "recording %s. Nothing you see is a real score.",
-            DEMO_RECORDING,
+            "recording %s, from %.1fh in at %gx. Nothing you see is a real score.",
+            DEMO_RECORDING, DEMO_START_OFFSET / 3600, DEMO_SPEED,
         )
 
     return EspnClient(

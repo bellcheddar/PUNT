@@ -139,7 +139,7 @@ def test_game_state_turns_a_zero_into_a_goose_egg():
                            pro_team_id=1, points=0.0, projected=11.5, game_over=True)
     side = Side(team_id=1, total=0.0, players=[yet_to_start, finished_flat])
 
-    assert side.yet_to_play == 1
+    assert side.in_play == 1
     assert yet_to_start.remaining == 19.0
     assert finished_flat.remaining == 0.0, "a finished game cannot still owe you points"
     assert side.live_projection == 19.0
@@ -150,7 +150,7 @@ def test_unknown_game_state_falls_back_rather_than_guessing():
     player = Player(id=1, name="a", slot_id=0, position="QB", pro_team="SF", points=4.0, projected=19.0)
     assert player.game_over is None
     assert player.remaining == 15.0
-    assert Side(team_id=1, players=[player]).yet_to_play == 0
+    assert Side(team_id=1, players=[player]).in_play == 0
 
 
 def test_nfl_scoreboard_parses_into_fantasy_team_ids():

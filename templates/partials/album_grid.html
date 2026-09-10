@@ -6,6 +6,13 @@
       <div class="card-tier">{{ c.tier }}{% if c.rank %} &middot; #{{ c.rank }}{% endif %}</div>
       <div class="card-name">{{ c.name }}</div>
     </div>
+    {# The card's own crest, large. Phase 3 fills this space properly with foil,
+       tilt and the pack rip; until then an empty middle third reads as a
+       rendering failure rather than as a card. #}
+    <div class="card-crest" aria-hidden="true">
+      {%- if c.logo %}<img src="{{ c.logo }}" alt="" loading="lazy">
+      {%- else %}{{ c.monogram }}{% endif -%}
+    </div>
     <div>
       <div class="card-score">{{ c.total | points }}</div>
       <div class="card-stats">

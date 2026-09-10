@@ -38,7 +38,8 @@ def _team_card(team: Team | None, side: Side | None) -> dict[str, Any]:
         "projected": round(side.live_projection, 2) if side else 0.0,
         "starters": [_player(p) for p in (side.starters if side else [])],
         "bench": [_player(p) for p in (side.bench if side else [])],
-        "yet_to_play": side.yet_to_play if side else 0,
+        "in_play": side.in_play if side else 0,
+        "yet_to_kick_off": side.yet_to_kick_off if side else 0,
         "missing": False,
     }
 

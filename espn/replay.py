@@ -240,14 +240,14 @@ class ReplayClock:
 class ReplayTransport(Transport):
     """A `Transport` that serves a recording instead of the network."""
 
-    def __init__(self, recording: Recording, speed: float = 1.0) -> None:
+    def __init__(self, recording: Recording, speed: float = 1.0, start: float = 0.0) -> None:
         self.recording = recording
-        self.clock = ReplayClock(speed=speed)
+        self.clock = ReplayClock(speed=speed, start=start)
         self.reads = 0
 
     @classmethod
-    def load(cls, name_or_path: str, speed: float = 1.0) -> "ReplayTransport":
-        return cls(Recording.load(name_or_path), speed=speed)
+    def load(cls, name_or_path: str, speed: float = 1.0, start: float = 0.0) -> "ReplayTransport":
+        return cls(Recording.load(name_or_path), speed=speed, start=start)
 
     @property
     def position(self) -> float:

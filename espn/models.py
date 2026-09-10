@@ -483,15 +483,25 @@ class Side:
         return round(self.total + sum(p.remaining for p in self.starters), 2)
 
     @property
-    def yet_to_play(self) -> int:
-        """Starters whose real game has not finished.
+    def in_play(self) -> int:
+        """Starters who can still score: their real game has not finished.
 
         Counted from game state rather than from `points == 0`, because a player
         who genuinely scored nothing and a player who has not kicked off yet look
         identical on the fantasy feed, and telling a manager they have four
         players left when they have none is the difference between hope and a
-        goose egg."""
+        goose egg.
+
+        Deliberately *not* called "yet to play": a player in the third quarter has
+        very much played, and labelling a mid-afternoon row "9 to play" reads as
+        though the whole lineup is still on the bus.
+        """
         return sum(1 for p in self.starters if p.game_over is False)
+
+    @property
+    def yet_to_kick_off(self) -> int:
+        """Starters whose game has not started at all. The genuinely untouched."""
+        return sum(1 for p in self.starters if p.game_over is False and p.points == 0.0)
 
     @classmethod
     def from_raw(cls, raw: Any, scoring_period: int) -> "Side":
