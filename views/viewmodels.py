@@ -50,7 +50,7 @@ def _player(player) -> dict[str, Any]:
     return {
         "id": player.id,
         "name": player.name,
-        "opponent": player.opponent,
+        "pro_opponent": player.opponent,
         "game_over": player.game_over,
         "slot": player.slot,
         "position": player.position,
@@ -264,15 +264,22 @@ def moments_view(live, limit: int = 25) -> list[dict[str, Any]]:
     phrase bank; the shape is the same either way."""
     if live is None:
         return []
-    return [
-        {
-            "kind": m.kind,
-            "magnitude": round(m.magnitude, 2),
-            "managers": m.managers,
-            "player": m.player,
-            "delta": round(m.delta_points, 2),
-            "context": m.context,
-            "ts": m.ts.isoformat(timespec="seconds"),
-        }
-        for m in live.recent(limit=limit)
-    ]
+    out = []
+    for moment in live.recent(limit=limit):
+        line = live.line_for(moment)
+        out.append({
+            "kind": moment.kind,
+            "magnitude": round(moment.magnitude, 2),
+            "managers": moment.managers,
+            "player": moment.player,
+            "delta": round(moment.delta_points, 2),
+            "context": moment.context,
+            "ts": moment.ts.isoformat(timespec="seconds"),
+            # The phrase bank's line when there is one. The templated description
+            # in the partial is the fallback for a Moment the bank had nothing
+            # to say about, which is a deliberate state rather than a gap.
+            "text": line.text if line else "",
+            "audio": line.audio if line else "",
+            "tone": list(line.tone) if line else [],
+        })
+    return out

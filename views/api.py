@@ -86,7 +86,13 @@ def stream():
         yield f"retry: {int(interval * 1000)}\n\n"
         yield f"event: hello\ndata: {json.dumps({'mode': st.mode, 'ts': time.time()})}\n\n"
         for payload in live.listen():
-            yield f"event: {payload['event']}\ndata: {json.dumps(payload['data'])}\n\n"
+            body = payload["data"]
+            if payload.get("replayed"):
+                # Carried into the payload rather than left as a sibling key: the
+                # client only ever sees `data`, and a backlog moment that looks
+                # live fires a horn for a touchdown from forty minutes ago.
+                body = {**body, "replayed": True}
+            yield f"event: {payload['event']}\ndata: {json.dumps(body)}\n\n"
 
     return Response(
         events(),

@@ -24,7 +24,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from config import PHRASES_DIR  # noqa: E402
+from config import PHRASES_DIR, STATIC_DIR  # noqa: E402
 from engine import events  # noqa: E402
 from engine.commentary import PhraseBank, PhraseError  # noqa: E402
 
@@ -74,8 +74,24 @@ def main() -> int:
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1
 
+    # Every `audio:` name must exist in the sprite. A phrase pointing at a sound
+    # that was renamed or never made is silent at play time and looks exactly
+    # like a phrase that was simply not chosen.
+    sprite_path = STATIC_DIR / "audio" / "sprite.json"
+    sounds: set[str] = set()
+    if sprite_path.is_file():
+        import json
+
+        sounds = set(json.loads(sprite_path.read_text("utf-8")).get("sprite", {}))
+    else:
+        print("(no sprite.json; run tools/make_audio.py to check sound names)\n")
+
     problems: list[str] = []
     for phrase in bank.phrases:
+        if sounds and phrase.audio and phrase.audio not in sounds:
+            problems.append(
+                f"{phrase.id} ({phrase.source}): audio {phrase.audio!r} is not in the sprite"
+            )
         for kind in phrase.kind:
             known = SLOTS.get(kind)
             if known is None:

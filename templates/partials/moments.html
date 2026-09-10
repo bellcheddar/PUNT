@@ -9,7 +9,9 @@
   <li class="feed-item feed-item--{{ m.kind | lower }}" style="--mag: {{ m.magnitude }}">
     <span class="feed-kind">{{ m.kind.replace('_', ' ') }}</span>
     <span class="feed-text">
-      {%- if m.kind == 'BENCH_DISASTER' -%}
+      {%- if m.text -%}
+        {{ m.text }}
+      {%- elif m.kind == 'BENCH_DISASTER' -%}
         <b>{{ m.managers | join(', ') }}</b> left {{ m.context.benched }}
         ({{ m.context.benched_points | points }}) on the bench for
         {{ m.context.started }} ({{ m.context.started_points | points }}) at {{ m.context.slot }}

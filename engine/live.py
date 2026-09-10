@@ -26,6 +26,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterator
 
+from engine.commentary import Commentator, Line, PhraseBank
 from engine.events import EventEngine, Moment
 from espn.models import LeagueSnapshot
 
@@ -67,10 +68,16 @@ class LiveFeed:
         fetch: Callable[[], LeagueSnapshot],
         poll_seconds: float = 30.0,
         engine: EventEngine | None = None,
+        commentator: Commentator | None = None,
     ) -> None:
         self.fetch = fetch
         self.poll_seconds = max(5.0, poll_seconds)
         self.engine = engine or EventEngine()
+        # The line is chosen on the server, not on each phone. Ten phones in one
+        # room must hear the same sentence: picking client-side would give ten
+        # different lines for the same touchdown, which is worse than silence.
+        self.commentator = commentator
+        self.lines: dict[str, Line] = {}
         self.moments: deque[Moment] = deque(maxlen=BUFFER)
         self.snapshot: LeagueSnapshot | None = None
         self.polls = 0
@@ -114,7 +121,13 @@ class LiveFeed:
             backlog = list(self.moments)[-20:]
         try:
             for moment in backlog:
-                listener.offer({"event": "moment", "data": moment.to_json(), "replayed": True})
+                payload = moment.to_json()
+                line = self.lines.get(moment.id)
+                if line is not None:
+                    payload["line"] = line.to_json()
+                # `replayed` so the client shows it in the feed without firing a
+                # horn for a touchdown that happened forty minutes ago.
+                listener.offer({"event": "moment", "data": payload, "replayed": True})
             while True:
                 try:
                     yield listener.queue.get(timeout=15.0)
@@ -157,7 +170,11 @@ class LiveFeed:
         if moments:
             self.moments.extend(moments)
             for moment in moments:
-                self._broadcast({"event": "moment", "data": moment.to_json()})
+                payload = moment.to_json()
+                line = self._commentate(moment, snapshot.scoring_period)
+                if line is not None:
+                    payload["line"] = line.to_json()
+                self._broadcast({"event": "moment", "data": payload})
         self._broadcast({
             "event": "tick",
             "data": {
@@ -172,6 +189,31 @@ class LiveFeed:
         self.failures = 0
         self.last_error = ""
         return moments
+
+    def _commentate(self, moment: Moment, week: int) -> Line | None:
+        """One line for this Moment, remembered so the feed and the stream agree.
+
+        Silence is a valid answer and is returned as one: a Moment with no line
+        still reaches the stream, still moves the scores, and simply says nothing.
+        """
+        if self.commentator is None:
+            return None
+        try:
+            line = self.commentator.say(moment, week=week)
+        except Exception:  # noqa: BLE001 - a bad phrase must not stop the poll
+            log.exception("commentary failed for %s", moment.kind)
+            return None
+        if line is not None:
+            self.lines[moment.id] = line
+            # Bounded alongside the moment buffer, or a long Sunday leaks one
+            # entry per event for as long as the process lives.
+            if len(self.lines) > BUFFER * 2:
+                keep = {m.id for m in self.moments}
+                self.lines = {k: v for k, v in self.lines.items() if k in keep}
+        return line
+
+    def line_for(self, moment: Moment) -> Line | None:
+        return self.lines.get(moment.id)
 
     def recent(self, limit: int = 30, kinds: set[str] | None = None) -> list[Moment]:
         items = [m for m in self.moments if not kinds or m.kind in kinds]

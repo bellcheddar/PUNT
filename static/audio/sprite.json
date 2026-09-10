@@ -1,0 +1,77 @@
+{
+  "sprite": {
+    "horn_01": [
+      0,
+      612
+    ],
+    "horn_02": [
+      920,
+      912
+    ],
+    "horn_03": [
+      2140,
+      1642
+    ],
+    "trombone": [
+      4090,
+      1442
+    ],
+    "whoosh": [
+      5840,
+      492
+    ],
+    "riser": [
+      6640,
+      1892
+    ],
+    "chime": [
+      8840,
+      1092
+    ],
+    "doom": [
+      10240,
+      2092
+    ],
+    "scratch": [
+      12640,
+      472
+    ],
+    "buzzer": [
+      13420,
+      792
+    ],
+    "crowd": [
+      14520,
+      2192
+    ],
+    "tap": [
+      17020,
+      52
+    ],
+    "flip": [
+      17380,
+      192
+    ],
+    "rip": [
+      17880,
+      712
+    ]
+  },
+  "buses": {
+    "horn_01": "stings",
+    "horn_02": "stings",
+    "horn_03": "stings",
+    "trombone": "stings",
+    "whoosh": "stings",
+    "riser": "stings",
+    "chime": "stings",
+    "doom": "stings",
+    "scratch": "stings",
+    "buzzer": "stings",
+    "crowd": "music",
+    "tap": "ui",
+    "flip": "ui",
+    "rip": "ui"
+  },
+  "rate": 44100
+}

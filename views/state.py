@@ -14,6 +14,7 @@ from typing import Any
 from flask import current_app
 
 from config import Config
+from engine.commentary import Commentator, PhraseBank
 from engine.events import EventEngine
 from engine.live import LiveFeed
 from espn.cache import TTLCache
@@ -42,6 +43,7 @@ class PuntState:
                 fetch=lambda: self.repo.snapshot(live=True),
                 poll_seconds=self.cfg.poll_seconds,
                 engine=EventEngine(),
+                commentator=_commentator(self.cfg),
             )
         self.live.start()
         return self.live
@@ -67,6 +69,22 @@ class PuntState:
         if self.live is not None:
             out["live"] = self.live.stats()
         return out
+
+
+def _commentator(cfg: Config) -> Commentator | None:
+    """Load the phrase bank, or carry on without one.
+
+    A missing or malformed bank must not stop the scores working: the app is a
+    scoreboard first and a broadcast second."""
+    from config import PHRASES_DIR  # noqa: PLC0415
+
+    try:
+        bank = PhraseBank.load(PHRASES_DIR)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("no commentary: %s", exc)
+        return None
+    log.info("commentary: %d phrases, roast level %d", len(bank), cfg.roast_level)
+    return Commentator(bank, roast_level=cfg.roast_level)
 
 
 def state() -> PuntState:
