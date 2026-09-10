@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}PUNT &middot; Receipts{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2 class="panel-title">Bench regret</h2>
+  {% if receipts.rows %}
+    <table class="rows">
+      <thead><tr><th>Manager</th><th class="num">Score</th><th class="num">Left on the bench</th></tr></thead>
+      <tbody>
+      {% for row in receipts.rows %}
+        <tr>
+          <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}</td>
+          <td class="num">{{ row.score | points }}</td>
+          <td class="num">{{ row.bench_regret | points }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
+      A lower bound until Phase 2: this is the best bench score minus the worst
+      starter, not the true optimal lineup under slot eligibility. All-play, luck
+      index and the fines ledger land with it.
+    </p>
+  {% else %}
+    <div class="empty"><strong>No receipts yet</strong>Nobody has done anything regrettable.</div>
+  {% endif %}
+</section>
+{% endblock %}

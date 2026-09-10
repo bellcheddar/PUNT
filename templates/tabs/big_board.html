@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}PUNT &middot; Big Board{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2 class="panel-title">Week {{ snap.scoring_period }}</h2>
+  <div hx-get="{{ url_for('api.partial_scorebar') }}"
+       hx-trigger="every {{ poll_seconds }}s"
+       hx-swap="innerHTML">
+    {% include "partials/scorebar.html" %}
+  </div>
+</section>
+{% endblock %}

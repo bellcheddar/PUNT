@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}PUNT &middot; Today{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; live</h2>
+  {# hx-trigger fires every poll_seconds, and the server's TTL cache means ten
+     phones doing this produce one upstream call, not ten. #}
+  <div hx-get="{{ url_for('api.partial_scorebar') }}"
+       hx-trigger="every {{ poll_seconds }}s"
+       hx-swap="innerHTML">
+    {% include "partials/scorebar.html" %}
+  </div>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Next thing to watch</h2>
+  <div class="empty">
+    <strong>Phase 2</strong>
+    Win probability and the biggest swing of the day arrive with the simulator.
+  </div>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Commentary</h2>
+  <div class="empty">
+    <strong>Phase 4</strong>
+    The phrase bank, the horns and the ducking are not built yet. The feed will
+    stream in here.
+  </div>
+</section>
+{% endblock %}

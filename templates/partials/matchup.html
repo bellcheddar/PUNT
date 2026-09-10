@@ -1,0 +1,29 @@
+{# One head-to-head row. Rendered by the page on first paint and by
+   /partials/matchup/<id> on every htmx refresh, so the two cannot diverge. #}
+<div class="matchup" id="matchup-{{ m.id }}">
+  <div class="side" style="--hue: {{ m.away.hue }}">
+    <span class="crest">
+      {%- if m.away.logo %}<img src="{{ m.away.logo }}" alt="" loading="lazy" width="34" height="34">
+      {%- else %}{{ m.away.monogram }}{% endif -%}
+    </span>
+    <span class="side-name">
+      <b>{{ m.away.name }}</b>
+      <span>{{ m.away.manager }} &middot; {{ m.away.record }}</span>
+    </span>
+  </div>
+  <div style="text-align:center">
+    <div class="score {% if m.away.total > m.home.total %}score--leading{% endif %}">{{ m.away.total | points }}</div>
+    <div class="vs">&mdash;</div>
+    <div class="score {% if m.home.total >= m.away.total %}score--leading{% endif %}">{{ m.home.total | points }}</div>
+  </div>
+  <div class="side side--away" style="--hue: {{ m.home.hue }}">
+    <span class="crest">
+      {%- if m.home.logo %}<img src="{{ m.home.logo }}" alt="" loading="lazy" width="34" height="34">
+      {%- else %}{{ m.home.monogram }}{% endif -%}
+    </span>
+    <span class="side-name">
+      <b>{{ m.home.name }}</b>
+      <span>{{ m.home.manager }} &middot; {{ m.home.record }}</span>
+    </span>
+  </div>
+</div>

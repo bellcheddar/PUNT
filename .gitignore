@@ -1,0 +1,28 @@
+# Secrets. ESPN_S2 and SWID are session cookies for a real account: never committed.
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Recorded upstream payloads captured from the live league. These contain real
+# managers' display names and ESPN account GUIDs, so only the committed synthetic
+# fixture under data/recordings/demo-* is ever tracked. See tools/make_fixture.py.
+data/recordings/*/
+!data/recordings/demo-*/
+
+# Pre-synthesised TTS. Built at deploy time from data/phrases, never tracked:
+# it is several hundred megabytes of derived audio.
+static/audio/phrase/
+
+# Session transcripts and macOS detritus
+*-this-session-is-being-continued-*.txt
+.DS_Store

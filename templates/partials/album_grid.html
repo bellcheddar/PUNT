@@ -1,0 +1,25 @@
+{% if album %}
+<div class="album-grid">
+  {% for c in album %}
+  <article class="card card--{{ c.tier }}" style="--hue: {{ c.hue }}">
+    <div>
+      <div class="card-tier">{{ c.tier }}{% if c.rank %} &middot; #{{ c.rank }}{% endif %}</div>
+      <div class="card-name">{{ c.name }}</div>
+    </div>
+    <div>
+      <div class="card-score">{{ c.total | points }}</div>
+      <div class="card-stats">
+        {{ c.manager }}<br>
+        {{ c.record }} &middot; PROJ {{ c.projected | points }}<br>
+        BENCH {{ c.bench_regret | points }}
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+  <div class="empty">
+    <strong>The album is empty</strong>
+    Cards are minted from the week's scores. There are none yet.
+  </div>
+{% endif %}

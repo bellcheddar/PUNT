@@ -1,0 +1,8 @@
+{% if matchups %}
+  {% for m in matchups %}{% include "partials/matchup.html" %}{% endfor %}
+{% else %}
+  <div class="empty">
+    <strong>No matchups yet</strong>
+    Week {{ snap.scoring_period }} has not been scheduled, or ESPN has not answered yet.
+  </div>
+{% endif %}

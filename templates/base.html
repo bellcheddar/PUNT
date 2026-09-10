@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" {% if tv or force_tv %}data-tv="1"{% endif %}>
+<head>
+<meta charset="utf-8">
+{# viewport-fit=cover is what makes env(safe-area-inset-*) return anything other
+   than zero, so the notch and home-indicator padding depend on it. #}
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+{# Matches the header, so Android's status bar is not a white stripe above it. #}
+<meta name="theme-color" content="#131826">
+<meta name="description" content="PUNT -- play-by-play, uproar, numbers and trash-talk for a ten-team bar league.">
+<title>{% block title %}PUNT{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+{# Cache-busted on mtime: Flask sends no Cache-Control on templates, and a
+   browser's heuristic caching will otherwise pin an old asset URL and make a
+   CSS deploy invisible to returning visitors. #}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v={{ asset_version }}">
+</head>
+<body>
+
+<header class="app-header chrome">
+  <a class="wordmark" href="{{ url_for('tabs.today') }}">PUNT</a>
+  <div class="header-meta">
+    {%- if snap and snap.settings.name -%}
+      {{ snap.settings.name }} &middot; week {{ snap.scoring_period }}
+    {%- else -%}
+      loading
+    {%- endif -%}
+  </div>
+  <button class="mute-toggle" type="button" data-mute aria-label="Mute audio" title="Mute">&#9834;</button>
+</header>
+
+{% block banners %}
+  {% if mode == 'demo' %}
+    <div class="banner banner--demo">
+      <strong>Demo data.</strong> No ESPN credentials are set, so this is the recorded
+      Sunday that ships with the repo. Every name and score below is invented.
+    </div>
+  {% elif mode == 'replay' and replay %}
+    <div class="banner banner--demo">
+      Replaying <code>{{ replay.recording }}</code> at {{ replay.speed }}&times; &mdash;
+      {{ (replay.progress * 100) | round(0) | int }}% through
+      {{ (replay.duration / 3600) | round(1) }}h of game time.
+    </div>
+  {% endif %}
+  {% if snap and snap.stale %}
+    <div class="banner banner--stale">
+      <strong>Showing the last good data.</strong>
+      {{ snap.problems | first if snap.problems else 'ESPN is not answering right now.' }}
+      Scores will catch up on their own.
+    </div>
+  {% endif %}
+{% endblock %}
+
+<main class="stack">
+  {% block content %}{% endblock %}
+</main>
+
+{% if not (tv or force_tv) %}
+<nav class="tabbar chrome" aria-label="Sections">
+  {% for tab in TABS %}
+    <a href="{{ url_for(tab.endpoint) }}"
+       {% if request.endpoint == tab.endpoint %}aria-current="page"{% endif %}>
+      <span class="tab-pip"></span>{{ tab.label }}
+    </a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+</body>
+</html>

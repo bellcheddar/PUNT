@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAMBLES Lookbook — Six Design Directions | Marc C. Deller</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Bebas+Neue&family=Anton&family=Archivo+Black&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ============ 1. CSS variables ============ */
+:root {
+  --md-primary:#1e73be; --md-primary-dark:#155a9c; --md-primary-light:#4a9fd4;
+  --md-bg:#ffffff; --md-bg-alt:#f4f7fb; --md-surface:#ffffff; --md-border:#dde4ed;
+  --md-text:#1a1a2e; --md-text-muted:#6b7c93; --md-text-light:#ffffff;
+  --md-accent-green:#00d084; --md-accent-orange:#ff6900; --md-accent-purple:#9b51e0; --md-accent-amber:#fcb900;
+  --md-shadow-sm:6px 6px 9px rgba(0,0,0,0.12); --md-shadow-md:12px 12px 50px rgba(0,0,0,0.18);
+  --md-radius:8px; --md-radius-lg:16px;
+}
+/* ============ 2. Reset + base ============ */
+*, *::before, *::after { box-sizing:border-box; }
+body { margin:0; overflow-x:hidden; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:15px; line-height:1.6; color:var(--md-text); background:var(--md-bg-alt); }
+img, video, canvas, svg { max-width:100%; height:auto; }
+code, .mono { font-family:'Roboto Mono',monospace; font-size:0.92em; }
+a { color:var(--md-primary); }
+/* ============ 3. Header ============ */
+.md-header { background:linear-gradient(135deg,var(--md-primary-dark) 0%,var(--md-primary) 100%);
+  color:var(--md-text-light); box-shadow:var(--md-shadow-sm); position:sticky; top:0; z-index:100; }
+.md-header-inner { max-width:1400px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.md-header-brand a { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.9); text-decoration:none;
+  font-weight:600; font-size:13px; letter-spacing:0.02em; transition:color 0.2s; white-space:nowrap; }
+.md-header-brand a:hover { color:#fff; }
+.md-logo-dot { width:10px; height:10px; background:var(--md-accent-amber); border-radius:50%; flex-shrink:0; }
+.md-header-title { flex:1; min-width:0; }
+.md-header-title h1 { font-size:16px; font-weight:700; color:#fff; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.md-header-links { display:flex; gap:10px; flex-shrink:0; flex-wrap:wrap; }
+.md-header-links a { color:rgba(255,255,255,0.85); text-decoration:none; font-size:12px; padding:4px 12px;
+  border:1px solid rgba(255,255,255,0.3); border-radius:20px; transition:all 0.2s; white-space:nowrap; }
+.md-header-links a:hover { background:rgba(255,255,255,0.15); color:#fff; border-color:rgba(255,255,255,0.6); }
+/* ============ 4. Layout ============ */
+.md-main { max-width:1400px; margin:0 auto; padding:24px; }
+.intro { max-width:840px; margin-bottom:8px; }
+.intro h2 { font-size:24px; margin:0 0 8px; }
+.intro p { color:var(--md-text-muted); margin:0 0 10px; }
+.intro strong { color:var(--md-text); }
+.md-card { background:var(--md-surface); border:1px solid var(--md-border); border-radius:var(--md-radius);
+  padding:20px; box-shadow:var(--md-shadow-sm); }
+.direction { margin-top:22px; overflow:hidden; padding:0; }
+.dir-head { padding:18px 20px 14px; border-bottom:1px solid var(--md-border); }
+.dir-num { font-family:'Roboto Mono',monospace; font-size:11px; font-weight:500; color:#fff;
+  background:var(--md-text); padding:2px 9px; border-radius:20px; }
+.dir-head h2 { font-size:21px; margin:10px 0 2px; letter-spacing:0.01em; }
+.dir-mood { font-size:14px; color:var(--md-text-muted); font-style:italic; margin:0; }
+.dir-body { display:grid; grid-template-columns:minmax(300px,1.05fr) minmax(300px,1fr); gap:0; }
+.dir-preview { padding:20px; background:var(--md-bg-alt); border-right:1px solid var(--md-border); display:flex; align-items:center; }
+.dir-notes { padding:20px; }
+.dir-notes h3 { font-size:12px; text-transform:uppercase; letter-spacing:0.07em; color:var(--md-text-muted); margin:16px 0 5px; }
+.dir-notes h3:first-child { margin-top:0; }
+.dir-notes p, .dir-notes ul { font-size:14px; margin:0; }
+.dir-notes ul { padding-left:18px; }
+.dir-notes li { margin-bottom:5px; }
+.chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+.chip { width:34px; height:34px; border-radius:6px; border:1px solid rgba(0,0,0,0.12); }
+.risk { background:#fff6f2; border-left:3px solid var(--md-accent-orange); padding:9px 13px;
+  border-radius:0 6px 6px 0; font-size:13.5px; margin-top:14px; }
+.fit { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.fit span { font-family:'Roboto Mono',monospace; font-size:11px; padding:3px 8px; border-radius:4px;
+  background:var(--md-bg-alt); border:1px solid var(--md-border); color:var(--md-text-muted); }
+.plumbing { margin-top:24px; }
+.plumbing h2 { font-size:21px; margin:0 0 6px; }
+.plumbing ul { padding-left:20px; }
+.plumbing li { margin-bottom:8px; font-size:14px; }
+pre { background:#1a1a2e; color:#e8edf5; padding:14px 16px; border-radius:var(--md-radius);
+  overflow-x:auto; font-family:'Roboto Mono',monospace; font-size:12.5px; line-height:1.55; }
+
+/* ============ 5. Preview shells ============ */
+.pv { width:100%; border-radius:10px; overflow:hidden; }
+.pv-label { font-size:11px; letter-spacing:0.09em; text-transform:uppercase; opacity:0.75; }
+
+/* --- T1 BROADCAST --- */
+.t1 { background:#0a0e1a; padding:0; font-family:'Inter',sans-serif; }
+.t1 .bar { background:linear-gradient(90deg,#0047ff 0%,#00a3ff 100%); height:5px; }
+.t1 .inner { padding:16px 18px; }
+.t1 .pv-label { color:#00a3ff; font-weight:700; }
+.t1 .row { display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.t1 .nm { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:0.04em; color:#fff; line-height:1; }
+.t1 .sc { font-family:'Bebas Neue',sans-serif; font-size:38px; color:#fff; line-height:1; }
+.t1 .sc.lead { color:#ffd400; }
+.t1 .wp { font-size:11px; color:#8aa2c0; font-family:'Roboto Mono',monospace; }
+.t1 .ticker { margin-top:14px; background:#111a2e; border-left:3px solid #ffd400; padding:7px 11px;
+  font-size:12px; color:#cddcf0; white-space:nowrap; overflow:hidden; }
+.t1 .ticker b { color:#ffd400; }
+
+/* --- T2 CHALKBOARD --- */
+.t2 { background:#26332e; padding:18px; position:relative;
+  box-shadow:inset 0 0 60px rgba(0,0,0,0.5); border:9px solid #6b4a2f; border-radius:6px; }
+.t2 .pv-label { color:#c9d6cd; font-family:'Caveat',cursive; font-size:15px; letter-spacing:0.04em; }
+.t2 .nm { font-family:'Caveat',cursive; font-size:27px; color:#fdfdf5; line-height:1.1; }
+.t2 .sc { font-family:'Caveat',cursive; font-size:33px; color:#ffe08a; }
+.t2 .row { display:flex; justify-content:space-between; align-items:baseline; margin-top:8px;
+  border-bottom:1px dashed rgba(255,255,255,0.22); padding-bottom:5px; }
+.t2 .note { font-family:'Caveat',cursive; font-size:19px; color:#9fe3b8; margin-top:11px; transform:rotate(-1.2deg); }
+.t2 .stain { position:absolute; right:12px; bottom:8px; width:52px; height:52px; border-radius:50%;
+  border:3px solid rgba(255,224,138,0.16); }
+
+/* --- T3 TERMINAL --- */
+.t3 { background:#050806; padding:15px 17px; font-family:'JetBrains Mono',monospace; border:1px solid #1c3a24; }
+.t3 .pv-label { color:#00e07a; }
+.t3 .line { display:flex; justify-content:space-between; font-size:13px; color:#c9ffe0; margin-top:7px;
+  border-bottom:1px dotted #17331f; padding-bottom:4px; }
+.t3 .k { color:#7de8ad; }
+.t3 .up { color:#00e07a; font-weight:700; }
+.t3 .dn { color:#ff5a5a; font-weight:700; }
+.t3 .hd { color:#00e07a; font-size:11px; letter-spacing:0.12em; border-bottom:1px solid #1c3a24; padding-bottom:5px; }
+.t3 .cur { display:inline-block; width:8px; height:14px; background:#00e07a; vertical-align:-2px;
+  animation:blink 1.05s steps(2,start) infinite; }
+@keyframes blink { to { visibility:hidden; } }
+
+/* --- T4 ARCADE --- */
+.t4 { background:radial-gradient(circle at 50% 0%,#2b0a4a 0%,#0a0416 70%); padding:20px 18px;
+  font-family:'Press Start 2P',monospace; position:relative; overflow:hidden; }
+.t4::after { content:''; position:absolute; inset:0; pointer-events:none;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,0.055) 0 1px,transparent 1px 3px); }
+.t4 .pv-label { font-family:'Press Start 2P',monospace; font-size:8px; color:#00f0ff;
+  text-shadow:0 0 9px #00f0ff; letter-spacing:0; }
+.t4 .nm { font-size:10px; color:#fff; margin-top:14px; line-height:1.5; }
+.t4 .sc { font-size:19px; color:#ff2fd0; text-shadow:0 0 14px #ff2fd0; }
+.t4 .row { display:flex; justify-content:space-between; align-items:center; margin-top:9px; }
+.t4 .flash { font-size:8px; color:#ffe600; margin-top:15px; line-height:1.9;
+  animation:pulse 1.3s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+
+/* --- T5 BACK PAGE --- */
+.t5 { background:#f7f3e8; padding:16px 18px; border:1px solid #d8d0bd; }
+.t5 .masthead { background:#c8102e; color:#fff; font-family:'Archivo Black',sans-serif; font-size:11px;
+  letter-spacing:0.18em; padding:4px 9px; display:inline-block; }
+.t5 .hl { font-family:'Anton',sans-serif; font-size:31px; line-height:0.96; color:#111; margin:11px 0 0;
+  text-transform:uppercase; letter-spacing:-0.01em; }
+.t5 .sub { font-family:'Inter',sans-serif; font-size:12.5px; color:#444; margin-top:7px;
+  border-top:2px solid #111; padding-top:7px; }
+.t5 .byline { font-family:'Roboto Mono',monospace; font-size:10px; color:#c8102e;
+  text-transform:uppercase; letter-spacing:0.1em; margin-top:9px; }
+.t5 .score { font-family:'Anton',sans-serif; font-size:15px; color:#111; margin-top:5px; }
+
+/* --- T6 STICKER ALBUM --- */
+.t6 { background:#eef1f7; padding:18px; display:flex; gap:12px; justify-content:center; }
+.t6 .card { flex:1; max-width:150px; border-radius:12px; padding:13px 11px; color:#fff; position:relative;
+  overflow:hidden; box-shadow:0 8px 18px rgba(0,0,0,0.22); }
+.t6 .card.a { background:linear-gradient(150deg,#1e73be 0%,#9b51e0 55%,#ff2fd0 100%); }
+.t6 .card.b { background:linear-gradient(150deg,#0e2740 0%,#1e73be 60%,#00d084 100%); }
+.t6 .card::before { content:''; position:absolute; top:-45%; left:-12%; width:52%; height:210%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.42),transparent); transform:rotate(20deg); }
+.t6 .pos { font-family:'Roboto Mono',monospace; font-size:9px; letter-spacing:0.13em;
+  background:rgba(0,0,0,0.3); padding:2px 7px; border-radius:20px; }
+.t6 .nm { font-family:'Anton',sans-serif; font-size:16px; margin-top:10px; line-height:1.05; text-transform:uppercase; }
+.t6 .sc { font-family:'Anton',sans-serif; font-size:29px; line-height:1; margin-top:4px; }
+.t6 .stat { font-size:10px; opacity:0.9; border-top:1px solid rgba(255,255,255,0.35); margin-top:8px; padding-top:5px; }
+
+/* ============ 7. Mobile ============ */
+@media (max-width:860px) {
+  .dir-body { grid-template-columns:1fr; }
+  .dir-preview { border-right:none; border-bottom:1px solid var(--md-border); }
+}
+@media (max-width:768px) {
+  .md-main { padding:16px; }
+  .md-card { padding:14px; }
+  .dir-head, .dir-preview, .dir-notes { padding:15px; }
+  .hide-mobile { display:none !important; }
+}
+@media (max-width:600px) {
+  .md-header-inner { padding:10px 16px; gap:8px; }
+  .md-header-title h1 { font-size:14px; }
+  .md-logo-text { display:none; }
+  .md-header-links a { font-size:11px; padding:3px 8px; }
+  .t5 .hl { font-size:25px; }
+}
+</style>
+</head>
+<body>
+
+<header class="md-header">
+  <div class="md-header-inner">
+    <div class="md-header-brand">
+      <a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">
+        <span class="md-logo-dot"></span><span class="md-logo-text">Marc C. Deller, D.Phil.</span>
+      </a>
+    </div>
+    <div class="md-header-title"><h1>SHAMBLES Lookbook — Six Design Directions</h1></div>
+    <div class="md-header-links">
+      <a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">🌐 marcdeller.com</a>
+      <a href="mailto:marc@marcdeller.com">✉️ marc@marcdeller.com</a>
+    </div>
+  </div>
+</header>
+
+<main class="md-main">
+
+  <section class="intro">
+    <h2>Same component, six personalities</h2>
+    <p>Every preview below renders the <strong>identical live matchup card</strong> — two managers, two scores, one
+    thing to watch — so you are comparing the design language, not the content. All six assume the same Flask
+    backend and the same five tabs; the theme is a stylesheet swap, not a rebuild.</p>
+    <p>The brief was flashy, fun and simple. That rules out anything with a settings panel, and it rules out
+    the flat card grid your science apps use. SHAMBLES should be unmistakably <em>not</em> CODSWALLOP.</p>
+  </section>
+
+  <!-- ===== 1 ===== -->
+  <article class="md-card direction">
+    <div class="dir-head">
+      <span class="dir-num">DIRECTION 01</span>
+      <h2>BROADCAST BOOTH</h2>
+      <p class="dir-mood">Sunday night football graphics package. Lower thirds, condensed numerals, an amber lead indicator.</p>
+    </div>
+    <div class="dir-body">
+      <div class="dir-preview">
+        <div class="pv t1">
+          <div class="bar"></div>
+          <div class="inner">
+            <span class="pv-label">Week 6 · Live</span>
+            <div class="row"><span class="nm">Dave's Disasters</span><span class="sc lead">112.4</span></div>
+            <div class="wp">WIN PROBABILITY 78% ▲12</div>
+            <div class="row"><span class="nm">Priya's Pack</span><span class="sc">108.9</span></div>
+            <div class="wp">WIN PROBABILITY 22% ▼12</div>
+            <div class="ticker"><b>WATCH →</b> Nix, 1st &amp; goal, red zone · started by Dave</div>
+          </div>
+        </div>
+      </div>
+      <div class="dir-notes">
+        <h3>Palette</h3>
+        <div class="chips"><span class="chip" style="background:#0a0e1a"></span><span class="chip" style="background:#0047ff"></span><span class="chip" style="background:#00a3ff"></span><span class="chip" style="background:#ffd400"></span><span class="chip" style="background:#8aa2c0"></span></div>
+        <h3>Type</h3>
+        <p>Bebas Neue for names and scores, Inter for body, Roboto Mono for probabilities. Condensed caps are what make it read as broadcast rather than dashboard.</p>
+        <h3>Signature move</h3>
+        <p>Score changes animate as a slot-machine roll, and the lower third slides up from the bottom edge on a scoring play. Motion carries the whole identity.</p>
+        <h3>Best for</h3>
+        <div class="fit"><span>Big Board</span><span>Swingometer</span></div>
+        <div class="risk"><b>Risk:</b> the most conventional option here. Done badly it is just a dark dashboard, and the ESPN app is already dark.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===== 2 ===== -->
+  <article class="md-card direction">
+    <div class="dir-head">
+      <span class="dir-num">DIRECTION 02</span>
+      <h2>THE CHALKBOARD</h2>
+      <p class="dir-mood">Pub slate behind the bar. Handwriting, dashed rules, a ring where someone put a pint down.</p>
+    </div>
+    <div class="dir-body">
+      <div class="dir-preview">
+        <div class="pv t2">
+          <span class="pv-label">~ Week 6 ~ Saturday's Specials ~</span>
+          <div class="row"><span class="nm">Dave's Disasters</span><span class="sc">112.4</span></div>
+          <div class="row"><span class="nm">Priya's Pack</span><span class="sc">108.9</span></div>
+          <div class="note">Watch: Nix, 1st &amp; goal → Dave</div>
+          <div class="note" style="color:#ffb3b3;transform:rotate(0.8deg)">Loser buys the round 🍺</div>
+          <div class="stain"></div>
+        </div>
+      </div>
+      <div class="dir-notes">
+        <h3>Palette</h3>
+        <div class="chips"><span class="chip" style="background:#26332e"></span><span class="chip" style="background:#6b4a2f"></span><span class="chip" style="background:#fdfdf5"></span><span class="chip" style="background:#ffe08a"></span><span class="chip" style="background:#9fe3b8"></span></div>
+        <h3>Type</h3>
+        <p>Caveat throughout, with a mono fallback for anything that must stay legible at a glance. Slight per-element rotation stops it looking like a font and starts it looking like handwriting.</p>
+        <h3>Signature move</h3>
+        <p>New entries are drawn on with an SVG stroke animation, and settled fines get scrubbed out with a chalk-smudge wipe rather than deleted.</p>
+        <h3>Best for</h3>
+        <div class="fit"><span>The Receipts</span><span>Fines &amp; rounds</span></div>
+        <div class="risk"><b>Risk:</b> handwriting fonts and dense numbers fight each other. Fine for verdicts and awards, poor for a table of twelve rows.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===== 3 ===== -->
+  <article class="md-card direction">
+    <div class="dir-head">
+      <span class="dir-num">DIRECTION 03</span>
+      <h2>THE DATA DESK</h2>
+      <p class="dir-mood">Phosphor terminal. Dense, monospaced, unapologetically nerdy — the one your day job would build.</p>
+    </div>
+    <div class="dir-body">
+      <div class="dir-preview">
+        <div class="pv t3">
+          <div class="hd">SHAMBLES :: WK06 :: LIVE :: 30s</div>
+          <div class="line"><span class="k">DAVE_DISASTERS</span><span class="up">112.40 ▲ P(W)=0.78</span></div>
+          <div class="line"><span class="k">PRIYA_PACK</span><span class="dn">108.90 ▼ P(W)=0.22</span></div>
+          <div class="line"><span class="k">Δ_LAST_PLAY</span><span class="up">+0.12 [NIX 14yd rush]</span></div>
+          <div class="line" style="border:none"><span class="k">WATCH</span><span>NIX RZ 1&amp;G · LEV=0.31</span></div>
+          <div style="color:#00e07a;font-size:12px;margin-top:8px">&gt; <span class="cur"></span></div>
+        </div>
+      </div>
+      <div class="dir-notes">
+        <h3>Palette</h3>
+        <div class="chips"><span class="chip" style="background:#050806"></span><span class="chip" style="background:#00e07a"></span><span class="chip" style="background:#7de8ad"></span><span class="chip" style="background:#ff5a5a"></span><span class="chip" style="background:#1c3a24"></span></div>
+        <h3>Type</h3>
+        <p>JetBrains Mono only. Tabular figures mean columns align without a table, which is why this direction fits so much on a phone screen.</p>
+        <h3>Signature move</h3>
+        <p>Everything is a stream. New events print at the bottom with a typewriter reveal; the whole page reads as one live log rather than a set of panels.</p>
+        <h3>Best for</h3>
+        <div class="fit"><span>Swingometer</span><span>Multiverse</span></div>
+        <div class="risk"><b>Risk:</b> fails the brief. It is fun for you and roughly four people, and opaque to everyone else in the bar — which is the audience.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===== 4 ===== -->
+  <article class="md-card direction">
+    <div class="dir-head">
+      <span class="dir-num">DIRECTION 04</span>
+      <h2>NEON ARCADE</h2>
+      <p class="dir-mood">Pinball backglass in a dark bar. Scanlines, glow, eight-bit type, everything flashing.</p>
+    </div>
+    <div class="dir-body">
+      <div class="dir-preview">
+        <div class="pv t4">
+          <span class="pv-label">WEEK 06</span>
+          <div class="row"><span class="nm">DAVE</span><span class="sc">112</span></div>
+          <div class="row"><span class="nm">PRIYA</span><span class="sc" style="color:#00f0ff;text-shadow:0 0 14px #00f0ff">108</span></div>
+          <div class="flash">&gt; NIX IN RED ZONE<br>&gt; PRESS FOR HORN</div>
+        </div>
+      </div>
+      <div class="dir-notes">
+        <h3>Palette</h3>
+        <div class="chips"><span class="chip" style="background:#0a0416"></span><span class="chip" style="background:#2b0a4a"></span><span class="chip" style="background:#ff2fd0"></span><span class="chip" style="background:#00f0ff"></span><span class="chip" style="background:#ffe600"></span></div>
+        <h3>Type</h3>
+        <p>Press Start 2P for anything short and shouty; a clean sans for anything longer than five words, because the pixel face becomes unreadable fast.</p>
+        <h3>Signature move</h3>
+        <p>Scoring plays trigger a full-screen flash, a horn, and a high-score-table entry with the manager's initials. This is the only direction where sound is part of the design rather than a bolt-on.</p>
+        <h3>Best for</h3>
+        <div class="fit"><span>Big Board</span><span>Full-screen mode</span></div>
+        <div class="risk"><b>Risk:</b> exhausting for a four-hour session, and the pixel font caps your information density at about six words per line. Consider it a mode, not the whole app.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===== 5 ===== -->
+  <article class="md-card direction">
+    <div class="dir-head">
+      <span class="dir-num">DIRECTION 05</span>
+      <h2>THE BACK PAGE</h2>
+      <p class="dir-mood">Tabloid sports section. Screaming headline, red masthead, newsprint cream, zero mercy.</p>
+    </div>
+    <div class="dir-body">
+      <div class="dir-preview">
+        <div class="pv t5">
+          <span class="masthead">SHAMBLES</span>
+          <h4 class="hl">Dave leaves 41 on the bench — and still wins</h4>
+          <div class="sub">Disasters edge Pack by 3.5 despite starting a player on bye. Priya declined to comment.</div>
+          <div class="score">DISASTERS 112.4 — 108.9 PACK</div>
+          <div class="byline">Week 6 · Match report · Auto-generated</div>
+        </div>
+      </div>
+      <div class="dir-notes">
+        <h3>Palette</h3>
+        <div class="chips"><span class="chip" style="background:#f7f3e8"></span><span class="chip" style="background:#111111"></span><span class="chip" style="background:#c8102e"></span><span class="chip" style="background:#d8d0bd"></span><span class="chip" style="background:#444444"></span></div>
+        <h3>Type</h3>
+        <p>Anton for headlines, Archivo Black for the masthead, Inter for standfirst and body. The headline scales with the size of the story — a 40-point blowout gets 40-point type.</p>
+        <h3>Signature move</h3>
+        <p>The app writes prose, not panels. Every week auto-generates a back page from templated narrative rules fired by the underlying stats. It is the only direction that makes The Receipts feel inevitable rather than bolted on.</p>
+        <h3>Best for</h3>
+        <div class="fit"><span>The Receipts</span><span>Weekly recap</span><span>Shareable</span></div>
+        <div class="risk"><b>Risk:</b> it is a <em>reading</em> layout, so it suits Monday morning better than live Sunday. Pair it with a livelier theme for in-play tabs.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===== 6 ===== -->
+  <article class="md-card direction">
+    <div class="dir-head">
+      <span class="dir-num">DIRECTION 06</span>
+      <h2>THE STICKER ALBUM</h2>
+      <p class="dir-mood">Panini foil cards. Every manager is a collectible, every week mints a new one.</p>
+    </div>
+    <div class="dir-body">
+      <div class="dir-preview">
+        <div class="pv t6">
+          <div class="card a">
+            <span class="pos">MANAGER</span>
+            <div class="nm">Dave's Disasters</div>
+            <div class="sc">112.4</div>
+            <div class="stat">W-L 4-2 · LUCK +1.8<br>BENCH REGRET 41.2</div>
+          </div>
+          <div class="card b">
+            <span class="pos">MANAGER</span>
+            <div class="nm">Priya's Pack</div>
+            <div class="sc">108.9</div>
+            <div class="stat">W-L 5-1 · LUCK −0.4<br>BENCH REGRET 6.1</div>
+          </div>
+        </div>
+      </div>
+      <div class="dir-notes">
+        <h3>Palette</h3>
+        <div class="chips"><span class="chip" style="background:#eef1f7"></span><span class="chip" style="background:#1e73be"></span><span class="chip" style="background:#9b51e0"></span><span class="chip" style="background:#ff2fd0"></span><span class="chip" style="background:#00d084"></span></div>
+        <h3>Type</h3>
+        <p>Anton for names and scores, Roboto Mono for the stat block. Holographic sheen is a single rotated gradient pseudo-element — cheap, and it sells the whole conceit.</p>
+        <h3>Signature move</h3>
+        <p>Cards tilt to the cursor or the phone's gyroscope and the foil moves with them. Rarity tiers earned by performance: a 150-point week mints a gold card that stays in the album all season.</p>
+        <h3>Best for</h3>
+        <div class="fit"><span>Standings</span><span>Manager profiles</span><span>Mobile</span></div>
+        <div class="risk"><b>Risk:</b> cards are wonderful for two managers and unwieldy for twelve. Needs a compact list view underneath, which is a second layout to maintain.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===== ARCHITECTURE ===== -->
+  <section class="md-card plumbing">
+    <h2>Making the theme a swap, not a decision</h2>
+    <p style="color:var(--md-text-muted);font-size:14px;margin-top:4px;">
+      You do not have to pick one today. Build the templates once against semantic classes, keep every colour and
+      font in a per-theme variables file, and the choice becomes a two-line change in <code>base.html</code>.</p>
+<pre>shambles/
+├── app.py                 # blueprint per tab
+├── espn/
+│   ├── client.py          # holds espn_s2 + SWID, one place only
+│   └── cache.py           # 30 s TTL, shared across all viewers
+├── static/themes/
+│   ├── broadcast.css      # each defines the SAME variable names
+│   ├── chalkboard.css
+│   └── backpage.css
+└── templates/
+    ├── base.html          # &lt;link href="themes/{{ theme }}.css"&gt;
+    └── partials/
+        └── matchup.html   # rendered standalone for live swaps</pre>
+    <ul>
+      <li><b>Server-side rendering, htmx for liveness.</b> A <code>hx-get="/partials/matchup/3" hx-trigger="every 30s"</code> attribute gives you live updates with no front-end framework and no JSON serialisation layer. Jinja renders the same partial for the first paint and every refresh after.</li>
+      <li><b>Server-Sent Events for the loud moments.</b> Polling handles scores; a single <code>/stream</code> SSE endpoint pushes touchdowns instantly so the horn fires when the room sees the play, not 25 seconds later. SSE is one-directional and needs no websocket stack.</li>
+      <li><b>One cache, all viewers.</b> Twelve phones in a bar must not mean twelve times the ESPN traffic. Cache in the Flask process and serve every client from it — ESPN sees one poll regardless of how many people are watching.</li>
+      <li><b>Tabs as routes, not JavaScript.</b> <code>/big-board</code>, <code>/cheer</code>, <code>/swing</code>, <code>/receipts</code>, <code>/multiverse</code>. Deep-linkable, back-button correct, and the bar TV can be parked on one URL all afternoon.</li>
+      <li><b>Full-screen mode is a query param.</b> <code>?tv=1</code> drops the nav, doubles every font size, and disables interaction. Same template, one conditional.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="md-footer" style="text-align:center;padding:20px;color:var(--md-text-muted);font-size:13px;">
+  Built by <a href="https://marcdeller.com" style="color:var(--md-primary);">Marc C. Deller, D.Phil.</a>
+  · <a href="mailto:marc@marcdeller.com" style="color:var(--md-primary);">marc@marcdeller.com</a>
+</footer>
+
+</body>
+</html>
