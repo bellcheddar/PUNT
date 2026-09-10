@@ -130,10 +130,13 @@ window.addEventListener('load', () => {{
     harness.write_text(probe, encoding="utf-8")
     try:
         result = subprocess.run(
+            # No --virtual-time-budget. The cards carry infinite CSS animations
+            # (the epic and legendary foil sweeps), and virtual time never
+            # reaches quiescence with one running, so Chrome simply never exits.
+            # `--dump-dom` waits for `load` on its own, which is all this needs.
             [CHROME, "--headless=new", "--disable-gpu",
              f"--window-size={max(520, width + 40)},1000",
-             "--virtual-time-budget=8000", "--dump-dom",
-             f"{base}/static/_overflow_probe.html"],
+             "--dump-dom", f"{base}/static/_overflow_probe.html"],
             capture_output=True, text=True, timeout=60,
         )
     except subprocess.TimeoutExpired:

@@ -1,0 +1,23 @@
+{
+  "name": "PUNT — Play-by-play, Uproar, Numbers & Trash-talk",
+  "short_name": "PUNT",
+  "description": "A fantasy football companion built for a bar, not a spreadsheet.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d1017",
+  "theme_color": "#131826",
+  "categories": ["sports", "entertainment"],
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/static/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Album", "url": "/album" },
+    { "name": "Receipts", "url": "/receipts" },
+    { "name": "Big Board", "url": "/big-board" }
+  ]
+}

@@ -20,6 +20,24 @@ bp = Blueprint("media", __name__)
 LOGO_CACHE_SECONDS = 86_400
 
 
+@bp.route("/sw.js")
+def service_worker():
+    """Serve the worker from the site root.
+
+    A service worker's default scope is the directory it is served from, so one
+    registered at `/static/js/sw.js` controls `/static/js/` and nothing the app
+    ever navigates to. Serving the same file from `/` is the whole fix. It is
+    also deliberately not cached: a worker that cannot be replaced is a worker
+    you live with for ever.
+    """
+    from flask import current_app  # noqa: PLC0415
+
+    response = send_file(current_app.root_path + "/static/js/sw.js", mimetype="text/javascript")
+    response.headers["Cache-Control"] = "no-cache, must-revalidate"
+    response.headers["Service-Worker-Allowed"] = "/"
+    return response
+
+
 @bp.route("/img/team/<int:team_id>")
 def team_logo(team_id: int):
     """Proxy a team's uploaded logo.

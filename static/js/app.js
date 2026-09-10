@@ -1,0 +1,129 @@
+/* PUNT front end. Deliberately small: htmx does the updating, the server does
+ * the rendering, and this file only handles the three things that cannot be
+ * done from the server -- installing, the live stream, and remembering which of
+ * the ten teams this phone belongs to.
+ */
+
+(() => {
+  'use strict';
+
+  // --- service worker ------------------------------------------------------
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        // Never load-bearing. A refused registration (private browsing, an
+        // insecure origin during development) must not take the app with it.
+        console.info('service worker not registered:', error.message);
+      });
+    });
+  }
+
+  // --- identity ------------------------------------------------------------
+
+  // The only thing this app stores locally: which of the ten teams this phone
+  // is. No accounts, no login, one URL for the whole league.
+  const TEAM_KEY = 'punt.team';
+
+  function storedTeam() {
+    try { return window.localStorage.getItem(TEAM_KEY); } catch { return null; }
+  }
+
+  function rememberTeam(id) {
+    try { window.localStorage.setItem(TEAM_KEY, String(id)); } catch { /* private mode */ }
+  }
+
+  // --- install hint --------------------------------------------------------
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  const isIosSafari = /iP(hone|ad|od)/.test(navigator.userAgent)
+    && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS/.test(navigator.userAgent);
+
+  // iOS fires no beforeinstallprompt, so the only way to be installed there is
+  // for somebody to be told about the Share menu. Shown once, to iOS Safari
+  // visitors who are not already installed.
+  if (isIosSafari && !isStandalone && !localStorage.getItem('punt.installHintSeen')) {
+    const hint = document.createElement('div');
+    hint.className = 'banner banner--demo';
+    hint.innerHTML = '<strong>Put PUNT on your home screen.</strong> '
+      + 'Tap Share, then <b>Add to Home Screen</b>. It runs full screen with no browser bar, '
+      + 'which is the only way the audio and the tilt work properly.';
+    document.querySelector('main')?.before(hint);
+    try { localStorage.setItem('punt.installHintSeen', '1'); } catch { /* ignore */ }
+  }
+
+  // Android does fire it. Suppress the mini-infobar (which covers the bottom of
+  // the screen, where the tab bar lives) and offer it as a banner instead.
+  //
+  // Deliberately not a second round button in the header: at 390 px the header
+  // is a wordmark, the league name and one control, and adding a second one
+  // truncated the league name to make room for something most visitors will tap
+  // once, ever.
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    if (isStandalone) return;
+
+    const banner = document.createElement('div');
+    banner.className = 'banner banner--demo';
+    banner.innerHTML = '<strong>Install PUNT.</strong> It runs full screen with no browser bar, '
+      + 'which is how the audio and the tilt are meant to work. '
+      + '<button class="banner-action" type="button">Install</button>';
+
+    banner.querySelector('button').addEventListener('click', async () => {
+      banner.remove();
+      event.prompt();
+      await event.userChoice;
+    }, { once: true });
+
+    document.querySelector('main')?.before(banner);
+  });
+
+  // --- live stream ---------------------------------------------------------
+
+  // Moments arrive here the instant the poller sees them. The htmx polling on
+  // each tab is the fallback, so a dropped connection degrades to a 30 s refresh
+  // rather than to silence.
+  let stream = null;
+
+  function connect() {
+    if (stream || !('EventSource' in window)) return;
+    stream = new EventSource('/stream');
+
+    stream.addEventListener('moment', (event) => {
+      let moment;
+      try { moment = JSON.parse(event.data); } catch { return; }
+      document.dispatchEvent(new CustomEvent('punt:moment', { detail: moment }));
+      // Phase 4 hangs the audio bus off this event. Until then the feed just
+      // refreshes itself so the new line appears without waiting for the poll.
+      if (window.htmx) {
+        const feed = document.getElementById('feed');
+        if (feed) window.htmx.trigger(feed, 'punt:refresh');
+      }
+    });
+
+    stream.onerror = () => {
+      // EventSource reconnects on its own using the server's `retry:` hint.
+      // Closing and recreating it here would defeat that and produce a
+      // reconnect storm on a bar's wifi, which is the thing to avoid.
+      document.documentElement.dataset.stream = 'reconnecting';
+    };
+    stream.addEventListener('hello', () => {
+      document.documentElement.dataset.stream = 'live';
+    });
+  }
+
+  // Backgrounded tabs throttle timers, so reconcile on return rather than
+  // trusting anything to have kept running.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && window.htmx) {
+      document.querySelectorAll('[hx-trigger*="every"]').forEach((el) => {
+        window.htmx.trigger(el, 'punt:refresh');
+      });
+    }
+  });
+
+  window.addEventListener('load', connect);
+
+  window.PUNT = { storedTeam, rememberTeam };
+})();
