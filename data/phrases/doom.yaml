@@ -1,0 +1,110 @@
+# DOOM. Fired once per doomed manager, only while the opponent can still score.
+# These have to be funny rather than cruel, because the person it is about is in
+# the room and has three hours of the afternoon left.
+
+- id: doom_01
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 5
+  cooldown: 1200
+  text: "{manager} is down to {win_pct} percent. It has been a pleasure."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_02
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 4
+  cooldown: 1200
+  text: "{win_pct} percent for {manager}, with {deficit} to find and not much left to find it with."
+  audio: doom
+  voice: colour
+- id: doom_03
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 4
+  cooldown: 1200
+  text: "The simulator has run {manager}'s afternoon ten thousand times. It is not going well in most of them."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_04
+  trigger: {kind: DOOM}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1200
+  text: "{manager} needs {deficit} points. {manager} does not have {deficit} points."
+  audio: doom
+  voice: colour
+- id: doom_05
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "Mathematically {manager} is still alive. Only mathematically."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_06
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "{manager} is at {win_pct} percent, which is a number, technically."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_07
+  trigger: {kind: DOOM}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1500
+  text: "It might be time for {manager} to start enjoying the other games."
+  audio: doom
+  voice: colour
+- id: doom_08
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 2
+  cooldown: 1500
+  text: "{deficit} behind, {win_pct} percent, and the opponent still has players on the field. That is the whole report."
+  audio: doom
+  voice: colour
+- id: doom_big_01
+  trigger: {kind: DOOM, deficit: {gte: 40}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1200
+  text: "{deficit} points, {manager}. That is not a deficit, that is a genre."
+  audio: doom
+  voice: colour
+- id: doom_big_02
+  trigger: {kind: DOOM, deficit: {gte: 40}}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 1200
+  text: "{manager} is {deficit} behind. The bar has seen worse, but not this year."
+  audio: doom
+  voice: colour
+- id: doom_close_01
+  trigger: {kind: DOOM, deficit: {lte: 12}}
+  tone: [dry]
+  weight: 4
+  cooldown: 1200
+  text: "Only {deficit} in it and {manager} is still at {win_pct} percent. That is the cruel part: it is close and it is over."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_close_02
+  trigger: {kind: DOOM, deficit: {lte: 12}}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "{deficit} points and nobody left to score them. {manager} may now shout at a television."
+  roast_level: 1
+  audio: doom
+  voice: colour

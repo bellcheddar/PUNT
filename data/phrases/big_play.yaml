@@ -1,0 +1,230 @@
+# Chunk plays. Commoner than touchdowns, so these are quieter by design: the
+# volume difference between this category and touchdown.yaml is most of what
+# stops the afternoon becoming one long horn.
+
+- id: bp_generic_01
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 5
+  cooldown: 780
+  text: "{player} breaks one. {delta} for {manager}."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_02
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 5
+  cooldown: 780
+  text: "Chunk play, {player}. {manager} up to {total}."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_03
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 4
+  cooldown: 900
+  text: "{delta} for {player}. {manager} noticed."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_04
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 4
+  cooldown: 900
+  text: "Big gain, {player}. {manager} is doing arithmetic in his head."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_05
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 3
+  cooldown: 960
+  text: "{player} finds space. That is {delta} nobody projected."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_06
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 3
+  cooldown: 960
+  text: "Another {delta} for {player}. {manager} is having a quietly good afternoon."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_07
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 3
+  cooldown: 1020
+  text: "{player} again. {manager} is starting to look organised, which is unlike him."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_08
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "Still going, {player}! {delta} on that one."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_09
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "{delta}. {player}. {manager} is now at {total} and pretending to be calm."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_10
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Tidy play from {player}. Points are points, {manager}."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_11
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "{player} adds {delta}. Undramatic, and it all counts."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_12
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "{manager} gets {delta} from {player} and immediately checks the other games."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_large_01
+  trigger: {kind: BIG_PLAY, delta_points: {gte: 5}}
+  tone: [hype]
+  weight: 4
+  cooldown: 960
+  text: "{player} is off! {delta} in a single play for {manager}."
+  audio: whoosh
+  voice: pbp
+- id: bp_large_02
+  trigger: {kind: BIG_PLAY, delta_points: {gte: 5}}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "Enormous from {player}. {manager} did not see that coming and neither did anybody."
+  audio: whoosh
+  voice: pbp
+- id: bp_large_03
+  trigger: {kind: BIG_PLAY, delta_points: {gte: 6}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{delta} without a touchdown. {manager} will still take it."
+  audio: whoosh
+  voice: colour
+- id: bp_bench_01
+  trigger: {kind: BIG_PLAY, starter: false}
+  tone: [dry]
+  roast_level: 1
+  weight: 4
+  cooldown: 900
+  text: "Nice from {player}, who is on {manager}'s bench doing it for nobody."
+  audio: trombone
+  voice: colour
+- id: bp_bench_02
+  trigger: {kind: BIG_PLAY, starter: false}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1020
+  text: "{delta} for {player}. {manager} benched him. Just so we are all clear."
+  audio: trombone
+  voice: colour
+- id: bp_bench_03
+  trigger: {kind: BIG_PLAY, starter: false}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 1080
+  text: "That is another one from the bench. {manager} is compiling quite a highlight reel he cannot use."
+  audio: trombone
+  voice: colour
+- id: bp_qb_01
+  trigger: {kind: BIG_PLAY, position: QB}
+  tone: [corny]
+  weight: 3
+  cooldown: 1020
+  text: "{player} moves the ball and {manager} moves up the standings."
+  audio: whoosh
+  voice: pbp
+- id: bp_rb_01
+  trigger: {kind: BIG_PLAY, position: RB}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "{player} finds a gap. {delta} on the ground for {manager}."
+  audio: whoosh
+  voice: pbp
+- id: bp_wr_01
+  trigger: {kind: BIG_PLAY, position: WR}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "Big catch, {player}. {manager} takes {delta}."
+  audio: whoosh
+  voice: pbp
+- id: bp_te_01
+  trigger: {kind: BIG_PLAY, position: TE}
+  tone: [dry]
+  weight: 3
+  cooldown: 1140
+  text: "The tight end contributes. {manager} looks genuinely surprised."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_k_01
+  trigger: {kind: BIG_PLAY, position: K}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "Three points from {player}. {manager} celebrates a kicker, which is where we all end up."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_dst_01
+  trigger: {kind: BIG_PLAY, position: D/ST}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "The defence does something. {manager} gets {delta} and takes no credit, correctly."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_q4_01
+  trigger: {kind: BIG_PLAY, quarter: {gte: 4}}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "Late points for {manager}: {delta} from {player} in the fourth."
+  audio: whoosh
+  voice: pbp
+- id: bp_q4_02
+  trigger: {kind: BIG_PLAY, quarter: {gte: 4}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{delta} with the clock going. {manager} is watching this one properly."
+  audio: whoosh
+  voice: colour
+- id: bp_redzone_01
+  trigger: {kind: BIG_PLAY, red_zone: true}
+  tone: [hype]
+  weight: 3
+  cooldown: 1080
+  text: "{player} gets them into scoring range. {manager} has stopped talking."
+  audio: riser
+  voice: pbp

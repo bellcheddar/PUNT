@@ -1,0 +1,74 @@
+# Goose eggs. Fired only once a player's real game has finished, because firing
+# it on a scoreless first quarter would be both wrong and, given what it sounds
+# like, unkind.
+
+- id: goose_01
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 5
+  cooldown: 1200
+  text: "{player} finishes on nothing at all for {manager}. Projected {projected}."
+  audio: trombone
+  voice: colour
+- id: goose_02
+  trigger: {kind: GOOSE_EGG}
+  tone: [corny]
+  weight: 4
+  cooldown: 1200
+  text: "A clean zero from the {slot}. {manager} started that."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_03
+  trigger: {kind: GOOSE_EGG}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 720
+  text: "Zero. Not nearly zero. Zero. {manager} had {player} in the {slot} all afternoon."
+  audio: trombone
+  voice: colour
+- id: goose_04
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 3
+  cooldown: 720
+  text: "The projection said {projected}. The afternoon said nothing."
+  audio: trombone
+  voice: colour
+- id: goose_05
+  trigger: {kind: GOOSE_EGG}
+  tone: [corny]
+  weight: 3
+  cooldown: 900
+  text: "Full game, no points. {manager}'s {slot} contributed a presence and nothing else."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_06
+  trigger: {kind: GOOSE_EGG}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 900
+  text: "{manager} could have started literally anybody in the {slot} and done better than zero."
+  audio: trombone
+  voice: colour
+- id: goose_high_01
+  trigger: {kind: GOOSE_EGG, projected: {gte: 12}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 900
+  text: "Projected {projected}, delivered nothing. Somewhere a spreadsheet is apologising to {manager}."
+  audio: trombone
+  voice: colour
+- id: goose_high_02
+  trigger: {kind: GOOSE_EGG, projected: {gte: 12}}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 900
+  text: "{projected} projected. Zero actual. That gap is the entire hobby."
+  audio: trombone
+  voice: colour

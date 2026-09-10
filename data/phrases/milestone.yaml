@@ -1,0 +1,86 @@
+# Milestones. Deliberately the quietest category with a real trigger: crossing a
+# round number is a moment, not an event, and treating it like a touchdown is how
+# an app becomes noise.
+
+- id: ms_player_20
+  trigger: {kind: MILESTONE, threshold: 20.0}
+  tone: [dry]
+  weight: 4
+  cooldown: 1200
+  text: "{player} through twenty for {manager}."
+  audio: chime
+  voice: colour
+- id: ms_player_30
+  trigger: {kind: MILESTONE, threshold: 30.0}
+  tone: [hype]
+  weight: 4
+  cooldown: 1200
+  text: "Thirty points from {player}. {manager} has one of the days."
+  audio: chime
+  voice: pbp
+- id: ms_player_40
+  trigger: {kind: MILESTONE, threshold: 40.0}
+  tone: [hype]
+  weight: 5
+  cooldown: 900
+  text: "Forty from one player. {player} is carrying {manager} on his own."
+  audio: horn_03
+  voice: pbp
+- id: ms_player_generic_01
+  trigger: {kind: MILESTONE, team: false}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "{player} passes {threshold} for {manager}."
+  audio: chime
+  voice: colour
+- id: ms_player_generic_02
+  trigger: {kind: MILESTONE, team: false}
+  tone: [corny]
+  weight: 2
+  cooldown: 720
+  text: "{threshold} points from {player}. {manager} is telling people about it already."
+  roast_level: 1
+  audio: chime
+  voice: colour
+- id: ms_team_100
+  trigger: {kind: MILESTONE, team: true, threshold: 100.0}
+  tone: [hype]
+  weight: 5
+  cooldown: 900
+  text: "{manager} is through a hundred."
+  audio: chime
+  voice: pbp
+- id: ms_team_125
+  trigger: {kind: MILESTONE, team: true, threshold: 125.0}
+  tone: [hype]
+  weight: 5
+  cooldown: 900
+  text: "A hundred and twenty five for {manager}. That is a winning score most weeks."
+  audio: horn_03
+  voice: pbp
+- id: ms_team_150
+  trigger: {kind: MILESTONE, team: true, threshold: 150.0}
+  tone: [hype]
+  weight: 5
+  cooldown: 1200
+  text: "A hundred and fifty. {manager} is not playing the same game as everybody else today."
+  audio: horn_03
+  voice: pbp
+- id: ms_team_generic_01
+  trigger: {kind: MILESTONE, team: true}
+  tone: [dry]
+  weight: 3
+  cooldown: 900
+  text: "{manager} crosses {threshold}, now on {total}."
+  audio: chime
+  voice: colour
+- id: ms_team_generic_02
+  trigger: {kind: MILESTONE, team: true}
+  tone: [corny]
+  weight: 2
+  cooldown: 900
+  text: "{threshold} up for {manager}, who would like everyone to notice."
+  roast_level: 1
+  audio: chime
+  voice: colour

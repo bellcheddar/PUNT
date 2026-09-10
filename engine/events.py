@@ -231,7 +231,11 @@ class EventEngine:
                         "slot": player.slot,
                         "position": player.position,
                         "pro_team": player.pro_team,
-                        "opponent": player.opponent,
+                        # `pro_opponent` rather than `opponent`: a commentary
+                        # line's `{opponent}` means the rival manager, and having
+                        # the NFL opponent silently take that name produced lines
+                        # addressed to a football team.
+                        "pro_opponent": player.opponent,
                         "total": round(player.points, 2),
                         "starter": player.is_starter,
                     }

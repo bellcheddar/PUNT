@@ -1,0 +1,27 @@
+# Injuries. Flat, quiet and never funny: a real person has been hurt, and the
+# house rule about roasting managers rather than players applies most here.
+
+- id: inj_01
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 5
+  cooldown: 1200
+  text: "{player} is {status} for {manager}."
+  audio: ""
+  voice: colour
+- id: inj_02
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 4
+  cooldown: 1200
+  text: "Injury update: {player}, {manager}'s {slot}."
+  audio: ""
+  voice: colour
+- id: inj_03
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 3
+  cooldown: 900
+  text: "{manager} loses {player} from the {slot}."
+  audio: ""
+  voice: colour

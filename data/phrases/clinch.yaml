@@ -1,0 +1,54 @@
+# Clinches. The counterweight to DOOM, and deliberately shorter: gloating ages
+# faster than sympathy.
+
+- id: clinch_01
+  trigger: {kind: CLINCH}
+  tone: [hype]
+  weight: 5
+  cooldown: 1200
+  text: "{manager} has this one. {lead} up and {win_pct} percent safe."
+  audio: horn_03
+  voice: pbp
+- id: clinch_02
+  trigger: {kind: CLINCH}
+  tone: [dry]
+  weight: 4
+  cooldown: 1200
+  text: "That is {manager} home. {lead} clear."
+  audio: horn_03
+  voice: colour
+- id: clinch_03
+  trigger: {kind: CLINCH}
+  tone: [corny]
+  weight: 4
+  cooldown: 1200
+  text: "{manager} may now relax, which he will do loudly."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: clinch_04
+  trigger: {kind: CLINCH}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "{win_pct} percent for {manager}. The simulator has stopped finding ways for him to lose."
+  audio: horn_03
+  voice: colour
+- id: clinch_05
+  trigger: {kind: CLINCH}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1500
+  text: "{manager} is {lead} ahead and did approximately none of it himself."
+  audio: horn_03
+  voice: colour
+- id: clinch_big_01
+  trigger: {kind: CLINCH, lead: {gte: 40}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1500
+  text: "{lead} points. This stopped being a matchup some time ago."
+  audio: horn_03
+  voice: colour

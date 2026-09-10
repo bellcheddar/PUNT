@@ -1,0 +1,67 @@
+# Dead air. Weighted low and on long cooldowns: the whole point is that these
+# are what you get when nothing has happened, so hearing one twice in an hour
+# means the afternoon was quiet, and hearing one twice in five minutes means the
+# bank is too small.
+#
+# Filler carries no slots by design. It is said during a gap, and a gap has no
+# player, no manager and no number attached to it.
+
+- id: fill_01
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 3
+  cooldown: 1800
+  text: "Nothing is happening. This is most of football."
+  voice: colour
+- id: fill_02
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 3
+  cooldown: 1800
+  text: "Quiet spell. Somebody check the wifi, or the drinks."
+  voice: colour
+- id: fill_03
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "The scores are still the scores."
+  voice: colour
+- id: fill_04
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "Somewhere out there, a punt is happening."
+  voice: colour
+- id: fill_05
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "This is the part of the afternoon where everyone pretends to understand the projections."
+  roast_level: 1
+  voice: colour
+- id: fill_06
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 2400
+  text: "No news. Which is, for at least one person in this room, good news."
+  roast_level: 1
+  voice: colour
+- id: fill_07
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "A commercial break, presumably. There are a lot of those."
+  voice: colour
+- id: fill_08
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3000
+  text: "Statistically, someone in here is about to check the wrong game."
+  roast_level: 1
+  voice: colour

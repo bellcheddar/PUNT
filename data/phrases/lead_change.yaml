@@ -1,0 +1,129 @@
+# Lead changes. Suppressed below 25 points so the opening ten minutes, when two
+# players have caught a pass between them, do not fire six of these.
+
+- id: lead_01
+  trigger: {kind: LEAD_CHANGE}
+  tone: [hype]
+  weight: 5
+  cooldown: 1020
+  text: "{manager} takes the lead from {opponent}, by {margin}."
+  audio: horn_02
+  voice: pbp
+- id: lead_02
+  trigger: {kind: LEAD_CHANGE}
+  tone: [hype]
+  weight: 4
+  cooldown: 1020
+  text: "Lead change! {manager} is in front of {opponent} by {margin}."
+  audio: horn_02
+  voice: pbp
+- id: lead_03
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 4
+  cooldown: 1080
+  text: "{opponent} led. {opponent} no longer leads. {manager} by {margin}."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_04
+  trigger: {kind: LEAD_CHANGE}
+  tone: [corny]
+  weight: 3
+  cooldown: 1080
+  text: "It has changed hands. {manager} ahead, {opponent} rethinking his life."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_05
+  trigger: {kind: LEAD_CHANGE}
+  tone: [hype]
+  weight: 3
+  cooldown: 1140
+  text: "There it goes. {manager} in front, {margin} the margin."
+  audio: horn_02
+  voice: pbp
+- id: lead_06
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "{manager} leads {opponent}. It will probably not last, but it is true right now."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_07
+  trigger: {kind: LEAD_CHANGE}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "New leader in that one. {manager}, briefly, is the story."
+  audio: horn_02
+  voice: colour
+- id: lead_08
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 2
+  cooldown: 720
+  text: "{margin} in it and the lead has moved. {opponent} is going to want to sit down."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_narrow_01
+  trigger: {kind: LEAD_CHANGE, margin: {lte: 2}}
+  tone: [hype]
+  weight: 5
+  cooldown: 960
+  text: "By {margin}. {margin}! {manager} leads {opponent} by less than a field goal's worth of nothing."
+  audio: horn_02
+  voice: pbp
+- id: lead_narrow_02
+  trigger: {kind: LEAD_CHANGE, margin: {lte: 2}}
+  tone: [dry]
+  weight: 4
+  cooldown: 1080
+  text: "{margin} points between them. Nobody in this bar is relaxed."
+  audio: horn_02
+  voice: colour
+- id: lead_narrow_03
+  trigger: {kind: LEAD_CHANGE, margin: {lte: 1}}
+  tone: [corny]
+  weight: 4
+  cooldown: 1080
+  text: "{margin}. That is the whole lead. {manager} and {opponent} are separated by a rounding error."
+  audio: horn_02
+  voice: colour
+- id: lead_wide_01
+  trigger: {kind: LEAD_CHANGE, margin: {gte: 10}}
+  tone: [hype]
+  weight: 4
+  cooldown: 1200
+  text: "{manager} does not just take the lead, he takes it by {margin}."
+  audio: horn_03
+  voice: pbp
+- id: lead_wide_02
+  trigger: {kind: LEAD_CHANGE, margin: {gte: 10}}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 720
+  text: "That is a {margin} point swing against {opponent}, who was comfortable about ninety seconds ago."
+  audio: horn_03
+  voice: colour
+- id: lead_swing_01
+  trigger: {kind: LEAD_CHANGE, win_prob_delta: {gte: 0.25}}
+  tone: [hype]
+  weight: 5
+  cooldown: 1200
+  text: "Enormous swing. {manager} was losing that and is now winning it."
+  audio: horn_03
+  voice: pbp
+- id: lead_swing_02
+  trigger: {kind: LEAD_CHANGE, win_prob_delta: {gte: 0.25}}
+  tone: [dry]
+  roast_level: 1
+  weight: 4
+  cooldown: 1200
+  text: "The whole matchup turned over in one play. {opponent} may wish to look away."
+  audio: horn_03
+  voice: colour
