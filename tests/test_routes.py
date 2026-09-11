@@ -110,20 +110,28 @@ def test_view_models_produce_text_not_markup(client, no_network):
 
     from views.viewmodels import cheer_view, receipts_view, swing_view, watch_now
 
-    snap = client.application.extensions["punt"].repo.snapshot()
-
-    with client.application.app_context():
-        strings: list[str] = []
-        for row in watch_now(snap):
-            strings.extend(v for v in row.values() if isinstance(v, str))
-        for row in cheer_view(snap, team_id=1):
-            strings.extend(v for v in row.values() if isinstance(v, str))
-        for row in receipts_view(snap)["rows"]:
-            strings.extend(v for v in row.values() if isinstance(v, str))
-        for row in swing_view(snap)["rows"]:
-            strings.extend(v for v in row.values() if isinstance(v, str))
+    state = client.application.extensions["punt"]
+    # Mid-afternoon, not kickoff. The default replay position is pre-game, where
+    # `cheer_view` and `watch_now` both correctly return nothing -- so the first
+    # version of this test walked two empty lists and passed no matter what was
+    # planted in them. Verified by planting an entity on an always-executed path
+    # and watching it still pass.
+    state.replay.clock.seek(3 * 3600)
+    state.client.cache.invalidate()
+    snap = state.repo.snapshot()
 
     entity = re.compile(r"&(?:[a-zA-Z]+|#\d+);")
-    offenders = [s for s in strings if entity.search(s)]
-    assert not offenders, f"HTML entities in view-model text: {offenders[:3]}"
-    assert strings, "the view models produced no text to check"
+
+    def check(label: str, rows: list[dict]) -> int:
+        strings = [v for row in rows for v in row.values() if isinstance(v, str)]
+        offenders = [s for s in strings if entity.search(s)]
+        assert not offenders, f"HTML entities in {label}: {offenders[:3]}"
+        return len(strings)
+
+    with client.application.app_context():
+        # Each view model separately, and each must actually have produced text:
+        # an empty list is not a pass.
+        assert check("watch_now", watch_now(snap)) > 0
+        assert check("cheer_view", cheer_view(snap, team_id=1)) > 0
+        assert check("receipts_view", receipts_view(snap)["rows"]) > 0
+        assert check("swing_view", swing_view(snap)["rows"]) > 0
