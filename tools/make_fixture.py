@@ -184,6 +184,7 @@ def build_season(rng: random.Random, rosters: dict[int, list[Athlete]]) \
             settled[tid].append(round(max(38.0, rng.gauss(104, 21)), 2))
 
     _plant_season_high(settled, rosters, rng)
+    _plant_a_tie(schedule, settled)
 
     standings = {tid: {"wins": 0, "losses": 0, "ties": 0, "pf": 0.0, "pa": 0.0}
                  for tid in team_ids}
@@ -243,6 +244,27 @@ def _plant_season_high(settled: dict[int, list[float]],
         score if score <= ceiling else round(ceiling - rng.uniform(0.5, 9.0), 2)
         for score in weeks
     ]
+
+
+#: Which settled week ends level, and which pairing in it. Week 4, because a tie
+#: early enough to be forgotten is funnier than one that decided the season.
+TIE_WEEK = 4
+
+
+def _plant_a_tie(schedule, settled: dict[int, list[float]]) -> None:
+    """One week that ended level.
+
+    A fantasy tie is rare, real, and the single most argued-about outcome in any
+    league. Every layer here handles it -- the payload writes "TIE", the record
+    carries ties, the standings weight them at half a win, all-play counts them
+    separately -- and none of that had ever run, because ten gaussian draws a
+    week never landed on the same two decimal places. Three branches deep in the
+    season maths with no data behind them.
+    """
+    if len(schedule) < TIE_WEEK:
+        return
+    home, away = schedule[TIE_WEEK - 1][0]
+    settled[away][TIE_WEEK - 1] = settled[home][TIE_WEEK - 1]
 
 
 def schedule_payload(schedule, settled, rosters, week_done: bool = False) -> dict:

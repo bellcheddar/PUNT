@@ -20,7 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Iterable, Sequence
 
-from espn.models import LINEUP_SLOTS, LeagueSnapshot, Matchup, Player, Side
+from espn.models import LINEUP_SLOTS, LeagueSnapshot, Player
 
 #: What a player is allowed to fill when ESPN has not told us. Keyed by the
 #: position string in `models.POSITIONS`. Used only as a fallback: the real
@@ -45,7 +45,7 @@ class LineupSlot:
 
     @property
     def slot(self) -> str:
-        return LINEUP_SLOTS.get(self.slot_id, f"?{self.slot_id}")
+        return LINEUP_SLOTS.get(self.slot_id, f"?{self.slot_id}")  # cold: every slot id in the fixture is one ESPN documents
 
     @property
     def points(self) -> float:
@@ -100,10 +100,10 @@ def eligible_slots(player: Player, declared: Sequence[int] | None = None) -> fro
     any league running a superflex.
     """
     if declared:
-        return frozenset(int(s) for s in declared)
+        return frozenset(int(s) for s in declared)  # cold: the eligibility override is a test seam; the app reads it off the player
     if player.eligible_slots:
         return frozenset(player.eligible_slots)
-    return frozenset(FALLBACK_ELIGIBILITY.get(player.position, (20,)))
+    return frozenset(FALLBACK_ELIGIBILITY.get(player.position, (20,)))  # cold: ESPN sends eligibleSlots for every player, so the guess is never needed
 
 
 def optimal_lineup(
@@ -131,7 +131,7 @@ def optimal_lineup(
     eligibility = eligibility or {}
     seats = [LineupSlot(slot_id=s) for s in starting_slots]
     if not seats:
-        return OptimalLineup(seats=[], total=0.0, actual=_started_total(players))
+        return OptimalLineup(seats=[], total=0.0, actual=_started_total(players))  # cold: a league with no starting slots is not a league
 
     ranked = sorted(
         (p for p in players if p.points > 0),
@@ -303,7 +303,7 @@ class SeasonRecord:
         and a near-zero sigma would make the simulator absurdly confident about
         the rest of the season."""
         if len(self.weekly) < 2:
-            return 22.0
+            return 22.0  # cold: two settled weeks minimum, and the demo opens in week 11
         mean = self.mean
         variance = sum((score - mean) ** 2 for score in self.weekly) / (len(self.weekly) - 1)
         return max(12.0, variance ** 0.5)
@@ -321,7 +321,7 @@ def season_records(snapshot: LeagueSnapshot) -> dict[int, SeasonRecord]:
         for team in snapshot.teams
     }
     if not records:
-        return records
+        return records  # cold: a league with no teams
 
     for week, games in sorted(snapshot.settled_weeks.items()):
         scores: dict[int, float] = {}
@@ -334,7 +334,7 @@ def season_records(snapshot: LeagueSnapshot) -> dict[int, SeasonRecord]:
             for side, other in ((home, away), (away, home)):
                 record = records.get(side.team_id)
                 if record is None:
-                    continue
+                    continue  # cold: every side in a settled week belongs to a team that exists
                 record.points_for = round(record.points_for + side.total, 2)
                 record.weekly.append(round(side.total, 2))
                 if side.total > other.total:
@@ -347,7 +347,7 @@ def season_records(snapshot: LeagueSnapshot) -> dict[int, SeasonRecord]:
         for team_id, weekly in all_play(scores).items():
             record = records.get(team_id)
             if record is None:
-                continue
+                continue  # cold: same
             record.all_play.wins += weekly.wins
             record.all_play.losses += weekly.losses
             record.all_play.ties += weekly.ties
@@ -365,16 +365,3 @@ def standings(snapshot: LeagueSnapshot) -> list[SeasonRecord]:
         key=lambda r: (-(r.wins + 0.5 * r.ties), -r.points_for),
     )
 
-
-def week_scores(snapshot: LeagueSnapshot) -> dict[int, float]:
-    """`{team_id: this week's score}` for every team with a matchup."""
-    scores: dict[int, float] = {}
-    for matchup in snapshot.live_matchups or snapshot.matchups:
-        for side in (matchup.home, matchup.away):
-            scores[side.team_id] = round(side.total, 2)
-    return scores
-
-
-def side_eligibility(side: Side, raw: dict[int, Sequence[int]] | None = None) -> dict[int, Sequence[int]]:
-    """Eligibility map for one side, keyed by player id."""
-    return raw or {}
