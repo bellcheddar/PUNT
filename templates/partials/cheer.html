@@ -1,0 +1,22 @@
+{% if cheer %}
+<table class="rows">
+  <thead><tr><th>Game</th><th class="num">Verdict</th></tr></thead>
+  <tbody>
+  {% for row in cheer %}
+    <tr class="cheer cheer--{{ row.verdict | lower }}">
+      <td>
+        {{ row.fixture }}{% if row.red_zone %} <span class="cheer-flag">RED ZONE</span>{% endif %}
+        <span class="sub">Q{{ row.quarter }} {{ row.clock }} &middot; {{ row.reason }}</span>
+      </td>
+      <td class="num"><span class="verdict">{{ row.verdict }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">
+  <strong>No games in progress</strong>
+  This tab answers the question people actually ask out loud: wait, do I want
+  this to happen? It needs games on to answer it.
+</div>
+{% endif %}

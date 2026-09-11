@@ -14,7 +14,7 @@ import time
 from flask import Blueprint, Response, jsonify, render_template, request
 
 from views.state import snapshot, state
-from views.viewmodels import album_view, matchup_view, moments_view
+from views.viewmodels import album_view, cheer_view, matchup_view, moments_view
 
 bp = Blueprint("api", __name__)
 
@@ -105,6 +105,14 @@ def stream():
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@bp.route("/partials/cheer")
+def partial_cheer():
+    from views.tabs import _team_param  # noqa: PLC0415
+
+    snap = snapshot()
+    return render_template("partials/cheer.html", cheer=cheer_view(snap, _team_param()), snap=snap)
 
 
 @bp.route("/api/recap")

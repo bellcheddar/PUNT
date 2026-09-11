@@ -37,6 +37,19 @@
   function apply() {
     const mine = read();
     document.documentElement.dataset.myTeam = mine || '';
+
+    // The Cheer tab is the one surface whose *content* depends on whose phone
+    // this is, not just its highlighting, so it is re-requested with the team.
+    const cheer = document.getElementById('cheer');
+    if (cheer && mine && cheer.dataset.team !== mine) {
+      cheer.dataset.team = mine;
+      cheer.setAttribute('hx-get', `/partials/cheer?team=${encodeURIComponent(mine)}`);
+      if (window.htmx) {
+        window.htmx.process(cheer);
+        window.htmx.ajax('GET', `/partials/cheer?team=${encodeURIComponent(mine)}`,
+                         { target: cheer, swap: 'innerHTML' });
+      }
+    }
     for (const node of document.querySelectorAll('[data-team]')) {
       node.classList.toggle('is-mine', Boolean(mine) && node.dataset.team === mine);
     }

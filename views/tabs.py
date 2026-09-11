@@ -71,7 +71,20 @@ def album():
 @bp.route("/cheer")
 def cheer():
     snap = snapshot()
-    return render_template("tabs/cheer.html", snap=snap, cheer=cheer_view(snap))
+    return render_template("tabs/cheer.html", snap=snap, cheer=cheer_view(snap, _team_param()))
+
+
+def _team_param() -> int | None:
+    """Which team the asking phone belongs to.
+
+    Passed as a query parameter rather than read from a session, because there
+    are no sessions and no accounts: the phone remembers, and tells the server
+    when it needs a personalised answer."""
+    raw = request.args.get("team", "")
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return None
 
 
 @bp.route("/swing")

@@ -148,13 +148,98 @@ def _tier(rank: int, count: int, bench_regret: float, win_prob: float | None) ->
     return "common"
 
 
-def cheer_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
-    """CHEER / BOO / CONFLICTED per live NFL game.
+def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[str, Any]]:
+    """CHEER / BOO / CONFLICTED per live NFL game, from one manager's point of view.
 
-    PHASE5: needs the NFL scoreboard feed to know which games are live and who
-    is on the field. The shape is settled now so the template is real.
+    The question this tab answers is the one people actually ask out loud in a
+    bar: "wait, do I want this to happen?" It is genuinely hard to hold in your
+    head, because a single NFL game can carry one of your starters and two of
+    your opponent's, and the answer flips depending on which of them touches
+    the ball.
+
+    With no team chosen it falls back to a league-wide view: who has a stake in
+    each game at all. That is still useful on the bar screen, where the question
+    is "does anybody in this room care about this game".
     """
-    return []
+    opponent_id = None
+    if team_id is not None:
+        matchup = snap.matchup_for(team_id)
+        other = matchup.opponent_of(team_id) if matchup else None
+        opponent_id = other.team_id if other else None
+
+    # pro_team_id -> [(team_id, manager, player)]
+    stakes: dict[int, list[tuple[int, str, Any]]] = {}
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            team = snap.team(side.team_id)
+            for player in side.starters:
+                stakes.setdefault(player.pro_team_id, []).append(
+                    (side.team_id, team.manager if team else "?", player)
+                )
+
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for pro_team_id, game in sorted(snap.games.items(), key=lambda kv: kv[1].abbrev):
+        if game.finished or game.state == "pre":
+            continue
+        # One row per fixture, not per team: the same game appears twice in the
+        # scoreboard, once from each side.
+        fixture = "-".join(sorted([game.abbrev, game.opponent or ""]))
+        if fixture in seen:
+            continue
+        seen.add(fixture)
+
+        # Both halves of the fixture carry players, so collect from each.
+        involved = list(stakes.get(pro_team_id, []))
+        for other_id, other in snap.games.items():
+            if other.abbrev == game.opponent:
+                involved += stakes.get(other_id, [])
+
+        mine = [p for tid, _, p in involved if tid == team_id]
+        theirs = [p for tid, _, p in involved if opponent_id is not None and tid == opponent_id]
+        others = sorted({m for tid, m, _ in involved if tid not in (team_id, opponent_id)})
+
+        if team_id is None:
+            verdict = "STAKE" if involved else ""
+            reason = (f"{len(involved)} starter{'s' if len(involved) != 1 else ''} "
+                      f"across {len(set(tid for tid, _, _ in involved))} managers")
+        elif mine and theirs:
+            verdict = "CONFLICTED"
+            reason = (f"You have {_names(mine)}. Your opponent has {_names(theirs)}.")
+        elif mine:
+            verdict = "CHEER"
+            reason = f"You have {_names(mine)} and your opponent has nobody."
+        elif theirs:
+            verdict = "BOO"
+            reason = f"Your opponent has {_names(theirs)}. You have nobody."
+        else:
+            verdict = "NOTHING"
+            reason = ("Nothing of yours and nothing of your opponent's. "
+                      + (f"{', '.join(others[:3])} care." if others else "Nobody in the league cares."))
+
+        rows.append({
+            "fixture": f"{game.opponent or '?'} at {game.abbrev}",
+            "quarter": game.period,
+            "clock": game.clock,
+            "red_zone": game.red_zone,
+            "verdict": verdict,
+            "reason": reason,
+            "mine": [p.name for p in mine],
+            "theirs": [p.name for p in theirs],
+            "others": others,
+        })
+
+    order = {"CONFLICTED": 0, "CHEER": 1, "BOO": 2, "STAKE": 3, "NOTHING": 4}
+    rows.sort(key=lambda r: (order.get(r["verdict"], 9), r["fixture"]))
+    return rows
+
+
+def _names(players: list) -> str:
+    """A readable list of player names, truncated before it becomes a paragraph."""
+    names = [p.name for p in players]
+    if len(names) <= 2:
+        return " and ".join(names)
+    return f"{', '.join(names[:2])} and {len(names) - 2} more"
 
 
 def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:

@@ -3,21 +3,14 @@
 {% block content %}
 <section class="panel">
   <h2 class="panel-title">Cheer, boo or conflicted</h2>
-  {% if cheer %}
-    <table class="rows">
-      <thead><tr><th>Game</th><th>Verdict</th><th>Because</th></tr></thead>
-      <tbody>
-      {% for row in cheer %}
-        <tr><td>{{ row.game }}</td><td>{{ row.verdict }}</td><td>{{ row.reason }}</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <div class="empty">
-      <strong>Phase 5</strong>
-      This tab needs the NFL scoreboard feed to know which games are live and who
-      is on the field for whom.
-    </div>
-  {% endif %}
+  {# Re-requested by identity.js with ?team= once the phone knows whose it is.
+     The first paint is the league-wide view, which is what the bar screen wants
+     anyway and what somebody who has not picked a team sees. #}
+  <div id="cheer"
+       hx-get="{{ url_for('api.partial_cheer') }}"
+       hx-trigger="every {{ poll_seconds }}s"
+       hx-swap="innerHTML">
+    {% include "partials/cheer.html" %}
+  </div>
 </section>
 {% endblock %}

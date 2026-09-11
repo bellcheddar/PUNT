@@ -748,6 +748,40 @@ main { padding: 12px 14px 24px; }
 .pack--ripped .pack-foil { transform: scaleY(1.16) translateY(-8%); opacity: 0; }
 .pack--ripped .pack-button { opacity: 0; transition: opacity 200ms ease; }
 
+.verdict {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: .1em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.cheer--cheer .verdict      { background: rgba(0,208,132,.18); color: var(--green); }
+.cheer--boo .verdict        { background: rgba(255,77,94,.16); color: var(--red); }
+.cheer--conflicted .verdict { background: rgba(252,185,0,.16); color: var(--amber); }
+.cheer--stake .verdict      { background: rgba(74,159,212,.16); color: var(--brand-bright); }
+.cheer--nothing .verdict    { background: rgba(255,255,255,.05); color: var(--ink-faint); }
+.cheer--nothing td          { color: var(--ink-faint); }
+.cheer-flag {
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: .14em;
+  color: var(--magenta); vertical-align: 1px;
+}
+.rows th.num, .rows td.num { width: 66px; }
+.cheer td.num { width: 108px; }
+
+/* The reason is the content of this tab, not a caption for it, so it wraps to
+ * two lines rather than ellipsising at one. "You have Delroy Marchbank and O..."
+ * answers nothing. */
+/* `.rows td .sub` above is one class plus one element and wins on specificity
+ * over a two-class selector, so this is spelled out rather than assumed. */
+.rows tr.cheer td .sub {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-height: 1.45;
+}
+
 .recap { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
 .recap-source {
   margin: 10px 0 0;
