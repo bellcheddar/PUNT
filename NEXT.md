@@ -91,6 +91,24 @@ Neither blocks Phase 3, 4 or 5.
 
 ## Deployment
 
+**The `deploy/` directory is written and tested; the droplet has not been touched.**
+
+```bash
+scp -r deploy root@45.55.102.228:/tmp/punt-deploy
+ssh root@45.55.102.228 bash /tmp/punt-deploy/provision.sh   # creates user, venv, unit, vhost, cert
+bash deploy/deploy.sh                                        # ships the code, verifies the new build
+```
+
+Port **8011**. 8000 to 8010 are taken (AlphaFraud, chem_sage-web, chatPDB-web,
+BoltzMaker, FlexAppeal, PANTS, CODSWALLOP, ButtFold, ALPHABETTI, GOBSMACKED,
+chatMCD). `provision.sh` refuses to install if anything is already listening,
+and `tests/test_deploy_config.py` refuses if the number drifts apart across the
+three files that mention it.
+
+After it is live: add PUNT to the top of `mdeller-landing/apps.json` and
+`./deploy.sh` there. Not done yet, because a launcher entry pointing at a host
+with no service on it is a broken link on the front page.
+
 Not deployed yet. `punt.mdeller.com` resolves to the droplet and nginx answers on
 :80, but there is no vhost, no certificate and no service — TLS currently serves
 another app's certificate. Needs: port allocation, `deploy/` unit + nginx conf +

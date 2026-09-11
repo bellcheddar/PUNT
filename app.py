@@ -128,7 +128,7 @@ def main() -> None:
     second application and load the demo recording as a side effect."""
     app = create_app()
     app.run(host=os.environ.get("HOST", "127.0.0.1"),
-            port=int(os.environ.get("PORT", "8009")),
+            port=int(os.environ.get("PORT", "8011")),
             debug=os.environ.get("FLASK_DEBUG") == "1",
             threaded=True)
 

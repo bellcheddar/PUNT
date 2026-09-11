@@ -1,0 +1,27 @@
+# systemd unit for the PUNT web app (gunicorn behind nginx).
+# Installed to /etc/systemd/system/punt-web.service by provision.sh.
+[Unit]
+Description=PUNT web app (gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=punt
+Group=punt
+WorkingDirectory=/opt/punt
+EnvironmentFile=-/opt/punt/.env
+ExecStart=/opt/punt/.venv/bin/gunicorn --config /opt/punt/deploy/gunicorn.conf.py wsgi:app
+Restart=on-failure
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+# The TTS cache is written at runtime under static/audio/phrase/, so the tree has
+# to stay writable. Nothing else here needs to be.
+ReadWritePaths=/opt/punt
+
+[Install]
+WantedBy=multi-user.target
