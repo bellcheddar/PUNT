@@ -21,7 +21,7 @@
       <span>{{ side.manager }} &middot; {{ side.record }}{% if side.in_play %} &middot; {{ side.in_play }} in play{% endif %}</span>
     </span>
     <span class="mside-score">
-      <b>{{ side.total | points }}</b>
+      <b{% if side.total > opponent.total %} aria-label="{{ side.total | points }}, leading"{% endif %}>{{ side.total | points }}</b>
       <span>proj {{ side.projected | points }}</span>
     </span>
   </div>

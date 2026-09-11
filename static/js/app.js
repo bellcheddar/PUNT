@@ -96,6 +96,7 @@
       let moment;
       try { moment = JSON.parse(event.data); } catch { return; }
       document.dispatchEvent(new CustomEvent('punt:moment', { detail: moment }));
+      announce(moment);
       // Phase 4 hangs the audio bus off this event. Until then the feed just
       // refreshes itself so the new line appears without waiting for the poll.
       if (window.htmx) {
@@ -124,6 +125,24 @@
       document.documentElement.dataset.stream = 'live';
       clearConnectionNotice();
     });
+  }
+
+  /* One sentence per Moment, for a screen reader.
+   *
+   * Deliberately not every Moment: a polite live region that speaks 241 times in
+   * an afternoon is not accessibility, it is a second problem. The same
+   * magnitude bar the Big Board's takeover uses, so what gets read aloud is what
+   * would have interrupted the room anyway. */
+  const ANNOUNCE_MAGNITUDE = 0.55;
+
+  function announce(moment) {
+    if (!moment || moment.replayed || (moment.magnitude || 0) < ANNOUNCE_MAGNITUDE) return;
+    const region = document.querySelector('[data-announce]');
+    if (!region) return;
+    const line = (moment.line && moment.line.text)
+      || `${(moment.kind || '').replace(/_/g, ' ').toLowerCase()}, `
+         + `${moment.player || ''} for ${(moment.managers || []).join(' and ')}`;
+    region.textContent = line;
   }
 
   // --- the connection banner ----------------------------------------------

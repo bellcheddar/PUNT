@@ -103,6 +103,12 @@
   {% endif %}
 {% endblock %}
 
+{# Where the afternoon is announced. Written one sentence at a time by app.js as
+   Moments arrive, rather than marking the score table itself live: a polite live
+   region wrapped around a table that htmx replaces every thirty seconds would
+   re-read all ten scores, every thirty seconds, for four hours. #}
+<div class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-announce></div>
+
 <main class="stack">
   {% block content %}{% endblock %}
 </main>
