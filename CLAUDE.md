@@ -22,11 +22,25 @@ python3 tools/screenshot.py --check-overflow   # horizontal overflow at 390px
 python3 tools/deadcode.py                      # which lines never run during a whole Sunday
 ```
 
-**Run `deadcode.py` after adding a feature.** It is not test coverage: it drives a whole
-simulated Sunday and reports what the application never reached. It has found three
-features that looked finished and had never once executed -- INJURY, the Legendary card
-tier, and the branch that reads ESPN's real lineup eligibility -- each with a passing test
-beside it.
+**Run `deadcode.py` after adding a feature, and keep it at zero.** It is not test
+coverage: it drives a whole simulated Sunday and reports what the application never
+reached. Everything under `engine/`, `espn/` and `views/viewmodels.py` currently runs, and
+the seventy-nine lines that do not each carry a `# cold:` comment saying why. So a new cold
+line means one of two things, and both need doing rather than noting: wire the feature up,
+or mark the line with the reason it cannot be reached.
+
+It has found six features that looked finished and had never once executed: INJURY, the
+Legendary card tier, the branch that reads ESPN's real lineup eligibility, the dedupe set
+that stops a restart replaying the afternoon, half the phrase-trigger vocabulary, and the
+recap validator's rejection path. Each had a passing test beside it. A test can keep a line
+warm while the application never reaches it, which is exactly what happened every time.
+
+It lies in three ways of its own, all now fixed, all worth remembering because they are
+general: `sys.settrace` is per-thread, so anything in a worker reports as dead; `if (` on
+its own line never gets a trace event, because the interpreter reports the line of the
+condition's first operand; and rendering the view models only at the final whistle marks
+every mid-afternoon branch cold. The driver samples eight points across the day for that
+last reason.
 
 **Look at the screenshots.** Six separate defects in this repository were invisible in
 the code and obvious in a capture: truncated team names, a demo opening on ten zeros, an

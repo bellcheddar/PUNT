@@ -85,11 +85,11 @@ class SpeechBackend:
         self.say = _which("say")
         self.ffmpeg = _which("ffmpeg")
         if self.piper:
-            self.kind = "piper"
+            self.kind = "piper"  # cold: piper is not installed on this Mac; it is what ships on the droplet
         elif self.say and self.ffmpeg:
             self.kind = "say"
         else:
-            self.kind = "none"
+            self.kind = "none"  # cold: this Mac has `say` and ffmpeg, so there is always a backend here
 
     @property
     def available(self) -> bool:
@@ -98,7 +98,7 @@ class SpeechBackend:
     def render(self, text: str, voice: Voice, target: Path) -> bool:
         try:
             if self.kind == "piper":
-                return self._render_piper(text, voice, target)
+                return self._render_piper(text, voice, target)  # cold: the piper render path: needs the binary and a voice model
             if self.kind == "say":
                 return self._render_say(text, voice, target)
         except subprocess.CalledProcessError as exc:
@@ -111,13 +111,13 @@ class SpeechBackend:
         return False
 
     def _render_piper(self, text: str, voice: Voice, target: Path) -> bool:
-        with tempfile.TemporaryDirectory() as work:
-            wav = Path(work) / "out.wav"
-            subprocess.run(
+        with tempfile.TemporaryDirectory() as work:  # cold: same
+            wav = Path(work) / "out.wav"  # cold: same
+            subprocess.run(  # cold: same
                 [self.piper, "--model", voice.piper_model, "--output_file", str(wav)],
                 input=text.encode(), check=True, capture_output=True, timeout=60,
             )
-            return self._encode(wav, target)
+            return self._encode(wav, target)  # cold: same
 
     def _render_say(self, text: str, voice: Voice, target: Path) -> bool:
         """macOS only, and a stand-in rather than the shipping path.

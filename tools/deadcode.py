@@ -361,6 +361,71 @@ def _drive_the_recap_guard(pack) -> None:
     pick_backend(Cfg())
 
 
+def _drive_the_speech_cache() -> None:
+    """The audio cache, and one real synthesis.
+
+    engine/speech.py was excused as "the TTS backends", and most of what that
+    hid is not a backend: it is the cache every spoken line goes through --
+    the digest, the on-disk hit, the in-flight dedupe that stops ten phones
+    synthesising the same sentence ten times, the worker pool and the wait.
+
+    One line is synthesised for real when this machine can, because the
+    render-and-encode path is two subprocesses and a rename, and a rename that
+    goes wrong leaves a truncated mp3 on the bar's speakers.
+    """
+    from engine.speech import VOICES, SpeechCache, phrase_hash
+
+    directory = Path(tempfile.mkdtemp(prefix="punt-deadcode-audio-"))
+    cache = SpeechCache(directory=directory, workers=2)
+    phrase_hash("Gone. All the way.", "pbp")
+
+    if cache.backend.available:
+        # Short deliberately: this is a code path, not a performance test.
+        url = cache.url_for("Touchdown.", "pbp")
+        digest = phrase_hash("Touchdown.", "pbp")
+        cache.wait_for(digest, timeout=20.0)
+        cache.url_for("Touchdown.", "pbp")          # now a hit on disk
+        cache.ensure(digest, "Touchdown.", "pbp")
+        cache.wait_for(digest, timeout=0.1)         # already on disk: no waiting
+        assert url
+
+    # Two phones asking for the same sentence at the same moment. The second
+    # finds the first already in flight and waits for it rather than starting a
+    # second synthesis of the same words.
+    import threading as _threading
+    cache._inflight["already-going"] = _threading.Event()
+    cache.ensure("already-going", "In flight.", "pbp")
+    cache._inflight.pop("already-going", None)
+
+    # Synthesis that fails at the subprocess. The line still goes out; it just
+    # goes out silent.
+    with quiet("engine.speech"):
+        if cache.backend.say:
+            broken = SpeechCache(directory=directory, workers=1)
+            broken.backend.kind = "say"
+            broken.backend.say = "/usr/bin/false"
+            broken.backend.render("Nothing.", VOICES["pbp"], directory / "nope.mp3")
+            broken.backend.say = "/definitely/not/a/binary"
+            broken.backend.render("Nothing.", VOICES["pbp"], directory / "nope.mp3")
+
+    # A backend that fails, and a request for audio that is not there and never
+    # will be. Silence is the right answer to both: the line still goes out.
+    with quiet("engine.speech"):
+        class Mute:
+            kind = "stub"
+            available = True
+
+            def render(self, text, voice, target):
+                return False
+
+        failing = SpeechCache(directory=directory, workers=1)
+        failing.backend = Mute()
+        failing.url_for("Something nobody will hear.", "colour")
+        failing.wait_for(phrase_hash("Something nobody will hear.", "colour"), timeout=5.0)
+        failing.wait_for("not-a-digest", timeout=0.1)
+        failing.stats()
+
+
 def _drive_the_replay_harness() -> None:
     """The recorder, the clock, and a recording that is not the demo one.
 
@@ -779,6 +844,7 @@ def drive_a_sunday() -> None:
     _drive_a_bad_afternoon()
     _drive_a_bad_upstream()
     _drive_the_replay_harness()
+    _drive_the_speech_cache()
 
     pack = build(snapshot, feed.notable)
     build_prompt(pack)          # what a model would be handed, backend or not
