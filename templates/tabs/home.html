@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}PUNT &middot; week {{ snap.scoring_period }}{% endblock %}
+{% block content %}
+
+{# One page, no tabs. Everything the afternoon has to say is here, because the
+   thing that used to change tabs was also the thing that unlocked the audio: a
+   tap started the bed's fade-in and the browser then destroyed the document
+   mid-fade. A single document means the music starts once and keeps playing. #}
+
+{# --- the cards, first and small --------------------------------------- #}
+<section class="panel panel--cards">
+  <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; ten cards</h2>
+  <div hx-get="{{ url_for('api.partial_album') }}"
+       hx-trigger="every {{ poll_seconds }}s"
+       hx-swap="innerHTML">
+    {% include "partials/album_grid.html" %}
+  </div>
+</section>
+
+{# --- everything else, two to a row ------------------------------------- #}
+<div class="pairs">
+
+  <section class="panel">
+    <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; live</h2>
+    <div hx-get="{{ url_for('api.partial_scorebar') }}"
+         hx-trigger="every {{ poll_seconds }}s"
+         hx-swap="innerHTML">
+      {% include "partials/scorebar.html" %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Who is in trouble</h2>
+    {% if swing.rows %}
+      <table class="rows">
+        <thead><tr><th>Manager</th><th class="num">Score</th><th class="num">+/-</th><th class="num">Win</th></tr></thead>
+        <tbody>
+        {% for row in swing.rows if row.deficit < 0 %}
+          <tr class="tappable" data-team="{{ row.id }}">
+            <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}</td>
+            <td class="num">{{ row.score | points }}</td>
+            <td class="num neg">{{ row.deficit | signed }}</td>
+            <td class="num">{{ (row.win_prob * 100) | round | int }}%</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty"><strong>Nobody yet</strong>Everyone is still in it.</div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Commentary</h2>
+    <div class="feed-wrap"
+         hx-get="{{ url_for('api.partial_moments') }}"
+         hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+      {% include "partials/moments.html" %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Cheer</h2>
+    <div hx-get="{{ url_for('api.partial_cheer') }}"
+         hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+      {% include "partials/cheer.html" %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Bench regret</h2>
+    {% if receipts.rows %}
+      <table class="rows regret">
+        <thead><tr><th>Manager</th><th class="num-wide">Score</th><th class="num-narrow">Left</th></tr></thead>
+        <tbody>
+        {% for row in receipts.rows %}
+          <tr class="tappable" data-team="{{ row.id }}">
+            <td>
+              <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}
+              {% if row.worst_swap %}<span class="sub">{{ row.worst_swap }}</span>{% endif %}
+            </td>
+            <td class="num num-wide">{{ row.score | points }}<span class="sub">best {{ row.optimal | points }}</span></td>
+            <td class="num num-narrow {% if row.bench_regret > 25 %}neg{% endif %}">{{ row.bench_regret | points }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty"><strong>No receipts yet</strong>Nobody has done anything regrettable.</div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Playoff odds</h2>
+    {% if multiverse.available %}
+      <table class="rows">
+        <thead><tr><th>Manager</th><th class="num">W-L</th><th class="num">Odds</th><th>Needs</th></tr></thead>
+        <tbody>
+        {% for row in multiverse.rows %}
+          <tr class="tappable {% if loop.index == multiverse.playoff_places %}cut{% endif %}" data-team="{{ row.id }}">
+            <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ loop.index }}. {{ row.manager }}</td>
+            <td class="num">{{ row.record }}</td>
+            <td class="num">{{ (row.odds * 100) | round | int }}%</td>
+            <td class="verdict-cell">{{ row.verdict }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty"><strong>No season grid</strong>The schedule feed is missing.</div>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

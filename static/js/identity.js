@@ -113,10 +113,14 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // On body, which survives a boosted swap: bound once.
+    document.body.addEventListener('htmx:afterSwap', apply);
+  });
+
+  window.PUNT_READY(() => {
     apply();
     // Only asked on the tab where it means something immediately.
     if (document.body.dataset.tab === 'today' && !steadyState()) choose();
-    document.body.addEventListener('htmx:afterSwap', apply);
     document.querySelector('[data-choose-team]')?.addEventListener('click', () => choose({ force: true }));
   });
 

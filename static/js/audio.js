@@ -216,10 +216,18 @@
 
   document.addEventListener('punt:unlock', unlock);
 
-  document.addEventListener('DOMContentLoaded', () => {
+  // The mute button is a NEW element after every boosted tab change, so this
+  // runs again each time. `setMuted` reads the same module-level flag, which is
+  // why the mute state survives a tab change now rather than resetting.
+  window.PUNT_READY(() => {
     setMuted(muted);
     document.querySelector('[data-mute]')?.addEventListener('click', () => setMuted(!muted));
+  });
 
+  document.addEventListener('DOMContentLoaded', () => {
+    // Once per document, not per tab: this listens on `document`, which the
+    // boosted swap does not replace.
+    //
     // A desktop has no unlock gate (there is no permission to ask for), so the
     // first real interaction is the gesture.
     const once = () => { unlock(); document.removeEventListener('pointerdown', once); };

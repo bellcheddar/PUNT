@@ -337,13 +337,23 @@ main { padding: 12px 14px 24px; }
 /* Ten teams is 2x5 on a phone and 5x2 on the TV, and both fit without
  * scrolling. That is worth protecting: it means no pagination and no
  * virtualisation anywhere in the album. */
-.album-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* Five across, not two. Marc asked for about a quarter of the old size, and on
+   a 390 px phone two-up gave a 175 px card where five-up gives 68 px -- close
+   enough to a quarter of the AREA, which is what the eye reads. They are an
+   index of the league now rather than the centrepiece, so the type inside them
+   scales with the card rather than staying at its old size and overflowing. */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  container-type: inline-size;
+}
 
 /* While the pack is sealed the cards exist and are face-down, but ten invisible
  * cards leave a screen-high void under the packet. Collapsed rather than
  * `display: none` so they keep their layout for the reveal animation. */
 .album-grid--sealed { max-height: 0; overflow: hidden; }
-:root[data-tv='1'] .album-grid { grid-template-columns: repeat(5, 1fr); }
+:root[data-tv='1'] .album-grid { grid-template-columns: repeat(10, 1fr); }
 
 /* A card is a stack of four layers, all of which move only on `transform` and
  * `opacity`. No filters, no blend modes: both are frame-rate killers on mobile
@@ -447,6 +457,13 @@ main { padding: 12px 14px 24px; }
   opacity: 0;
 }
 
+.album-grid .card { padding: 5px; border-radius: 7px; }
+.album-grid .card-face { padding: 5px; }
+.album-grid .card-name { font-size: 8px; line-height: 1.05; }
+.album-grid .card-tier { font-size: 6px; letter-spacing: .04em; }
+.album-grid .card-score { font-size: 15px; }
+.album-grid .card-stats { font-size: 6px; line-height: 1.35; }
+.album-grid .card-crest { display: none; }
 .card-tier {
   font-family: var(--font-mono); font-size: 8px; letter-spacing: .16em;
   text-transform: uppercase; color: var(--tier-colour);
@@ -1102,3 +1119,136 @@ main { padding: 12px 14px 24px; }
   text-align: center;
 }
 .credit a { color: var(--ink-faint); text-decoration: underline; }
+
+/* Panels two to a row, 50:50. `minmax(0, 1fr)` rather than `1fr`: a grid track
+   defaults to min-content, so a table inside one refuses to shrink below its
+   widest cell and pushes the row wider than the screen. That is the horizontal
+   overflow this project keeps finding, and it is always this. */
+.pairs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.pairs > .panel { margin: 0; padding: 12px 10px; }
+
+/* Two up at 390 px means each panel is about 186 px wide, which a four-column
+   table does not fit at the normal type size. So inside a pair everything gets
+   tighter: smaller type, less padding, and the columns that are context rather
+   than content stop taking a fixed width. Without this the tables push their
+   grid track wider than the screen and the whole page scrolls sideways, which
+   is the failure this project keeps rediscovering. */
+.pairs .panel-title { font-size: 12px; letter-spacing: .08em; }
+.pairs .rows { font-size: 11px; }
+.pairs .rows th { font-size: 8.5px; letter-spacing: .06em; padding: 0 4px 5px; }
+.pairs .rows td { padding: 5px 4px; }
+.pairs .rows td.num, .pairs .rows th.num { width: auto; min-width: 38px; }
+.pairs .rows th.num-wide, .pairs .rows td.num-wide { width: auto; min-width: 46px; }
+.pairs .rows th.num-narrow, .pairs .rows td.num-narrow { width: auto; min-width: 34px; }
+.pairs .rows td .sub { font-size: 8px; }
+.pairs .empty { font-size: 12px; padding: 14px 10px; }
+.pairs .dot { margin-right: 4px; }
+
+/* One column only where two genuinely cannot work: a 320 px phone leaves 150 px
+   a side, which is narrower than the widest unbreakable thing on the page. */
+@media (max-width: 359px) {
+  .pairs { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The commentary feed is the one panel that would otherwise grow without limit
+   and drag its neighbour's height with it. */
+.feed-wrap { max-height: 320px; overflow-y: auto; }
+
+/* Everything that has more to say when you touch it says so. A row that looks
+   identical to a dead one and does something when tapped is worse than a row
+   that does nothing. */
+.tappable { cursor: pointer; }
+.tappable:hover { background: var(--bg-raised); }
+.tappable:focus-visible { outline: 2px solid var(--brand-bright); outline-offset: -2px; }
+.tappable[aria-expanded='true'] { background: var(--bg-raised); }
+
+/* One headline at a time; see the note in partials/matchup.html. */
+.mside-manager { display: none; }
+.pairs .mside-team, .pairs .mside-mgr-inline { display: none; }
+.pairs .mside-manager { display: block; font-size: 15px; }
+
+/* "MANAGER" and "SCORE" ran into each other as MANAGERSCORE once the header
+   padding came down for the pair layout. A left-aligned header next to a
+   right-aligned one has nothing between them but padding. */
+.pairs .rows th + th.num, .pairs .rows th + th.num-wide { padding-left: 10px; }
+.pairs .rows th:first-child { padding-right: 10px; }
+
+/* --- the team detail sheet ------------------------------------------------
+   Opened by tapping anything with a team id. Bottom-anchored on a phone,
+   because that is where a thumb is, and capped so the page behind stays
+   visible: this is a look at one manager, not a new screen. */
+.sheet {
+  width: min(520px, calc(100vw - 24px));
+  max-height: 82vh;
+  margin: auto auto 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px 16px 0 0;
+  background: var(--bg-raised);
+  color: var(--ink);
+  overflow: hidden;
+}
+@media (min-width: 621px) { .sheet { margin: auto; border-radius: 16px; } }
+.sheet::backdrop { background: rgba(6, 9, 16, .72); }
+#sheet-body { max-height: 82vh; overflow-y: auto; padding: 14px 14px 22px; }
+.sheet-close {
+  position: absolute; top: 8px; right: 10px; z-index: 2;
+  width: 34px; height: 34px; line-height: 1;
+  font-size: 22px; color: var(--ink-faint);
+  background: transparent; border: 0; cursor: pointer;
+}
+.sheet-close:hover { color: var(--ink); }
+.sheet-head { display: grid; grid-template-columns: auto 1fr auto; gap: 10px;
+  align-items: center; padding-right: 34px; margin-bottom: 12px; }
+.sheet-id b { display: block; font-family: var(--font-display); font-size: 17px; }
+.sheet-id span, .sheet-score span { display: block; font-family: var(--font-mono);
+  font-size: 10px; color: var(--ink-faint); }
+.sheet-score { text-align: right; }
+.sheet-score b { font-family: var(--font-display); font-size: 24px; }
+.sheet-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 12px; margin: 0 0 12px; }
+.sheet-stats div { display: flex; justify-content: space-between; gap: 8px;
+  border-top: 1px solid var(--border); padding-top: 5px; }
+.sheet-stats dt { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint);
+  text-transform: uppercase; letter-spacing: .06em; }
+.sheet-stats dd { margin: 0; font-family: var(--font-mono); font-size: 12px; }
+.sheet-note { font-size: 12.5px; color: var(--ink-dim); margin: 0 0 12px; }
+.sheet-group { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 14px 0 2px; }
+.sheet-roster td.slot { font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--ink-faint); width: 34px; }
+.sheet-roster td { padding: 5px 6px; }
+
+/* At pair width the row stops being three columns and becomes two.
+   `34px | name | score` leaves the name about 90 px in a 186 px panel, and
+   shaving font sizes only moved which names truncated: "Priya" and
+   "Marguerite" first, then "Chidi" once a lead marker took the space back.
+   Squeezing was the wrong move -- the row has one thing too many in it.
+   So the score drops to its own line under the name, where it has the whole
+   width and the name never competes with it. */
+.pairs .mside {
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 4px 8px;
+  padding: 6px 0;
+}
+.pairs .crest { width: 28px; height: 28px; border-radius: 7px; font-size: 10px; }
+.pairs .crest img { width: 28px; height: 28px; }
+.pairs .mside-id { grid-column: 2; }
+.pairs .mside-score {
+  grid-column: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.pairs .mside-score b { font-size: 20px; }
+.pairs .mside-score span { font-size: 9px; }
+
+/* "Marguerite" is eleven characters in a column with room for about eight.
+   Wrapping rather than truncating: a name is the one thing on these rows that
+   has to be readable, and there is vertical room going spare in a panel that is
+   half the width it used to be. */
+.pairs .rows td:first-child { overflow: visible; white-space: normal; word-break: break-word; }

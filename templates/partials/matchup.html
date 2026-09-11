@@ -16,9 +16,18 @@
       {%- if side.logo %}<img src="{{ side.logo }}" alt="" loading="lazy" width="34" height="34">
       {%- else %}{{ side.monogram }}{% endif -%}
     </span>
+    {# Two headlines, one shown at a time. Full width the team name leads, which
+       is how the league talks about itself. In a half-width pair it truncated to
+       "The...", "Reg...", "Stati..." -- the same failure this file's own comment
+       describes at 130 px, one width further down. There the MANAGER leads
+       instead: it is shorter, it is who you are actually looking for, and the
+       crest beside it already carries the team's colour and abbreviation. #}
     <span class="mside-id">
-      <b>{{ side.name }}</b>
-      <span>{{ side.manager }} &middot; {{ side.record }}{% if side.in_play %} &middot; {{ side.in_play }} in play{% endif %}</span>
+      <b class="mside-team">{{ side.name }}</b>
+      <b class="mside-manager">{{ side.manager }}</b>
+      <span class="mside-meta">
+        <span class="mside-mgr-inline">{{ side.manager }} &middot; </span>{{ side.record }}{% if side.in_play %} &middot; {{ side.in_play }} in play{% endif %}
+      </span>
     </span>
     <span class="mside-score">
       <b{% if side.total > opponent.total %} aria-label="{{ side.total | points }}, leading"{% endif %}>{{ side.total | points }}</b>

@@ -7,6 +7,39 @@
 (() => {
   'use strict';
 
+  // --- surviving a tab change ----------------------------------------------
+
+  /* The tab bar is boosted, so changing tabs swaps the body instead of loading
+   * a new document. That is not a performance decision, it is the only way the
+   * music can play at all.
+   *
+   * Audio needs a user gesture per DOCUMENT. With plain links, tapping a tab
+   * was the gesture: it unlocked the audio, started the bed's 1400 ms fade-in,
+   * and then the browser tore the document down mid-fade and the next page
+   * began locked again. The music could only ever be heard in the gap between
+   * the tap and the page changing, which is exactly what it sounded like.
+   *
+   * Keeping the document means the AudioContext, the bed and the mute state all
+   * survive. It also means DOMContentLoaded fires once for the whole visit, so
+   * anything that wires up an ELEMENT has to run again after each swap. That is
+   * what `PUNT_READY` is for. Anything that listens on `document` itself must
+   * NOT use it, or it binds again on every tab change.
+   */
+  window.PUNT_READY = (fn) => {
+    document.addEventListener('DOMContentLoaded', fn);
+    document.addEventListener('punt:navigated', fn);
+  };
+
+  // A boosted navigation is the one that replaces the body; the thirty-second
+  // polls swap partials deeper in the page. Discriminating on the target rather
+  // than on a flag in the event detail, because the target is what actually
+  // determines whether this page's elements are still the ones on screen.
+  document.addEventListener('htmx:afterSettle', (event) => {
+    if (event.detail && event.detail.target === document.body) {
+      document.dispatchEvent(new CustomEvent('punt:navigated'));
+    }
+  });
+
   // --- service worker ------------------------------------------------------
 
   if ('serviceWorker' in navigator) {

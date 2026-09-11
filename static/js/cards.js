@@ -155,10 +155,12 @@
 
   // Cards are swapped in by htmx on every poll, so the list has to be rebuilt.
   document.body?.addEventListener('htmx:afterSwap', collect);
+  // `collect` is rebound on body, which the boosted swap keeps, so guard it;
+  // `init` is about the cards on THIS page and has to run for each one.
   document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('htmx:afterSwap', collect);
-    init();
   });
+  window.PUNT_READY(init);
 
   window.PUNT_CARDS = { collect, set };
 })();

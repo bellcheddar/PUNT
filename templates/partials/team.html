@@ -1,0 +1,58 @@
+{# One manager's afternoon, opened by tapping anything that carries their id.
+   Rendered on the server so the sheet shows the same numbers as the page it was
+   opened from, rather than a second opinion assembled in JavaScript. #}
+{% if card %}
+<div class="sheet-head" style="--hue: {{ card.hue }}">
+  <span class="crest">
+    {%- if card.logo %}<img src="{{ card.logo }}" alt="" width="34" height="34">
+    {%- else %}{{ card.monogram }}{% endif -%}
+  </span>
+  <span class="sheet-id">
+    <b>{{ card.manager }}</b>
+    <span>{{ card.name }} &middot; {{ card.record }}</span>
+  </span>
+  <span class="sheet-score">
+    <b>{{ card.total | points }}</b>
+    <span>proj {{ card.projected | points }}</span>
+  </span>
+</div>
+
+<dl class="sheet-stats">
+  <div><dt>Bench regret</dt><dd class="{% if card.bench_regret > 25 %}neg{% endif %}">{{ card.bench_regret | points }}</dd></div>
+  <div><dt>Best possible</dt><dd>{{ card.optimal | points }}</dd></div>
+  <div><dt>Still to play</dt><dd>{{ card.in_play }}</dd></div>
+  {% if card.win_prob is not none %}
+  <div><dt>Win chance</dt><dd>{{ (card.win_prob * 100) | round | int }}%</dd></div>
+  {% endif %}
+</dl>
+
+{% if card.worst_swap %}
+<p class="sheet-note">
+  The one that cost them: <b>{{ card.worst_swap.benched }}</b>
+  ({{ card.worst_swap.benched_points | points }}) on the bench while
+  <b>{{ card.worst_swap.started }}</b> ({{ card.worst_swap.started_points | points }})
+  started at {{ card.worst_swap.slot }}.
+</p>
+{% endif %}
+
+{% for group, players in (('Starters', card.starters), ('Bench', card.bench)) %}
+  {% if players %}
+  <h4 class="sheet-group">{{ group }}</h4>
+  <table class="rows sheet-roster">
+    <tbody>
+    {% for p in players %}
+      <tr>
+        <td class="slot">{{ p.slot }}</td>
+        <td>{{ p.name }}<span class="sub">{{ p.position }} &middot; {{ p.pro_team }}
+            {%- if p.pro_opponent %} v {{ p.pro_opponent }}{% endif %}
+            {%- if p.injury %} &middot; {{ p.injury }}{% endif %}</span></td>
+        <td class="num">{{ p.points | points }}<span class="sub">{{ 'final' if p.game_over else 'proj ' ~ (p.projected | points) }}</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+{% endfor %}
+{% else %}
+  <div class="empty"><strong>Nobody there</strong>That team is not in this week.</div>
+{% endif %}

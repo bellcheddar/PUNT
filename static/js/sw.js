@@ -39,6 +39,7 @@ const SHELL = [
   `/static/css/fonts.css?v=${STAMP}`,
   `/static/js/htmx.min.js?v=${STAMP}`,
   `/static/js/app.js?v=${STAMP}`,
+  `/static/js/sheet.js?v=${STAMP}`,
   '/static/icons/icon-192.png',
   '/static/fonts/anton-400-latin.woff2',
   '/static/fonts/inter-400-latin.woff2',

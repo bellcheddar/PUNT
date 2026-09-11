@@ -116,6 +116,21 @@ def partial_cheer():
     return render_template("partials/cheer.html", cheer=cheer_view(snap, _team_param()), snap=snap)
 
 
+@bp.route("/partials/team/<int:team_id>")
+def partial_team(team_id: int):
+    """One manager's afternoon, for the detail sheet.
+
+    Server-rendered, so the sheet shows the same numbers as the page it was
+    opened from. Assembling it in JavaScript from what happened to be in the DOM
+    would give a second opinion, and two numbers for the same thing on one
+    screen is worse than one number nobody can see.
+    """
+    snap = snapshot()
+    cards = album_view(snap, state().live)
+    card = next((c for c in cards if c["id"] == team_id), None)
+    return render_template("partials/team.html", card=card, snap=snap)
+
+
 @bp.route("/partials/watchnow")
 def partial_watchnow():
     snap = snapshot()

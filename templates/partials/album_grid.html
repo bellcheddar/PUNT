@@ -1,13 +1,9 @@
 {% if album %}
 <div class="album-grid" data-album data-week="{{ snap.scoring_period }}">
   {% for c in album %}
-  {# `data-reveal` is the pack-rip order: highest score first, lowest last, so
-     the reveal builds towards the worst week in the league rather than the best.
-     That is the joke, and it is the spec's ordering.
-
-     Cards are face-up in the markup and turned face-down by JavaScript before a
-     rip. With no JavaScript at all the album is simply an album, which is the
-     right failure: the reveal is a flourish, not the content. #}
+  {# Cards load face-up and stay that way. There was a pack rip -- face-down,
+     torn open, revealed one at a time worst-last -- and it was a flourish in
+     front of the content on a page somebody opens forty times on a Sunday. #}
   <article class="card card--{{ c.tier }}" style="--hue: {{ c.hue }}"
            data-reveal="{{ loop.index0 }}" data-tier="{{ c.tier }}"
            data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points, {{ c.tier }}">
@@ -28,10 +24,6 @@
           BENCH {{ c.bench_regret | points }}
         </div>
       </div>
-    </div>
-    {# The back carries the wordmark and nothing else. #}
-    <div class="card-face card-face--back" aria-hidden="true">
-      <span class="card-back-mark">PUNT</span>
     </div>
   </article>
   {% endfor %}

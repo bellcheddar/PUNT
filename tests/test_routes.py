@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 ROUTES = ["/", "/album", "/cheer", "/swing", "/receipts", "/multiverse", "/big-board"]
@@ -26,18 +28,28 @@ def test_no_tab_is_ever_blank(client, path, no_network):
     assert any(marker in main for marker in rendered), f"{path} rendered nothing"
 
 
+ROOT_STATIC = Path(__file__).resolve().parent.parent / "static"
+
 def test_tv_mode_drops_the_chrome(client, no_network):
+    """The chrome a phone needs and a television across a room does not.
+
+    The tab bar used to be the marker here. There is no tab bar now, so the
+    marker is the music credit: CC-BY is discharged where the work is heard, and
+    a credit is worth showing to somebody holding the page and pointless on a
+    screen nobody can touch.
+    """
     normal = client.get("/").get_data(as_text=True)
     tv = client.get("/?tv=1").get_data(as_text=True)
-    assert 'class="tabbar' in normal
-    assert 'class="tabbar' not in tv
+    assert 'class="credit"' in normal
+    assert 'class="credit"' not in tv
     assert 'data-tv="1"' in tv
+    assert 'class="tabbar' not in normal, "the tab bar is gone; see views/tabs.py"
 
 
 def test_big_board_is_tv_shaped_without_the_parameter(client, no_network):
     body = client.get("/big-board").get_data(as_text=True)
     assert 'data-tv="1"' in body
-    assert 'class="tabbar' not in body
+    assert 'class="credit"' not in body
 
 
 def test_healthz_does_not_depend_on_espn(client, no_network):
@@ -112,10 +124,19 @@ def test_monogram_is_served_for_a_logoless_team(client, no_network):
     assert b"STA" in response.data
 
 
-def test_a_missing_page_still_shows_the_tab_bar(client, no_network):
+def test_a_missing_page_still_shows_the_app_around_it(client, no_network):
+    """A 404 is still a page of this app, not a bare browser error.
+
+    This used to assert the tab bar was on it. There is no tab bar any more:
+    five tabs meant five documents, and audio needs a user gesture per document,
+    so the tap that changed tabs was the tap that unlocked the sound and the
+    document was destroyed a moment later, mid fade-in. What matters here was
+    never the bar itself but that the chrome is still wrapped round the error.
+    """
     response = client.get("/definitely-not-a-tab")
     assert response.status_code == 404
-    assert b"tabbar" in response.data
+    assert b"PUNT" in response.data
+    assert b"<main" in response.data
 
 
 def test_view_models_produce_text_not_markup(client, no_network):
@@ -297,3 +318,42 @@ def test_the_offline_shell_precaches_the_urls_the_page_actually_asks_for(client)
     for url in urls:
         resolved = url.replace("${STAMP}", stamp)
         assert client.get(resolved).status_code == 200, f"{resolved} is precached and does not 200"
+
+
+def test_everything_is_on_one_page(client, no_network):
+    """The whole point of the restructure.
+
+    Five tabs meant five documents, and a browser requires a user gesture per
+    document before it will make a sound. So the tap that changed tabs was also
+    the tap that unlocked the audio: the bed began its 1400 ms fade-in and the
+    document was torn down before it finished. The music could only ever be
+    heard in the gap between the tap and the page changing.
+    """
+    body = client.get("/?punt=steady&team=5").get_data(as_text=True)
+    for marker in ("album-grid", "Who is in trouble", "Commentary",
+                   "Cheer", "Bench regret", "Playoff odds"):
+        assert marker in body, f"{marker} is not on the single page"
+    assert 'class="pairs"' in body, "the panels are not laid out two to a row"
+
+
+def test_the_cards_just_load(client, no_network):
+    """No pack rip. It was face-down cards, torn open, revealed worst-last -- a
+    flourish in front of the content, on a page somebody opens forty times on a
+    Sunday."""
+    body = client.get("/?punt=steady&team=5").get_data(as_text=True)
+    assert "card-face--back" not in body, "the cards still have a back to flip"
+    assert "packrip" not in body
+    assert (ROOT_STATIC / "js" / "packrip.js").exists() is False
+
+
+def test_anything_naming_a_team_can_be_opened(client, no_network):
+    """Every card and every score row carries a team id, and one delegated
+    listener turns all of them into a way to see that manager's afternoon."""
+    body = client.get("/?punt=steady&team=5").get_data(as_text=True)
+    assert body.count("data-team=") >= 20, "most rows are not openable"
+    assert 'id="sheet"' in body, "there is nothing for them to open"
+
+    detail = client.get("/partials/team/5")
+    assert detail.status_code == 200
+    text = detail.get_data(as_text=True)
+    assert "sheet-head" in text and "Starters" in text

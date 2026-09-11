@@ -57,7 +57,7 @@
     if (board && board.contains(event.target)) show(index);
   });
 
-  document.addEventListener('DOMContentLoaded', start);
+  window.PUNT_READY(start);
 
   // --- the takeover --------------------------------------------------------
 

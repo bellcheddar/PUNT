@@ -56,14 +56,30 @@ def inject_chrome():
 
 @bp.route("/")
 def today():
+    """Everything, on one page.
+
+    It used to be five tabs. They were plain links, so every tab change was a
+    new document -- and audio needs a user gesture per document, which meant the
+    tap that changed tabs was also the tap that unlocked the sound. The bed
+    began its 1400 ms fade-in and the browser tore the document down before it
+    finished. The music could only be heard in the gap between the tap and the
+    page changing, which is exactly what it sounded like.
+
+    One document fixes that by construction, and the panels turn out to fit
+    beside each other anyway.
+    """
     snap = snapshot()
     live = state().live
     return render_template(
-        "tabs/today.html",
+        "tabs/home.html",
         snap=snap,
         matchups=matchup_view(snap),
         moments=moments_view(live),
         swing=swing_view(snap, live),
+        album=album_view(snap, live),
+        cheer=cheer_view(snap, _team_param()),
+        receipts=receipts_view(snap),
+        multiverse=multiverse_view(snap),
     )
 
 

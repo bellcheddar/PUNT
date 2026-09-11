@@ -60,11 +60,11 @@
 <script src="{{ url_for('static', filename='js/htmx.min.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/cards.js') }}?v={{ asset_version }}" defer></script>
-<script src="{{ url_for('static', filename='js/packrip.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/identity.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/howler.min.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/audio.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/countdown.js') }}?v={{ asset_version }}" defer></script>
+<script src="{{ url_for('static', filename='js/sheet.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/board.js') }}?v={{ asset_version }}" defer></script>
 </head>
 <body data-tab="{{ request.endpoint.split('.')[-1] if request.endpoint else '' }}">
@@ -113,6 +113,15 @@
   {% block content %}{% endblock %}
 </main>
 
+{# The detail sheet. One of these for the whole page: anything carrying a team
+   id opens it, which is what makes every card, every score row and every table
+   line worth touching. A <dialog> rather than a div, so Escape closes it, focus
+   is trapped, and the backdrop is the browser's rather than a z-index guess. #}
+<dialog id="sheet" class="sheet" aria-label="Team detail">
+  <button class="sheet-close" type="button" data-sheet-close aria-label="Close">&times;</button>
+  <div id="sheet-body"><div class="empty">Loading…</div></div>
+</dialog>
+
 {# The music credit. CC-BY is discharged in the medium the work appears in, and
    for an app that means where somebody listening can see it -- a file in the
    repository credits the people who cloned it, not the people in the bar. The
@@ -129,16 +138,10 @@
 </p>
 {% endif %}
 
-{% if not (tv or force_tv) %}
-<nav class="tabbar chrome" aria-label="Sections">
-  {% for tab in TABS %}
-    <a href="{{ url_for(tab.endpoint) }}"
-       {% if request.endpoint == tab.endpoint %}aria-current="page"{% endif %}>
-      <span class="tab-pip"></span>{{ tab.label }}
-    </a>
-  {% endfor %}
-</nav>
-{% endif %}
+{# The tab bar is gone. Everything is on one page: five tabs meant five
+   documents, and audio needs a user gesture per document, so the tap that
+   changed tabs was the tap that unlocked the sound and the document was
+   destroyed a moment later, mid fade-in. #}
 
 </body>
 </html>
