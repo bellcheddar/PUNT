@@ -1,120 +1,112 @@
 # PUNT — where the build is
 
 Live state of the build. The plan is `docs/punt_build_spec_v1.md`; this file says
-what is actually done and what the next person (or the next session) should pick up.
+what is actually done and what the next session should pick up.
 
-## Status: Phases 1-4 complete
+## Status: all six phases built. 214 tests, 1 skipped, all offline.
 
-Phases 1 to 4 are built. Watch any of them:
+Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
+python3 -m pytest                             # 214 tests, no network, no cookies
+PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
-python3 tools/transcript.py                   # the commentary it would have said
-python3 tools/phrase_lint.py                  # where the phrase bank is thin
+python3 tools/transcript.py --stats           # the commentary, and how often it repeats
+python3 tools/recap.py                        # the weekly write-up
+python3 tools/deadcode.py                     # which lines never run during a whole Sunday
+python3 tools/screenshot.py                   # needs a server; see above
 python3 tools/screenshot.py --check-overflow  # no horizontal overflow at 390px
+python3 tools/a11y.py                         # contrast
+python3 tools/perf.py                         # the blocking path
 ```
 
-Three parts of the acceptance criteria are **not** met and are not met for the same
-reason each time -- they need something this machine does not have:
+`tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
+and `views/viewmodels.py`. The seventy-nine it cannot reach each carry a `# cold:`
+comment in the source saying why. Keep it that way: see `CLAUDE.md`.
 
-| Gate | Needs |
-|---|---|
-| Phase 2: bench regret vs two real ESPN box scores | League credentials |
-| Phase 3: 60 fps with ten cards on a real phone | A real phone |
-| Phase 4: the mute toggle on iOS, and Piper | A real iPhone; Piper on the droplet |
+## What is left, and all of it needs Marc
 
-Everything else passes, as `tests/test_phase1_acceptance.py` and
-`tests/test_phase2_acceptance.py`. 147 tests, 1 skipped, all offline.
+Every remaining item is blocked on something this machine does not have. Nothing is
+blocked on a decision about the code.
 
-### What exists
+| What | Needs | Why it is not done |
+|---|---|---|
+| **Deploy to `punt.mdeller.com`** | `sudo` on the droplet | Outward-facing, on a box serving eleven other apps. `deploy/` is written and tested; the droplet has not been touched. |
+| **Phase 2's second gate** | `LEAGUE_ID`, `ESPN_S2`, `ESPN_SWID` | Reconciling bench regret by hand against two real ESPN box scores. Everything else in Phase 2 passes against the fixture. |
+| **Phase 3's 60 fps gate** | A real iPhone | Simulators do not reproduce the frame cost of ten foil cards. |
+| **Phase 4's mute-toggle gate** | A real iPhone | Nor the iOS audio-session behaviour, which is where this app is most fragile. |
+| **Piper** | Installing it on the droplet | It is the shipping TTS backend; macOS `say` is the local stand-in and the no-backend path is supported. |
+| **The recap's model path** | `ollama pull qwen2.5:1.5b-instruct` (~1 GB) | The validator and the retry loop are driven against stub backends on every `deadcode.py` run, so the logic is exercised; only a real model's output is not. |
+| **The launcher entry** | The deploy above | Deliberately deferred: an entry in `mdeller-landing/apps.json` pointing at a host with no service is a broken link on the front page. |
+| **Whether real recordings may ever be committed** | A decision | `.gitignore` tracks only `demo-*`, on the assumption that ten managers' ESPN display names should not be in a public repo. |
+| **The wordmark** | A decision | The spec says to commission it from the vibe-icon skill once the card geometry is locked. It is locked. |
+
+### One open question
+
+**Does the league run a superflex, or any flex that accepts a quarterback?** It decides
+whether a bug that is now fixed was ever live. The optimal lineup used to be computed
+against a *guess* at slot eligibility rather than the `eligibleSlots` ESPN sends. On this
+league's slots the guess and the truth agree exactly, so nothing was ever wrong on screen.
+In a superflex the guess reports 6 points of bench regret where the truth is 20.
+
+## What exists
 
 | Area | State |
 |---|---|
-| `espn/models.py` | Total parsers for teams, players, matchups, settings, NFL game state. Never raise; degrade into `.problems`. |
+| `espn/models.py` | Total parsers for teams, players, matchups, settings, NFL game state. Never raise; degrade into `.problems`. Every branch is driven. |
 | `espn/cache.py` | TTL cache with single-flight, so ten phones make one upstream call. Serves stale on a failed refresh. |
 | `espn/feeds.py` | Every endpoint, view name and TTL in one table. |
-| `espn/client.py` | Cookie auth, exponential backoff to 5 min, auth-expiry state, `LeagueRepository` → `LeagueSnapshot`. |
+| `espn/client.py` | Cookie auth, exponential backoff with separate local and remote ceilings, auth-expiry state, `LeagueRepository` → `LeagueSnapshot`. |
 | `espn/replay.py` | Recorder (`RECORD=1`) and replay transport, gzipped payloads, seekable clock. |
-| `data/recordings/demo-2025-11-16/` | Synthetic ten-team Sunday, 10.9 h, 416 payloads, 2 MB. Committed. |
-| `views/`, `templates/`, `static/css/theme.css` | All seven routes render, htmx polling wired, TV mode, monogram fallback, empty states everywhere. |
-| `tools/make_fixture.py` | Regenerates the fixture, seeded and byte-stable. |
-| `tools/replay_check.py` | Watch a Sunday go past in the terminal. |
-| `engine/scoring.py` | Exact optimal lineup (max-weight bipartite matching), bench regret, all-play, luck. |
-| `engine/simulate.py` | Monte Carlo win probability with a lumpy per-player distribution. |
-| `engine/events.py` | Nine Moment kinds, idempotent across restarts, magnitude-scaled. |
-| `engine/live.py` | One background poller, event detection, SSE fan-out with backlog. |
-| `tools/timeline.py` | Watch the day's Moments go past. |
-| `tools/screenshot.py` | Phone-width captures, and `--check-overflow`. |
-| `tests/` | 120 tests + 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `data/recordings/demo-2025-11-16/` | Synthetic ten-team Sunday: 10.9 h, 414 payloads, 3.2 MB on disk. Committed, seeded, byte-stable. |
+| `engine/scoring.py` | Exact optimal lineup (max-weight bipartite matching), bench regret, all-play, luck, standings with ties. |
+| `engine/simulate.py` | Monte Carlo win probability with a lumpy per-player distribution; playoff odds, magic numbers, clinch and elimination. |
+| `engine/events.py` | Nine Moment kinds, magnitude-scaled, idempotent across restarts via a persisted dedupe set. |
+| `engine/live.py` | One background poller, event detection, commentary, speech, SSE fan-out with backlog. |
+| `engine/commentary.py` | Retrieval-only phrase bank: 410 lines, cooldowns, roast levels, weighted sampling, seeded per `(week, moment.id)`. |
+| `engine/recap.py` | Grounded weekly write-up. Every numeral and proper noun must appear in the fact pack; three rejected samples fall back to the template. |
+| `engine/speech.py` | Phrase audio cached by the hash of what is spoken, rendered on a pool as soon as the server picks the line. |
+| `views/`, `templates/`, `static/` | Seven tabs plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
+| `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
+| `tests/` | 214 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
-### Decisions taken during Phase 1
+## The fixture's planted storylines
 
-- **The committed fixture is synthetic, not a capture of the real league.** A real
-  capture is ~500 MB and carries ten real people's ESPN display names and account
-  GUIDs into a public repository. The generator plants one of every event the
-  engine must detect, so Phase 2's tests have something to assert against.
-- **`views/` is a package**, split by response kind (pages, partials, JSON, media,
-  admin) rather than by tab, because caching and degradation differ per kind.
-- **Payloads are gzipped in recordings.** Fantasy JSON compresses about twentyfold.
-- **The NFL scoreboard is fetched in Phase 1**, earlier than the plan implies. Without
-  it, "scored nothing" and "has not kicked off" are indistinguishable, and a settled
-  Sunday night tells every manager they still have four players to play.
+The generator plants one of every event the engine has to detect, because a seeded
+four-hour simulation left to chance might contain none of them and the test for the
+funniest event in the app would pass by asserting nothing.
 
-## Next: Phase 2 — the engine
-
-Acceptance: *replaying a recorded Sunday emits a plausible Moment timeline, and
-bench regret figures reconcile by hand against the ESPN box score for two known weeks.*
-
-- [ ] `engine/events.py` — poll diffing to `Moment`s, idempotent across restarts,
-      magnitude-scaled. Note the fixture contains a `-2.0` turnover: deltas are signed.
-- [ ] `engine/scoring.py` — optimal lineup under real slot eligibility, bench regret,
-      all-play, luck index. Replaces the lower-bound placeholders in `views/viewmodels.py`
-      (every one is marked `PHASE2`).
-- [ ] `engine/simulate.py` — Monte Carlo win probability and playoff odds.
-- [ ] Wire `Moment`s into the existing `/stream` SSE endpoint, which is currently a
-      working heartbeat.
-- [ ] Golden-file test: a recorded week produces a byte-identical Moment timeline.
-
-### Blocked on Marc
-
-Neither blocks Phase 3, 4 or 5.
-
-- [ ] **`LEAGUE_ID`, `ESPN_S2`, `ESPN_SWID`** for the real league. Needed for the second
-      half of the Phase 2 gate (reconcile bench regret against two known ESPN box scores)
-      and for the real-device testing in Phase 6.
-- [ ] **Whether real recordings may ever be committed.** Currently `.gitignore` tracks
-      only `demo-*`, on the assumption that ten managers' ESPN display names should not
-      be in a public repo.
-- [ ] **The wordmark.** The spec says to commission it from the vibe-icon skill once the
-      card geometry is locked, which is the end of Phase 3.
+| Storyline | Who |
+|---|---|
+| A 41.2-point bench disaster | Priya |
+| A goose egg from a starter | Gus |
+| Mathematically finished by mid-afternoon | Wren |
+| A Sunday-night lead change, and his season high | Sam |
+| Two injured starters and one injured bench player | Chidi, Theo, Noor |
+| Three starters in one NFL game | Bex |
+| A week that ended level | Priya and Bex, week 4 |
 
 ## Deployment
 
-**The `deploy/` directory is written and tested; the droplet has not been touched.**
+**`deploy/` is written and tested; the droplet has not been touched.**
 
 ```bash
 scp -r deploy root@45.55.102.228:/tmp/punt-deploy
-ssh root@45.55.102.228 bash /tmp/punt-deploy/provision.sh   # creates user, venv, unit, vhost, cert
+ssh root@45.55.102.228 bash /tmp/punt-deploy/provision.sh   # user, venv, unit, vhost, cert
 bash deploy/deploy.sh                                        # ships the code, verifies the new build
 ```
 
 Port **8011**. 8000 to 8010 are taken (AlphaFraud, chem_sage-web, chatPDB-web,
 BoltzMaker, FlexAppeal, PANTS, CODSWALLOP, ButtFold, ALPHABETTI, GOBSMACKED,
-chatMCD). `provision.sh` refuses to install if anything is already listening,
-and `tests/test_deploy_config.py` refuses if the number drifts apart across the
-three files that mention it.
+chatMCD). `provision.sh` refuses to install if anything is already listening, and
+`tests/test_deploy_config.py` refuses if the number drifts apart across the three
+files that mention it.
 
-After it is live: add PUNT to the top of `mdeller-landing/apps.json` and
-`./deploy.sh` there. Not done yet, because a launcher entry pointing at a host
-with no service on it is a broken link on the front page.
-
-Not deployed yet. `punt.mdeller.com` resolves to the droplet and nginx answers on
-:80, but there is no vhost, no certificate and no service — TLS currently serves
-another app's certificate. Needs: port allocation, `deploy/` unit + nginx conf +
-certbot, and an entry in `mdeller-landing/apps.json`.
+`punt.mdeller.com` resolves to the droplet and nginx answers on :80, but there is no
+vhost, no certificate and no service, so TLS currently serves another app's certificate.
 
 **One gunicorn worker with threads**, not several processes: the live feed's poller and
-moment buffer are per-process, so a second worker doubles the upstream poll rate and gives
+Moment buffer are per-process, so a second worker doubles the upstream poll rate and gives
 half the phones a different commentary feed. Moving the buffer to Redis is the prerequisite
 for scaling out, and it is not needed for ten people.
