@@ -207,8 +207,14 @@ class Player:
             except (TypeError, ValueError):
                 continue
 
-        points, projected = _split_stats(raw.get("stats"), scoring_period)
-        if projected == 0.0 and points == 0.0 and raw:
+        points, projected, found_a_week = _split_stats(raw.get("stats"), scoring_period)
+        # Whether a weekly row was *found*, not whether it was non-zero. This
+        # asked `projected == 0.0 and points == 0.0`, which is a perfectly
+        # ordinary player: a backup on a bench, somebody ruled out, a defence on
+        # bye. ESPN projects those at zero and they score zero, and the first
+        # live league put four of them on the degradation banner -- which is how
+        # a banner stops being read by the time it means something.
+        if raw and not found_a_week:
             problems.append("no week stats")
 
         injury = raw.get("injuryStatus")
@@ -234,15 +240,21 @@ class Player:
         )
 
 
-def _split_stats(stats: Any, scoring_period: int) -> tuple[float, float]:
+def _split_stats(stats: Any, scoring_period: int) -> tuple[float, float, bool]:
     """Pull (actual, projected) for one week out of ESPN's stats array.
 
     The array mixes season totals, weekly splits, actuals and projections in one
     flat list distinguished only by `statSourceId` and `statSplitTypeId`. Reading
     it without filtering on both is the classic way to display a season total as
     a weekly score and not notice until someone's card says 1,400 points.
+
+    Returns `(actual, projected, found_a_weekly_row)`. The third is not
+    cosmetic: a player can legitimately have both numbers at zero, and telling
+    that apart from a player ESPN sent no weekly row for is the difference
+    between a quiet bench and a degraded feed.
     """
     actual = projected = 0.0
+    found = False
     for stat in _list(stats):
         stat = _dict(stat)
         if stat.get("scoringPeriodId") != scoring_period:
@@ -252,9 +264,13 @@ def _split_stats(stats: Any, scoring_period: int) -> tuple[float, float]:
         total = _num(stat.get("appliedTotal"))
         if stat.get("statSourceId") == STAT_SOURCE_PROJECTED:
             projected = total
+            found = True
         elif stat.get("statSourceId") == STAT_SOURCE_ACTUAL:
             actual = total
-    return actual, projected
+            found = True
+    # `found` separates "ESPN sent no weekly row for this player", which is worth
+    # putting on the banner, from "both numbers are zero", which is Tuesday.
+    return actual, projected, found
 
 
 @dataclass

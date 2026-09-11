@@ -172,3 +172,42 @@ def test_nfl_scoreboard_parses_into_fantasy_team_ids():
     assert states[12].opponent == "LV"
     assert states[13].possession is False
     assert states[13].opponent == "KC"
+
+
+def test_a_player_who_is_simply_projected_nothing_is_not_a_degraded_feed():
+    """Zero is data. No row is a problem. They are not the same thing.
+
+    The check used to be `projected == 0.0 and points == 0.0`, which describes a
+    backup on a bench, somebody ruled out, or a defence on bye -- ESPN projects
+    those at zero and they score zero. The first real league put four of them on
+    the degradation banner within a minute of the cookies going in, which is how
+    a banner stops being read by the time it means something.
+    """
+    def entry(stats):
+        return {"lineupSlotId": 20, "playerId": 1,
+                "playerPoolEntry": {"player": {"id": 1, "fullName": "Somebody Quiet",
+                                               "defaultPositionId": 2, "stats": stats}}}
+
+    quiet = Player.from_entry(entry([
+        {"scoringPeriodId": 1, "statSourceId": 1, "statSplitTypeId": 1, "appliedTotal": 0.0},
+        {"scoringPeriodId": 1, "statSourceId": 0, "statSplitTypeId": 1, "appliedTotal": 0.0},
+    ]), 1)
+    assert quiet.points == 0.0 and quiet.projected == 0.0
+    assert "no week stats" not in quiet.problems
+
+    # A projection and no actual yet is every player before kickoff.
+    pregame = Player.from_entry(entry([
+        {"scoringPeriodId": 1, "statSourceId": 1, "statSplitTypeId": 1, "appliedTotal": 0.0},
+    ]), 1)
+    assert "no week stats" not in pregame.problems
+
+    # Rows for another week, or a season split, are not this week's numbers.
+    elsewhere = Player.from_entry(entry([
+        {"scoringPeriodId": 7, "statSourceId": 0, "statSplitTypeId": 1, "appliedTotal": 19.4},
+        {"scoringPeriodId": 1, "statSourceId": 0, "statSplitTypeId": 0, "appliedTotal": 204.0},
+    ]), 1)
+    assert elsewhere.points == 0.0, "a season total was read as a weekly score"
+    assert "no week stats" in elsewhere.problems
+
+    assert "no week stats" in Player.from_entry(entry([]), 1).problems
+    assert "no week stats" in Player.from_entry(entry("not a list"), 1).problems
