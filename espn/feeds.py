@@ -34,6 +34,9 @@ class Feed:
     per_week: bool = False
     #: NFL game state is a public endpoint on a different host with no auth.
     absolute_url: str = ""
+    #: Whether this feed sends the league cookies. Read by the client, which must
+    #: not report a 403 from a public host as "your espn_s2 has expired".
+    authenticated: bool = True
     headers: dict[str, str] = field(default_factory=dict)
     purpose: str = ""
 
@@ -72,7 +75,7 @@ PLAYERS = Feed(
     purpose="Projections, injury flags, ownership across the whole player universe",
 )
 NFL = Feed(
-    name="nfl_scoreboard", ttl=20, absolute_url=NFL_SCOREBOARD,
+    name="nfl_scoreboard", ttl=20, absolute_url=NFL_SCOREBOARD, authenticated=False,
     purpose="Possession, down and distance, red zone, clock",
 )
 

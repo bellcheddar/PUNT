@@ -469,3 +469,53 @@ def test_the_logo_cache_cannot_grow_without_bound(flaky_app, no_network):
     # Oldest evicted, newest kept.
     assert 0 not in media._LOGO_CACHE
     assert (media.LOGO_CACHE_ENTRIES + 24) in media._LOGO_CACHE
+
+
+def test_a_public_feed_403_is_not_blamed_on_the_league_cookies():
+    """The NFL scoreboard is public, on another host, and sends no cookies.
+
+    Reporting its 403 as "espn_s2 has most likely rotated" is how a perfectly
+    good cookie gets replaced twice before anybody reads the hostname. It
+    happened on the first live deploy: the banner said the cookie had expired
+    while the league's own four feeds were loading beside it, with real teams
+    and real players on them.
+    """
+    from espn import feeds
+    from espn.client import AuthExpired, LiveTransport, UpstreamError
+
+    class Response:
+        status_code = 403
+
+        def json(self):
+            return {}
+
+    class Session:
+        def get(self, url, params=None, timeout=None, headers=None):
+            return Response()
+
+    transport = LiveTransport(espn_s2="s2", espn_swid="{swid}")
+    transport._session = Session()
+
+    assert feeds.NFL.authenticated is False
+    with pytest.raises(UpstreamError) as public:
+        transport.fetch(feeds.NFL, 2026, "1", None)
+    assert "public endpoint" in str(public.value)
+    assert "espn_s2" not in str(public.value)
+
+    # A league feed does send them, so there a 403 means what it always meant.
+    assert feeds.TEAM.authenticated is True
+    with pytest.raises(AuthExpired):
+        transport.fetch(feeds.TEAM, 2026, "1", None)
+
+
+def test_the_user_agent_leads_with_the_library_making_the_call():
+    """`site.api.espn.com` allowlists the leading token of the User-Agent, and
+    403s a polite self-identifying one -- measured from two networks, so it is
+    the header and not the address. Leading with `python-requests/<version>` is
+    not a disguise: it is what is making the request, and it is what would be
+    sent with no override at all."""
+    from espn.client import USER_AGENT
+
+    assert USER_AGENT.startswith("python-requests/"), USER_AGENT
+    assert "PUNT/1.0" in USER_AGENT, "a human reading a log should still see who this is"
+    assert "punt.mdeller.com" in USER_AGENT

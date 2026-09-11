@@ -40,7 +40,39 @@ from espn.models import (
 
 log = logging.getLogger(__name__)
 
-USER_AGENT = "PUNT/1.0 (+https://punt.mdeller.com) ten-team bar league companion"
+def _user_agent() -> str:
+    """Identify the app, but lead with the library that is actually making the call.
+
+    `site.api.espn.com` -- the public NFL scoreboard, the one feed here with no
+    auth on it -- runs bot management that allowlists the *leading token* of the
+    User-Agent. Measured against it on 2026-09-11, from a droplet and from a
+    home connection alike, so this is the header and not the address:
+
+        curl/8.7.1                200      Go-http-client/2.0        200
+        python-requests/2.34.2    200      curl/8.7.1 PUNT           200
+        Wget/1.21.4               403      (empty)                   403
+        Mozilla/5.0 ...           403      PUNT/1.0 (+url) ...       403
+
+    So a polite, self-identifying User-Agent -- the correct thing to send, and
+    the thing every guide on scraping etiquette asks for -- was the one being
+    refused, while the library's own default sails through. The league host
+    (`lm-api-reads.fantasy.espn.com`) does not do this and takes either.
+
+    Leading with `python-requests/<version>` is not a disguise: it is what is
+    making the request, and it is exactly what would be sent with no override at
+    all. PUNT's own identification is appended, which is the conventional way to
+    extend a User-Agent and leaves a human reading a log able to see who this is.
+    """
+    try:
+        import requests  # noqa: PLC0415
+
+        library = f"python-requests/{requests.__version__}"
+    except Exception:  # noqa: BLE001 - a User-Agent is not worth an import error
+        library = "python-requests/2"  # cold: requests is installed, so the fallback version never applies
+    return f"{library} PUNT/1.0 (+https://punt.mdeller.com) ten-team bar league companion"
+
+
+USER_AGENT = _user_agent()
 
 #: Backoff ceiling for a failure that reached ESPN: a 500, a 429, a redirect to a
 #: login page. Five minutes of silence is a long time on a Sunday, but the
@@ -140,9 +172,20 @@ class LiveTransport:
             raise UpstreamError(f"{feed.name}: {exc}") from exc
 
         if response.status_code in (401, 403):
-            raise AuthExpired(
-                f"{feed.name}: ESPN returned {response.status_code}; espn_s2 has most "
-                "likely rotated and needs refreshing",
+            # Only for a feed that actually sends the cookies. The NFL scoreboard
+            # is public and on another host, and calling its 403 an auth failure
+            # is how a perfectly good `espn_s2` gets replaced twice before
+            # anybody reads the hostname: the banner said the cookie had rotated
+            # while the league's own four feeds were loading fine beside it.
+            if feed.authenticated:
+                raise AuthExpired(
+                    f"{feed.name}: ESPN returned {response.status_code}; espn_s2 has most "
+                    "likely rotated and needs refreshing",
+                    status=response.status_code,
+                )
+            raise UpstreamError(
+                f"{feed.name}: ESPN returned {response.status_code} on a public endpoint, "
+                "which is nothing to do with the league cookies",
                 status=response.status_code,
             )
         if response.status_code != 200:

@@ -289,6 +289,14 @@ def _drive_the_live_transport() -> None:
         except (UpstreamError, AuthExpired):
             pass
 
+    # The same 403 on the public scoreboard, which sends no cookies and must not
+    # be reported as the league's cookie having expired.
+    transport._session = Session([Response(403)])
+    try:
+        transport.fetch(feeds.NFL, 2025, "1", None)
+    except UpstreamError:
+        pass
+
 
 def _drive_the_recap_guard(pack) -> None:
     """The validator, against text that fails it.
