@@ -39,7 +39,7 @@ def api_state():
             "stale": snap.stale,
             "problems": snap.all_problems()[:20],
             "matchups": matchup_view(snap),
-            "album": album_view(snap),
+            "album": album_view(snap, state().live),
             "moments": moments_view(state().live),
             "diagnostics": state().diagnostics(),
         }
@@ -58,7 +58,8 @@ def partial_matchup(matchup_id: int):
 @bp.route("/partials/album")
 def partial_album():
     snap = snapshot()
-    return render_template("partials/album_grid.html", album=album_view(snap), snap=snap)
+    return render_template("partials/album_grid.html",
+                           album=album_view(snap, state().live), snap=snap)
 
 
 @bp.route("/partials/scorebar")

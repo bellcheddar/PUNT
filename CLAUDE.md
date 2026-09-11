@@ -19,7 +19,14 @@ python3 tools/phrase_lint.py                   # dead triggers, unfillable slots
 python3 tools/a11y.py                          # contrast
 python3 tools/screenshot.py                    # captures at a real phone width
 python3 tools/screenshot.py --check-overflow   # horizontal overflow at 390px
+python3 tools/deadcode.py                      # which lines never run during a whole Sunday
 ```
+
+**Run `deadcode.py` after adding a feature.** It is not test coverage: it drives a whole
+simulated Sunday and reports what the application never reached. It has found three
+features that looked finished and had never once executed -- INJURY, the Legendary card
+tier, and the branch that reads ESPN's real lineup eligibility -- each with a passing test
+beside it.
 
 **Look at the screenshots.** Six separate defects in this repository were invisible in
 the code and obvious in a capture: truncated team names, a demo opening on ten zeros, an

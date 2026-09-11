@@ -41,7 +41,6 @@ def _team_card(team: Team | None, side: Side | None) -> dict[str, Any]:
         "starters": [_player(p) for p in (side.starters if side else [])],
         "bench": [_player(p) for p in (side.bench if side else [])],
         "in_play": side.in_play if side else 0,
-        "yet_to_kick_off": side.yet_to_kick_off if side else 0,
         "missing": False,
     }
 
@@ -89,12 +88,19 @@ def matchup_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
     return out
 
 
-def album_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
+def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
     """The ten cards, ordered by this week's score. Rarity is earned, so it can
     only be assigned once every team's score is known -- which is why this is one
     pass over all ten rather than a property on a card."""
     slots = snap.settings.starting_slots
     probabilities = probabilities_for(snap)
+    # The week's low-water mark, and each team's best settled week. Both are
+    # needed for Legendary and neither can be read off the current snapshot.
+    week_low = dict(live.week_low) if live is not None else {}
+    best_week = {
+        record.team_id: max(record.weekly, default=0.0)
+        for record in (standings(snap) if snap.season_schedule else [])
+    }
     cards: list[dict[str, Any]] = []
 
     for team in snap.teams:
@@ -111,27 +117,42 @@ def album_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
              "slot": swap[0].slot}
             if swap else None
         )
-        card["win_prob"] = (
-            probabilities[matchup.id].for_team(team.id) if matchup and matchup.id in probabilities else None
+        probability = (
+            probabilities[matchup.id].for_team(team.id)
+            if matchup and matchup.id in probabilities else None
         )
+        card["win_prob"] = probability
+        card["week_low"] = week_low.get(team.id)
+        card["season_high"] = bool(
+            best_week.get(team.id) and card["total"] > best_week[team.id]
+        )
+        card["winning"] = bool(probability is not None and probability > 0.5)
         cards.append(card)
 
     cards.sort(key=lambda c: c["total"], reverse=True)
     for rank, card in enumerate(cards):
         card["rank"] = rank + 1
-        card["tier"] = _tier(rank, len(cards), card["bench_regret"], card["win_prob"])
+        card["tier"] = _tier(
+            rank, len(cards), card["bench_regret"],
+            winning=card["winning"], week_low=card["week_low"],
+            season_high=card["season_high"],
+        )
     return cards
 
 
-#: A win from below this probability mints a Legendary card. It is checked at
-#: the point the card is rendered, which means a manager who was under it earlier
-#: and is comfortable now does not qualify -- Phase 5 keeps the running minimum
-#: per week, which is the version the spec actually describes.
+#: A win from below this probability mints a Legendary card.
+#:
+#: "From under 10%" is a thing that was true at some point in the afternoon, not
+#: a thing that is true now. Reading the current number instead -- which this did
+#: for a while -- marks whoever is *losing* as legendary, and marks nobody at all
+#: once the games finish and every probability is 1.0 or 0.0. The tier was
+#: unreachable, which is how `tools/deadcode.py` found it.
 LEGENDARY_WIN_PROB = 0.10
 
 
-def _tier(rank: int, count: int, bench_regret: float, win_prob: float | None) -> str:
-    """Rarity, per the spec's table.
+def _tier(rank: int, count: int, bench_regret: float, *,
+          winning: bool, week_low: float | None, season_high: bool) -> str:
+    """Rarity, per the spec's table: season-high score, or a win from under 10%.
 
     Cursed is checked first and deliberately outranks Legendary: a manager who
     left forty points on the bench does not get a holographic card for it,
@@ -139,7 +160,9 @@ def _tier(rank: int, count: int, bench_regret: float, win_prob: float | None) ->
     """
     if rank == count - 1 or bench_regret > 40:
         return "cursed"
-    if win_prob is not None and 0.0 < win_prob < LEGENDARY_WIN_PROB:
+    if season_high:
+        return "legendary"
+    if winning and week_low is not None and week_low < LEGENDARY_WIN_PROB:
         return "legendary"
     if rank == 0:
         return "epic"

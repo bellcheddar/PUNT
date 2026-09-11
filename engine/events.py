@@ -246,6 +246,12 @@ class EventEngine:
             loudest = max(candidates, key=lambda m: (m.magnitude, m.delta_points))
             loudest.win_prob_delta = swing
 
+    @property
+    def win_probabilities(self) -> dict[int, float]:
+        """The probabilities from the last ingest, so callers that need them do
+        not run the simulator a second time on the same snapshot."""
+        return dict(self._win_prob)
+
     def persist(self) -> None:
         """Write the dedupe set so a restart does not replay the afternoon."""
         if not self.seen_path:

@@ -135,3 +135,68 @@ def test_view_models_produce_text_not_markup(client, no_network):
         assert check("cheer_view", cheer_view(snap, team_id=1)) > 0
         assert check("receipts_view", receipts_view(snap)["rows"]) > 0
         assert check("swing_view", swing_view(snap)["rows"]) > 0
+
+
+def test_a_legendary_card_can_actually_be_minted(no_network):
+    """The tier was unreachable, and nothing said so.
+
+    It read the *current* win probability, so mid-game it marked whoever was
+    losing as legendary, and once the games finished every probability was 1.0 or
+    0.0 and nobody qualified at all. `tools/deadcode.py` found it: the
+    `return "legendary"` line never executed during a whole simulated Sunday.
+
+    The spec's rule is a season-high score or a win from under 10%, and "from
+    under 10%" is a thing that was true at some point in the afternoon.
+    """
+    from config import DEMO_RECORDING
+    from engine.events import EventEngine
+    from engine.live import LiveFeed
+    from espn.cache import TTLCache
+    from espn.client import EspnClient, LeagueRepository
+    from espn.replay import ReplayTransport
+    from views.viewmodels import album_view
+
+    transport = ReplayTransport.load(DEMO_RECORDING, speed=0.0)
+    client = EspnClient(transport, 2025, "demo", TTLCache())
+    repo = LeagueRepository(client)
+    feed = LiveFeed(
+        fetch=lambda: (client.cache.invalidate(), repo.snapshot())[1],
+        poll_seconds=30, engine=EventEngine(simulate_draws=200),
+    )
+    feed._broadcast = lambda payload: None
+    for position in range(0, int(transport.recording.duration) + 120, 120):
+        transport.clock.seek(position)
+        feed.poll_once()
+
+    cards = album_view(feed.snapshot, feed)
+    legendary = [c for c in cards if c["tier"] == "legendary"]
+    assert legendary, "no Legendary card in a Sunday containing a comeback from 7%"
+
+    for card in legendary:
+        assert card["season_high"] or (card["winning"] and card["week_low"] < 0.10)
+
+    # And the other half: dipping below 10% and losing is not legendary, it is
+    # just losing. Several managers bottomed out at 0.0% in this fixture.
+    losers_who_dipped = [
+        c for c in cards
+        if not c["winning"] and c["week_low"] is not None and c["week_low"] < 0.10
+    ]
+    assert losers_who_dipped, "the fixture should contain doomed managers"
+    assert all(c["tier"] != "legendary" for c in losers_who_dipped)
+
+
+def test_the_low_water_mark_resets_between_weeks():
+    """It is the week's minimum, not the season's. Carrying it over would mint a
+    Legendary card in week 12 for something that happened in week 11."""
+    from engine.events import EventEngine
+    from engine.live import LiveFeed
+    from espn.models import LeagueSettings, LeagueSnapshot
+
+    feed = LiveFeed(fetch=lambda: None, poll_seconds=30, engine=EventEngine(simulate_draws=10))
+    feed.engine._win_prob = {1: 0.04}
+    feed._accumulate(LeagueSnapshot(season=2025, scoring_period=11, settings=LeagueSettings()), [])
+    assert feed.week_low[1] == 0.04
+
+    feed.engine._win_prob = {1: 0.80}
+    feed._accumulate(LeagueSnapshot(season=2025, scoring_period=12, settings=LeagueSettings()), [])
+    assert feed.week_low[1] == 0.80, "last week's low survived into this week"

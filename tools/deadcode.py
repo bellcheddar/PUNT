@@ -28,9 +28,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 ROOT = Path(__file__).resolve().parent.parent
 
-#: What a Sunday should exercise. `views/` is excluded: it needs a request
-#: context, and the route tests cover it.
+#: What a Sunday should exercise. `views/viewmodels.py` is included because it is
+#: where the data actually reaches the page, and a field nothing renders is dead
+#: however many engines compute it. The blueprint modules are excluded: they need
+#: a request context and the route tests cover them.
 WATCHED = ["engine", "espn"]
+EXTRA_FILES = ["views/viewmodels.py"]
 
 #: Lines that are *meant* never to run in a replay, with the reason. Anything
 #: here is excluded from the report rather than silently tolerated, so the list
@@ -110,6 +113,25 @@ def drive_a_sunday() -> None:
     for matchup in snapshot.matchups:
         for side in (matchup.home, matchup.away):
             optimal_lineup(side.players, snapshot.settings.starting_slots)
+    # The view models too: this is where the data reaches the page, and a field
+    # nothing renders is dead however many engines compute it. Driving only the
+    # engine produced a report full of false positives -- `Team.monogram` and
+    # `Side.bench` looked dead and are used on every card.
+    from views.viewmodels import (
+        album_view, cheer_view, matchup_view, moments_view, multiverse_view,
+        receipts_view, swing_view, watch_now,
+    )
+
+    album_view(snapshot)
+    matchup_view(snapshot)
+    receipts_view(snapshot)
+    swing_view(snapshot, feed)
+    cheer_view(snapshot, team_id=snapshot.teams[0].id if snapshot.teams else None)
+    cheer_view(snapshot, team_id=None)
+    multiverse_view(snapshot, draws=40)
+    watch_now(snapshot)
+    moments_view(feed)
+
     pack = build(snapshot, feed.notable)
     recap = generate(pack, backend=None)
     validate(recap.text, pack)
@@ -136,7 +158,7 @@ def main() -> int:
     files = sorted(
         p for directory in WATCHED for p in (ROOT / directory).glob("*.py")
         if p.name != "__init__.py"
-    )
+    ) + [ROOT / name for name in EXTRA_FILES]
     if args.module:
         files = [ROOT / args.module]
 

@@ -70,7 +70,7 @@ def today():
 @bp.route("/album")
 def album():
     snap = snapshot()
-    return render_template("tabs/album.html", snap=snap, album=album_view(snap))
+    return render_template("tabs/album.html", snap=snap, album=album_view(snap, state().live))
 
 
 @bp.route("/cheer")

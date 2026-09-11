@@ -512,11 +512,6 @@ class Side:
         """
         return sum(1 for p in self.starters if p.game_over is False)
 
-    @property
-    def yet_to_kick_off(self) -> int:
-        """Starters whose game has not started at all. The genuinely untouched."""
-        return sum(1 for p in self.starters if p.game_over is False and p.points == 0.0)
-
     @classmethod
     def from_raw(cls, raw: Any, scoring_period: int) -> "Side":
         raw = _dict(raw)

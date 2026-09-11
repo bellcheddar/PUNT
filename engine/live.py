@@ -97,6 +97,14 @@ class LiveFeed:
         self.week: int | None = None
         self.notable: list[Moment] = []
         self.week_counts: dict[str, int] = {}
+        #: The lowest win probability each team has seen this week.
+        #:
+        #: A Legendary card is a win from under 10%, and "under 10%" is a thing
+        #: that was true at some point, not a thing that is true now. Reading the
+        #: current number instead marked whoever was *losing* as legendary, and
+        #: marked nobody at all once the games finished and every probability was
+        #: 1.0 or 0.0 -- so the tier could never actually be awarded.
+        self.week_low: dict[int, float] = {}
 
         #: pro_team_id -> what we knew when the drive reached the red zone.
         #: Diffed each poll to open and close the countdown overlay.
@@ -222,6 +230,12 @@ class LiveFeed:
             self.week = snapshot.scoring_period
             self.notable = []
             self.week_counts = {}
+            self.week_low = {}
+
+        for team_id, probability in self.engine.win_probabilities.items():
+            previous = self.week_low.get(team_id)
+            if previous is None or probability < previous:
+                self.week_low[team_id] = probability
         for moment in moments:
             self.week_counts[moment.kind] = self.week_counts.get(moment.kind, 0) + 1
             if moment.kind in self.NOTABLE and len(self.notable) < self.MAX_NOTABLE:
