@@ -71,24 +71,17 @@
       && typeof window.DeviceOrientationEvent.requestPermission === 'function';
   }
 
-  /* Whether this device plausibly has an orientation sensor to ask about.
+  /* `DeviceOrientationEvent.requestPermission` is NOT an iOS test, whatever
+   * every recipe online says: desktop Chrome ships that method too. Measured
+   * directly -- headless Chrome on macOS reports `DeviceOrientationEvent:
+   * function, requestPermission: function` -- and using it as an iOS proxy once
+   * put the full-screen gate in front of every desktop visitor, including the
+   * screenshot harness, which is how it was noticed.
    *
-   * The near-universal recipe for "is this iOS" is
-   * `typeof DeviceOrientationEvent.requestPermission === 'function'`, and it is
-   * out of date: desktop Chrome ships that method now. Measured directly --
-   * headless Chrome on macOS reports `DeviceOrientationEvent: function,
-   * requestPermission: function` -- and using it as a proxy put the full-screen
-   * unlock gate in front of every desktop visitor, including the screenshot
-   * harness, which is how it was noticed.
-   *
-   * Input modality is the honest question. A coarse pointer with no hover is a
-   * touch device; anything else gets the pointer tilt, which needs no permission
-   * and no gate.
+   * That no longer decides whether the gate appears (it appears everywhere now,
+   * because audio needs a gesture everywhere), only whether there is a
+   * permission to ask for inside it.
    */
-  function isTouchDevice() {
-    return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  }
-
   async function requestGyro() {
     if (!gyroNeedsPermission()) {
       if ('DeviceOrientationEvent' in window) startGyro();
@@ -115,7 +108,6 @@
       <div class="gate-inner">
         <span class="gate-mark">PUNT</span>
         <button class="gate-button" type="button">TAP TO KICK OFF</button>
-        <p class="gate-note">Turns on the tilt, and (from Phase 4) the sound.</p>
       </div>`;
 
     gate.querySelector('.gate-button').addEventListener('click', async () => {
@@ -132,6 +124,11 @@
   }
 
   function gatePassed() {
+    // `?punt=steady` skips it, the same flag identity.js uses to skip the team
+    // chooser: a capture or a demo link should land on the app in use rather
+    // than on its front door. Now that the gate is on every device, the
+    // screenshot tooling would otherwise photograph nothing but the splash.
+    if (new URLSearchParams(location.search).get('punt') === 'steady') return true;
     try { return sessionStorage.getItem(GATE_KEY) === '1'; } catch { return false; }
   }
 
@@ -142,15 +139,16 @@
     if (reducedMotion) return;
     startPointer();
 
-    // The gate only earns its place where there is something behind it to
-    // unlock. On a desktop the pointer tilt already works, so a full-screen
-    // splash in front of the scores would be theatre.
-    if (!isTouchDevice()) return;
-    if (gyroNeedsPermission()) {
-      if (!gatePassed()) buildGate();
-    } else if ('DeviceOrientationEvent' in window) {
-      startGyro();
-    }
+    // Every device gets the gate, phone and desktop alike.
+    //
+    // It used to be touch-only, on the reasoning that a desktop needs no
+    // permission for the pointer tilt so a splash in front of the scores would
+    // be theatre. That was true of the tilt and wrong about the sound: audio
+    // needs a gesture everywhere, so on a desktop the music started on whatever
+    // the visitor happened to click first, which is not a start, it is a
+    // surprise. One landing, one tap, same on both.
+    if (!gatePassed()) buildGate();
+    if (!gyroNeedsPermission() && 'DeviceOrientationEvent' in window) startGyro();
   }
 
   // Cards are swapped in by htmx on every poll, so the list has to be rebuilt.

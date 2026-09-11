@@ -337,16 +337,16 @@ main { padding: 12px 14px 24px; }
 /* Ten teams is 2x5 on a phone and 5x2 on the TV, and both fit without
  * scrolling. That is worth protecting: it means no pagination and no
  * virtualisation anywhere in the album. */
-/* Five across, not two. Marc asked for about a quarter of the old size, and on
-   a 390 px phone two-up gave a 175 px card where five-up gives 68 px -- close
-   enough to a quarter of the AREA, which is what the eye reads. They are an
-   index of the league now rather than the centrepiece, so the type inside them
-   scales with the card rather than staying at its old size and overflowing. */
+/* Two per row, at every width. A trading card is 5:7, so two-up on a 1280 px
+   screen would be 620 px wide and 870 px tall -- a billboard, not a card. The
+   grid is therefore capped and centred: the cards get bigger on a desktop, as
+   asked, and stop before they become absurd. */
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  container-type: inline-size;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 560px;
+  margin-inline: auto;
 }
 
 /* While the pack is sealed the cards exist and are face-down, but ten invisible
@@ -436,7 +436,11 @@ main { padding: 12px 14px 24px; }
   position: absolute;
   inset: -40%;
   pointer-events: none;
-  opacity: 0;
+  /* Every card catches the light. This was 0 -- common cards were matte, and
+     that WAS the rarity treatment: the glint was the reward. Rarity is carried
+     by the border, the tier colour and the animation speed instead now, and
+     common still gets the least of it. */
+  opacity: .16;
   background: linear-gradient(
     104deg,
     transparent 34%,
@@ -449,6 +453,7 @@ main { padding: 12px 14px 24px; }
   transition: opacity 200ms ease;
 }
 
+
 .card-face--front::after {
   content: '';
   position: absolute;
@@ -457,13 +462,6 @@ main { padding: 12px 14px 24px; }
   opacity: 0;
 }
 
-.album-grid .card { padding: 5px; border-radius: 7px; }
-.album-grid .card-face { padding: 5px; }
-.album-grid .card-name { font-size: 8px; line-height: 1.05; }
-.album-grid .card-tier { font-size: 6px; letter-spacing: .04em; }
-.album-grid .card-score { font-size: 15px; }
-.album-grid .card-stats { font-size: 6px; line-height: 1.35; }
-.album-grid .card-crest { display: none; }
 .card-tier {
   font-family: var(--font-mono); font-size: 8px; letter-spacing: .16em;
   text-transform: uppercase; color: var(--tier-colour);
@@ -490,7 +488,7 @@ main { padding: 12px 14px 24px; }
 
 /* ---- rarity treatments ---- */
 
-/* Common: matte. The foil stays at zero opacity, which is the point of it. */
+/* Common: the least of the foil, set on the base rule above. */
 
 /* Rare: a subtle sweep that only appears as the card is tilted. */
 .card--rare { --tier-colour: var(--tier-rare); }
@@ -1167,10 +1165,19 @@ main { padding: 12px 14px 24px; }
 .tappable:focus-visible { outline: 2px solid var(--brand-bright); outline-offset: -2px; }
 .tappable[aria-expanded='true'] { background: var(--bg-raised); }
 
-/* One headline at a time; see the note in partials/matchup.html. */
-.mside-manager { display: none; }
-.pairs .mside-team, .pairs .mside-mgr-inline { display: none; }
-.pairs .mside-manager { display: block; font-size: 15px; }
+/* The TEAM name leads, everywhere. It briefly led with the manager at half
+   width because the team name truncated there -- but the answer to a name that
+   does not fit is to give it room, not to show a different name in one panel
+   and the real one everywhere else. The league calls itself by its team names;
+   the manager stays as the line underneath, and on the cards. */
+/* `.mside-id b` is 0,1,1 and `.mside-manager` is 0,1,0, so a bare class loses
+   and the manager rendered a second time under the team name. Matching the
+   element as well makes it a fair fight. */
+.mside-id b.mside-manager { display: none; }
+/* `.mside-id span` sets `display: block`, and the manager is a span INSIDE the
+   meta span -- so it became its own line and the row read "Chidi ." above
+   "2-8 . 9 in play". A descendant selector does not stop at the first match. */
+.mside-id span.mside-mgr-inline { display: inline; }
 
 /* "MANAGER" and "SCORE" ran into each other as MANAGERSCORE once the header
    padding came down for the pair layout. A left-aligned header next to a
@@ -1223,32 +1230,61 @@ main { padding: 12px 14px 24px; }
   color: var(--ink-faint); width: 34px; }
 .sheet-roster td { padding: 5px 6px; }
 
-/* At pair width the row stops being three columns and becomes two.
-   `34px | name | score` leaves the name about 90 px in a 186 px panel, and
-   shaving font sizes only moved which names truncated: "Priya" and
-   "Marguerite" first, then "Chidi" once a lead marker took the space back.
-   Squeezing was the wrong move -- the row has one thing too many in it.
-   So the score drops to its own line under the name, where it has the whole
-   width and the name never competes with it. */
-.pairs .mside {
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 4px 8px;
-  padding: 6px 0;
-}
-.pairs .crest { width: 28px; height: 28px; border-radius: 7px; font-size: 10px; }
-.pairs .crest img { width: 28px; height: 28px; }
-.pairs .mside-id { grid-column: 2; }
-.pairs .mside-score {
-  grid-column: 2;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-.pairs .mside-score b { font-size: 20px; }
-.pairs .mside-score span { font-size: 9px; }
+
 
 /* "Marguerite" is eleven characters in a column with room for about eight.
    Wrapping rather than truncating: a name is the one thing on these rows that
    has to be readable, and there is vertical room going spare in a panel that is
    half the width it used to be. */
 .pairs .rows td:first-child { overflow: visible; white-space: normal; word-break: break-word; }
+
+/* Card type grows with the screen. A card is about 175 px on a 390 px phone and
+   about 260 px on a desktop, and type sized for the phone looks timid at that
+   width -- the crest in particular, which is the team's own badge and the
+   fastest way to know whose card this is. */
+@media (min-width: 700px) {
+  .album-grid .card-name  { font-size: 18px; }
+  .album-grid .card-tier  { font-size: 9.5px; }
+  .album-grid .card-score { font-size: 38px; }
+  .album-grid .card-stats { font-size: 11px; }
+  /* No width/height here: `.card-crest` is `flex: 1` and fixing its box
+     collapses the space the crest is supposed to fill. Scale the image. */
+  .album-grid .card-crest img { width: 62%; }
+}
+/* The grid is capped and centred, so the heading above it should be too or the
+   panel reads as a mistake rather than a decision. */
+@media (min-width: 620px) { .panel--cards .panel-title { text-align: center; } }
+
+/* --- the live panel, full width, two matchups to a row -------------------
+   Each matchup is already two stacked rows, so a pair of them side by side is
+   four lines of score and the whole slate fits in five rows instead of ten. */
+.matchup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 18px;
+}
+@media (max-width: 419px) { .matchup-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* --- bench regret beside everything else ---------------------------------
+   A two-column grid rather than two floats, so both sides end level whichever
+   has more in it: that is what `align-items: stretch` does for nothing, and it
+   is the reason this is not four panels in a masonry. */
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+.columns > .panel { margin: 0; display: flex; flex-direction: column; }
+.column-stack { display: flex; flex-direction: column; gap: 12px; }
+.column-stack > .panel { margin: 0; }
+/* The two columns end level because the grid stretches them, and that is all
+   the stretching that is wanted. Making the TABLE fill as well was a mistake:
+   a table told to be 100% tall distributes the slack across its rows, so bench
+   regret came out double-spaced against a right column that was not. The panel
+   is tall; the rows keep their own height and the space falls at the bottom,
+   where empty space belongs. */
+.columns > .panel > .rows { flex: 0 0 auto; }
+@media (max-width: 619px) {
+  .columns { grid-template-columns: minmax(0, 1fr); }
+}

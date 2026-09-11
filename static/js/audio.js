@@ -99,10 +99,14 @@
     // splendid across a room and exhausting six inches from your ear.
     const onTheWall = document.documentElement.dataset.tv === '1';
     const stem = onTheWall ? 'bed-epic' : 'bed-party';
+    // Once, not on a loop. It is a theme, and a theme that comes round again
+    // every forty-five seconds for four hours stops being a theme and becomes a
+    // thing people ask you to turn off. The stings and the commentary carry the
+    // afternoon after it has played.
     bed = new window.Howl({
       src: [`/static/audio/${stem}.mp3`, `/static/audio/${stem}.ogg`],
       html5: false,
-      loop: true,
+      loop: false,
       volume: 0,
     });
   }

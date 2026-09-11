@@ -333,7 +333,12 @@ def test_everything_is_on_one_page(client, no_network):
     for marker in ("album-grid", "Who is in trouble", "Commentary",
                    "Cheer", "Bench regret", "Playoff odds"):
         assert marker in body, f"{marker} is not on the single page"
-    assert 'class="pairs"' in body, "the panels are not laid out two to a row"
+    # The shape changed again: the cards and the live slate are full width with
+    # their own internal grids, and bench regret sits beside a stack of the
+    # rest in two equal-height columns.
+    assert 'class="matchup-grid"' in body, "the live slate is not two matchups to a row"
+    assert 'class="columns"' in body, "bench regret is not beside the others"
+    assert 'class="column-stack"' in body
 
 
 def test_the_cards_just_load(client, no_network):
@@ -357,3 +362,52 @@ def test_anything_naming_a_team_can_be_opened(client, no_network):
     assert detail.status_code == 200
     text = detail.get_data(as_text=True)
     assert "sheet-head" in text and "Starters" in text
+
+
+def test_the_landing_gate_is_the_same_on_every_device():
+    """One landing, one tap, phone and desktop alike.
+
+    The gate used to be touch-only, on the reasoning that a desktop needs no
+    permission for the pointer tilt so a splash in front of the scores would be
+    theatre. True of the tilt and wrong about the sound: audio needs a gesture
+    everywhere, so on a desktop the music started on whatever the visitor
+    happened to click first, which is not a start, it is a surprise.
+    """
+    source = (ROOT_STATIC / "js" / "cards.js").read_text("utf-8")
+    assert "isTouchDevice" not in source, "the gate is gated on input modality again"
+    assert "if (!gatePassed()) buildGate();" in source
+    assert "Turns on the tilt" not in source, "the tilt note is back"
+
+
+def test_the_theme_plays_once_and_does_not_loop():
+    """A theme that comes round every forty-five seconds for four hours stops
+    being a theme and becomes a thing people ask you to turn off."""
+    source = (ROOT_STATIC / "js" / "audio.js").read_text("utf-8")
+    assert "loop: false" in source
+    assert "loop: true" not in source
+
+
+def test_every_card_catches_the_light():
+    """Common cards were matte -- the foil sat at zero opacity and that WAS the
+    rarity treatment. Rarity is carried by the border, the tier colour and the
+    animation speed now, and every card glints."""
+    import re
+
+    css = (ROOT_STATIC / "css" / "theme.css").read_text("utf-8")
+    block = re.search(r"\.card-face--front::before \{(.*?)\}", css, re.S).group(1)
+    opacity = float(re.search(r"opacity:\s*([\d.]+)", block).group(1))
+    assert opacity > 0, "the base foil is invisible again, so common cards are matte"
+
+
+def test_the_team_name_is_the_headline_everywhere():
+    """The league calls itself by its team names. The manager stays as the line
+    underneath, and on the cards."""
+    home = (Path(__file__).resolve().parent.parent / "templates" / "tabs" / "home.html").read_text("utf-8")
+    assert "row.manager" not in home, "a table is still headlined by the username"
+    assert home.count("row.team") >= 3
+
+    css = (ROOT_STATIC / "css" / "theme.css").read_text("utf-8")
+    assert ".mside-id b.mside-manager { display: none; }" in css, (
+        "the manager leads the live rows again; note the specificity trap, "
+        "`.mside-id b` is 0,1,1 and beats a bare class"
+    )

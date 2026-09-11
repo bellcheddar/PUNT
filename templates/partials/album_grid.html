@@ -12,9 +12,13 @@
         <div class="card-tier">{{ c.tier }}{% if c.rank %} &middot; #{{ c.rank }}{% endif %}</div>
         <div class="card-name">{{ c.name }}</div>
       </div>
+      {# Always an image. A team with no ESPN logo used to fall back to a
+         CSS watermark -- huge ghosted letters with no badge behind them -- so
+         half the album had a crest and half had a smudge. The monogram route
+         draws the same badge the logo route falls back to, so both paths end
+         up looking like the same thing, which is what they are. #}
       <div class="card-crest" aria-hidden="true">
-        {%- if c.logo %}<img src="{{ c.logo }}" alt="" loading="lazy">
-        {%- else %}{{ c.monogram }}{% endif -%}
+        <img src="{{ c.logo or url_for('media.monogram', team_id=c.id) }}" alt="" loading="lazy">
       </div>
       <div>
         <div class="card-score">{{ c.total | points }}</div>
