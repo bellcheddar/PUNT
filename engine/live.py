@@ -88,6 +88,10 @@ class LiveFeed:
         self.last_poll_at: float | None = None
         self.last_error: str = ""
 
+        #: pro_team_id -> what we knew when the drive reached the red zone.
+        #: Diffed each poll to open and close the countdown overlay.
+        self._redzone: dict[int, dict[str, Any]] = {}
+
         self._listeners: set[Listener] = set()
         self._lock = threading.Lock()
         self._thread: threading.Thread | None = None
@@ -178,6 +182,7 @@ class LiveFeed:
                 if line is not None:
                     payload["line"] = self._with_speech(line)
                 self._broadcast({"event": "moment", "data": payload})
+        self._redzone_events(snapshot)
         self._broadcast({
             "event": "tick",
             "data": {
@@ -192,6 +197,75 @@ class LiveFeed:
         self.failures = 0
         self.last_error = ""
         return moments
+
+    #: A points jump at least this big while a drive was inside the five is a
+    #: touchdown rather than a two-yard carry. The same threshold the event
+    #: engine uses, and for the same reason: the feed carries totals, not plays.
+    SCORE_DELTA = 5.9
+
+    def _redzone_events(self, snapshot: LeagueSnapshot) -> None:
+        """Open and close the countdown overlay.
+
+        The overlay is a promise: it says something is about to happen. So the
+        close has to be as reliable as the open, and it has to say which way it
+        went -- a drive that stalls on the two gets a record scratch, not a horn.
+        Left open, it would sit over the scores for the rest of the afternoon.
+        """
+        live_now: dict[int, dict[str, Any]] = {}
+
+        for game in snapshot.red_zone_games:
+            if not game.possession:
+                continue
+            involved = []
+            for matchup in snapshot.matchups:
+                for side in (matchup.home, matchup.away):
+                    team = snapshot.team(side.team_id)
+                    for player in side.starters:
+                        if player.pro_team_id == game.pro_team_id:
+                            involved.append({
+                                "player": player.name,
+                                "player_id": player.id,
+                                "points": round(player.points, 2),
+                                "manager": team.manager if team else "?",
+                                "team_id": side.team_id,
+                            })
+            # Nobody in the league owns anybody on this drive, so nobody in the
+            # bar cares. The overlay is for the room, not for the football.
+            if involved:
+                live_now[game.pro_team_id] = {"game": game, "involved": involved}
+
+        for pro_team_id, info in live_now.items():
+            if pro_team_id in self._redzone:
+                continue
+            self._redzone[pro_team_id] = {
+                "at": time.time(),
+                "points": {p["player_id"]: p["points"] for p in info["involved"]},
+                "involved": info["involved"],
+            }
+            self._broadcast({"event": "redzone", "data": {
+                "state": "enter",
+                "pro_team": info["game"].abbrev,
+                "opponent": info["game"].opponent,
+                "quarter": info["game"].period,
+                "clock": info["game"].clock,
+                "down_distance": info["game"].down_distance,
+                "involved": info["involved"],
+            }})
+
+        for pro_team_id in [k for k in self._redzone if k not in live_now]:
+            opened = self._redzone.pop(pro_team_id)
+            scored = False
+            for matchup in snapshot.matchups:
+                for side in (matchup.home, matchup.away):
+                    for player in side.players:
+                        before = opened["points"].get(player.id)
+                        if before is not None and player.points - before >= self.SCORE_DELTA:
+                            scored = True
+            self._broadcast({"event": "redzone", "data": {
+                "state": "score" if scored else "stop",
+                "involved": opened["involved"],
+                "seconds": round(time.time() - opened["at"], 1),
+            }})
 
     def _commentate(self, moment: Moment, week: int) -> Line | None:
         """One line for this Moment, remembered so the feed and the stream agree.
@@ -251,4 +325,5 @@ class LiveFeed:
             "dropped_messages": dropped,
             "poll_seconds": self.poll_seconds,
             "speech": self.speech.stats() if self.speech is not None else None,
+            "red_zone": sorted(self._redzone),
         }

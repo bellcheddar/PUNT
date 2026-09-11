@@ -608,6 +608,74 @@ main { padding: 12px 14px 24px; }
   background: none; border: 0; cursor: pointer;
 }
 
+/* ---------- the red-zone countdown ---------- */
+
+.countdown {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
+  z-index: 120;
+  padding: 14px;
+  pointer-events: none;
+  animation: countdown-in 260ms cubic-bezier(.2,1.1,.4,1);
+}
+.countdown--closing { animation: countdown-out 500ms ease forwards; }
+
+.countdown-inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  text-align: center;
+  background: linear-gradient(128deg, #6a1a58, #b3123f);
+  box-shadow: 0 10px 40px rgba(179, 18, 63, .4);
+}
+
+/* The beat. A scaling pseudo-layer rather than a box-shadow pulse, because a
+ * shadow repaints the whole element every frame and this runs while a horn is
+ * about to fire. */
+.countdown-pulse {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(255,255,255,.30), transparent 62%);
+  animation: countdown-beat 640ms ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+.countdown[data-outcome='score'] .countdown-pulse { animation: none; opacity: .9; }
+
+.countdown-label {
+  position: relative;
+  font-family: var(--font-display); font-size: 22px; letter-spacing: .14em;
+  color: #fff;
+}
+.countdown-who {
+  position: relative;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+  color: rgba(255,255,255,.92); margin-top: 3px;
+}
+.countdown-detail {
+  position: relative;
+  font-family: var(--font-mono); font-size: 9.5px;
+  color: rgba(255,255,255,.7); margin-top: 3px;
+}
+
+@keyframes countdown-beat {
+  0%, 100% { transform: scale(.82); opacity: .35; }
+  50%      { transform: scale(1.05); opacity: .75; }
+}
+@keyframes countdown-in {
+  from { transform: translateY(110%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes countdown-out {
+  to { transform: translateY(110%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdown, .countdown--closing { animation: none; }
+  .countdown-pulse { animation: none; opacity: .5; }
+}
+
 /* ---------- the pack ---------- */
 
 .pack {

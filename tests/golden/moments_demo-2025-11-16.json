@@ -50,8 +50,8 @@
    "starter": false,
    "quarter": 1,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 13"
+   "red_zone": false,
+   "down_distance": "3rd & 14"
   },
   "ts": 960
  },
@@ -79,7 +79,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 5"
+   "down_distance": "2rd & 3"
   },
   "ts": 1020
  },
@@ -190,8 +190,8 @@
    "starter": true,
    "quarter": 1,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 8"
+   "red_zone": false,
+   "down_distance": "1rd & 6"
   },
   "ts": 1560
  },
@@ -219,7 +219,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 5"
+   "down_distance": "2rd & 3"
   },
   "ts": 1860
  },
@@ -302,8 +302,8 @@
    "starter": false,
    "quarter": 1,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 8"
+   "red_zone": false,
+   "down_distance": "1rd & 6"
   },
   "ts": 2340
  },
@@ -330,8 +330,8 @@
    "starter": false,
    "quarter": 1,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 13"
+   "red_zone": false,
+   "down_distance": "3rd & 14"
   },
   "ts": 2520
  },
@@ -359,7 +359,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 5"
+   "down_distance": "2rd & 3"
   },
   "ts": 2640
  },
@@ -387,7 +387,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 1"
+   "down_distance": "2rd & 5"
   },
   "ts": 2700
  },
@@ -443,7 +443,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 1"
+   "down_distance": "2rd & 5"
   },
   "ts": 3180
  },
@@ -499,7 +499,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 5",
+   "down_distance": "2rd & 3",
    "threshold": 20.0
   },
   "ts": 3420
@@ -555,8 +555,8 @@
    "starter": true,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
+   "red_zone": true,
+   "down_distance": "1rd & 3"
   },
   "ts": 3840
  },
@@ -583,8 +583,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
+   "red_zone": true,
+   "down_distance": "1rd & 3"
   },
   "ts": 4260
  },
@@ -612,7 +612,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 4"
+   "down_distance": "3rd & 15"
   },
   "ts": 4860
  },
@@ -640,7 +640,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 4"
+   "down_distance": "3rd & 15"
   },
   "ts": 4920
  },
@@ -696,7 +696,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 2"
+   "down_distance": "4rd & 8"
   },
   "ts": 5160
  },
@@ -724,7 +724,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 4"
+   "down_distance": "3rd & 15"
   },
   "ts": 5160
  },
@@ -752,7 +752,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 15"
+   "down_distance": "2rd & 2"
   },
   "ts": 5220
  },
@@ -780,7 +780,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 9"
+   "down_distance": "1rd & 4"
   },
   "ts": 5280
  },
@@ -807,8 +807,8 @@
    "starter": true,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 8"
+   "red_zone": true,
+   "down_distance": "2rd & 8"
   },
   "ts": 5340
  },
@@ -835,8 +835,8 @@
    "starter": true,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
+   "red_zone": true,
+   "down_distance": "1rd & 3"
   },
   "ts": 5340
  },
@@ -864,7 +864,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 9"
+   "down_distance": "1rd & 4"
   },
   "ts": 5400
  },
@@ -891,8 +891,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 8"
+   "red_zone": true,
+   "down_distance": "2rd & 8"
   },
   "ts": 5460
  },
@@ -943,8 +943,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 8"
+   "red_zone": true,
+   "down_distance": "2rd & 8"
   },
   "ts": 5640
  },
@@ -971,8 +971,8 @@
    "starter": true,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
+   "red_zone": true,
+   "down_distance": "1rd & 3"
   },
   "ts": 5760
  },
@@ -999,7 +999,7 @@
    "starter": true,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "2rd & 3"
   },
   "ts": 5760
@@ -1027,8 +1027,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 8"
+   "red_zone": true,
+   "down_distance": "2rd & 8"
   },
   "ts": 5820
  },
@@ -1056,7 +1056,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 4"
+   "down_distance": "3rd & 15"
   },
   "ts": 6000
  },
@@ -1083,8 +1083,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
+   "red_zone": true,
+   "down_distance": "1rd & 3"
   },
   "ts": 6060
  },
@@ -1111,8 +1111,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 8"
+   "red_zone": true,
+   "down_distance": "2rd & 8"
   },
   "ts": 6360
  },
@@ -1139,8 +1139,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 11"
+   "red_zone": false,
+   "down_distance": "4rd & 14"
   },
   "ts": 6600
  },
@@ -1168,7 +1168,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 10"
+   "down_distance": "4rd & 2"
   },
   "ts": 6600
  },
@@ -1196,7 +1196,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "2rd & 4"
   },
   "ts": 6600
  },
@@ -1223,8 +1223,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 11"
+   "red_zone": false,
+   "down_distance": "4rd & 14"
   },
   "ts": 6780
  },
@@ -1251,8 +1251,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "4rd & 6"
   },
   "ts": 6840
  },
@@ -1279,8 +1279,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "4rd & 6"
   },
   "ts": 6900
  },
@@ -1308,7 +1308,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 13"
+   "down_distance": "1rd & 8"
   },
   "ts": 6960
  },
@@ -1336,7 +1336,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 5"
+   "down_distance": "3rd & 10"
   },
   "ts": 6960
  },
@@ -1363,8 +1363,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 11"
+   "red_zone": false,
+   "down_distance": "4rd & 14"
   },
   "ts": 7080
  },
@@ -1392,7 +1392,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 8"
+   "down_distance": "4rd & 14"
   },
   "ts": 7260
  },
@@ -1419,8 +1419,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "4rd & 6"
   },
   "ts": 7380
  },
@@ -1448,7 +1448,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "1rd & 2"
   },
   "ts": 7500
  },
@@ -1476,7 +1476,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 10"
+   "down_distance": "4rd & 2"
   },
   "ts": 7560
  },
@@ -1504,7 +1504,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 8"
+   "down_distance": "4rd & 14"
   },
   "ts": 7560
  },
@@ -1532,7 +1532,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "2rd & 4"
   },
   "ts": 7740
  },
@@ -1560,7 +1560,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 13"
+   "down_distance": "1rd & 8"
   },
   "ts": 7800
  },
@@ -1588,7 +1588,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "2rd & 4"
   },
   "ts": 7920
  },
@@ -1616,7 +1616,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "2rd & 4"
   },
   "ts": 7980
  },
@@ -1644,7 +1644,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "1rd & 2"
   },
   "ts": 8160
  },
@@ -1672,7 +1672,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "2rd & 4"
   },
   "ts": 8280
  },
@@ -1700,7 +1700,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7",
+   "down_distance": "2rd & 4",
    "threshold": 20.0
   },
   "ts": 8280
@@ -1728,8 +1728,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "4rd & 6"
   },
   "ts": 8280
  },
@@ -1756,8 +1756,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "4rd & 6"
   },
   "ts": 8520
  },
@@ -1785,7 +1785,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 13"
+   "down_distance": "1rd & 8"
   },
   "ts": 8640
  },
@@ -1812,8 +1812,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 11"
+   "red_zone": false,
+   "down_distance": "4rd & 12"
   },
   "ts": 8640
  },
@@ -1841,7 +1841,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 8"
+   "down_distance": "4rd & 14"
   },
   "ts": 8820
  },
@@ -1917,7 +1917,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 4",
+   "down_distance": "1rd & 2",
    "threshold": 20.0
   },
   "ts": 8940
@@ -1946,7 +1946,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 8"
+   "down_distance": "4rd & 14"
   },
   "ts": 8940
  },
@@ -1973,8 +1973,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 11"
+   "red_zone": false,
+   "down_distance": "4rd & 14"
   },
   "ts": 9120
  },
@@ -2025,8 +2025,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 11",
+   "red_zone": false,
+   "down_distance": "4rd & 14",
    "threshold": 20.0
   },
   "ts": 9120
@@ -2054,8 +2054,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "4rd & 6"
   },
   "ts": 9180
  },
@@ -2107,7 +2107,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "2rd & 4"
   },
   "ts": 9240
  },
@@ -2187,7 +2187,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 9"
+   "down_distance": "3rd & 15"
   },
   "ts": 9660
  },
@@ -2215,7 +2215,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2"
+   "down_distance": "1rd & 5"
   },
   "ts": 9660
  },
@@ -2272,7 +2272,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2",
+   "down_distance": "1rd & 5",
    "threshold": 30.0
   },
   "ts": 9780
@@ -2301,7 +2301,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2"
+   "down_distance": "1rd & 5"
   },
   "ts": 9780
  },
@@ -2329,7 +2329,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 9840
  },
@@ -2409,7 +2409,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 15"
+   "down_distance": "3rd & 15"
   },
   "ts": 9900
  },
@@ -2437,7 +2437,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 13"
+   "down_distance": "4rd & 1"
   },
   "ts": 9900
  },
@@ -2597,7 +2597,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2"
+   "down_distance": "1rd & 5"
   },
   "ts": 10200
  },
@@ -2625,7 +2625,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 10260
  },
@@ -2705,7 +2705,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2"
+   "down_distance": "1rd & 5"
   },
   "ts": 10380
  },
@@ -2733,7 +2733,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 15"
+   "down_distance": "3rd & 15"
   },
   "ts": 10380
  },
@@ -2761,7 +2761,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "1rd & 11"
   },
   "ts": 10500
  },
@@ -2789,7 +2789,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 10500
  },
@@ -2845,7 +2845,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2"
+   "down_distance": "1rd & 5"
   },
   "ts": 10680
  },
@@ -2901,7 +2901,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 11220
  },
@@ -2929,7 +2929,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 2"
+   "down_distance": "1rd & 5"
   },
   "ts": 11220
  },
@@ -2957,7 +2957,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 11280
  },
@@ -2985,7 +2985,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "1rd & 11"
   },
   "ts": 11580
  },
@@ -3013,7 +3013,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 13"
+   "down_distance": "4rd & 1"
   },
   "ts": 11640
  },
@@ -3041,7 +3041,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 11700
  },
@@ -3069,7 +3069,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 9"
+   "down_distance": "3rd & 15"
   },
   "ts": 11700
  },
@@ -3125,7 +3125,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 15"
+   "down_distance": "3rd & 15"
   },
   "ts": 11760
  },
@@ -3177,7 +3177,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "2rd & 15"
+   "down_distance": "4rd & 13"
   },
   "ts": 11880
  },
@@ -3205,7 +3205,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "1rd & 11"
   },
   "ts": 11880
  },
@@ -3257,7 +3257,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 7"
+   "down_distance": "1rd & 11"
   },
   "ts": 11940
  },
@@ -3313,7 +3313,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 10"
+   "down_distance": "1rd & 1"
   },
   "ts": 12060
  },
@@ -3341,7 +3341,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "4rd & 8"
   },
   "ts": 12060
  },
@@ -3397,7 +3397,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 10"
+   "down_distance": "1rd & 1"
   },
   "ts": 12240
  },
@@ -3495,7 +3495,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "4rd & 8"
   },
   "ts": 12360
  },
@@ -3547,7 +3547,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "4rd & 10"
+   "down_distance": "1rd & 1"
   },
   "ts": 12540
  },
@@ -3599,7 +3599,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "4rd & 10"
+   "down_distance": "1rd & 1"
   },
   "ts": 12600
  },
@@ -3627,7 +3627,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "2rd & 8"
+   "down_distance": "3rd & 2"
   },
   "ts": 12600
  },
@@ -3655,7 +3655,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "2rd & 14"
+   "down_distance": "1rd & 4"
   },
   "ts": 12840
  },
@@ -3683,7 +3683,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "2rd & 8"
+   "down_distance": "3rd & 2"
   },
   "ts": 12840
  },
@@ -3711,7 +3711,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "3rd & 12"
+   "down_distance": "2rd & 6"
   },
   "ts": 13080
  },
@@ -3739,7 +3739,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "4rd & 8"
   },
   "ts": 13500
  },
@@ -3767,7 +3767,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "4rd & 8"
   },
   "ts": 13560
  },
@@ -3795,7 +3795,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "4rd & 10"
+   "down_distance": "1rd & 1"
   },
   "ts": 13860
  },
@@ -3822,8 +3822,8 @@
    "starter": false,
    "quarter": 1,
    "clock": "13:19",
-   "red_zone": true,
-   "down_distance": "1rd & 6"
+   "red_zone": false,
+   "down_distance": "3rd & 1"
   },
   "ts": 13920
  },
@@ -3851,7 +3851,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "2rd & 8"
+   "down_distance": "3rd & 2"
   },
   "ts": 13920
  },
@@ -3879,7 +3879,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "4rd & 10"
+   "down_distance": "1rd & 1"
   },
   "ts": 13980
  },
@@ -3907,7 +3907,7 @@
    "quarter": 1,
    "clock": "13:19",
    "red_zone": false,
-   "down_distance": "3rd & 4"
+   "down_distance": "4rd & 8"
   },
   "ts": 14040
  },
@@ -3935,7 +3935,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 13"
+   "down_distance": "4rd & 3"
   },
   "ts": 14820
  },
@@ -3962,8 +3962,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 4"
+   "red_zone": false,
+   "down_distance": "4rd & 15"
   },
   "ts": 14820
  },
@@ -3990,8 +3990,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 15"
+   "red_zone": true,
+   "down_distance": "4rd & 2"
   },
   "ts": 15000
  },
@@ -4019,7 +4019,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 13"
+   "down_distance": "4rd & 3"
   },
   "ts": 15060
  },
@@ -4047,7 +4047,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 13"
+   "down_distance": "4rd & 1"
   },
   "ts": 15360
  },
@@ -4099,7 +4099,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 13"
+   "down_distance": "4rd & 1"
   },
   "ts": 15600
  },
@@ -4126,8 +4126,8 @@
    "starter": true,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 4"
+   "red_zone": false,
+   "down_distance": "4rd & 15"
   },
   "ts": 15600
  },
@@ -4154,8 +4154,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 15"
+   "red_zone": true,
+   "down_distance": "4rd & 2"
   },
   "ts": 15720
  },
@@ -4183,7 +4183,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 13"
+   "down_distance": "4rd & 3"
   },
   "ts": 15900
  },
@@ -4210,8 +4210,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 15"
+   "red_zone": true,
+   "down_distance": "4rd & 2"
   },
   "ts": 16080
  },
@@ -4260,7 +4260,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 7"
+   "down_distance": "2rd & 12"
   },
   "ts": 16140
  },
@@ -4287,7 +4287,7 @@
    "starter": true,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 3"
   },
   "ts": 16260
@@ -4315,8 +4315,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 15"
+   "red_zone": true,
+   "down_distance": "4rd & 2"
   },
   "ts": 16380
  },
@@ -4343,8 +4343,8 @@
    "starter": false,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 15"
+   "red_zone": true,
+   "down_distance": "4rd & 2"
   },
   "ts": 16680
  },
@@ -4372,7 +4372,7 @@
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 7",
+   "down_distance": "2rd & 12",
    "threshold": 20.0
   },
   "ts": 17160
@@ -4401,7 +4401,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 15"
   },
   "ts": 17760
  },
@@ -4429,7 +4429,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 3"
+   "down_distance": "1rd & 7"
   },
   "ts": 18120
  },
@@ -4457,7 +4457,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 15"
   },
   "ts": 18300
  },
@@ -4485,7 +4485,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 7"
+   "down_distance": "3rd & 6"
   },
   "ts": 18420
  },
@@ -4513,7 +4513,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 7"
+   "down_distance": "3rd & 6"
   },
   "ts": 18480
  },
@@ -4540,8 +4540,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 11"
+   "red_zone": true,
+   "down_distance": "2rd & 5"
   },
   "ts": 18540
  },
@@ -4568,8 +4568,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 14"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 18660
  },
@@ -4596,8 +4596,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 14",
+   "red_zone": false,
+   "down_distance": "4rd & 5",
    "threshold": 20.0
   },
   "ts": 18660
@@ -4649,8 +4649,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 14"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 19020
  },
@@ -4677,8 +4677,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 4"
+   "red_zone": false,
+   "down_distance": "4rd & 1"
   },
   "ts": 19260
  },
@@ -4706,7 +4706,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 3"
+   "down_distance": "1rd & 7"
   },
   "ts": 19260
  },
@@ -4733,8 +4733,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 11"
+   "red_zone": true,
+   "down_distance": "2rd & 5"
   },
   "ts": 19440
  },
@@ -4762,7 +4762,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 7"
+   "down_distance": "3rd & 6"
   },
   "ts": 19560
  },
@@ -4789,8 +4789,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 14"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 19680
  },
@@ -4817,8 +4817,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 14"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 19800
  },
@@ -4867,7 +4867,7 @@
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 15"
   },
   "ts": 19920
  },
@@ -4918,8 +4918,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 14",
+   "red_zone": false,
+   "down_distance": "4rd & 5",
    "threshold": 30.0
   },
   "ts": 19980
@@ -4947,8 +4947,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 3"
+   "red_zone": false,
+   "down_distance": "4rd & 11"
   },
   "ts": 20640
  },
@@ -4975,7 +4975,7 @@
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7"
   },
   "ts": 20640
@@ -5003,7 +5003,7 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7"
   },
   "ts": 20640
@@ -5032,7 +5032,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 20760
  },
@@ -5060,7 +5060,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4",
+   "down_distance": "2rd & 1",
    "threshold": 20.0
   },
   "ts": 20760
@@ -5112,7 +5112,7 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7"
   },
   "ts": 20820
@@ -5140,8 +5140,8 @@
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 14"
+   "red_zone": false,
+   "down_distance": "1rd & 3"
   },
   "ts": 20880
  },
@@ -5169,7 +5169,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 9"
+   "down_distance": "1rd & 9"
   },
   "ts": 21180
  },
@@ -5196,8 +5196,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 4"
+   "red_zone": false,
+   "down_distance": "3rd & 12"
   },
   "ts": 21240
  },
@@ -5224,8 +5224,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 3",
+   "red_zone": false,
+   "down_distance": "4rd & 11",
    "threshold": 20.0
   },
   "ts": 21300
@@ -5254,7 +5254,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 21300
  },
@@ -5281,8 +5281,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 3"
+   "red_zone": false,
+   "down_distance": "4rd & 11"
   },
   "ts": 21300
  },
@@ -5310,7 +5310,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 21660
  },
@@ -5337,7 +5337,7 @@
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7"
   },
   "ts": 21840
@@ -5365,8 +5365,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 3",
+   "red_zone": false,
+   "down_distance": "4rd & 11",
    "threshold": 20.0
   },
   "ts": 21840
@@ -5394,8 +5394,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 3"
+   "red_zone": false,
+   "down_distance": "4rd & 11"
   },
   "ts": 21840
  },
@@ -5422,8 +5422,8 @@
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 14"
+   "red_zone": false,
+   "down_distance": "1rd & 3"
   },
   "ts": 21840
  },
@@ -5471,7 +5471,7 @@
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7"
   },
   "ts": 22140
@@ -5499,7 +5499,7 @@
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7",
    "threshold": 30.0
   },
@@ -5528,7 +5528,7 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
+   "red_zone": false,
    "down_distance": "4rd & 7"
   },
   "ts": 22260
@@ -5557,7 +5557,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 22320
  },
@@ -5604,8 +5604,8 @@
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "1rd & 3"
+   "red_zone": false,
+   "down_distance": "4rd & 11"
   },
   "ts": 22380
  },
@@ -5654,7 +5654,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 22380
  },
@@ -5706,7 +5706,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 22500
  },
@@ -5758,7 +5758,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4",
+   "down_distance": "2rd & 1",
    "threshold": 40.0
   },
   "ts": 22620
@@ -5787,7 +5787,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 22620
  },
@@ -5815,7 +5815,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 22680
  },
@@ -5843,7 +5843,7 @@
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 4"
+   "down_distance": "2rd & 1"
   },
   "ts": 22740
  },
@@ -5921,7 +5921,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 5"
+   "down_distance": "3rd & 12"
   },
   "ts": 27300
  },
@@ -5970,7 +5970,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 5"
+   "down_distance": "3rd & 12"
   },
   "ts": 27960
  },
@@ -5998,7 +5998,7 @@
    "quarter": 1,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "2rd & 5"
+   "down_distance": "3rd & 12"
   },
   "ts": 29700
  },
@@ -6026,7 +6026,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 1"
+   "down_distance": "4rd & 5"
   },
   "ts": 30480
  },
@@ -6054,7 +6054,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 1"
+   "down_distance": "4rd & 5"
   },
   "ts": 30600
  },
@@ -6082,7 +6082,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 1"
+   "down_distance": "4rd & 5"
   },
   "ts": 30840
  },
@@ -6110,7 +6110,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 1"
+   "down_distance": "4rd & 5"
   },
   "ts": 31440
  },
@@ -6138,7 +6138,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 1"
+   "down_distance": "4rd & 5"
   },
   "ts": 32100
  },
@@ -6166,7 +6166,7 @@
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "3rd & 1"
+   "down_distance": "4rd & 5"
   },
   "ts": 32340
  },
@@ -6217,8 +6217,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 5"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 33360
  },
@@ -6245,8 +6245,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 5"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 33780
  },
@@ -6273,8 +6273,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 5",
+   "red_zone": false,
+   "down_distance": "4rd & 5",
    "threshold": 20.0
   },
   "ts": 33780
@@ -6302,8 +6302,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 5"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 33840
  },
@@ -6330,8 +6330,8 @@
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 5"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 34920
  },
@@ -6358,8 +6358,8 @@
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "3rd & 5"
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
   "ts": 35280
  },
@@ -6408,7 +6408,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 9"
   },
   "ts": 36300
  },
@@ -6436,7 +6436,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 9"
   },
   "ts": 36360
  },
@@ -6485,7 +6485,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9",
+   "down_distance": "4rd & 9",
    "threshold": 30.0
   },
   "ts": 36720
@@ -6514,7 +6514,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 9"
   },
   "ts": 36720
  },
@@ -6542,7 +6542,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 9"
   },
   "ts": 38100
  },
@@ -6570,7 +6570,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 9"
   },
   "ts": 38340
  },
@@ -6598,7 +6598,7 @@
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 9"
+   "down_distance": "4rd & 9"
   },
   "ts": 38460
  }

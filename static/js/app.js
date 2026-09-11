@@ -104,6 +104,12 @@
       }
     });
 
+    stream.addEventListener('redzone', (event) => {
+      let detail;
+      try { detail = JSON.parse(event.data); } catch { return; }
+      document.dispatchEvent(new CustomEvent('punt:redzone', { detail }));
+    });
+
     stream.onerror = () => {
       // EventSource reconnects on its own using the server's `retry:` hint.
       // Closing and recreating it here would defeat that and produce a

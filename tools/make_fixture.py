@@ -429,11 +429,16 @@ def nfl_payload(t: int, rng: random.Random) -> dict:
             clock = f"{int(remaining)}:{int((remaining % 1) * 60):02d}"
 
         for home_id, away_id in pairs:
-            # Seeded off the game and the quarter so the situation is stable
-            # within a quarter rather than flickering on every poll.
+            # Seeded off the game and a two-minute bucket. Per-quarter was
+            # stable but wrong: a red-zone trip lasts a couple of minutes, and
+            # seeding per quarter left a game inside the five for fifteen
+            # minutes of game time, which would pin the countdown overlay open
+            # for most of an afternoon.
+            bucket = t // 120
             situation_rng = random.Random(f"{home_id}-{away_id}-{period}")
-            possession_id = home_id if situation_rng.random() < 0.5 else away_id
-            red_zone = state == "in" and situation_rng.random() < 0.18
+            drive_rng = random.Random(f"{home_id}-{away_id}-{bucket}")
+            possession_id = home_id if drive_rng.random() < 0.5 else away_id
+            red_zone = state == "in" and drive_rng.random() < 0.07
             competition = {
                 "competitors": [
                     {

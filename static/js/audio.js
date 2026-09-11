@@ -22,13 +22,23 @@
 
   const MUTE_KEY = 'punt.muted';
 
-  /* Levels from the build spec. `music` ducks under commentary and stings,
-   * `stings` ducks under commentary, `commentary` ducks under nothing. */
+  /* Levels, in the spec's proportions but scaled for headroom. `music` ducks
+   * under commentary and stings, `stings` ducks under commentary, `commentary`
+   * ducks under nothing.
+   *
+   * The scaling is not cosmetic. Web Audio hard-clips at the destination, and
+   * the spec's nominal levels (music 0.35, stings 0.80, commentary 1.00) sum to
+   * 1.42 even with music fully ducked -- and a sting and a play call genuinely do
+   * overlap, because the play call is started 260 ms into a 600 ms horn on
+   * purpose. These are set so the worst simultaneous case lands exactly at 1.0,
+   * which tests/test_audio_levels.py asserts. Turning the phone up is free;
+   * clipping is not.
+   */
   const BUSES = {
-    music: { volume: 0.35, ducked: 0.12 },
-    stings: { volume: 0.80, ducked: 0.30 },
-    commentary: { volume: 1.00, ducked: 1.00 },
-    ui: { volume: 0.50, ducked: 0.20 },
+    music: { volume: 0.26, ducked: 0.07 },
+    stings: { volume: 0.58, ducked: 0.11 },
+    commentary: { volume: 0.78, ducked: 0.78 },
+    ui: { volume: 0.36, ducked: 0.04 },
   };
 
   const DUCK_DOWN_MS = 200;
@@ -124,7 +134,10 @@
     if (!sprite.sprite[name]) return;
 
     const which = bus || sprite.buses[name] || 'stings';
-    const level = (BUSES[which] || BUSES.stings).volume;
+    const profile = BUSES[which] || BUSES.stings;
+    // Stings duck under commentary too, not just music. Without this the horn
+    // and the play call fight and the room hears neither.
+    const level = speaking ? profile.ducked : profile.volume;
     try {
       // Magnitude scales within the bus, never across it: a small touchdown is
       // quieter than a big one, and neither is ever louder than a play call.

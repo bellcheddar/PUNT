@@ -96,3 +96,48 @@ def test_a_failing_poll_does_not_kill_the_loop(no_network):
         pass  # poll_once propagates; the thread's _run is what swallows it
     assert calls["n"] == 1
     assert feed.polls == 0
+
+
+def test_every_red_zone_overlay_that_opens_also_closes(no_network):
+    """The overlay is a promise: it says something is about to happen.
+
+    So the close matters as much as the open, and it has to say which way the
+    drive went -- a stall on the two gets a record scratch, not a horn. An
+    overlay left open would sit over the scores for the rest of the afternoon.
+    """
+    feed, transport, _ = make_feed(draws=40)
+    events = []
+    feed._broadcast = lambda payload: (
+        events.append(payload) if payload["event"] == "redzone" else None
+    )
+
+    for position in range(0, int(transport.recording.duration), 60):
+        transport.clock.seek(position)
+        feed.poll_once()
+
+    opens = [e for e in events if e["data"]["state"] == "enter"]
+    closes = [e for e in events if e["data"]["state"] in ("score", "stop")]
+
+    assert opens, "a whole Sunday produced no red-zone drives anybody owned"
+    assert len(opens) == len(closes), f"{len(opens)} opened, {len(closes)} closed"
+    assert not feed._redzone, "a drive was still inside the five at the end of the day"
+    # Both outcomes must be reachable, or the scratch path is never exercised.
+    assert {e["data"]["state"] for e in closes} == {"score", "stop"}
+    for event in opens:
+        assert event["data"]["involved"], "opened with nobody in the league involved"
+
+
+def test_a_red_zone_drive_nobody_owns_is_not_announced(no_network):
+    """The overlay is for the room, not for the football. A drive inside the
+    five with no rostered starter on it is of no interest to anybody here."""
+    feed, transport, _ = make_feed(draws=40)
+    events = []
+    feed._broadcast = lambda payload: (
+        events.append(payload) if payload["event"] == "redzone" else None
+    )
+    transport.clock.seek(3 * 3600)
+    feed.poll_once()
+
+    for event in events:
+        if event["data"]["state"] == "enter":
+            assert event["data"]["involved"]
