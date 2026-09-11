@@ -11,8 +11,8 @@
 <section class="panel">
   <h2 class="panel-title">Bench regret</h2>
   {% if receipts.rows %}
-    <table class="rows">
-      <thead><tr><th>Manager</th><th class="num">Score</th><th class="num">Left</th></tr></thead>
+    <table class="rows regret">
+      <thead><tr><th>Manager</th><th class="num-wide">Score</th><th class="num-narrow">Left</th></tr></thead>
       <tbody>
       {% for row in receipts.rows %}
         <tr>
@@ -20,8 +20,8 @@
             <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}
             {% if row.worst_swap %}<span class="sub">{{ row.worst_swap }}</span>{% endif %}
           </td>
-          <td class="num">{{ row.score | points }}<span class="sub">best {{ row.optimal | points }}</span></td>
-          <td class="num {% if row.bench_regret > 25 %}neg{% endif %}">{{ row.bench_regret | points }}</td>
+          <td class="num num-wide">{{ row.score | points }}<span class="sub">best {{ row.optimal | points }}</span></td>
+          <td class="num num-narrow {% if row.bench_regret > 25 %}neg{% endif %}">{{ row.bench_regret | points }}</td>
         </tr>
       {% endfor %}
       </tbody>

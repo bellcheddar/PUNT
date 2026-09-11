@@ -543,6 +543,18 @@ main { padding: 12px 14px 24px; }
 .rows { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
 .rows th.num, .rows td.num { width: 66px; }
 .rows th.num-narrow, .rows td.num-narrow { width: 52px; }
+/* The bench-regret table only. Its score cell carries "best 80.4" underneath,
+   which is nine mono characters and does not fit the 66 px every other numeric
+   column uses: it truncated to "best 80…", a number cut in half, which is worse
+   than no number. The width comes out of the Left column rather than out of the
+   manager's name, so the row is the same total width it was. */
+.rows th.num-wide, .rows td.num-wide { width: 80px; }
+/* And the swap itself wraps instead of truncating. It reads "Zeke Applewhite
+   (19.3) for Delroy Ashgrove (0.0) at FLEX" -- fifty-five characters in a
+   column with room for about thirty-one, so it lost the benched player, his
+   score and the slot. That is the entire half of the sentence this tab exists
+   to show. */
+.rows.regret td:first-child .sub { white-space: normal; line-height: 1.45; }
 .rows td:first-child { overflow: hidden; }
 .rows th { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
            text-transform: uppercase; color: var(--ink-faint); text-align: left;

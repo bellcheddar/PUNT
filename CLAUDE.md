@@ -43,10 +43,21 @@ condition's first operand; and rendering the view models only at the final whist
 every mid-afternoon branch cold. The driver samples eight points across the day for that
 last reason.
 
-**Look at the screenshots.** Six separate defects in this repository were invisible in
+**Look at the screenshots.** Eight separate defects in this repository were invisible in
 the code and obvious in a capture: truncated team names, a demo opening on ten zeros, an
 HTML entity rendered literally, a sealed pack over a screen-high void, the TV type at
-phone size, and every "IN" chip the wrong colour. The code read fine each time.
+phone size, every "IN" chip the wrong colour, `best 80…` in the bench-regret table (a
+number cut in half, which is worse than no number, because 80.4 and 809 truncate
+identically), and the swap line losing its whole second half -- the benched player, his
+score and the slot, which is the half the Receipts tab exists to show. The code read fine
+every time. The last two sat in the committed captures for days.
+
+**And look at them with long names.** `python3 tools/stress_names.py` serves the demo with
+managers named the way ESPN display names actually are. The fixture's are Bex, Gus, Sam:
+median four characters, longest ten. The first real league had a median of fourteen and a
+longest of sixteen, so every layout decision and every overflow check here was made against
+the easy case. The two defects above were found that way -- neither is a long-name bug,
+long names are just what made anybody look.
 
 ## Hard rules
 
