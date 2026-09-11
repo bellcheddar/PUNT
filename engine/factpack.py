@@ -134,7 +134,7 @@ def build(snapshot: LeagueSnapshot, moments: Iterable | None = None) -> FactPack
         side = matchup.side_for(team.id) if matchup else None
         opponent = matchup.opponent_of(team.id) if matchup else None
         if side is None:
-            continue
+            continue  # cold: every team in the fixture has a side in a matchup
         lineup = optimal_lineup(side.players, slots)
         lineups[team.id] = lineup
         record = records.get(team.id)
@@ -161,7 +161,7 @@ def build(snapshot: LeagueSnapshot, moments: Iterable | None = None) -> FactPack
         home, away = matchup.home, matchup.away
         home_team, away_team = snapshot.team(home.team_id), snapshot.team(away.team_id)
         if not home_team or not away_team:
-            continue
+            continue  # cold: every matchup in the fixture has two teams behind it
         winner, loser = ((home_team, away_team) if home.total >= away.total
                          else (away_team, home_team))
         matchups.append({

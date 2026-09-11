@@ -157,11 +157,6 @@ class Player:
             return 0.0
         return max(0.0, self.projected - self.points)
 
-    @property
-    def yet_to_play(self) -> bool:
-        """Genuinely still to come, as opposed to merely short of projection."""
-        return self.game_over is False and self.points == 0.0
-
     @classmethod
     def from_entry(cls, entry: Any, scoring_period: int) -> "Player":
         entry = _dict(entry)

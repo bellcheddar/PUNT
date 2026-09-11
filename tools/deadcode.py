@@ -121,6 +121,113 @@ def quiet(*names: str):
             lg.setLevel(level)
 
 
+def _drive_a_bad_afternoon() -> None:
+    """What the parsers see when ESPN is having a day.
+
+    Every parser here is total: it accepts any JSON at all and records what it
+    could not understand rather than raising. That is forty-nine lines of
+    deliberate degradation, and a well-formed fixture reaches none of it -- so
+    the report called the whole tolerance layer dead while tests/test_models.py
+    was proving it worked. A degraded response is not a hypothetical: it is what
+    a Sunday looks like when ESPN ships a schema change at one o'clock.
+    """
+    from espn.models import (
+        GameState, LeagueSettings, LeagueSnapshot, Matchup, Player, Side, Team,
+        parse_game_states, parse_matchups, parse_members, parse_teams,
+    )
+
+    for rubbish in ({}, {"teams": None}, {"teams": "nope"}, {"teams": [None, 3, "x"]},
+                    {"schedule": [None, {}, {"home": "no"}]}, {"members": 7}):
+        parse_teams(rubbish)
+        parse_matchups(rubbish, 11)
+        parse_members(rubbish)
+        parse_game_states(rubbish)
+        LeagueSettings.from_raw(rubbish)
+
+    # One object at a time, each missing exactly one thing, because that is how
+    # a schema change arrives: everything still parses and one field is gone.
+    Player.from_entry(None, 11)
+    Player.from_entry({}, 11)
+    Player.from_entry({"playerPoolEntry": {"player": {}}}, 11)
+    Player.from_entry({"playerPoolEntry": {"player": {
+        "id": 1, "fullName": "", "firstName": "", "lastName": "",
+        "proTeamId": "not a number", "stats": "not a list",
+    }}}, 11)
+    Player.from_entry({"playerPoolEntry": {"player": {
+        "id": 2, "firstName": "Otis", "lastName": "Danforth",
+        "stats": [None, 3, {"scoringPeriodId": 99}],
+    }}}, 11)
+
+    Team.from_raw({})
+    Team.from_raw({"id": "not a number"})
+    Team.from_raw({"id": 7})
+    Team.from_raw({"id": 8, "owners": ["{nobody}"]}, members={})
+    Side.from_raw(None, 11)
+    Side.from_raw({"teamId": "x", "rosterForCurrentScoringPeriod": {"entries": "no"}}, 11)
+    # `True` is the one worth naming: bool is an int subclass, so an unguarded
+    # coercion turns a flag into a one-point score. And a dict where a number
+    # belongs is what a schema change looks like before anyone has read it.
+    Side.from_raw({"teamId": 3, "totalPoints": True,
+                   "totalProjectedPointsLive": "ninety"}, 11)
+    Matchup.from_raw({}, 11)
+    Matchup.from_raw({"id": "x", "matchupPeriodId": "y"}, 11)
+
+    # Numbers that are not numbers. `True` is the one worth naming: bool is an
+    # int subclass, so an unguarded coercion turns a flag into a one-point score.
+    Player.from_entry({"playerId": "abc", "playerPoolEntry": {"player": {
+        "fullName": "Rennie Ravensworth",
+        "eligibleSlots": [2, "flex", None],
+        "stats": [{"scoringPeriodId": 11, "statSplitTypeId": 0, "appliedTotal": True},
+                  {"scoringPeriodId": 11, "statSplitTypeId": 1, "appliedTotal": {}}],
+    }}}, 11)
+
+    # A scoreboard whose fixtures do not name teams the league knows, a member
+    # with no display name, and a lineup-slot block that counts nothing.
+    parse_game_states({"events": [None, {}, {"competitions": [{"competitors": []}]}]})
+    parse_game_states({"events": [{"competitions": [{"competitors": [
+        {"team": {"id": "not a number", "abbreviation": "SF"}},
+        {"team": {"id": "also not", "abbreviation": "ZZZ"}},
+    ]}]}]})
+    # A franchise ESPN renumbered: the id parses, it is nobody we know, and the
+    # abbreviation is the only thing that still identifies the team.
+    parse_game_states({"events": [{"competitions": [{"competitors": [
+        {"team": {"id": 9001, "abbreviation": "SF"}},
+        {"team": {"id": 9002, "abbreviation": "PHI"}},
+    ]}]}]})
+    parse_members({"members": [{"id": "{guid}", "firstName": "Wren", "lastName": "Ashby"},
+                               {"id": "{other}"}]})
+    LeagueSettings.from_raw({"settings": {"rosterSettings": {"lineupSlotCounts": "no"}}})
+    LeagueSettings.from_raw({"settings": {"rosterSettings": {
+        "lineupSlotCounts": {"0": 1, "bad": "x"}}}})
+    # A slot ESPN invented that is not in the display order and is not one of the
+    # non-scoring ones: it still has to end up in the starting lineup.
+    LeagueSettings.from_raw({"settings": {"rosterSettings": {
+        "lineupSlotCounts": {"0": 1, "88": 1}}}}).starting_slots
+
+    # A side with no live projection of its own, so it has to be reconstructed.
+    bare = Side.from_raw({"teamId": 1, "rosterForCurrentScoringPeriod": {"entries": [
+        {"lineupSlotId": 0, "playerId": 9, "playerPoolEntry": {"player": {
+            "id": 9, "fullName": "Pax Yarrowmead",
+            "stats": [{"scoringPeriodId": 11, "statSplitTypeId": 1,
+                       "statSourceId": 1, "appliedTotal": 14.0}]}}},
+    ]}}, 11)
+
+    # Asking a matchup about somebody who is not in it, and a snapshot about a
+    # team with no matchup at all.
+    pair = Matchup.from_raw({"id": 1, "matchupPeriodId": 11,
+                             "home": {"teamId": 1}, "away": {"teamId": 2}}, 11)
+    pair.side_for(99)
+    pair.opponent_of(99)
+
+    empty = LeagueSnapshot(season=2025, scoring_period=11,
+                           settings=LeagueSettings.from_raw({}))
+    empty.matchups = [pair]
+    empty.matchup_for(99)
+    empty.apply_game_states({})                 # no scoreboard: nothing to join on
+    pair.home.players = list(bare.players)
+    empty.apply_game_states({99: GameState(pro_team_id=99, abbrev="ZZZ")})
+
+
 def drive_a_sunday() -> None:
     """Everything a real afternoon does, in order."""
     from config import DEMO_RECORDING, PHRASES_DIR
@@ -128,7 +235,7 @@ def drive_a_sunday() -> None:
     from engine.events import EventEngine
     from engine.factpack import build
     from engine.live import LiveFeed
-    from engine.recap import generate, templated, validate
+    from engine.recap import build_prompt, generate, templated, validate
     from engine.speech import SpeechCache
     from engine.scoring import optimal_lineup, standings
     from engine.simulate import playoff_odds, probabilities_for
@@ -342,7 +449,10 @@ def drive_a_sunday() -> None:
     for moment_ in feed.recent(limit=40):
         polite.eligible(moment_)
 
+    _drive_a_bad_afternoon()
+
     pack = build(snapshot, feed.notable)
+    build_prompt(pack)          # what a model would be handed, backend or not
     recap = generate(pack, backend=None)
     validate(recap.text, pack)
     templated(pack)
