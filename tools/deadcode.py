@@ -290,6 +290,107 @@ def _drive_the_live_transport() -> None:
             pass
 
 
+def _drive_the_replay_harness() -> None:
+    """The recorder, the clock, and a recording that is not the demo one.
+
+    espn/replay.py was excused as "RecordingTransport: writes captures, only used
+    with RECORD=1", and two thirds of what that hid is not the recorder: it is
+    the clock the demo mode runs on -- paused, resumed, advanced, at a speed
+    other than zero -- the uncompressed payload path, the slot fallback for a
+    week the recording does not contain, and the error for a feed it has none of.
+    The driver seeks a stopped clock all afternoon and reaches none of it.
+    """
+    import gzip
+    import json as _json
+
+    from espn import feeds
+    from espn.client import UpstreamError
+    from espn.replay import (
+        Entry, Recording, RecordingTransport, ReplayTransport, list_recordings,
+        resolve_recording_dir, write_recording,
+    )
+
+    list_recordings()
+    resolve_recording_dir(str(ROOT / "data" / "recordings"))
+
+    # A two-payload recording written out and read back, one gzipped and one
+    # not. Real captures are uncompressed; only the committed fixture is gzipped,
+    # so the plain path is the one an actual RECORD=1 session produces.
+    directory = Path(tempfile.mkdtemp(prefix="punt-deadcode-rec-")) / "tiny"
+    tiny = Recording(
+        name="tiny", directory=directory, season=2025, league_id="1",
+        scoring_period=11, synthetic=True, description="", created="",
+        entries=[
+            Entry(seq=0, feed="mSettings", offset=0.0, file="0000_mSettings.json"),
+            Entry(seq=1, feed="mTeam", offset=10.0, file="0001_mTeam.json.gz"),
+            Entry(seq=2, feed="mMatchupScore", offset=10.0,
+                  file="0002_mMatchupScore.json", scoring_period=11),
+        ],
+    )
+    write_recording(tiny, {"0000_mSettings.json": {"settings": {}},
+                           "0001_mTeam.json.gz": {"teams": []},
+                           "0002_mMatchupScore.json": {"schedule": []}})
+    reloaded = Recording.load(str(directory))
+    reloaded.to_manifest()
+    reloaded.slots
+
+    served = ReplayTransport(reloaded, speed=0.0)
+    served.fetch(feeds.SETTINGS, 2025, "1", None)
+    served.fetch(feeds.TEAM, 2025, "1", None)
+    # A week this recording does not contain: fall back to what was captured
+    # rather than rendering an empty page, because `scoringPeriodId` drifts.
+    served.fetch(feeds.SCOREBOARD, 2025, "1", 99)
+    try:
+        served.fetch(feeds.ROSTER, 2025, "1", 11)      # a feed it has none of
+    except UpstreamError:
+        pass
+    served.describe()
+
+    # A payload file that is not readable JSON. A half-written capture is a
+    # normal outcome of stopping a recording with ctrl-C.
+    (directory / "0000_mSettings.json").write_text("{half", encoding="utf-8")
+    try:
+        ReplayTransport(Recording.load(str(directory)), speed=0.0).fetch(
+            feeds.SETTINGS, 2025, "1", None)
+    except UpstreamError:
+        pass
+    # And ESPN's list envelope, which survives into a capture.
+    with gzip.GzipFile(directory / "0001_mTeam.json.gz", "wb", mtime=0) as raw:
+        raw.write(_json.dumps([{"teams": []}]).encode("utf-8"))
+    ReplayTransport(Recording.load(str(directory)), speed=0.0).fetch(
+        feeds.TEAM, 2025, "1", None)
+
+    # A recording directory with no manifest in it.
+    try:
+        Recording.load(str(Path(tempfile.mkdtemp(prefix="punt-deadcode-empty-"))))
+    except FileNotFoundError:
+        pass
+
+    # The clock the demo mode actually runs on. The driver seeks a stopped one
+    # all afternoon, so running, paused, resumed and advanced had never run.
+    moving = ReplayTransport(reloaded, speed=60.0)
+    moving.clock.position
+    moving.clock.advance(5.0)
+    moving.clock.pause()
+    moving.clock.position
+    moving.clock.resume()
+    moving.finished, moving.progress
+
+    # The recorder, wrapping something that answers, and then something that
+    # cannot be written: a full disk must not take the live poll down with it.
+    class Inner:
+        def fetch(self, feed, season, league_id, scoring_period=None):
+            return {"teams": []}
+
+    capture_dir = Path(tempfile.mkdtemp(prefix="punt-deadcode-capture-"))
+    recorder = RecordingTransport(inner=Inner(), directory=capture_dir, name="capture")
+    recorder.fetch(feeds.TEAM, 2025, "1", None)
+    recorder.fetch(feeds.SCOREBOARD, 2025, "1", 11)
+    with quiet("espn.replay"):
+        recorder.directory = Path("/dev/null/nowhere")
+        recorder.fetch(feeds.TEAM, 2025, "1", None)
+
+
 def _drive_a_bad_upstream() -> None:
     """ESPN having a bad afternoon, and the app being started without cookies.
 
@@ -606,6 +707,7 @@ def drive_a_sunday() -> None:
 
     _drive_a_bad_afternoon()
     _drive_a_bad_upstream()
+    _drive_the_replay_harness()
 
     pack = build(snapshot, feed.notable)
     build_prompt(pack)          # what a model would be handed, backend or not

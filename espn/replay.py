@@ -197,7 +197,7 @@ def resolve_recording_dir(name_or_path: str) -> Path:
 
 def list_recordings() -> list[str]:
     if not RECORDINGS_DIR.is_dir():
-        return []
+        return []  # cold: data/recordings is committed, so it is always there
     return sorted(d.name for d in RECORDINGS_DIR.iterdir() if (d / MANIFEST).is_file())
 
 
