@@ -74,6 +74,7 @@
 <script src="{{ url_for('static', filename='js/countdown.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/sheet.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/board.js') }}?v={{ asset_version }}" defer></script>
+<script src="{{ url_for('static', filename='js/ticker.js') }}?v={{ asset_version }}" defer></script>
 </head>
 <body data-tab="{{ request.endpoint.split('.')[-1] if request.endpoint else '' }}"
       data-archive="{{ '1' if (chosen_week and chosen_week != live_week) else '0' }}">

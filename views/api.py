@@ -28,6 +28,7 @@ from views.viewmodels import (
     receipts_view,
     regret_detail,
     stored_moments,
+    ticker_view,
     swing_view,
     trouble_detail,
     watch_now,
@@ -140,6 +141,7 @@ def partial_cheer():
 #: bar showed two o'clock's numbers at five and nothing on screen said so. They
 #: were correct on arrival, which is why nobody caught it.
 PANELS = {
+    "ticker": lambda snap, live: {"ticker": ticker_view(live, snap)},
     "regret": lambda snap, live: {"receipts": receipts_view(snap)},
     "trouble": lambda snap, live: {"swing": swing_view(snap, live)},
     "odds": lambda snap, live: {"multiverse": multiverse_view(snap)},

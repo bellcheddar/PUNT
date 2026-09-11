@@ -301,6 +301,42 @@ class GameState:
     def live(self) -> bool:
         return self.state == "in"
 
+    @property
+    def elapsed(self) -> float:
+        """How much of this game has been played, from 0 to 1.
+
+        Read from the period and the play clock rather than from wall time,
+        because a live feed's idea of kickoff is not reliable and the clock is
+        what every screen in the bar is already showing.
+
+        Lives on the model rather than in a view, because two different things
+        need it and they are on opposite sides of the import graph: the card
+        ratings prorate a projection by it, and the ticker uses it to decide
+        whether a player is behind or merely early.
+
+        Overtime is deliberately not modelled. It would push this past 1.0 and
+        make a finished game look unfinished, and the only question anyone asks
+        of it is "how much of this has happened", which overtime does not
+        change.
+        """
+        if self.finished:
+            return 1.0
+        if not self.live or not self.period:
+            return 0.0
+        # The clock counts DOWN within a quarter, so the elapsed part of the
+        # current one is what is missing from it. A malformed or empty clock is
+        # treated as the quarter having just started, which errs towards a
+        # smaller denominator and so towards a flattering figure: the
+        # alternative errs towards dividing by something that has not happened.
+        left = 15.0
+        try:
+            minutes, _, seconds = str(self.clock or "15:00").partition(":")
+            left = float(minutes) + float(seconds or 0) / 60.0
+        except ValueError:
+            pass  # cold: ESPN has never sent a clock that is not mm:ss
+        played = (self.period - 1) * 15.0 + max(0.0, 15.0 - left)
+        return max(0.0, min(1.0, played / 60.0))
+
 
 def parse_game_states(raw: Any) -> dict[int, GameState]:
     """Index the NFL scoreboard by fantasy `proTeamId`.

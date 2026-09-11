@@ -1701,3 +1701,111 @@ main { padding: 12px 14px 24px; }
 /* A week that is not the live one. The page is a record rather than a
  * scoreboard, and it should not look identical to the one that is moving. */
 .banner--archive { background: rgba(74,159,212,.10); border-color: var(--brand); }
+
+/* --- the LATEST wheel ----------------------------------------------------
+ * A slot-machine reel: one row visible, the strip stepped upward by a
+ * transform. Thin on purpose, because it sits above everything and the page
+ * below it is the app.
+ *
+ * The step is a finite `transition` driven from JavaScript rather than an
+ * infinite `@keyframes` loop, and that is not a style preference. An infinite
+ * CSS animation stops `--virtual-time-budget` from ever settling, so every
+ * headless capture in this repo would hang the moment this landed on the page:
+ * `tools/screenshot.py`, the a11y probe and the perf probe all use it. A
+ * transition per step leaves the page idle between steps.
+ *
+ * `transform` only, never `top` or `height`: this thing moves all afternoon on
+ * a phone, and it is the one element on the page guaranteed to be animating
+ * while somebody is scrolling past it. */
+.wheel {
+  --wheel-row: 30px;
+  height: var(--wheel-row);
+  overflow: hidden;
+  position: relative;
+  /* The reel is clipped hard at both ends rather than faded: a mask costs a
+   * compositor layer on every frame and the row is only 30px tall, so there is
+   * no room for a gradient to read as anything but a smudge. */
+}
+.wheel-reel {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  transition: transform 420ms cubic-bezier(.22, .68, .36, 1);
+}
+/* Somebody who has asked for less motion gets the list, not the wheel: it grows
+ * to show several rows at once and never moves. The content is identical. */
+@media (prefers-reduced-motion: reduce) {
+  .wheel { height: auto; max-height: calc(var(--wheel-row) * 4); overflow-y: auto; }
+  .wheel-reel { transition: none; transform: none !important; }
+}
+.wheel-row {
+  height: var(--wheel-row);
+  flex: 0 0 var(--wheel-row);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px 0 9px;
+  min-width: 0;
+  cursor: pointer;
+  /* The direction, as a bar down the left edge. The chip on the right already
+     carries it, but the chip sits next to the TEAM dot, which is that team's
+     own identity colour and has nothing to do with good or bad: a green dot
+     beside a red chip reads as a contradiction, and on the first capture it
+     did. The bar is unambiguous because nothing else on the row is at the left
+     edge. Transparent by default rather than absent, so the text does not
+     shift by three pixels between a neutral row and a coloured one. */
+  border-left: 3px solid transparent;
+}
+.wheel-row .dot { flex-shrink: 0; }
+.wheel-kind {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  color: var(--ink-faint);
+  width: 54px;
+}
+.wheel-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wheel-value {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+/* Red bad, green good, and neither for the ones that are genuinely neither: a
+ * milestone and an injury are news without being good or bad news, and painting
+ * them green because the number went up would be a lie the colour tells. */
+.wheel-row--good .wheel-value { background: rgba(0,208,132,.18); color: var(--green); }
+.wheel-row--bad  .wheel-value { background: rgba(255,77,94,.16);  color: var(--red); }
+.wheel-row--flat .wheel-value { background: rgba(255,255,255,.06); color: var(--ink-dim); }
+.wheel-row--good { border-left-color: var(--green); }
+.wheel-row--bad  { border-left-color: var(--red); }
+
+/* The kind label is the first thing to go at phone width. It is a category, and
+   the sentence beside it says the same thing in words: keeping both cost 54px
+   of a 390px screen and truncated "Sunday Roast have 51.6 sitting on the bench"
+   to "sitti...". */
+@media (max-width: 619px) {
+  .wheel-kind { display: none; }
+  .wheel-row { gap: 6px; }
+}
+
+/* The panel it lives in: title on the same line as the reel, because a title
+ * bar above a 30px strip would make the chrome taller than the content. */
+.panel--ticker { padding-top: 10px; padding-bottom: 10px; }
+.panel--ticker .panel-title { margin: 0 0 4px; }
+@media (min-width: 620px) {
+  .panel--ticker { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px;
+                   align-items: center; }
+  .panel--ticker .panel-title { margin: 0; white-space: nowrap; }
+}

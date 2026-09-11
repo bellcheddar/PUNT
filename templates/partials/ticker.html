@@ -1,0 +1,30 @@
+{# The wheel. One item is visible; the rest are stacked below it and the strip
+   is stepped upward by a transform.
+
+   `aria-live="polite"` and not "assertive": it changes every few seconds all
+   afternoon, and an assertive region would interrupt a screen reader mid-word
+   every time. The whole list is in the DOM, so a reader that ignores the
+   animation still gets everything in order. #}
+{% if ticker %}
+<div class="wheel" data-wheel aria-live="polite" aria-atomic="false">
+  <div class="wheel-reel" data-reel>
+    {% for item in ticker %}
+    <div class="wheel-row wheel-row--{{ 'good' if item.good else 'bad' if item.good is false else 'flat' }}"
+         {% if item.team_id %}data-sheet="{{ url_for('api.partial_team', team_id=item.team_id) }}"{% endif %}>
+      <span class="dot" style="--hue: {{ item.hue }}"></span>
+      <span class="wheel-kind">{{ item.kind }}</span>
+      <span class="wheel-text">{{ item.text }}</span>
+      {% if item.value %}<span class="wheel-value">{{ item.value }}</span>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="wheel">
+  <div class="wheel-reel">
+    <div class="wheel-row wheel-row--flat">
+      <span class="wheel-text">Nothing has moved yet. This fills as the games do.</span>
+    </div>
+  </div>
+</div>
+{% endif %}

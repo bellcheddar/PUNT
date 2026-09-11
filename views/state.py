@@ -64,6 +64,7 @@ class PuntState:
                 speech=self.speech,
                 on_week_change=self._week_changed,
                 after_poll=self._record,
+                ranks=_ranks,
             )
         self.live.start()
         return self.live
@@ -157,6 +158,19 @@ class PuntState:
             out["live"] = self.live.stats()
         out["history"] = self.store().stats()
         return out
+
+
+def _ranks(snapshot) -> dict[int, int]:
+    """Album position per team, for the ticker's "up to #3 on form" lines.
+
+    Injected rather than imported by the engine. The rating that decides the
+    album is a view model, and `engine/` importing `views/` would be a cycle and
+    the wrong direction besides: the engine has no business knowing the app has
+    an album in it.
+    """
+    from views.viewmodels import album_view  # noqa: PLC0415 - avoids a cycle
+
+    return {card["id"]: card["rank"] for card in album_view(snapshot)}
 
 
 def _commentator(cfg: Config) -> Commentator | None:

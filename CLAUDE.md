@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 282 tests, offline
+python3 -m pytest                              # 297 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -101,8 +101,14 @@ long names are just what made anybody look.
 - **Chrome will not give a window narrower than 500px on macOS**, so `--window-size=390`
   silently lays out at 500 and captures a crop. `tools/screenshot.py` renders into a
   correctly sized iframe instead.
-- **`--virtual-time-budget` never settles with an infinite CSS animation running**, so any
-  headless probe using it hangs the moment a looping animation lands on the page.
+- **`--virtual-time-budget` never settles with anything that repeats forever**, so any headless
+  probe using it hangs the moment a looping animation lands on the page. That is why the LATEST
+  wheel is stepped by a finite `transition` from `ticker.js` rather than by an infinite
+  `@keyframes` loop -- but a repeating `setInterval` does it too, so the wheel also refuses to
+  start under `?punt=steady`. **Every headless probe against this app must pass `?punt=steady`.**
+  Verified the hard way: `--dump-dom --virtual-time-budget` against `/` never returned, while the
+  same thing against `/?punt=steady` took three seconds. `tests/test_ticker.py` asserts that every
+  tool driving Chrome with virtual time asks for a still page.
 - **Chrome's HTTP cache persists across headless launches**, so a regenerated harness at the
   same URL serves the previous run's contents.
 - **A fresh `--user-data-dir` hangs Chrome outright** on this machine.
@@ -115,6 +121,10 @@ long names are just what made anybody look.
   glyph on a flat ground has two extrema.
 - **Desktop Chrome ships `DeviceOrientationEvent.requestPermission`**, so the usual "that
   means iOS" recipe is wrong. Gate on `(hover: none) and (pointer: coarse)`.
+- **A test that greps source for a forbidden word greps the comments too.** Two checks here
+  failed on the prose explaining them: the CSS comment saying the wheel is "not an infinite
+  keyframes loop" contains `infinite`, and the JS comment saying a poll "swaps the strip's
+  innerHTML" contains `innerHTML`. Strip comments before asserting about code.
 - **`str.replace` on a short CSS anchor matches twice.** `.verdict {` hit both the base rule
   and `.cheer--conflicted .verdict`, duplicating a block and silently changing a colour.
   There is a duplicate-selector test now.

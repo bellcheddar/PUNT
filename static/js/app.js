@@ -143,6 +143,15 @@
       }
     });
 
+    // The LATEST wheel. Re-broadcast rather than handled here: ticker.js owns
+    // the reel, and app.js owning the stream is the only reason this listener
+    // is in this file at all.
+    stream.addEventListener('change', (event) => {
+      let change;
+      try { change = JSON.parse(event.data); } catch { return; }
+      document.dispatchEvent(new CustomEvent('punt:change', { detail: change }));
+    });
+
     stream.addEventListener('redzone', (event) => {
       let detail;
       try { detail = JSON.parse(event.data); } catch { return; }

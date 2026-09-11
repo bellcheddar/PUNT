@@ -683,10 +683,17 @@ def drive_a_sunday() -> None:
         rolled.append(ended or 0)
         history.remember(snap.season, ended or 0, feed.recent(limit=500), feed.lines)
 
+    # `ranks` is supplied the way the app supplies it. Without it the ticker's
+    # "up to #3 on form" branch is unreachable, and the report would say so.
+    def album_ranks(snap):
+        from views.viewmodels import album_view  # noqa: PLC0415
+
+        return {card["id"]: card["rank"] for card in album_view(snap)}
+
     feed = LiveFeed(fetch=lambda: (client.cache.invalidate(), repo.snapshot())[1],
                     poll_seconds=30, engine=engine, commentator=commentator,
                     speech=speech, after_poll=record_the_week,
-                    on_week_change=week_changed)
+                    on_week_change=week_changed, ranks=album_ranks)
 
     # The view models are rendered all afternoon, not only at the end of it, so
     # this keeps eight snapshots spread across the day as well as the settled
@@ -937,6 +944,30 @@ def drive_a_sunday() -> None:
     feed.stats()
     client.stats()
     snapshot.all_problems()
+
+    # The ticker's own edges. A single week of recording never clinches or is
+    # eliminated from the playoffs, and the summary strip only renders when the
+    # differ has nothing -- which is never true by this point in the drive.
+    from engine.ticker import Ticker  # noqa: PLC0415
+    from views.viewmodels import ticker_view  # noqa: PLC0415
+
+    if snapshot is not None:
+        ticker_view(feed, snapshot)
+        ticker_view(None, snapshot)          # the summary fallback
+        lonely = Ticker()
+        lonely.observe(snapshot)             # the first look, which says nothing
+        settled = copy.copy(snapshot)
+        from engine.simulate import PlayoffOdds  # noqa: PLC0415
+
+        clinched = {t.id: PlayoffOdds(team_id=t.id, odds=1.0, clinched=True)
+                    for t in snapshot.teams}
+        out = {t.id: PlayoffOdds(team_id=t.id, odds=0.0, eliminated=True)
+               for t in snapshot.teams}
+        lonely.observe(settled, odds=clinched, ranks={t.id: 1 for t in snapshot.teams})
+        lonely.observe(settled, odds=out, ranks={t.id: 9 for t in snapshot.teams})
+        lonely.observe(settled, odds=clinched)
+        # A snapshot with nothing in it: the guard at the top of `observe`.
+        lonely.observe(None)
 
     # --- the week machinery, last ------------------------------------------
     # Last on purpose. The rollover empties the Moment buffer and the notable

@@ -238,37 +238,14 @@ def _pace(snap: LeagueSnapshot, side: Side | None) -> dict[str, Any]:
     }
 
 
-#: A regulation NFL game, in minutes. Overtime is deliberately not modelled: it
-#: would push `_elapsed` past 1.0 and make a finished game look unfinished, and
-#: the branch that matters here is "has this game been played", which overtime
-#: does not change.
-GAME_MINUTES = 60.0
-
-
 def _elapsed(game) -> float:
     """How much of one NFL game has been played, from 0 to 1.
 
-    Read from the period and the play clock rather than from wall time, because
-    a live feed's idea of kickoff is not reliable and the clock is the thing
-    every screen in the bar is already showing.
+    Kept as a name here because half this module reads better for it. The
+    arithmetic moved to `GameState.elapsed`: the ticker needs the same figure
+    and lives in `engine/`, which cannot import a view.
     """
-    if game.finished:
-        return 1.0
-    if not game.live or not game.period:
-        return 0.0
-    # The clock counts DOWN within a quarter, so the elapsed part of the current
-    # quarter is what is missing from it. A malformed or empty clock is treated
-    # as the quarter having just started, which errs towards a smaller
-    # denominator and so towards a flattering pace -- the alternative errs
-    # towards dividing by something that has not happened yet.
-    left = 15.0
-    try:
-        minutes, _, seconds = str(game.clock or "15:00").partition(":")
-        left = float(minutes) + float(seconds or 0) / 60.0
-    except ValueError:
-        pass  # cold: ESPN has never sent a clock that is not mm:ss
-    played = (game.period - 1) * 15.0 + max(0.0, 15.0 - left)
-    return max(0.0, min(1.0, played / GAME_MINUTES))
+    return game.elapsed
 
 
 def _best_previous_week(snap: LeagueSnapshot) -> dict[int, float]:
@@ -787,6 +764,66 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
 
     rows.sort(key=lambda r: r["sort"])
     return rows[:limit]
+
+
+def ticker_view(live, snap: LeagueSnapshot, limit: int = 30) -> list[dict[str, Any]]:
+    """The strip along the top: what has moved, newest first.
+
+    Falls back to a summary of the week when nothing has moved. That is not a
+    nicety: the differ needs two polls before it can report anything, so a fresh
+    process, a deploy, or anybody opening the page on a Tuesday would otherwise
+    get an empty strip where the liveliest thing on the page is supposed to be.
+    A settled week has plenty to say, it just does not change.
+    """
+    changes = [c.to_json() for c in live.ticker.recent(limit)] if live is not None else []
+    if changes:
+        return changes
+    return _week_in_summary(snap)
+
+
+def _week_in_summary(snap: LeagueSnapshot) -> list[dict[str, Any]]:
+    """The week as a handful of ticker lines, for when nothing is moving."""
+    cards = album_view(snap)
+    if not cards:
+        return []  # cold: a snapshot with no teams renders its own empty state first
+    out: list[dict[str, Any]] = []
+
+    def line(kind, card, text, value, good):
+        out.append({
+            "id": f"summary-{kind}-{card['id']}", "kind": kind,
+            "team_id": card["id"], "team": card["name"], "hue": card["hue"],
+            "text": text, "value": value, "good": good, "magnitude": 0.5,
+            "ts": snap.captured_at, "summary": True,
+        })
+
+    best = cards[0]
+    line("FORM", best, f"{best['name']} lead the week on form", f"{best['form']:.0f}", True)
+
+    top = max(cards, key=lambda c: c["total"])
+    line("SCORE", top, f"{top['name']} top the scoring", f"{top['total']:.1f}", True)
+
+    worst = max(cards, key=lambda c: c["bench_regret"])
+    if worst["bench_regret"] > 0:
+        line("BENCH", worst,
+             f"{worst['name']} left the most on the bench", f"{worst['bench_regret']:.1f}", False)
+
+    hottest = max(cards, key=lambda c: c["beating"])
+    if hottest["beating"]:
+        line("HOT", hottest,
+             f"{hottest['name']} have {hottest['beating']} starters beating projection",
+             str(hottest["beating"]), True)
+
+    multiverse = multiverse_view(snap)
+    if multiverse.get("available") and multiverse["rows"]:
+        leader = multiverse["rows"][0]
+        out.append({
+            "id": f"summary-playoff-{leader['id']}", "kind": "PLAYOFF",
+            "team_id": leader["id"], "team": leader["team"], "hue": leader["hue"],
+            "text": f"{leader['team']} lead the playoff race",
+            "value": f"{leader['odds'] * 100:.0f}%", "good": True,
+            "magnitude": 0.5, "ts": snap.captured_at, "summary": True,
+        })
+    return out
 
 
 def moments_view(live, limit: int = 25, snap: LeagueSnapshot | None = None) -> list[dict[str, Any]]:

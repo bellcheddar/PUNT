@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 282 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 297 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 282 tests, no network, no cookies
+python3 -m pytest                             # 297 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -28,6 +28,22 @@ python3 tools/perf.py                         # the blocking path
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## The LATEST strip
+
+A thin reel above the album, stepping one line at a time through what has moved: scores, win
+probability, playoff odds, clinching, album positions, bench regret, players hot and cold
+against their prorated projection, and the commentary. `engine/ticker.py` is a differ rather
+than a detector, and that is the point -- nobody's win probability falls twelve points in one
+play, it falls twelve points over twenty minutes of the other bloke's running back grinding
+out first downs, and there is no Moment anywhere in that.
+
+Two traps, both now tested. The reel is stepped by a finite CSS `transition` driven from
+JavaScript, never an infinite `@keyframes` loop, because anything that repeats forever stops
+`--virtual-time-budget` from settling and would hang every headless capture in the repo. A
+repeating `setInterval` does the same, so the wheel also refuses to start under `?punt=steady`,
+and a test asserts that every tool driving Chrome with virtual time asks for a still page. That
+was found by hitting it: `--dump-dom --virtual-time-budget` against `/` never returned.
 
 ## Everything on the page is live
 
@@ -124,7 +140,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 282 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 297 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

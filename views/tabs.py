@@ -11,6 +11,7 @@ from flask import Blueprint, render_template, request
 from views.state import snapshot, state
 from views.viewmodels import (
     album_view,
+    ticker_view,
     watch_now,
     cheer_view,
     matchup_view,
@@ -85,6 +86,7 @@ def today():
         snap=snap,
         matchups=matchup_view(snap),
         moments=moments_view(live, snap=snap),
+        ticker=ticker_view(live, snap),
         swing=swing_view(snap, live),
         album=album_view(snap, live),
         cheer=cheer_view(snap, _team_param()),

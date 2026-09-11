@@ -7,6 +7,18 @@
    tap started the bed's fade-in and the browser then destroyed the document
    mid-fade. A single document means the music starts once and keeps playing. #}
 
+{# --- what has just moved, along the top -------------------------------- #}
+{# Above the cards on purpose: it is the only thing on the page that answers
+   "what did I just miss", and a strip answering that below the fold answers it
+   for nobody. Thin enough that the album still opens the page. #}
+<section class="panel panel--ticker">
+  <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; latest</h2>
+  <div hx-get="{{ url_for('api.partial_panel', name='ticker', week=chosen_week) }}"
+       hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+    {% include "partials/ticker.html" %}
+  </div>
+</section>
+
 {# --- the cards, first and small --------------------------------------- #}
 <section class="panel panel--cards">
   <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; ten cards</h2>

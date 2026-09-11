@@ -29,6 +29,7 @@ from typing import Any, Callable, Iterator
 from engine.commentary import Commentator, Line, PhraseBank
 from engine.factpack import FactPack, build as build_factpack
 from engine.speech import SpeechCache
+from engine.ticker import Ticker
 from engine.events import EventEngine, Moment
 from espn.models import LeagueSnapshot
 
@@ -74,7 +75,13 @@ class LiveFeed:
         speech: SpeechCache | None = None,
         on_week_change: Callable[[int | None, LeagueSnapshot], None] | None = None,
         after_poll: Callable[[LeagueSnapshot], None] | None = None,
+        ranks: Callable[[LeagueSnapshot], dict[int, int]] | None = None,
     ) -> None:
+        #: Album positions, supplied by the caller. The ticker reports a team
+        #: moving up the album, and the rating that decides the album lives in a
+        #: view model: `engine/` cannot import one without a cycle, so the
+        #: dependency is injected rather than imported.
+        self.ranks = ranks
         self.fetch = fetch
         #: Called at the end of every successful poll, after the Moments have
         #: been detected and broadcast. Broadcasting first is deliberate: the
@@ -96,6 +103,9 @@ class LiveFeed:
         self.lines: dict[str, Line] = {}
         self.moments: deque[Moment] = deque(maxlen=BUFFER)
         self.snapshot: LeagueSnapshot | None = None
+        #: What has moved since the last poll, which is a different question
+        #: from what has happened. See `engine/ticker.py`.
+        self.ticker = Ticker()
         self.polls = 0
         self.failures = 0
         self.last_poll_at: float | None = None
@@ -216,6 +226,9 @@ class LiveFeed:
             # because the restart this protects against is usually the kind that
             # does not get to run a shutdown hook.
             self.engine.persist()
+        # After the lines are chosen, so the commentary can be folded into the
+        # same ticker: the room should read one strip, not two.
+        self._tick(snapshot, moments)
         self._redzone_events(snapshot)
         self._broadcast({
             "event": "tick",
@@ -238,6 +251,31 @@ class LiveFeed:
         self.failures = 0
         self.last_error = ""
         return moments
+
+    def _tick(self, snapshot: LeagueSnapshot, moments: list[Moment]) -> None:
+        """Run the differ and push whatever it found to every phone.
+
+        Everything expensive is computed once here and handed in. Both of these
+        are memoised on the state that produced them, so the panels that poll
+        for the same figures a moment later get them free.
+        """
+        from engine.simulate import playoff_odds, team_probabilities  # noqa: PLC0415
+
+        try:
+            odds = playoff_odds(snapshot) if snapshot.season_schedule else {}
+            changes = self.ticker.observe(
+                snapshot, moments,
+                probabilities=team_probabilities(snapshot),
+                odds=odds,
+                ranks=self.ranks(snapshot) if self.ranks else None,
+                lines=self.lines,
+            )
+        except Exception:  # noqa: BLE001
+            # The ticker is a strip along the top. The scores are the product.
+            log.exception("the ticker failed")
+            return
+        for change in changes:
+            self._broadcast({"event": "change", "data": change.to_json()})
 
     #: Moment kinds the weekly fact pack reads. Everything else is counted but
     #: not kept: there are 117 big plays in a Sunday and the recap needs the
@@ -285,6 +323,7 @@ class LiveFeed:
         self.moments.clear()
         self.lines.clear()
         self._redzone.clear()
+        self.ticker.reset()
 
         # Deliberately NOT cleared: the event engine's set of fired ids. Every
         # Moment id is hashed with its week, so last week's ids cannot suppress

@@ -10,7 +10,7 @@ Every vendored file needs a line here. No exceptions, no orphan files.
 | `../fonts/*.woff2` | Google Fonts | Anton v27, Inter, Roboto Mono | [SIL Open Font Licence 1.1](https://openfontlicense.org) |
 
 Everything else in this directory (`app.js`, `audio.js`, `board.js`, `cards.js`,
-`countdown.js`, `identity.js`, `sheet.js`, `sw.js`) is part of this repository and
+`countdown.js`, `identity.js`, `sheet.js`, `sw.js`, `ticker.js`) is part of this repository and
 carries its licence: MIT, see `LICENSE` at the root.
 
 Fonts are **self-hosted**, fetched by `tools/fetch_fonts.py`, latin and latin-ext subsets only.
