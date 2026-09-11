@@ -20,7 +20,9 @@ nor pytest-cov is installed here and this needs no more than they provide.
 from __future__ import annotations
 
 import argparse
+import copy
 import sys
+import threading
 import trace
 from pathlib import Path
 
@@ -76,6 +78,10 @@ def executable_lines(path: Path) -> set[int]:
     return lines
 
 
+def _raise() -> None:
+    raise RuntimeError("ESPN returned 503")
+
+
 def drive_a_sunday() -> None:
     """Everything a real afternoon does, in order."""
     from config import DEMO_RECORDING, PHRASES_DIR
@@ -100,11 +106,22 @@ def drive_a_sunday() -> None:
                     poll_seconds=30, engine=engine, commentator=commentator)
     feed._broadcast = lambda payload: None
 
+    # The view models are rendered all afternoon, not only at the end of it, so
+    # this keeps a mid-afternoon snapshot as well as the settled one. Rendering
+    # only at settle reported fifty-three lines of `cheer_view` and `watch_now`
+    # as dead when in fact every game had simply finished: no game is in the red
+    # zone at midnight, and nothing is "worth looking up for" once it is over.
+    # The same trap caught the entity-escaping guard test, which passed because
+    # its snapshot was at kickoff and the view returned nothing at all.
     snapshot = None
-    for position in range(0, int(transport.recording.duration) + 120, 120):
+    afternoon = None
+    duration = int(transport.recording.duration)
+    for position in range(0, duration + 120, 120):
         transport.clock.seek(position)
         feed.poll_once()
         snapshot = feed.snapshot
+        if afternoon is None and position >= duration // 2:
+            afternoon = snapshot
 
     # The surfaces a replay does not reach on its own.
     probabilities_for(snapshot, draws=40)
@@ -122,15 +139,66 @@ def drive_a_sunday() -> None:
         receipts_view, swing_view, watch_now,
     )
 
-    album_view(snapshot)
-    matchup_view(snapshot)
-    receipts_view(snapshot)
-    swing_view(snapshot, feed)
-    cheer_view(snapshot, team_id=snapshot.teams[0].id if snapshot.teams else None)
-    cheer_view(snapshot, team_id=None)
-    multiverse_view(snapshot, draws=40)
-    watch_now(snapshot)
+    for view_of in (snapshot, afternoon):
+        if view_of is None:
+            continue
+        album_view(view_of, feed)
+        matchup_view(view_of)
+        receipts_view(view_of)
+        swing_view(view_of, feed)
+        # Every team, not just the first: "CONFLICTED" needs a fixture where one
+        # manager and his opponent both have a starter, which is a property of
+        # the pairing rather than of the afternoon.
+        for team in view_of.teams:
+            cheer_view(view_of, team_id=team.id)
+        cheer_view(view_of, team_id=None)
+        multiverse_view(view_of, draws=40)
+        watch_now(view_of)
     moments_view(feed)
+    moments_view(None)          # the tab before the first poll returns
+
+    # A league with no `mSchedule` -- a single-week recording, or an ESPN outage
+    # mid-season. The multiverse tab has to say so rather than render zeros.
+    # The URL builders. A replay answers by feed name and never constructs a URL,
+    # so these are cold for the transport's sake rather than their own.
+    from espn.feeds import ALL_FEEDS, params_for, url_for
+    for espn_feed in ALL_FEEDS:
+        url_for(espn_feed, season=2025, league_id="demo")
+        params_for(espn_feed, scoring_period=11)
+
+    without_schedule = copy.copy(snapshot)
+    without_schedule.season_schedule = []
+    multiverse_view(without_schedule, draws=40)
+
+    # Ten phones on one poll. The driver invalidates before each seek so the
+    # replay clock can advance, which means the cache never serves a hit -- and
+    # the single-flight double-check under the lock, which is the entire reason
+    # the cache exists, had never run here. This is what the bar actually does.
+    # Cold first, so all ten miss together and nine of them queue behind the one
+    # that fetches. That queue is the single-flight double-check, and it is only
+    # reachable under contention.
+    client.cache.invalidate()
+    threads = [threading.Thread(target=repo.snapshot) for _ in range(10)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    repo.snapshot()             # and now warm: the fast path, no lock taken
+    client.cache.invalidate("nfl_scoreboard")
+
+    client.cache.get_or_set("blip", ttl=0.0, fetch=lambda: "first")
+    try:
+        # ESPN blinks. A Sunday afternoon has one of these in it, and the answer
+        # is to serve what we had and say how old it is.
+        client.cache.get_or_set("blip", ttl=0.0, fetch=_raise)
+    except Exception:
+        pass
+    try:
+        # The same blink against a key that was never filled. Nothing to serve,
+        # so it propagates and the caller decides.
+        client.cache.get_or_set("never-filled", ttl=30.0, fetch=_raise)
+    except Exception:
+        pass
 
     pack = build(snapshot, feed.notable)
     recap = generate(pack, backend=None)
@@ -150,7 +218,11 @@ def main() -> int:
     args = parser.parse_args()
 
     tracer = trace.Trace(count=1, trace=0, ignoredirs=[sys.prefix, sys.exec_prefix])
+    # `sys.settrace` is per-thread, so without this the ten concurrent readers
+    # run untraced and the cache's whole reason for existing reports as dead.
+    threading.settrace(tracer.globaltrace)
     tracer.runfunc(drive_a_sunday)
+    threading.settrace(None)
     executed: dict[str, set[int]] = {}
     for (filename, lineno), _count in tracer.results().counts.items():
         executed.setdefault(filename, set()).add(lineno)

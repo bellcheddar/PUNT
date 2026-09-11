@@ -97,10 +97,7 @@ def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
     # The week's low-water mark, and each team's best settled week. Both are
     # needed for Legendary and neither can be read off the current snapshot.
     week_low = dict(live.week_low) if live is not None else {}
-    best_week = {
-        record.team_id: max(record.weekly, default=0.0)
-        for record in (standings(snap) if snap.season_schedule else [])
-    }
+    best_week = _best_previous_week(snap)
     cards: list[dict[str, Any]] = []
 
     for team in snap.teams:
@@ -138,6 +135,29 @@ def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
             season_high=card["season_high"],
         )
     return cards
+
+
+def _best_previous_week(snap: LeagueSnapshot) -> dict[int, float]:
+    """Each team's best score in a week that is *not* this one.
+
+    The current week has to be excluded explicitly. The moment the last game
+    ends, ESPN marks the week complete and it joins `settled_weeks`, so a team's
+    own live score enters its own season best and "beat your season high" becomes
+    "beat your own score", which is false for everybody forever. The Legendary
+    card was therefore visible all afternoon and gone at the final whistle --
+    exactly backwards for a trophy, and invisible to a unit test that passes the
+    flag in by hand.
+    """
+    this_week = snap.settings.current_matchup_period
+    best: dict[int, float] = {}
+    for week, games in snap.settled_weeks.items():
+        if week == this_week:
+            continue
+        for matchup in games:
+            for side in (matchup.home, matchup.away):
+                if side.total > best.get(side.team_id, 0.0):
+                    best[side.team_id] = round(side.total, 2)
+    return best
 
 
 #: A win from below this probability mints a Legendary card.

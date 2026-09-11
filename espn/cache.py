@@ -50,10 +50,6 @@ class Result(Generic[T]):
     stale: bool = False
     error: str = ""
 
-    @property
-    def fresh(self) -> bool:
-        return not self.stale
-
 
 class TTLCache:
     def __init__(self) -> None:
