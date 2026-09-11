@@ -89,7 +89,7 @@ def main() -> int:
             if args.summary or (wanted and moment.kind not in wanted):
                 continue
             colour = KIND_COLOUR.get(moment.kind, "")
-            who = ", ".join(moment.managers) or "-"
+            who = ", ".join(moment.teams) or "-"
             subject = moment.player or who
             print(
                 f"{clock(position)}  {colour}{moment.kind:<15}{RESET}"
