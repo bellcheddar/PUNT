@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import time
 
-from flask import Blueprint, Response, jsonify, render_template, request
+from flask import Blueprint, Response, abort, jsonify, render_template, request
 
 from views.state import snapshot, state
 from views.tabs import _team_param, _week_param
@@ -23,9 +23,12 @@ from views.viewmodels import (
     matchup_view,
     moment_detail,
     moments_view,
+    multiverse_view,
     odds_detail,
+    receipts_view,
     regret_detail,
     stored_moments,
+    swing_view,
     trouble_detail,
     watch_now,
 )
@@ -126,6 +129,41 @@ def stream():
 def partial_cheer():
     snap = snapshot(_week_param())
     return render_template("partials/cheer.html", cheer=cheer_view(snap, _team_param()), snap=snap)
+
+
+#: The panels that poll, and the view model each one needs.
+#:
+#: One route rather than six, because the six differ only in which view model
+#: they build and which template they render. Three of these panels used to have
+#: no route at all: bench regret, playoff odds and who is in trouble were
+#: rendered once when the page loaded and never again, so a phone left on the
+#: bar showed two o'clock's numbers at five and nothing on screen said so. They
+#: were correct on arrival, which is why nobody caught it.
+PANELS = {
+    "regret": lambda snap, live: {"receipts": receipts_view(snap)},
+    "trouble": lambda snap, live: {"swing": swing_view(snap, live)},
+    "odds": lambda snap, live: {"multiverse": multiverse_view(snap)},
+    "swings": lambda snap, live: {"swing": swing_view(snap, live)},
+    "allplay": lambda snap, live: {"receipts": receipts_view(snap)},
+    "luck": lambda snap, live: {"multiverse": multiverse_view(snap)},
+}
+
+
+@bp.route("/partials/panel/<name>")
+def partial_panel(name: str):
+    """One panel, re-rendered. The fragment htmx swaps in on every poll.
+
+    `?full=1` picks the fuller variant a dedicated tab has room for. The flag
+    rides on the request rather than living in two templates, because two
+    templates is how the Receipts tab ended up still leading every row with a
+    username months after the rest of the app moved to team names.
+    """
+    if name not in PANELS:
+        abort(404)
+    snap = snapshot(_week_param())
+    context = PANELS[name](snap, state().live)
+    return render_template(f"partials/{name}.html", snap=snap,
+                           full=request.args.get("full") == "1", **context)
 
 
 @bp.route("/partials/team/<int:team_id>")

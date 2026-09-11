@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import hashlib
 import random
+import threading
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Sequence
 
@@ -179,12 +181,73 @@ def win_probability(
     )
 
 
+#: Results keyed by the state that produced them, so ten phones polling inside
+#: one thirty-second window share one simulation instead of running ten.
+#:
+#: The module docstring said "the result is cached for the poll anyway" from the
+#: first commit and nothing ever cached it. Five view models call
+#: `probabilities_for`, so a single page render was running the whole Monte
+#: Carlo five times over, and every panel that polls multiplies that by the
+#: number of phones in the room. This is the same rule the ESPN cache exists
+#: for, applied one layer up: the expensive thing is now the arithmetic rather
+#: than the fetch.
+_MEMO: "OrderedDict[tuple, object]" = OrderedDict()
+_MEMO_LOCK = threading.Lock()
+
+#: Four entries. The key changes on every score, so this is not a cache in the
+#: hit-rate sense: it only has to survive the handful of calls that a single
+#: poll's worth of requests makes. A larger one would hold onto scores nobody
+#: will ask about again.
+_MEMO_MAX = 4
+
+
+def _state_key(snapshot, kind: str, draws: int) -> tuple:
+    """What the simulation actually reads, hashed.
+
+    Not `captured_at`, which is the wall clock at snapshot construction and so
+    differs on every request, and not the object's identity, which is fresh each
+    time too: both would make the memo miss on every call and look like it was
+    working. Not the team totals alone either, because a manager can swap a
+    player before kickoff without any score changing, and the answer moves.
+    """
+    parts = []
+    for matchup in snapshot.live_matchups or snapshot.matchups:
+        for side in (matchup.home, matchup.away):
+            parts.append((side.team_id, round(side.total, 2)))
+            for player in side.starters:
+                parts.append((player.id, round(player.points, 2),
+                              round(player.projected, 2), player.game_over))
+    return (kind, draws, snapshot.season, snapshot.scoring_period, tuple(parts))
+
+
+def _memoised(key: tuple, compute):
+    with _MEMO_LOCK:
+        if key in _MEMO:
+            _MEMO.move_to_end(key)
+            return _MEMO[key]
+    # Computed outside the lock on purpose. Holding it across a 175 ms playoff
+    # simulation would serialise every phone in the room behind the first one,
+    # which is the failure the memo exists to prevent. Two threads arriving
+    # together may both compute; they agree on the answer, and a duplicated
+    # simulation is cheaper than a queue.
+    value = compute()
+    with _MEMO_LOCK:
+        _MEMO[key] = value
+        _MEMO.move_to_end(key)
+        while len(_MEMO) > _MEMO_MAX:
+            _MEMO.popitem(last=False)
+    return value
+
+
 def probabilities_for(snapshot, draws: int = DEFAULT_DRAWS) -> dict[int, WinProbability]:
     """`{matchup_id: WinProbability}` for every live matchup in a snapshot."""
-    return {
-        m.id: win_probability(m, draws=draws)
-        for m in (snapshot.live_matchups or snapshot.matchups)
-    }
+    return _memoised(
+        _state_key(snapshot, "win", draws),
+        lambda: {
+            m.id: win_probability(m, draws=draws)
+            for m in (snapshot.live_matchups or snapshot.matchups)
+        },
+    )
 
 
 def team_probabilities(snapshot, draws: int = DEFAULT_DRAWS) -> dict[int, float]:
@@ -243,6 +306,11 @@ def playoff_odds(snapshot, draws: int = 3000, seed: int = 0) -> dict[int, Playof
     left to play. Ignoring that would have the simulator rate a manager's chances
     while pretending the afternoon they are halfway through has not happened.
     """
+    return _memoised(_state_key(snapshot, f"odds{seed}", draws),
+                     lambda: _playoff_odds(snapshot, draws, seed))
+
+
+def _playoff_odds(snapshot, draws: int, seed: int) -> dict[int, "PlayoffOdds"]:
     from engine.scoring import season_records  # noqa: PLC0415 - avoids a cycle
 
     records = season_records(snapshot)

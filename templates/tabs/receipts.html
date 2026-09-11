@@ -3,6 +3,9 @@
 {% block content %}
 <section class="panel">
   <h2 class="panel-title">The week, in short</h2>
+  {# The recap is the one fragment that does not poll: it is generated prose
+     about a finished week, and rewriting it every thirty seconds would churn
+     the wording while nobody is reading a different afternoon. #}
   <div hx-get="{{ url_for('api.partial_recap') }}" hx-trigger="load" hx-swap="innerHTML">
     <div class="empty"><strong>Writing it up</strong>One moment.</div>
   </div>
@@ -10,49 +13,17 @@
 
 <section class="panel">
   <h2 class="panel-title">Bench regret</h2>
-  {% if receipts.rows %}
-    <table class="rows regret">
-      <thead><tr><th>Manager</th><th class="num-wide">Score</th><th class="num-narrow">Left</th></tr></thead>
-      <tbody>
-      {% for row in receipts.rows %}
-        <tr>
-          <td>
-            <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}
-            {% if row.worst_swap %}<span class="sub">{{ row.worst_swap }}</span>{% endif %}
-          </td>
-          <td class="num num-wide">{{ row.score | points }}<span class="sub">best {{ row.optimal | points }}</span></td>
-          <td class="num num-narrow {% if row.bench_regret > 25 %}neg{% endif %}">{{ row.bench_regret | points }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <div class="empty"><strong>No receipts yet</strong>Nobody has done anything regrettable.</div>
-  {% endif %}
+  <div hx-get="{{ url_for('api.partial_panel', name='regret', week=chosen_week) }}"
+       hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+    {% include "partials/regret.html" %}
+  </div>
 </section>
 
 <section class="panel">
   <h2 class="panel-title">All-play &middot; week {{ snap.scoring_period }}</h2>
-  {% if receipts.rows %}
-  <table class="rows">
-    <thead><tr><th>Manager</th><th class="num">All-play</th><th class="num">Luck</th></tr></thead>
-    <tbody>
-      {% for row in receipts.rows | sort(attribute='all_play_pct', reverse=true) %}
-      <tr>
-        <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}</td>
-        <td class="num">{{ row.all_play }}</td>
-        <td class="num {% if row.luck and row.luck > 0 %}pos{% elif row.luck and row.luck < 0 %}neg{% endif %}">
-          {{ row.luck | signed }}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
-    All-play is this week only: a season grid needs the schedule feed, which lands
-    with the Multiverse tab. Luck is wins minus what an all-play record deserved,
-    in wins, so positive means the fixture list has been kind.
-  </p>
-  {% endif %}
+  <div hx-get="{{ url_for('api.partial_panel', name='allplay', week=chosen_week) }}"
+       hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+    {% include "partials/allplay.html" %}
+  </div>
 </section>
 {% endblock %}

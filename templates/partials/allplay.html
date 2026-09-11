@@ -1,0 +1,24 @@
+{# This week against everybody, and the luck that follows from it. #}
+{% if receipts.rows %}
+<table class="rows">
+  <thead><tr><th>Team</th><th class="num">All-play</th><th class="num">Luck</th></tr></thead>
+  <tbody>
+    {% for row in receipts.rows | sort(attribute='all_play_pct', reverse=true) %}
+    <tr class="tappable" data-team="{{ row.id }}">
+      <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
+      <td class="num">{{ row.all_play }}</td>
+      <td class="num {% if row.luck and row.luck > 0 %}pos{% elif row.luck and row.luck < 0 %}neg{% endif %}">
+        {{ row.luck | signed }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="panel-note">
+  All-play is this week only: a season grid needs the schedule feed, which lands
+  with the Multiverse tab. Luck is wins minus what an all-play record deserved,
+  in wins, so positive means the fixture list has been kind.
+</p>
+{% else %}
+<div class="empty"><strong>Nothing to compare yet</strong>All-play needs a week with scores in it.</div>
+{% endif %}

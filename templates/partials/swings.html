@@ -1,0 +1,19 @@
+{# The day's biggest win-probability moves. #}
+{% if swing.swings %}
+<ul class="feed">
+  {% for s in swing.swings %}
+  <li class="feed-item">
+    <span class="feed-kind">{{ s.delta | pct }}</span>
+    <span class="feed-text">
+      {{ s.kind.replace('_', ' ') | lower }}{% if s.player %} &mdash; {{ s.player }}{% endif %}
+      for <b>{{ s.teams | join(', ') }}</b>
+    </span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="empty">
+  <strong>Nothing has swung yet</strong>
+  A swing is a Moment that moved somebody's win probability by more than five points.
+</div>
+{% endif %}

@@ -1,0 +1,24 @@
+{# Who is losing, and by how much. `full` drops the filter and shows everybody,
+   which is what the Swing tab is for; the panel on the main page shows only the
+   teams in trouble, because that is the question it asks. #}
+{% set rows = swing.rows if full else swing.rows | selectattr('deficit', 'lt', 0) | list %}
+{% if rows %}
+<table class="rows">
+  <thead><tr><th>Team</th><th class="num">Score</th><th class="num">+/-</th><th class="num">Win</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_trouble', team_id=row.id) }}">
+      <td>
+        <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}
+        {% if full %}<span class="sub">{{ row.in_play }} still in play</span>{% endif %}
+      </td>
+      <td class="num">{{ row.score | points }}</td>
+      <td class="num {% if row.deficit >= 0 %}pos{% else %}neg{% endif %}">{{ row.deficit | signed }}</td>
+      <td class="num">{{ (row.win_prob * 100) | round | int }}%</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>Nobody yet</strong>Everyone is still in it.</div>
+{% endif %}

@@ -401,10 +401,27 @@ def test_every_card_catches_the_light():
 
 def test_the_team_name_is_the_headline_everywhere():
     """The league calls itself by its team names. The manager stays as the line
-    underneath, and on the cards."""
-    home = (Path(__file__).resolve().parent.parent / "templates" / "tabs" / "home.html").read_text("utf-8")
-    assert "row.manager" not in home, "a table is still headlined by the username"
-    assert home.count("row.team") >= 3
+    underneath, and on the cards.
+
+    Scans every template rather than `home.html`, which is what it used to do.
+    Pinning it to one file made it pass while the Receipts and Swing tabs went
+    on leading every row with a username for months, and then made it FAIL for
+    the wrong reason the moment the tables moved into shared partials: the
+    markup it was asserting about had simply gone somewhere else. A rule about
+    how rows are headlined belongs to all the templates that draw rows.
+    """
+    templates = Path(__file__).resolve().parent.parent / "templates"
+    drawn = [p for p in templates.rglob("*.html")]
+    assert drawn, "no templates found at all"
+
+    headlined = 0
+    for path in drawn:
+        source = path.read_text("utf-8")
+        assert "row.manager" not in source, (
+            f"{path.relative_to(templates)} headlines a table row with the username"
+        )
+        headlined += source.count("row.team")
+    assert headlined >= 3, "no table is headlined by the team name any more"
 
     css = (ROOT_STATIC / "css" / "theme.css").read_text("utf-8")
     assert ".mside-id b.mside-manager { display: none; }" in css, (

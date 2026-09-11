@@ -1,0 +1,16 @@
+{# Who the schedule has been kind to. #}
+{% if multiverse.luckiest and multiverse.unluckiest %}
+<p class="recap">
+  <b>{{ multiverse.luckiest.team }}</b> is {{ multiverse.luckiest.luck | signed }} wins better off
+  than an all-play record says they deserve ({{ multiverse.luckiest.all_play }} against the whole
+  league, {{ multiverse.luckiest.record }} against the fixture list).
+  <b>{{ multiverse.unluckiest.team }}</b> is {{ multiverse.unluckiest.luck | signed }}:
+  {{ multiverse.unluckiest.all_play }} all-play, {{ multiverse.unluckiest.record }} actual.
+</p>
+<p class="recap-source">
+  Luck is wins minus what beating everybody every week would have earned. It is the one number
+  in this app nobody can argue with and everybody tries to.
+</p>
+{% else %}
+<div class="empty"><strong>Not enough season yet</strong>Luck needs a few settled weeks to mean anything.</div>
+{% endif %}

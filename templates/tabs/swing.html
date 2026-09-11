@@ -1,56 +1,27 @@
 {% extends "base.html" %}
 {% block title %}PUNT &middot; Swing{% endblock %}
 {% block content %}
+{# Both panels poll the same fragments the main page uses. They were static: a
+   tab showing live win probability that never changed after load is worse than
+   one that says it cannot, because it looks like the numbers are just steady. #}
 <section class="panel">
   <h2 class="panel-title">Win probability</h2>
-  {% if swing.rows %}
-  <table class="rows">
-    <thead><tr><th>Manager</th><th class="num">Score</th><th class="num-narrow">+/-</th><th class="num">Win</th></tr></thead>
-    <tbody>
-      {% for row in swing.rows %}
-      <tr>
-        <td>
-          <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.manager }}
-          <span class="sub">{{ row.in_play }} still in play</span>
-        </td>
-        <td class="num">{{ row.score | points }}</td>
-        <td class="num-narrow num {% if row.deficit >= 0 %}pos{% else %}neg{% endif %}">{{ row.deficit | signed }}</td>
-        <td class="num">
-          <span class="prob" style="--p: {{ (row.win_prob or 0) * 100 }}%">{{ row.win_prob | pct }}</span>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
-    Monte Carlo, {{ swing.rows | length }} teams, re-run every poll. Lumpy on purpose:
-    a touchdown is a six-point step, so a manager needing 22 from one player is a
-    long shot rather than a dead certainty either way.
+  <div hx-get="{{ url_for('api.partial_panel', name='trouble', week=chosen_week, full=1) }}"
+       hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+    {% with full = true %}{% include "partials/trouble.html" %}{% endwith %}
+  </div>
+  <p class="panel-note">
+    Monte Carlo, re-run every poll. Lumpy on purpose: a touchdown is a six-point
+    step, so a manager needing 22 from one player is a long shot rather than a
+    dead certainty either way.
   </p>
-  {% else %}
-  <div class="empty"><strong>No live matchups</strong>The curve needs games in progress.</div>
-  {% endif %}
 </section>
 
 <section class="panel">
   <h2 class="panel-title">Biggest swings today</h2>
-  {% if swing.swings %}
-  <ul class="feed">
-    {% for s in swing.swings %}
-    <li class="feed-item">
-      <span class="feed-kind">{{ s.delta | pct }}</span>
-      <span class="feed-text">
-        {{ s.kind.replace('_', ' ') | lower }}{% if s.player %} &mdash; {{ s.player }}{% endif %}
-        for <b>{{ s.teams | join(', ') }}</b>
-      </span>
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <div class="empty">
-    <strong>Nothing has swung yet</strong>
-    A swing is a Moment that moved somebody's win probability by more than five points.
+  <div hx-get="{{ url_for('api.partial_panel', name='swings', week=chosen_week) }}"
+       hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+    {% include "partials/swings.html" %}
   </div>
-  {% endif %}
 </section>
 {% endblock %}

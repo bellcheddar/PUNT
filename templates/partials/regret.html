@@ -1,0 +1,23 @@
+{# Bench regret. Shared by the one-page view and the Receipts tab, so the two
+   cannot drift: they did, and the tab was still leading every row with a
+   username months after the rest of the app moved to team names. `full` adds
+   the detail a dedicated page has room for. #}
+{% if receipts.rows %}
+<table class="rows regret">
+  <thead><tr><th>Team</th><th class="num-wide">Score</th><th class="num-narrow">Left</th></tr></thead>
+  <tbody>
+  {% for row in receipts.rows %}
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_regret', team_id=row.id) }}">
+      <td>
+        <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}
+        {% if row.worst_swap %}<span class="sub">{{ row.worst_swap }}</span>{% endif %}
+      </td>
+      <td class="num num-wide">{{ row.score | points }}<span class="sub">best {{ row.optimal | points }}</span></td>
+      <td class="num num-narrow {% if row.bench_regret > 25 %}neg{% endif %}">{{ row.bench_regret | points }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>No receipts yet</strong>Nobody has done anything regrettable.</div>
+{% endif %}

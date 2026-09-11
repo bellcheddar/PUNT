@@ -1,0 +1,37 @@
+{# Playoff odds. The expensive one: 2,500 simulated seasons. It is safe to poll
+   at the same rate as everything else because the simulation is memoised on the
+   state that produced it, so ten phones in a room share one run. #}
+{% if multiverse.available %}
+<table class="rows">
+  <thead><tr><th>Team</th><th class="num">W-L</th><th class="num">Odds</th><th>Needs</th></tr></thead>
+  <tbody>
+  {% for row in multiverse.rows %}
+    <tr class="tappable {% if loop.index == multiverse.playoff_places %}cut{% endif %}"
+        data-sheet="{{ url_for('api.detail_odds', team_id=row.id) }}">
+      <td>
+        <span class="dot" style="--hue: {{ row.hue }}"></span>{{ loop.index }}. {{ row.team }}
+        {% if full %}<span class="sub">{{ row.points_for }} for &middot; all-play {{ row.all_play }} &middot; luck {{ row.luck | signed }}</span>{% endif %}
+      </td>
+      <td class="num">{{ row.record }}</td>
+      <td class="num">{{ (row.odds * 100) | round | int }}%</td>
+      <td class="verdict-cell">{{ row.verdict }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if full %}
+<p class="album-note">
+  {{ multiverse.draws }} simulated seasons, replayed from the real fixture list. Each team's
+  weekly score is drawn from its own spread, not the league's: a manager averaging 110 every
+  week and one alternating 150 and 70 are very different playoff propositions, and a table of
+  records cannot tell them apart. Top {{ multiverse.playoff_places }} make it.
+</p>
+{% endif %}
+{% else %}
+<div class="empty">
+  <strong>No season schedule</strong>
+  Every figure here is simulated from the real fixture list, and the schedule
+  feed is not answering. Better to say so than to show a table of zeros that
+  looks like a league where nobody has played yet.
+</div>
+{% endif %}
