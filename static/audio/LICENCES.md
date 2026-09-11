@@ -50,10 +50,37 @@ python3 tools/make_audio.py --preview horn_03   # one sound, as a wav, to listen
 not in this sprite: a phrase pointing at a renamed or missing sound is silent at
 play time and looks exactly like a phrase that simply was not chosen.
 
-## Not yet made
+## The loop bed
 
-- **A loop bed for the `music` bus.** The ducking machinery is built and wired,
-  but with nothing playing on that bus it currently has nothing to duck. Needs a
-  seamlessly loopable bed, which is a different synthesis problem to a sting.
-- **Speech.** `commentary` is the one bus with no assets: Piper is not installed
-  on this machine, so lines are currently displayed rather than spoken.
+`bed.mp3` / `bed.ogg` is an eight second pad, also synthesised here. Every
+frequency in it is snapped to an integer multiple of 1/8 Hz so the loop is
+seamless by construction, and the generator measures the join against the typical
+sample step rather than against zero.
+
+That measurement earned its place immediately. The first version compared the
+first sample to the last and flagged a perfectly good loop, because wrapping from
+the last sample to the first *is* one ordinary sample step and for a 55 Hz tone
+that step is about 0.008. Rewritten to compare the join against the 99th
+percentile of steps elsewhere, it then found a real fault: the one-pole lowpass
+starts from zero state, so the first thirty samples came out attenuated and the
+loop clicked every eight seconds. Filtering two copies and keeping the second
+fixed it, from 8.9x a typical step to 0.93x.
+
+Deliberately dull. It plays for four hours under everything else and its job is
+to make silence feel like a room rather than a fault.
+
+## Speech
+
+The `commentary` bus is synthesised at runtime and cached by the hash of exactly
+what is spoken, under `phrase/` (gitignored: it is derived, and a season of it is
+a few hundred megabytes).
+
+The spec asks for Piper, pre-rendered at deploy. Two things stop that being the
+whole design: most lines carry a player's name, and a week's player universe is
+not known until Sunday; and Piper is not installed on this machine, so the macOS
+`say` binary stands in for local work. Rendering starts when the *server* picks
+the line rather than when a phone asks for the file, which hides the latency
+behind the SSE round trip and the browser's own request.
+
+- [ ] **Install Piper on the droplet.** It is the shipping backend; `say` is
+      macOS-only and exists so the pipeline is testable end to end here.

@@ -292,6 +292,54 @@ def sound_rip() -> np.ndarray:
     return fade(normalise(tear * adsr(n, 0.01, 0.15, 0.7, 0.3), 0.6))
 
 
+#: The loop bed's length. Every frequency in it is snapped to an integer
+#: multiple of 1/BED_SECONDS, which is what makes the loop seamless: a component
+#: that does not complete a whole number of cycles leaves a step at the join, and
+#: a step in a bed playing for four hours is a click every eight seconds.
+BED_SECONDS = 8.0
+
+
+def snap(freq: float) -> float:
+    """The nearest frequency that completes a whole number of cycles per loop."""
+    return max(1, round(freq * BED_SECONDS)) / BED_SECONDS
+
+
+def sound_bed() -> np.ndarray:
+    """The music bed: a low, sparse pad with a soft pulse, made to loop forever.
+
+    Deliberately dull. It plays for four hours under everything else and its
+    whole job is to make silence feel like a room rather than a fault, so it
+    carries no melody and nothing that could become annoying on the fiftieth
+    repeat.
+    """
+    n = int(BED_SECONDS * RATE)
+    out = np.zeros(n)
+
+    # A1 and its fifths, all snapped. Tremolo rates are snapped too, or the
+    # amplitude envelope itself would not line up at the join.
+    for freq, gain in ((55.0, 1.0), (82.5, 0.45), (110.0, 0.5), (165.0, 0.22), (220.0, 0.14)):
+        tone = sine(snap(freq), BED_SECONDS)[:n]
+        tremolo = 1 + 0.16 * np.sin(2 * np.pi * snap(0.25) * t(BED_SECONDS))[:n]
+        out += tone * tremolo * gain
+
+    # Filtered over two copies, keeping the second. `lowpass` is an IIR whose
+    # state starts at zero, so the first thirty samples come out attenuated --
+    # which at the loop point is a step, and a step every eight seconds for four
+    # hours is a click track. Pre-rolling one whole loop through the filter means
+    # the kept half begins in steady state, exactly as it will when looping.
+    out = lowpass(np.concatenate([out, out]), 700)[n:]
+
+    # Four soft pulses, at exact two-second spacing. Each decays well inside the
+    # gap, so the last one is silent before the loop point.
+    pulse = timpani(55.0, 1.4) * 0.30
+    for beat in range(4):
+        start = int(beat * 2.0 * RATE)
+        end = min(n, start + len(pulse))
+        out[start:end] += pulse[: end - start]
+
+    return normalise(out, 0.5)
+
+
 SOUNDS = {
     "horn_01": sound_horn_01, "horn_02": sound_horn_02, "horn_03": sound_horn_03,
     "trombone": sound_trombone, "whoosh": sound_whoosh, "riser": sound_riser,
@@ -361,6 +409,28 @@ def main() -> int:
     wav = OUT / "sprite.wav"
     write_wav(wav, full)
 
+    # The bed is its own file, not a sprite entry: Howler loops a whole file
+    # cleanly and loops a sprite region with an audible gap at the seek.
+    bed = sound_bed()
+    # A seamless loop does not mean bed[0] == bed[-1]. Wrapping from the last
+    # sample to the first is one ordinary sample step, and for a 55 Hz tone at
+    # 44.1 kHz that step is naturally about 0.008 per unit amplitude -- the first
+    # version of this check flagged exactly that as a fault. What matters is
+    # whether the step at the join is bigger than the steps everywhere else,
+    # because that is what is audible as a click.
+    steps = np.abs(np.diff(bed))
+    join = abs(float(bed[0]) - float(bed[-1]))
+    typical = float(np.percentile(steps, 99))
+    seam = join / max(typical, 1e-9)
+    if seam > 3.0:
+        print(f"WARNING: the loop join is {seam:.1f}x a typical sample step; "
+              f"something is not snapped to the loop length", file=sys.stderr)
+    bed_wav = OUT / "bed.wav"
+    write_wav(bed_wav, bed)
+    encode(bed_wav, OUT / "bed.mp3", ["-codec:a", "libmp3lame", "-b:a", "80k", "-ar", "44100"])
+    encode(bed_wav, OUT / "bed.ogg", ["-codec:a", "libvorbis", "-qscale:a", "3", "-ar", "44100"])
+    bed_wav.unlink()
+
     encode(wav, OUT / "sprite.mp3", ["-codec:a", "libmp3lame", "-b:a", "96k", "-ar", "44100"])
     encode(wav, OUT / "sprite.ogg", ["-codec:a", "libvorbis", "-qscale:a", "3", "-ar", "44100"])
     wav.unlink()
@@ -370,7 +440,8 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    print(f"{len(SOUNDS)} sounds, {cursor:.1f}s")
+    print(f"{len(SOUNDS)} sounds, {cursor:.1f}s, plus a {BED_SECONDS:.0f}s loop bed "
+          f"(join step {seam:.2f}x typical)")
     for suffix in ("mp3", "ogg"):
         path = OUT / f"sprite.{suffix}"
         print(f"  {path.relative_to(ROOT)}  {path.stat().st_size / 1000:.0f} kB")

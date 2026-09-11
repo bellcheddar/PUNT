@@ -17,6 +17,7 @@ from config import Config
 from engine.commentary import Commentator, PhraseBank
 from engine.events import EventEngine
 from engine.live import LiveFeed
+from engine.speech import SpeechCache
 from espn.cache import TTLCache
 from espn.client import EspnClient, LeagueRepository
 from espn.models import LeagueSnapshot
@@ -31,6 +32,7 @@ class PuntState:
     client: EspnClient
     repo: LeagueRepository
     live: LiveFeed | None = None
+    speech: SpeechCache | None = None
 
     def start_live(self) -> LiveFeed:
         """Begin polling in the background.
@@ -38,12 +40,15 @@ class PuntState:
         The feed goes through the same TTL cache every request uses, so the
         poller and the phones share one upstream call rather than adding one.
         """
+        if self.speech is None:
+            self.speech = SpeechCache()
         if self.live is None:
             self.live = LiveFeed(
                 fetch=lambda: self.repo.snapshot(live=True),
                 poll_seconds=self.cfg.poll_seconds,
                 engine=EventEngine(),
                 commentator=_commentator(self.cfg),
+                speech=self.speech,
             )
         self.live.start()
         return self.live

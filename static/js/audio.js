@@ -36,6 +36,7 @@
 
   let sprite = null;
   let howl = null;
+  let bed = null;
   let unlocked = false;
   let muted = readMuted();
   let ducking = 0;          // how many things are currently talking over the top
@@ -77,6 +78,15 @@
       console.info('audio sprite failed to decode:', error);
       howl = null;
     });
+
+    // The bed is a separate file rather than a sprite region: Howler loops a
+    // whole file cleanly and loops a region with an audible gap at the seek.
+    bed = new window.Howl({
+      src: ['/static/audio/bed.mp3', '/static/audio/bed.ogg'],
+      html5: false,
+      loop: true,
+      volume: 0,
+    });
   }
 
   // --- ducking -------------------------------------------------------------
@@ -85,8 +95,8 @@
    * as a click; 200 ms down and 600 ms up is the shape that reads as a mix
    * decision rather than as a fault. */
   function rampMusic(target, ms) {
-    if (!howl || !musicId) return;
-    howl.fade(howl.volume(musicId), target * (muted ? 0 : 1), ms, musicId);
+    if (!bed || musicId === null) return;
+    bed.fade(bed.volume(musicId), target * (muted ? 0 : 1), ms, musicId);
   }
 
   function duck() {
@@ -137,6 +147,16 @@
     await load();
     if (!howl) return;
 
+    // The bed starts inside the unlock handler, which is the only place iOS
+    // will let it: the gesture that granted the context is the gesture that has
+    // to start the sound. Faded in rather than cut in, because a loop arriving
+    // at full level is startling in a quiet room.
+    if (bed) {
+      musicId = bed.play();
+      bed.volume(0, musicId);
+      bed.fade(0, BUSES.music.volume, 1400, musicId);
+    }
+
     // A context that unlocked but produces no output is a real state on iOS
     // (silent switch plus an element path, a Bluetooth device that grabbed the
     // route). Checked once, a beat after the first sound, so the UI can say so
@@ -161,6 +181,7 @@
     muted = value;
     writeMuted(value);
     if (window.Howler) window.Howler.mute(value);
+    if (speaking) speaking.muted = value;
     document.documentElement.dataset.audio = value ? 'muted' : (unlocked ? 'on' : 'locked');
     const button = document.querySelector('[data-mute]');
     if (button) {
@@ -193,7 +214,42 @@
     if (moment.replayed) return;
     const line = moment.line || {};
     play(line.audio, { magnitude: moment.magnitude });
+    if (line.speech) speak(line.speech, line.audio ? 260 : 0);
   });
 
-  window.PUNT_AUDIO = { play, unlock, setMuted, isMuted: () => muted };
+  /* Speech on the commentary bus.
+   *
+   * A plain Audio element rather than a Howl: each line is a one-off URL that
+   * will never be played again, and creating a Howl per line would leak a
+   * decoded buffer for every touchdown of the afternoon.
+   *
+   * The delay lets the sting land first. A horn and a play call starting on the
+   * same frame is the thing ducking exists to prevent, and starting them
+   * together defeats it before the ramp has moved.
+   */
+  let speaking = null;
+
+  function speak(url, delayMs) {
+    if (muted || !unlocked) return;
+    setTimeout(() => {
+      try {
+        // One at a time. Two play calls over each other is unintelligible, and
+        // on a busy afternoon Moments genuinely do arrive in the same poll.
+        if (speaking) { speaking.pause(); speaking = null; }
+        const audio = new Audio(url);
+        audio.volume = BUSES.commentary.volume;
+        speaking = audio;
+        duck();
+        audio.addEventListener('ended', () => { speaking = null; unduck(0); }, { once: true });
+        audio.addEventListener('error', () => { speaking = null; unduck(0); }, { once: true });
+        // Fire and forget, like everything else here: a rejected play must not
+        // leave the music bed ducked for the rest of the afternoon.
+        audio.play().catch(() => { speaking = null; unduck(0); });
+      } catch {
+        unduck(0);
+      }
+    }, delayMs);
+  }
+
+  window.PUNT_AUDIO = { play, speak, unlock, setMuted, isMuted: () => muted };
 })();

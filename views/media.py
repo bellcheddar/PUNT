@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import hashlib
-import io
 import logging
+import re
 
 from flask import Blueprint, Response, abort, redirect, send_file
 
@@ -18,6 +18,34 @@ bp = Blueprint("media", __name__)
 #: long cache is safe. A manager who changes their logo waits a day for it,
 #: which is a better trade than ten phones re-fetching ten images every poll.
 LOGO_CACHE_SECONDS = 86_400
+
+
+@bp.route("/audio/phrase/<digest>.mp3")
+def phrase_audio(digest: str):
+    """Pre-synthesised commentary, immutable and cached hard.
+
+    The name is the hash of exactly what is spoken, so the content behind a URL
+    can never change and a year is a safe max-age. A miss is a 404 rather than a
+    wait: the line is still on screen, it simply is not spoken, and holding a
+    worker open through the loudest minute of the afternoon is a worse failure
+    than a silent line.
+    """
+    from views.state import state  # noqa: PLC0415
+
+    if not re.fullmatch(r"[0-9a-f]{8,64}", digest):
+        abort(404)
+
+    cache = state().speech
+    if cache is None:
+        abort(404)
+
+    path = cache.wait_for(digest)
+    if path is None:
+        abort(404)
+
+    response = send_file(path, mimetype="audio/mpeg", conditional=True)
+    response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    return response
 
 
 @bp.route("/sw.js")

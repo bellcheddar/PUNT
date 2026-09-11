@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Iterator
 
 from engine.commentary import Commentator, Line, PhraseBank
+from engine.speech import SpeechCache
 from engine.events import EventEngine, Moment
 from espn.models import LeagueSnapshot
 
@@ -69,6 +70,7 @@ class LiveFeed:
         poll_seconds: float = 30.0,
         engine: EventEngine | None = None,
         commentator: Commentator | None = None,
+        speech: SpeechCache | None = None,
     ) -> None:
         self.fetch = fetch
         self.poll_seconds = max(5.0, poll_seconds)
@@ -77,6 +79,7 @@ class LiveFeed:
         # room must hear the same sentence: picking client-side would give ten
         # different lines for the same touchdown, which is worse than silence.
         self.commentator = commentator
+        self.speech = speech
         self.lines: dict[str, Line] = {}
         self.moments: deque[Moment] = deque(maxlen=BUFFER)
         self.snapshot: LeagueSnapshot | None = None
@@ -124,7 +127,7 @@ class LiveFeed:
                 payload = moment.to_json()
                 line = self.lines.get(moment.id)
                 if line is not None:
-                    payload["line"] = line.to_json()
+                    payload["line"] = self._with_speech(line)
                 # `replayed` so the client shows it in the feed without firing a
                 # horn for a touchdown that happened forty minutes ago.
                 listener.offer({"event": "moment", "data": payload, "replayed": True})
@@ -173,7 +176,7 @@ class LiveFeed:
                 payload = moment.to_json()
                 line = self._commentate(moment, snapshot.scoring_period)
                 if line is not None:
-                    payload["line"] = line.to_json()
+                    payload["line"] = self._with_speech(line)
                 self._broadcast({"event": "moment", "data": payload})
         self._broadcast({
             "event": "tick",
@@ -212,6 +215,20 @@ class LiveFeed:
                 self.lines = {k: v for k, v in self.lines.items() if k in keep}
         return line
 
+    def _with_speech(self, line: Line) -> dict:
+        """The line, plus where its audio will be.
+
+        Asking for the URL is what starts synthesis, and it happens here rather
+        than when a phone requests the file: the SSE frame then has to cross the
+        room and the browser has to issue a request, which is most of a second in
+        which the renderer is already working."""
+        payload = line.to_json()
+        if self.speech is not None:
+            url = self.speech.url_for(line.text, line.voice)
+            if url:
+                payload["speech"] = url
+        return payload
+
     def line_for(self, moment: Moment) -> Line | None:
         return self.lines.get(moment.id)
 
@@ -233,4 +250,5 @@ class LiveFeed:
             "listeners": listeners,
             "dropped_messages": dropped,
             "poll_seconds": self.poll_seconds,
+            "speech": self.speech.stats() if self.speech is not None else None,
         }
