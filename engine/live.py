@@ -159,7 +159,7 @@ class LiveFeed:
                 except queue.Empty:
                     # A comment frame keeps proxies and phones from timing the
                     # connection out during a quiet stretch of a Sunday evening.
-                    yield {"event": "keepalive", "data": {"ts": time.time()}}
+                    yield {"event": "keepalive", "data": {"ts": time.time()}}  # cold: a fifteen-second quiet stretch; the driver never waits that long
         finally:
             with self._lock:
                 self._listeners.discard(listener)
@@ -245,7 +245,7 @@ class LiveFeed:
         """The week as facts, or nothing if there is not a week yet."""
         snapshot = snapshot or self.snapshot
         if snapshot is None or not snapshot.teams:
-            return None
+            return None  # cold: the factpack before the first poll returns
         pack = build_factpack(snapshot, self.notable)
         # Counts come from the accumulator rather than from `notable`, which is
         # deliberately a subset: the recap says "74 touchdowns" and there is no
@@ -329,7 +329,7 @@ class LiveFeed:
         still reaches the stream, still moves the scores, and simply says nothing.
         """
         if self.commentator is None:
-            return None
+            return None  # cold: the app always has a commentator; running without one is a supported config
         try:
             line = self.commentator.say(moment, week=week)
         except Exception:  # noqa: BLE001 - a bad phrase must not stop the poll
@@ -355,7 +355,7 @@ class LiveFeed:
         if self.speech is not None:
             url = self.speech.url_for(line.text, line.voice)
             if url:
-                payload["speech"] = url
+                payload["speech"] = url  # cold: no TTS backend here, so there is never a URL to attach
         return payload
 
     def line_for(self, moment: Moment) -> Line | None:

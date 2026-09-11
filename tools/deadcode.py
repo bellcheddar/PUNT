@@ -20,11 +20,16 @@ nor pytest-cov is installed here and this needs no more than they provide.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import copy
+import logging
 import sys
+import tempfile
 import threading
+import time
 import trace
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -89,6 +94,26 @@ def _raise() -> None:
     raise RuntimeError("ESPN returned 503")
 
 
+@contextlib.contextmanager
+def quiet(*names: str):
+    """Silence a logger while something is broken on purpose.
+
+    Three of the paths driven here are failures -- an ESPN blip, a poll that
+    raises, a phrase file that says something impossible -- and each logs a
+    traceback the tool's reader has no reason to read. A report with three
+    stack traces in it does not get run twice.
+    """
+    loggers = [logging.getLogger(n) for n in names]
+    levels = [lg.level for lg in loggers]
+    for lg in loggers:
+        lg.setLevel(logging.CRITICAL)
+    try:
+        yield
+    finally:
+        for lg, level in zip(loggers, levels):
+            lg.setLevel(level)
+
+
 def drive_a_sunday() -> None:
     """Everything a real afternoon does, in order."""
     from config import DEMO_RECORDING, PHRASES_DIR
@@ -97,6 +122,7 @@ def drive_a_sunday() -> None:
     from engine.factpack import build
     from engine.live import LiveFeed
     from engine.recap import generate, templated, validate
+    from engine.speech import SpeechCache
     from engine.scoring import optimal_lineup, standings
     from engine.simulate import playoff_odds, probabilities_for
     from espn.cache import TTLCache
@@ -109,9 +135,18 @@ def drive_a_sunday() -> None:
     bank = PhraseBank.load(PHRASES_DIR)
     engine = EventEngine(simulate_draws=40)
     commentator = Commentator(bank, roast_level=2)
+    # A real speech cache, with the backend switched off. The shipping path asks
+    # for a URL as soon as the server picks the line, which is what hides the
+    # synthesis behind the SSE round trip -- and with no backend the honest
+    # answer is no audio and a line that goes out anyway. Leaving `speech=None`
+    # here skipped the asking entirely, and skipped it on the one machine where
+    # macOS `say` would otherwise synthesise two hundred and thirty-six phrases
+    # every time somebody ran this tool.
+    speech = SpeechCache(directory=Path(tempfile.mkdtemp(prefix="punt-deadcode-")))
+    speech.backend.kind = "none"
     feed = LiveFeed(fetch=lambda: (client.cache.invalidate(), repo.snapshot())[1],
-                    poll_seconds=30, engine=engine, commentator=commentator)
-    feed._broadcast = lambda payload: None
+                    poll_seconds=30, engine=engine, commentator=commentator,
+                    speech=speech)
 
     # The view models are rendered all afternoon, not only at the end of it, so
     # this keeps eight snapshots spread across the day as well as the settled
@@ -209,18 +244,71 @@ def drive_a_sunday() -> None:
     client.cache.invalidate("nfl_scoreboard")
 
     client.cache.get_or_set("blip", ttl=0.0, fetch=lambda: "first")
-    try:
-        # ESPN blinks. A Sunday afternoon has one of these in it, and the answer
-        # is to serve what we had and say how old it is.
-        client.cache.get_or_set("blip", ttl=0.0, fetch=_raise)
-    except Exception:
-        pass
-    try:
-        # The same blink against a key that was never filled. Nothing to serve,
-        # so it propagates and the caller decides.
-        client.cache.get_or_set("never-filled", ttl=30.0, fetch=_raise)
-    except Exception:
-        pass
+    with quiet("espn.cache"):
+        try:
+            # ESPN blinks. A Sunday afternoon has one of these in it, and the
+            # answer is to serve what we had and say how old it is.
+            client.cache.get_or_set("blip", ttl=0.0, fetch=_raise)
+        except Exception:
+            pass
+        try:
+            # The same blink against a key that was never filled. Nothing to
+            # serve, so it propagates and the caller decides.
+            client.cache.get_or_set("never-filled", ttl=30.0, fetch=_raise)
+        except Exception:
+            pass
+
+    # The SSE fan-out and the background poller. `poll_once` is the seam a test
+    # drives; the app runs a thread and pushes to every connected phone, and
+    # forty-five lines of that -- start, stop, the listener set, the backlog a
+    # phone gets when it unlocks mid-afternoon, the drop rule for a connection
+    # that stopped reading -- had never run here at all.
+    stream = feed.listen()
+    next(stream)                        # the backlog, delivered on connect
+    transport.clock.seek(duration)
+    feed.poll_once()                    # and now a live broadcast, to a real listener
+    stream.close()                      # the finally that discards the listener
+
+    crashed = []
+
+    def _flaky() -> Any:
+        # One poll that raises. The loop has to outlive it: a single bad response
+        # from ESPN must not end the afternoon for the whole bar.
+        if not crashed:
+            crashed.append(True)
+            raise RuntimeError("ESPN returned nonsense")
+        return repo.snapshot()
+
+    feed.fetch = _flaky
+    feed.poll_seconds = 1.0
+    with quiet("engine.live"):
+        feed.start()
+        feed.start()                    # already running: the second call is a no-op
+        deadline = time.monotonic() + 6.0
+        while feed.failures == 0 and time.monotonic() < deadline:
+            time.sleep(0.05)
+        feed.stop()
+        if feed._thread is not None:
+            feed._thread.join(timeout=3.0)
+
+    # A phone that stopped reading. Blocking the poller on it would stop the
+    # whole room's updates for one dead connection, so it is dropped instead.
+    from engine.live import LISTENER_BACKLOG, Listener
+    deaf = Listener()
+    for _ in range(LISTENER_BACKLOG + 2):
+        deaf.offer({"event": "moment", "data": {}})
+
+    # A phrase that blows up mid-poll. The line is dropped and the Moment still
+    # reaches the stream: a bad phrase must not stop the afternoon.
+    def _explode(*_args, **_kwargs):
+        raise ValueError("a phrase file said something impossible")
+
+    was = feed.commentator.say
+    feed.commentator.say = _explode
+    with quiet("engine.live"):
+        if feed.moments:
+            feed._commentate(feed.moments[-1], week=11)
+    feed.commentator.say = was
 
     pack = build(snapshot, feed.notable)
     recap = generate(pack, backend=None)
