@@ -228,3 +228,346 @@
   text: "{player} gets them into scoring range. {manager} has stopped talking."
   audio: riser
   voice: pbp
+
+# --- second batch ----------------------------------------------------------
+# 117 big plays in a Sunday, more than any other kind, so this needs the most
+# depth after touchdowns. Kept quieter than the horns throughout: the volume gap
+# between this file and touchdown.yaml is most of what stops the afternoon
+# becoming one continuous noise.
+
+- id: bp_generic_13
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 4
+  cooldown: 900
+  text: "{delta} more for {player}. {manager} climbs to {total}."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_14
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 4
+  cooldown: 900
+  text: "{player} gets loose. {delta} for {manager}."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_15
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 3
+  cooldown: 900
+  text: "Quietly, {player} is having a day. {manager} has noticed."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_16
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 3
+  cooldown: 960
+  text: "{player}, {delta}. Nothing spectacular, all of it counting."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_17
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 3
+  cooldown: 960
+  text: "Good gain for {player} and {delta} on {manager}'s pile."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_18
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 3
+  cooldown: 960
+  text: "{delta} for {player}. {manager} pretends not to be watching this game."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_19
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 3
+  cooldown: 1020
+  text: "Another chunk for {player}. {manager}'s afternoon is going to plan, for once."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_20
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "{player} is moving. {delta} added for {manager}."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_21
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1020
+  text: "{player} picks up {delta}. {manager} updates his mental arithmetic."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_22
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "{delta}. It all adds up, {manager}, and today it is adding up your way."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_23
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 2
+  cooldown: 1080
+  text: "Big one from {player}! {manager} on {total}."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_24
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "{player} again. Somebody in this room is very pleased and it is {manager}."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_25
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "{player} adds {delta} without anybody looking up."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_26
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "Steady from {player}. {manager} would like a touchdown but will take this."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_27
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "{delta} for {player} in the {slot}. {manager} is on {total}."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_28
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 2
+  cooldown: 1200
+  text: "There goes {player}. {delta} for {manager} and the afternoon carries on."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_29
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{player} keeps chipping away. {manager} is quietly assembling a score."
+  audio: whoosh
+  voice: colour
+- id: bp_generic_30
+  trigger: {kind: BIG_PLAY}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{delta}, {player}. {manager} has not said a word all quarter, which is suspicious."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_generic_31
+  trigger: {kind: BIG_PLAY}
+  tone: [hype]
+  weight: 2
+  cooldown: 1200
+  text: "{player} finds room! {delta} on the board."
+  audio: whoosh
+  voice: pbp
+- id: bp_generic_32
+  trigger: {kind: BIG_PLAY}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "Another {delta} for {manager}, who is now doing that face."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_large_04
+  trigger: {kind: BIG_PLAY, delta_points: {gte: 5}}
+  tone: [hype]
+  weight: 3
+  cooldown: 960
+  text: "Huge play, {player}. {delta} and no touchdown to show for it."
+  audio: whoosh
+  voice: pbp
+- id: bp_large_05
+  trigger: {kind: BIG_PLAY, delta_points: {gte: 5}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "{delta} in one play. {manager} nearly stood up."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_large_06
+  trigger: {kind: BIG_PLAY, delta_points: {gte: 6}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "{player} does everything but score. {manager} takes {delta} and wants more."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_small_01
+  trigger: {kind: BIG_PLAY, delta_points: {lte: 3}}
+  tone: [dry]
+  weight: 3
+  cooldown: 1020
+  text: "{delta} for {player}. It is not much and it is not nothing."
+  audio: whoosh
+  voice: colour
+- id: bp_small_02
+  trigger: {kind: BIG_PLAY, delta_points: {lte: 3}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "A modest {delta} for {manager}, who will need several more of those."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_bench_04
+  trigger: {kind: BIG_PLAY, starter: false}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 960
+  text: "{player} adds {delta} to a total {manager} does not get to keep."
+  audio: trombone
+  voice: colour
+- id: bp_bench_05
+  trigger: {kind: BIG_PLAY, starter: false}
+  tone: [corny]
+  roast_level: 1
+  weight: 3
+  cooldown: 1080
+  text: "The bench is busy again. {manager}'s bench, specifically."
+  audio: trombone
+  voice: colour
+- id: bp_bench_06
+  trigger: {kind: BIG_PLAY, starter: false}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1200
+  text: "{player} is quietly out-scoring the {slot} {manager} chose over him."
+  audio: trombone
+  voice: colour
+- id: bp_qb_02
+  trigger: {kind: BIG_PLAY, position: QB}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "{player} completes one for {delta}. {manager}'s quarterback is earning it."
+  audio: whoosh
+  voice: colour
+- id: bp_rb_02
+  trigger: {kind: BIG_PLAY, position: RB}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "{player} runs into some space. {delta} for {manager}."
+  audio: whoosh
+  voice: pbp
+- id: bp_wr_02
+  trigger: {kind: BIG_PLAY, position: WR}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "Caught by {player} for {delta}. {manager}'s receivers are showing up."
+  audio: whoosh
+  voice: colour
+- id: bp_te_02
+  trigger: {kind: BIG_PLAY, position: TE}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "{delta} from the tight end. {manager} checks the name to be sure."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_k_02
+  trigger: {kind: BIG_PLAY, position: K}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "The kicker again. {manager} is genuinely pleased about a kicker."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_dst_02
+  trigger: {kind: BIG_PLAY, position: D/ST}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "The defence contributes {delta}. Nobody drafted them on purpose."
+  roast_level: 1
+  audio: whoosh
+  voice: colour
+- id: bp_q1_01
+  trigger: {kind: BIG_PLAY, quarter: {lte: 1}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "Early {delta} for {player}. Long way to go, {manager}."
+  audio: whoosh
+  voice: colour
+- id: bp_q2_01
+  trigger: {kind: BIG_PLAY, quarter: 2}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "{delta} before the half. {manager} on {total} at the break."
+  audio: whoosh
+  voice: colour
+- id: bp_q3_01
+  trigger: {kind: BIG_PLAY, quarter: 3}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "Out of the break, {player} with {delta}."
+  audio: whoosh
+  voice: colour
+- id: bp_q4_03
+  trigger: {kind: BIG_PLAY, quarter: {gte: 4}}
+  tone: [hype]
+  weight: 2
+  cooldown: 1080
+  text: "{delta} with the clock running down. Every one of those matters now."
+  audio: whoosh
+  voice: pbp
+- id: bp_redzone_02
+  trigger: {kind: BIG_PLAY, red_zone: true}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "{player} carries them to the edge. {manager} has gone quiet."
+  audio: riser
+  voice: pbp
+- id: bp_redzone_03
+  trigger: {kind: BIG_PLAY, red_zone: true}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "That is {player} into scoring range and {manager} into a state."
+  roast_level: 1
+  audio: riser
+  voice: colour

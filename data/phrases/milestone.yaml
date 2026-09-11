@@ -84,3 +84,167 @@
   roast_level: 1
   audio: chime
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+# Eight milestones went unsaid in a measured Sunday, because each threshold has
+# its own narrow trigger and there were only one or two lines behind each.
+
+- id: ms_player_20b
+  trigger: {kind: MILESTONE, threshold: 20.0}
+  tone: [corny]
+  weight: 3
+  cooldown: 1020
+  text: "Twenty up for {player}. A solid afternoon's work for {manager}."
+  audio: chime
+  voice: colour
+- id: ms_player_20c
+  trigger: {kind: MILESTONE, threshold: 20.0}
+  tone: [dry]
+  weight: 3
+  cooldown: 1080
+  text: "{player} passes twenty. That is a starter earning its slot."
+  audio: chime
+  voice: colour
+- id: ms_player_30b
+  trigger: {kind: MILESTONE, threshold: 30.0}
+  tone: [corny]
+  weight: 3
+  cooldown: 1080
+  text: "Thirty for {player}. {manager} is telling somebody about this right now."
+  roast_level: 1
+  audio: chime
+  voice: colour
+- id: ms_player_30c
+  trigger: {kind: MILESTONE, threshold: 30.0}
+  tone: [dry]
+  weight: 3
+  cooldown: 1140
+  text: "{player} through thirty in the {slot}. That is most of a lineup on its own."
+  audio: chime
+  voice: colour
+- id: ms_player_40b
+  trigger: {kind: MILESTONE, threshold: 40.0}
+  tone: [hype]
+  weight: 4
+  cooldown: 1200
+  text: "Forty points. {player} is the entire reason {manager} is still in this."
+  audio: horn_03
+  voice: pbp
+- id: ms_player_40c
+  trigger: {kind: MILESTONE, threshold: 40.0}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "{player} goes past forty. {manager} will mention this until Christmas."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: ms_player_generic_03
+  trigger: {kind: MILESTONE, team: false}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "{player} is through {threshold} for {manager}."
+  audio: chime
+  voice: pbp
+- id: ms_player_generic_04
+  trigger: {kind: MILESTONE, team: false}
+  tone: [dry]
+  weight: 3
+  cooldown: 1080
+  text: "{threshold} for {player}, and {manager} is on {total}."
+  audio: chime
+  voice: colour
+- id: ms_player_generic_05
+  trigger: {kind: MILESTONE, team: false}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "Past {threshold} goes {player}. Somebody drafted well, or luckily."
+  roast_level: 1
+  audio: chime
+  voice: colour
+- id: ms_player_generic_06
+  trigger: {kind: MILESTONE, team: false}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{player} clears {threshold} from the {slot}."
+  audio: chime
+  voice: colour
+- id: ms_player_bench_01
+  trigger: {kind: MILESTONE, team: false, starter: false}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1080
+  text: "{player} is through {threshold}. On the bench. {manager} put him there."
+  audio: trombone
+  voice: colour
+- id: ms_player_bench_02
+  trigger: {kind: MILESTONE, team: false, starter: false}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 1140
+  text: "{threshold} from a player {manager} is not starting."
+  audio: trombone
+  voice: colour
+- id: ms_team_100b
+  trigger: {kind: MILESTONE, team: true, threshold: 100.0}
+  tone: [corny]
+  weight: 4
+  cooldown: 1200
+  text: "A hundred for {manager}. Respectable in any week."
+  audio: chime
+  voice: colour
+- id: ms_team_100c
+  trigger: {kind: MILESTONE, team: true, threshold: 100.0}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "{manager} reaches a hundred, on {total}, and is not finished."
+  audio: chime
+  voice: colour
+- id: ms_team_125b
+  trigger: {kind: MILESTONE, team: true, threshold: 125.0}
+  tone: [corny]
+  weight: 4
+  cooldown: 1200
+  text: "{manager} through a hundred and twenty five. Somebody is losing badly to this."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: ms_team_150b
+  trigger: {kind: MILESTONE, team: true, threshold: 150.0}
+  tone: [hype]
+  weight: 4
+  cooldown: 1200
+  text: "A hundred and fifty for {manager}. That is a season high in most seasons."
+  audio: horn_03
+  voice: pbp
+- id: ms_team_generic_03
+  trigger: {kind: MILESTONE, team: true}
+  tone: [hype]
+  weight: 3
+  cooldown: 1080
+  text: "{manager} is through {threshold}."
+  audio: chime
+  voice: pbp
+- id: ms_team_generic_04
+  trigger: {kind: MILESTONE, team: true}
+  tone: [dry]
+  weight: 3
+  cooldown: 1140
+  text: "That is {threshold} up for {manager}, now on {total}."
+  audio: chime
+  voice: colour
+- id: ms_team_generic_05
+  trigger: {kind: MILESTONE, team: true}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{manager} passes {threshold} and immediately checks whether it is enough."
+  roast_level: 1
+  audio: chime
+  voice: colour

@@ -48,7 +48,7 @@ SLOTS: dict[str, set[str]] = {
     events.BENCH_DISASTER: UNIVERSAL | {"slot", "started", "started_points",
                                         "benched", "benched_points", "regret"},
     events.DOOM: UNIVERSAL | {"win_prob", "win_pct", "deficit", "opponent_in_play"},
-    events.CLINCH: UNIVERSAL | {"win_prob", "win_pct", "lead"},
+    events.CLINCH: UNIVERSAL | {"win_prob", "win_pct", "lead", "opponent_in_play"},
     events.LEAD_CHANGE: UNIVERSAL | {"matchup", "margin", "home", "away"},
     "FILLER": {"week"},
 }
@@ -115,7 +115,11 @@ def main() -> int:
 
     counts = bank.counts()
     width = max(len(k) for k in WANTED)
-    print(f"{len(bank)} phrases, target {TARGET_TOTAL}\n")
+    verdict = "at target" if len(bank) >= TARGET_TOTAL else f"target {TARGET_TOTAL}"
+    print(f"{len(bank)} phrases, {verdict}\n")
+    print("  Per-category figures are guidance, scaled to how often each Moment\n"
+          "  fires across a recorded Sunday. The number that matters is the total\n"
+          "  and, more than either, what tools/transcript.py measures.\n")
     total_wanted = 0
     for kind, wanted in sorted(WANTED.items()):
         have = counts.get(kind, 0)
@@ -139,6 +143,10 @@ def main() -> int:
         return 1
 
     print("No unfillable slots, no dead triggers, every category has a safe line.")
+    if len(bank) >= TARGET_TOTAL:
+        print(f"\nAt the launch target. Run tools/transcript.py to see what it buys: "
+              f"the repeat rate across a full Sunday is the figure that decides "
+              f"whether an afternoon of this is bearable.")
     if len(bank) < TARGET_TOTAL:
         message = (f"Below the launch target: {len(bank)}/{TARGET_TOTAL}. "
                    f"{TARGET_TOTAL - len(bank)} more lines needed before this is heard "

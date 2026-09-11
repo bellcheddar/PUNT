@@ -447,7 +447,8 @@ class EventEngine:
                         managers=[manager], team_ids=[side.team_id],
                         win_prob_delta=round(probability - self._win_prob.get(side.team_id, probability), 4),
                         context={"week": week, "win_prob": probability,
-                                 "lead": round(side.total - opponent.total, 2)},
+                                 "lead": round(side.total - opponent.total, 2),
+                                 "opponent_in_play": opponent.in_play},
                     ))
         return out
 

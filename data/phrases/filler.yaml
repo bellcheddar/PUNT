@@ -65,3 +65,318 @@
   text: "Statistically, someone in here is about to check the wrong game."
   roast_level: 1
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+# Dead air is most of a Sunday. These carry no slots by design: a gap has no
+# player, no manager and no number attached to it, and a filler line that tried
+# to name somebody would be talking about a thing that did not happen.
+
+- id: fill_09
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 3
+  cooldown: 2400
+  text: "Still nothing. Football is mostly people standing in groups."
+  voice: colour
+- id: fill_10
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 3
+  cooldown: 2400
+  text: "A brief intermission, brought to you by nobody having scored."
+  voice: colour
+- id: fill_11
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "The projections remain confident about things that have not happened."
+  voice: colour
+- id: fill_12
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 2400
+  text: "Somewhere a coach is deciding to run it up the middle again."
+  voice: colour
+- id: fill_13
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "Nothing to report, which is itself a kind of report."
+  voice: colour
+- id: fill_14
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 2400
+  text: "This is a good moment to get a round in."
+  voice: colour
+- id: fill_15
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 3000
+  text: "Everyone in here is now an authority on a team they have never seen play."
+  roast_level: 1
+  voice: colour
+- id: fill_16
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 3000
+  text: "The scores have not moved. The confidence in this room has."
+  roast_level: 1
+  voice: colour
+- id: fill_17
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 3000
+  text: "Quiet. Suspiciously quiet. Historically this does not last."
+  voice: colour
+- id: fill_18
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 3000
+  text: "At least one person here is refreshing something that updates automatically."
+  roast_level: 1
+  voice: colour
+- id: fill_19
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 3000
+  text: "Nobody has scored in a while. Somebody is taking that personally."
+  roast_level: 1
+  voice: colour
+- id: fill_20
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 3000
+  text: "A lull. Use it wisely."
+  voice: colour
+- id: fill_21
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "The bench is having a better afternoon than several lineups in this room."
+  roast_level: 1
+  voice: colour
+- id: fill_22
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "Somebody just explained the flex position to somebody who already knew."
+  roast_level: 1
+  voice: colour
+- id: fill_23
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "Two minutes of nothing. That is four points of projection evaporating."
+  voice: colour
+- id: fill_24
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "The commentary has nothing. The commentary is being honest about it."
+  voice: colour
+- id: fill_25
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "Somebody is about to say the words wait, who do I have in this game."
+  roast_level: 1
+  voice: colour
+
+- id: fill_26
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "Nothing is happening anywhere. It is a broad and even nothing."
+  voice: colour
+- id: fill_27
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 2400
+  text: "Somewhere a drive has stalled on third and long."
+  voice: colour
+- id: fill_28
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "The projections are still confident. They have not earned that."
+  voice: colour
+- id: fill_29
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 2400
+  text: "This is the quiet bit. Enjoy it, somebody is about to be furious."
+  voice: colour
+- id: fill_30
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 2400
+  text: "No scoring. Several opinions, though."
+  roast_level: 1
+  voice: colour
+- id: fill_31
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 2400
+  text: "A period of calm reflection, imposed by nothing happening."
+  voice: colour
+- id: fill_32
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 3000
+  text: "Somebody has just checked a score they already knew."
+  roast_level: 1
+  voice: colour
+- id: fill_33
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 3000
+  text: "The bar is louder than the football at the moment."
+  voice: colour
+- id: fill_34
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 3000
+  text: "Punts. Lots of punts. It is in the name."
+  voice: colour
+- id: fill_35
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 3000
+  text: "Nobody has done anything remarkable for several minutes."
+  voice: colour
+- id: fill_36
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 2
+  cooldown: 3000
+  text: "Two people in here are quietly recalculating. It will not help."
+  roast_level: 1
+  voice: colour
+- id: fill_37
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 2
+  cooldown: 3000
+  text: "A moment of stillness before somebody shouts."
+  voice: colour
+- id: fill_38
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "Nothing. Still nothing. There is a lot of nothing in this sport."
+  voice: colour
+- id: fill_39
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "Somebody just said they were never worried. They were worried."
+  roast_level: 1
+  voice: colour
+- id: fill_40
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "The waiver wire is open and at least one person here is looking at it."
+  roast_level: 1
+  voice: colour
+- id: fill_41
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "This would be a good time for something to happen."
+  voice: colour
+- id: fill_42
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "The bench is watching the bench."
+  roast_level: 1
+  voice: colour
+- id: fill_43
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "Commercial break. Somebody is explaining their draft strategy again."
+  roast_level: 1
+  voice: colour
+- id: fill_44
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "A quiet spell. Historically these end abruptly and badly for somebody."
+  voice: colour
+- id: fill_45
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "Still level, still quiet, still four hours to go."
+  voice: colour
+- id: fill_46
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "Nothing to say, and saying it anyway."
+  voice: colour
+- id: fill_47
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "Twenty two enormous men are standing around discussing it."
+  voice: colour
+- id: fill_48
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "One of these games is about to turn on a single play. None of them are yet."
+  voice: colour
+- id: fill_49
+  trigger: {kind: FILLER}
+  tone: [corny]
+  weight: 1
+  cooldown: 3600
+  text: "The kickers are warming up somewhere, quietly deciding an afternoon."
+  voice: colour
+- id: fill_50
+  trigger: {kind: FILLER}
+  tone: [dry]
+  weight: 1
+  cooldown: 3600
+  text: "Nothing has happened. This has been PUNT."
+  voice: colour

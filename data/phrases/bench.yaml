@@ -162,3 +162,235 @@
   text: "Nothing at all from the {slot}, and {benched_points} sitting on the bench."
   audio: trombone
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+
+- id: bench_11
+  trigger: {kind: BENCH_DISASTER}
+  tone: [dry]
+  weight: 4
+  cooldown: 1020
+  text: "{regret} points on {manager}'s bench. He set that lineup with his own hands."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_12
+  trigger: {kind: BENCH_DISASTER}
+  tone: [corny]
+  weight: 3
+  cooldown: 1020
+  text: "{benched} is on {benched_points} and not playing. {manager} arranged this."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_13
+  trigger: {kind: BENCH_DISASTER}
+  tone: [dry]
+  weight: 3
+  cooldown: 1080
+  text: "The {slot} has {started_points}. The bench has {benched_points}. Those are the two numbers."
+  audio: trombone
+  voice: colour
+- id: bench_14
+  trigger: {kind: BENCH_DISASTER}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1080
+  text: "{manager} owns {benched}. {manager} did not play {benched}. Both of those are true."
+  audio: trombone
+  voice: colour
+- id: bench_15
+  trigger: {kind: BENCH_DISASTER}
+  tone: [corny]
+  weight: 3
+  cooldown: 1140
+  text: "Spare a thought for {benched}, on {benched_points}, watching from {manager}'s bench."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_16
+  trigger: {kind: BENCH_DISASTER}
+  tone: [dry]
+  weight: 3
+  cooldown: 1140
+  text: "{manager} is {regret} points worse off than he had to be."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_17
+  trigger: {kind: BENCH_DISASTER}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1200
+  text: "There was a version of this afternoon where {manager} played {benched}. He did not pick it."
+  audio: trombone
+  voice: colour
+- id: bench_18
+  trigger: {kind: BENCH_DISASTER}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{manager}'s bench: {benched_points}. {manager}'s {slot}: {started_points}. No further questions."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_19
+  trigger: {kind: BENCH_DISASTER}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "That is {regret} points {manager} owns and is not allowed to use."
+  audio: trombone
+  voice: colour
+- id: bench_20
+  trigger: {kind: BENCH_DISASTER}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1200
+  text: "Everybody makes lineup decisions. {manager} makes them like this."
+  audio: trombone
+  voice: colour
+- id: bench_21
+  trigger: {kind: BENCH_DISASTER}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{benched} has {benched_points} and nowhere to put them."
+  audio: trombone
+  voice: colour
+- id: bench_22
+  trigger: {kind: BENCH_DISASTER}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "The optimal lineup would have {manager} on {regret} more. The optimal lineup is not a thing you can start."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_23
+  trigger: {kind: BENCH_DISASTER}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "This is the part of the afternoon {manager} will not be describing later."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_24
+  trigger: {kind: BENCH_DISASTER}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{started} in the {slot} on {started_points}, and {benched} on {benched_points} doing nothing for anybody."
+  audio: trombone
+  voice: colour
+- id: bench_big_05
+  trigger: {kind: BENCH_DISASTER, delta_points: {gte: 25}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1080
+  text: "{delta} points of difference. {manager} has achieved something here."
+  audio: trombone
+  voice: colour
+- id: bench_big_06
+  trigger: {kind: BENCH_DISASTER, delta_points: {gte: 25}}
+  tone: [corny]
+  weight: 3
+  cooldown: 1140
+  text: "{benched} on {benched_points}, benched. That is a whole manager's score sitting out."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_big_07
+  trigger: {kind: BENCH_DISASTER, delta_points: {gte: 35}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1200
+  text: "{regret} points. {manager} could field a second team out of what he left behind."
+  audio: trombone
+  voice: colour
+- id: bench_big_08
+  trigger: {kind: BENCH_DISASTER, delta_points: {gte: 35}}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 1200
+  text: "At {regret} points this stops being a mistake and becomes a decision."
+  audio: trombone
+  voice: colour
+- id: bench_flex_03
+  trigger: {kind: BENCH_DISASTER, slot: FLEX}
+  tone: [corny]
+  roast_level: 1
+  weight: 3
+  cooldown: 1140
+  text: "The flex takes anybody, {manager}. Anybody at all. And you chose {started}."
+  audio: trombone
+  voice: colour
+- id: bench_flex_04
+  trigger: {kind: BENCH_DISASTER, slot: FLEX}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "{started_points} out of the flex while {benched} sat on {benched_points}."
+  audio: trombone
+  voice: colour
+- id: bench_zero_03
+  trigger: {kind: BENCH_DISASTER, started_points: {lte: 1}}
+  tone: [corny]
+  roast_level: 1
+  weight: 3
+  cooldown: 1140
+  text: "{started_points} from the {slot}. {benched_points} from the bench. {manager} chose the first one on purpose."
+  audio: trombone
+  voice: colour
+- id: bench_zero_04
+  trigger: {kind: BENCH_DISASTER, started_points: {lte: 1}}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1200
+  text: "A blank in the {slot} and {benched_points} on the bench behind it. That is the whole tragedy in two numbers."
+  audio: trombone
+  voice: colour
+- id: bench_wr_01
+  trigger: {kind: BENCH_DISASTER, slot: WR}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{manager}'s receivers are in the wrong order and have been all day."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_rb_01
+  trigger: {kind: BENCH_DISASTER, slot: RB}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "Wrong running back, {manager}. The right one is on {benched_points}."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: bench_qb_01
+  trigger: {kind: BENCH_DISASTER, slot: QB}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1200
+  text: "Benching a quarterback is a choice with one job, {manager}, and it went the other way."
+  audio: trombone
+  voice: colour
+- id: bench_te_01
+  trigger: {kind: BENCH_DISASTER, slot: TE}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "Two tight ends and {manager} picked the quiet one."
+  roast_level: 1
+  audio: trombone
+  voice: colour

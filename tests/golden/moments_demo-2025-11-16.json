@@ -3438,7 +3438,8 @@
   "context": {
    "week": 11,
    "win_prob": 0.9862,
-   "lead": 59.12
+   "lead": 59.12,
+   "opponent_in_play": 5
   },
   "ts": 12300
  },
@@ -5577,7 +5578,8 @@
   "context": {
    "week": 11,
    "win_prob": 0.9912,
-   "lead": 16.25
+   "lead": 16.25,
+   "opponent_in_play": 5
   },
   "ts": 22380
  },

@@ -135,22 +135,51 @@ def test_a_line_does_not_come_round_twice_in_a_hurry(bank):
     assert closest >= 12, f"a line repeated {closest} moments apart"
 
 
-def test_silence_is_a_valid_answer(bank):
+def tiny_bank() -> PhraseBank:
+    """Two lines on long cooldowns.
+
+    The silence rules are tested against this rather than against the real bank,
+    because they are a property of the *mechanism* and the real bank is now large
+    enough never to exhaust its cooldowns at any plausible Moment rate -- which is
+    the bank working, and which made the original version of this test assert
+    nothing. A mechanism test that depends on how many lines somebody has written
+    stops testing the mechanism the moment somebody writes more.
+    """
+    return PhraseBank([
+        Phrase(id="tiny_a", text="{player} again.", kind=("BIG_PLAY", "TOUCHDOWN"), cooldown=3600),
+        Phrase(id="tiny_b", text="{player} once more.", kind=("BIG_PLAY", "TOUCHDOWN"), cooldown=3600),
+    ])
+
+
+def test_silence_is_a_valid_answer():
     """An app that says something about every single play is worse than one that
     picks its moments. Small moments go quiet rather than repeat."""
-    commentator = Commentator(bank, roast_level=1)
-    said = sum(1 for i in range(200)
+    commentator = Commentator(tiny_bank(), roast_level=1)
+    said = sum(1 for i in range(30)
                if commentator.say(moment(kind="BIG_PLAY", magnitude=0.3, seq=i, id=f"q-{i}"), week=11))
-    assert said < 200, "the commentator never once shut up"
+    assert said == 2, f"said {said} lines from a bank of two with everything on cooldown"
     assert commentator.missed.get("BIG_PLAY", 0) > 0
 
 
-def test_a_big_moment_still_speaks_even_when_everything_is_on_cooldown(bank):
+def test_a_big_moment_still_speaks_even_when_everything_is_on_cooldown():
     """The other half of that trade: a touchdown is worth a repeated line."""
-    commentator = Commentator(bank, roast_level=1)
-    said = sum(1 for i in range(150)
+    commentator = Commentator(tiny_bank(), roast_level=1)
+    said = sum(1 for i in range(30)
                if commentator.say(moment(kind="TOUCHDOWN", magnitude=0.9, seq=i, id=f"td-{i}"), week=11))
-    assert said == 150, "a high-magnitude moment went silent"
+    assert said == 30, "a high-magnitude moment went silent"
+
+
+def test_the_real_bank_is_large_enough_not_to_need_the_silence_rule(bank):
+    """The measurement that justified writing 410 lines.
+
+    At the poll rate a Sunday actually produces, the real bank never runs out of
+    eligible big-play lines, so the silence rule is a safety net rather than a
+    routine behaviour. It was not always so: at 27 lines, six big plays an
+    afternoon went unsaid."""
+    commentator = Commentator(bank, roast_level=1)
+    said = sum(1 for i in range(120)
+               if commentator.say(moment(kind="BIG_PLAY", magnitude=0.3, seq=i, id=f"r-{i}"), week=11))
+    assert said == 120, f"{120 - said} big plays went silent with a 410-line bank"
 
 
 def test_triggers_narrow_correctly(bank):

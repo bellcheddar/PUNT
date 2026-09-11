@@ -72,3 +72,152 @@
   text: "{projected} projected. Zero actual. That gap is the entire hobby."
   audio: trombone
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+
+- id: goose_07
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 4
+  cooldown: 1020
+  text: "A full game from {player} and nothing to show {manager} for it."
+  audio: trombone
+  voice: colour
+- id: goose_08
+  trigger: {kind: GOOSE_EGG}
+  tone: [corny]
+  weight: 3
+  cooldown: 1080
+  text: "Zero from the {slot}. {manager} has seen it and is choosing not to discuss it."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_09
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 3
+  cooldown: 1080
+  text: "{player} finishes on nothing. {manager} started him and will have to live with it."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_10
+  trigger: {kind: GOOSE_EGG}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1140
+  text: "Not one point. {manager} devoted an entire lineup slot to that."
+  audio: trombone
+  voice: colour
+- id: goose_11
+  trigger: {kind: GOOSE_EGG}
+  tone: [corny]
+  weight: 3
+  cooldown: 1140
+  text: "{player} is done for the day, on zero, in {manager}'s {slot}."
+  audio: trombone
+  voice: colour
+- id: goose_12
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "The projection said {projected}. The scoreboard says otherwise."
+  audio: trombone
+  voice: colour
+- id: goose_13
+  trigger: {kind: GOOSE_EGG}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1200
+  text: "An empty slot would have scored the same, {manager}, and asked for less."
+  audio: trombone
+  voice: colour
+- id: goose_14
+  trigger: {kind: GOOSE_EGG}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "Goose egg in the {slot}. They happen. They happen to {manager} a lot."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_15
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "Nothing at all from {player}, and the game is over."
+  audio: trombone
+  voice: colour
+- id: goose_16
+  trigger: {kind: GOOSE_EGG}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{manager} gets a clean zero. Round numbers are satisfying, apparently."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_17
+  trigger: {kind: GOOSE_EGG}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "Zero in the {slot}. It is the one number nobody plans for."
+  audio: trombone
+  voice: colour
+- id: goose_high_03
+  trigger: {kind: GOOSE_EGG, projected: {gte: 12}}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 1140
+  text: "{projected} projected, nothing delivered. {manager} was counting on that."
+  audio: trombone
+  voice: colour
+- id: goose_high_04
+  trigger: {kind: GOOSE_EGG, projected: {gte: 15}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1200
+  text: "{projected} projected. Zero actual. That is a whole matchup's worth of nothing."
+  audio: trombone
+  voice: colour
+- id: goose_high_05
+  trigger: {kind: GOOSE_EGG, projected: {gte: 15}}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "The model liked {player} for {projected}. The model has been wrong before."
+  audio: trombone
+  voice: colour
+- id: goose_flex_01
+  trigger: {kind: GOOSE_EGG, slot: FLEX}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1200
+  text: "A zero out of the flex, {manager}. The one seat where you had a choice."
+  audio: trombone
+  voice: colour
+- id: goose_dst_01
+  trigger: {kind: GOOSE_EGG, position: D/ST}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "The defence contributed nothing. {manager} is not surprised and should not be."
+  roast_level: 1
+  audio: trombone
+  voice: colour
+- id: goose_k_01
+  trigger: {kind: GOOSE_EGG, position: K}
+  tone: [dry]
+  weight: 3
+  cooldown: 1200
+  text: "Not a single point from the kicker. There is nowhere lower to go."
+  audio: trombone
+  voice: colour

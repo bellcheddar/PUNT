@@ -108,3 +108,204 @@
   roast_level: 1
   audio: doom
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+
+- id: doom_09
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 4
+  cooldown: 1500
+  text: "{manager} is at {win_pct} percent. That is not nothing, but it is close."
+  audio: doom
+  voice: colour
+- id: doom_10
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 3
+  cooldown: 1500
+  text: "The numbers have stopped being kind to {manager}."
+  audio: doom
+  voice: colour
+- id: doom_11
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 3
+  cooldown: 1500
+  text: "{deficit} behind with the other side still playing. {manager} knows."
+  audio: doom
+  voice: colour
+- id: doom_12
+  trigger: {kind: DOOM}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1500
+  text: "{manager} is {win_pct} percent to win and a hundred percent to talk about it."
+  audio: doom
+  voice: colour
+- id: doom_13
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 3
+  cooldown: 1500
+  text: "Ten thousand simulated Sundays, and {manager} wins {win_pct} percent of them."
+  audio: doom
+  voice: colour
+- id: doom_14
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "There is a path for {manager}. It is narrow and it involves other people failing."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_15
+  trigger: {kind: DOOM}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1800
+  text: "{manager} needs {deficit} points and has run out of people to get them."
+  audio: doom
+  voice: colour
+- id: doom_16
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "This is the stage where {manager} starts supporting whoever is playing his opponent's players."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_17
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "{win_pct} percent. Somebody buy {manager} a drink."
+  audio: doom
+  voice: colour
+- id: doom_18
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "{manager} is still watching. That is the part that hurts."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_19
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "With {opponent_in_play} of the other side still on the field, {manager} is at {win_pct} percent."
+  audio: doom
+  voice: colour
+- id: doom_20
+  trigger: {kind: DOOM}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1800
+  text: "It would take something remarkable now, and nothing remarkable has happened to {manager} all day."
+  audio: doom
+  voice: colour
+- id: doom_21
+  trigger: {kind: DOOM}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "{manager} has entered the bargaining stage."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_22
+  trigger: {kind: DOOM}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "Not over. Nearly over. {manager} at {win_pct} percent."
+  audio: doom
+  voice: colour
+- id: doom_big_03
+  trigger: {kind: DOOM, deficit: {gte: 40}}
+  tone: [dry]
+  roast_level: 1
+  weight: 3
+  cooldown: 1500
+  text: "{deficit} points behind. At some point this stops being a matchup."
+  audio: doom
+  voice: colour
+- id: doom_big_04
+  trigger: {kind: DOOM, deficit: {gte: 40}}
+  tone: [corny]
+  weight: 3
+  cooldown: 1500
+  text: "{manager} is {deficit} down. There is no gentle way to put that."
+  audio: doom
+  voice: colour
+- id: doom_big_05
+  trigger: {kind: DOOM, deficit: {gte: 60}}
+  tone: [savage]
+  roast_level: 2
+  weight: 4
+  cooldown: 1800
+  text: "{deficit}. {manager} could double his score and still lose."
+  audio: doom
+  voice: colour
+- id: doom_close_03
+  trigger: {kind: DOOM, deficit: {lte: 12}}
+  tone: [dry]
+  weight: 4
+  cooldown: 1500
+  text: "{deficit} points and no way to get them. That is the worst kind of losing."
+  audio: doom
+  voice: colour
+- id: doom_close_04
+  trigger: {kind: DOOM, deficit: {lte: 12}}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1500
+  text: "So close, {manager}, and so completely finished."
+  audio: doom
+  voice: colour
+- id: doom_close_05
+  trigger: {kind: DOOM, deficit: {lte: 6}}
+  tone: [corny]
+  weight: 4
+  cooldown: 1500
+  text: "{deficit} points. One catch. {manager} has nobody left to catch it."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_early_01
+  trigger: {kind: DOOM, opponent_in_play: {gte: 5}}
+  tone: [dry]
+  weight: 3
+  cooldown: 1800
+  text: "{manager} is out of it and it is not even dark yet."
+  roast_level: 1
+  audio: doom
+  voice: colour
+- id: doom_many_01
+  trigger: {kind: DOOM, opponent_in_play: {gte: 4}}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1800
+  text: "{opponent_in_play} of the other lot still to play, and {manager} is already at {win_pct} percent."
+  audio: doom
+  voice: colour
+- id: doom_many_02
+  trigger: {kind: DOOM, opponent_in_play: {gte: 4}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "It can still get worse for {manager}, and statistically it will."
+  roast_level: 1
+  audio: doom
+  voice: colour

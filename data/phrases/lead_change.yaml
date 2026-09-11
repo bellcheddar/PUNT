@@ -127,3 +127,173 @@
   text: "The whole matchup turned over in one play. {opponent} may wish to look away."
   audio: horn_03
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+
+- id: lead_09
+  trigger: {kind: LEAD_CHANGE}
+  tone: [hype]
+  weight: 4
+  cooldown: 900
+  text: "{manager} goes in front! {margin} the gap over {opponent}."
+  audio: horn_02
+  voice: pbp
+- id: lead_10
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 3
+  cooldown: 960
+  text: "New leader. {manager} by {margin}, and {opponent} has some thinking to do."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_11
+  trigger: {kind: LEAD_CHANGE}
+  tone: [corny]
+  weight: 3
+  cooldown: 960
+  text: "{manager} is ahead. {opponent} is not. These things change."
+  audio: horn_02
+  voice: colour
+- id: lead_12
+  trigger: {kind: LEAD_CHANGE}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "The lead moves to {manager}! {margin} in it."
+  audio: horn_02
+  voice: pbp
+- id: lead_13
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 3
+  cooldown: 1020
+  text: "{opponent} led for a while. That while is over."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_14
+  trigger: {kind: LEAD_CHANGE}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "{manager} takes it by {margin}. Somebody in this bar just made a noise."
+  audio: horn_02
+  voice: colour
+- id: lead_15
+  trigger: {kind: LEAD_CHANGE}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1140
+  text: "{opponent} had that one won about a minute ago. {opponent} was wrong."
+  audio: horn_02
+  voice: colour
+- id: lead_16
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "Lead change. {manager} by {margin}. Nobody should get comfortable."
+  audio: horn_02
+  voice: colour
+- id: lead_17
+  trigger: {kind: LEAD_CHANGE}
+  tone: [hype]
+  weight: 2
+  cooldown: 1140
+  text: "It has turned over. {manager} in front of {opponent}."
+  audio: horn_02
+  voice: pbp
+- id: lead_18
+  trigger: {kind: LEAD_CHANGE}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{manager} noses ahead. {opponent} is doing sums."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: lead_19
+  trigger: {kind: LEAD_CHANGE}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{margin} between them and the names have swapped over."
+  audio: horn_02
+  voice: colour
+- id: lead_20
+  trigger: {kind: LEAD_CHANGE}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1200
+  text: "That is {opponent}'s lead gone, and it was not a big one to begin with."
+  audio: horn_02
+  voice: colour
+- id: lead_narrow_04
+  trigger: {kind: LEAD_CHANGE, margin: {lte: 2}}
+  tone: [hype]
+  weight: 4
+  cooldown: 900
+  text: "{margin}! That is the whole thing. Neither of them can sit still."
+  audio: horn_02
+  voice: pbp
+- id: lead_narrow_05
+  trigger: {kind: LEAD_CHANGE, margin: {lte: 3}}
+  tone: [dry]
+  weight: 3
+  cooldown: 1020
+  text: "{manager} leads by {margin}, which is one catch either way."
+  audio: horn_02
+  voice: colour
+- id: lead_narrow_06
+  trigger: {kind: LEAD_CHANGE, margin: {lte: 3}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "{margin} points. This one is going to hurt somebody."
+  audio: horn_02
+  voice: colour
+- id: lead_wide_03
+  trigger: {kind: LEAD_CHANGE, margin: {gte: 8}}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "{manager} does not take the lead so much as take it away, by {margin}."
+  audio: horn_03
+  voice: pbp
+- id: lead_wide_04
+  trigger: {kind: LEAD_CHANGE, margin: {gte: 12}}
+  tone: [dry]
+  roast_level: 1
+  weight: 2
+  cooldown: 1200
+  text: "{margin} the wrong way for {opponent} in the space of one play."
+  audio: horn_03
+  voice: colour
+- id: lead_swing_03
+  trigger: {kind: LEAD_CHANGE, win_prob_delta: {gte: 0.2}}
+  tone: [hype]
+  weight: 4
+  cooldown: 1020
+  text: "The whole matchup has flipped. {manager} was losing that and now is not."
+  audio: horn_03
+  voice: pbp
+- id: lead_swing_04
+  trigger: {kind: LEAD_CHANGE, win_prob_delta: {gte: 0.2}}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1140
+  text: "{opponent} may want to look away for a bit."
+  audio: horn_03
+  voice: colour
+- id: lead_swing_05
+  trigger: {kind: LEAD_CHANGE, win_prob_delta: {gte: 0.35}}
+  tone: [hype]
+  weight: 4
+  cooldown: 1200
+  text: "Enormous. That single play took the game off {opponent} and gave it to {manager}."
+  audio: horn_03
+  voice: pbp

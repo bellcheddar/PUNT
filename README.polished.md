@@ -2,7 +2,7 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-147%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-4%20of%206%20complete-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-190%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -146,8 +146,10 @@ the latency behind the SSE round trip.
 - **Repetition.** The first transcript run showed 236 lines from 75 distinct phrases
   with the closest repeat exactly 8 Moments apart, which is `cooldown: 240` divided
   by the 30 s poll: the mechanism working perfectly at a badly chosen setting.
-  Retuning moved the closest repeat to 26 Moments and dropped the worst line from 11
-  uses to 7.
+  Retuning the cooldowns before writing any more lines moved the closest repeat to 26
+  Moments; growing the bank to 410 took the repeat rate from 68% to 43% and the worst
+  line from 11 uses to 5. Tuning the cheap parameter first was worth roughly half the
+  improvement and cost nothing.
 - **Clipping.** Web Audio hard-clips at the destination, and the spec's nominal bus
   levels sum to 1.42 with music fully ducked. Rescaled so all four buses ducked under
   a play call sum to exactly 1.0, with a test that reads the levels out of the
@@ -308,7 +310,7 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                       # 147 tests, no network, no cookies
+python3 -m pytest                       # 190 tests, no network, no cookies
 python3 tools/screenshot.py --check-overflow   # needs the app running
 ```
 
@@ -457,9 +459,9 @@ line inside its cooldown, and the mute toggle works instantly on iOS.*
 - [x] **Red-zone countdown overlay**, opening only when somebody in the league owns a player on the
       drive, and closing either way
 - [x] **`static/audio/LICENCES.md`**, which cannot drift because everything in it is generated
-- [ ] **258 more phrase lines** to reach the spec's 400. `tools/phrase_lint.py` reports the shortfall
-      per category and `tools/transcript.py` measures what it costs: currently 64% of lines said are
-      a repeat, with the worst line heard 7 times in an afternoon
+- [x] **410 phrase lines**, past the spec's 400. What that bought, measured across a full Sunday
+      rather than assumed: the repeat rate fell from 68% to 43%, the worst line from 11 uses to 5,
+      and the closest repeat moved from 8 Moments apart to 30, with none at all inside 10
 - [ ] **Install Piper on the droplet.** It is the shipping TTS backend; macOS `say` stands in locally
       so the pipeline is testable end to end, but it is not on the server
 - [ ] **Verify the mute toggle on a real iPhone.** Part of the acceptance criterion and not

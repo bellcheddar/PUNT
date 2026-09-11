@@ -350,3 +350,450 @@
   text: "First quarter and {player} is already in. {manager}, it is a long afternoon."
   audio: horn_01
   voice: pbp
+
+# --- second batch ----------------------------------------------------------
+# Written after tools/transcript.py measured the first: 74 touchdowns in a Sunday
+# against 35 lines meant the top one was heard seven times. Weight is concentrated
+# on the generics because most Moments carry no special trigger, so those are what
+# actually get drawn.
+
+- id: td_generic_11
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 4
+  cooldown: 900
+  text: "In! {player} scores and {manager} has {delta} more than he had a second ago."
+  audio: horn_01
+  voice: pbp
+- id: td_generic_12
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 3
+  cooldown: 900
+  text: "{player}, end zone, done. {manager} is on {total}."
+  audio: horn_01
+  voice: pbp
+- id: td_generic_13
+  trigger: {kind: TOUCHDOWN}
+  tone: [dry]
+  weight: 3
+  cooldown: 960
+  text: "Six for {player}. {manager} nods as though he expected it."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_generic_14
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 3
+  cooldown: 960
+  text: "{player} gets in! That is {delta} for {manager} and a noise from the corner."
+  audio: horn_02
+  voice: pbp
+- id: td_generic_15
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 3
+  cooldown: 960
+  text: "Touchdown. {player}. {manager} would like to remind everyone he drafted him."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_16
+  trigger: {kind: TOUCHDOWN}
+  tone: [dry]
+  weight: 3
+  cooldown: 1020
+  text: "{player} scores. The {slot} earns its place for once."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_17
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 3
+  cooldown: 1020
+  text: "Over the line goes {player}. {manager} takes {delta}."
+  audio: horn_02
+  voice: pbp
+- id: td_generic_18
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 2
+  cooldown: 1020
+  text: "{player} in the end zone. {manager} has gone very quiet, which means it is good."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_19
+  trigger: {kind: TOUCHDOWN}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "That is six and a bit for {player}. {manager} will round it up when he tells this story."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_generic_20
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 3
+  cooldown: 1080
+  text: "{player}! Touchdown! {manager} is having a moment."
+  audio: horn_02
+  voice: pbp
+- id: td_generic_21
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Another one for {player}. {manager}'s afternoon improves without his involvement."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_22
+  trigger: {kind: TOUCHDOWN}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "{delta} for {player}. {manager} did nothing except own him, which is the whole game."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_23
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 2
+  cooldown: 1140
+  text: "He is in! {player} for {manager}, and the table is shaking."
+  audio: horn_02
+  voice: pbp
+- id: td_generic_24
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 2
+  cooldown: 1140
+  text: "{player} scores. {manager} does the thing with his arms again."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_25
+  trigger: {kind: TOUCHDOWN}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "Touchdown {player}. {manager} moves to {total} and starts checking other people's scores."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_generic_26
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 2
+  cooldown: 1200
+  text: "{player} takes it in and {manager} takes {delta}."
+  audio: horn_01
+  voice: pbp
+- id: td_generic_27
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "Six points, {player}, and one very smug {manager}."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_generic_28
+  trigger: {kind: TOUCHDOWN}
+  tone: [dry]
+  weight: 2
+  cooldown: 1200
+  text: "{player} finds the end zone. {manager} finds his voice."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_generic_29
+  trigger: {kind: TOUCHDOWN}
+  tone: [hype]
+  weight: 2
+  cooldown: 1200
+  text: "Touchdown! {delta} for {manager}, who needed it more than he will admit."
+  roast_level: 1
+  audio: horn_02
+  voice: pbp
+- id: td_generic_30
+  trigger: {kind: TOUCHDOWN}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "{player} scores for {manager}, who has been staring at this game for twenty minutes."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+
+# --- long ones, second batch ----------------------------------------------
+
+- id: td_long_06
+  trigger: {kind: TOUCHDOWN, delta_points: {gte: 11}}
+  tone: [hype]
+  weight: 3
+  cooldown: 900
+  text: "{player} is not being caught. {delta} for {manager} in one go."
+  audio: horn_03
+  voice: pbp
+- id: td_long_07
+  trigger: {kind: TOUCHDOWN, delta_points: {gte: 11}}
+  tone: [corny]
+  weight: 3
+  cooldown: 900
+  text: "All the way. {player} for {delta}, and {manager} has stopped watching anything else."
+  audio: horn_03
+  voice: pbp
+- id: td_long_08
+  trigger: {kind: TOUCHDOWN, delta_points: {gte: 12}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1020
+  text: "One play, {delta} points. The rest of {manager}'s lineup is now surplus."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: td_long_09
+  trigger: {kind: TOUCHDOWN, delta_points: {gte: 12}}
+  tone: [hype]
+  weight: 2
+  cooldown: 1020
+  text: "{player} breaks it and keeps going. {delta} for {manager}."
+  audio: horn_03
+  voice: pbp
+- id: td_long_10
+  trigger: {kind: TOUCHDOWN, delta_points: {gte: 13}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1200
+  text: "That is the play of {manager}'s week and it is not yet four o'clock."
+  audio: horn_03
+  voice: colour
+
+# --- short ones, second batch ---------------------------------------------
+
+- id: td_short_04
+  trigger: {kind: TOUCHDOWN, delta_points: {lte: 6.6}}
+  tone: [dry]
+  weight: 3
+  cooldown: 960
+  text: "{player} gets the short one. {manager} will take six however it arrives."
+  audio: horn_01
+  voice: colour
+- id: td_short_05
+  trigger: {kind: TOUCHDOWN, delta_points: {lte: 6.6}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1020
+  text: "Barely a yard, still six. {manager} is not fussy today."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_short_06
+  trigger: {kind: TOUCHDOWN, delta_points: {lte: 6.6}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "Unspectacular and entirely sufficient. {delta} for {manager}."
+  audio: horn_01
+  voice: colour
+
+# --- position, second batch ------------------------------------------------
+
+- id: td_qb_03
+  trigger: {kind: TOUCHDOWN, position: QB}
+  tone: [dry]
+  weight: 2
+  cooldown: 1020
+  text: "{player} finds somebody in the end zone. {manager} gets {delta} for the pass."
+  audio: horn_01
+  voice: colour
+- id: td_qb_04
+  trigger: {kind: TOUCHDOWN, position: QB}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Through the air, {player}, and {manager} is suddenly an expert on quarterbacks."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_rb_03
+  trigger: {kind: TOUCHDOWN, position: RB}
+  tone: [dry]
+  weight: 2
+  cooldown: 1020
+  text: "{player} takes it in on the ground. {manager}'s running game is working."
+  audio: horn_01
+  voice: colour
+- id: td_rb_04
+  trigger: {kind: TOUCHDOWN, position: RB}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Short yardage, big points. {player} for {delta}, {manager} exhaling."
+  audio: horn_02
+  voice: pbp
+- id: td_wr_03
+  trigger: {kind: TOUCHDOWN, position: WR}
+  tone: [dry]
+  weight: 2
+  cooldown: 1020
+  text: "{player} catches one in the end zone. {manager} takes {delta} and says nothing."
+  audio: horn_01
+  voice: colour
+- id: td_wr_04
+  trigger: {kind: TOUCHDOWN, position: WR}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Lovely catch by {player}. {manager} is claiming credit for the waiver pickup."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_te_02
+  trigger: {kind: TOUCHDOWN, position: TE}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "{player} scores from the tight end slot, which {manager} had forgotten he filled."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_te_03
+  trigger: {kind: TOUCHDOWN, position: TE}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "Six from the tight end. {manager} gets {delta} from the position nobody plans for."
+  audio: horn_01
+  voice: colour
+- id: td_k_01
+  trigger: {kind: TOUCHDOWN, position: K}
+  tone: [corny]
+  weight: 3
+  cooldown: 1200
+  text: "Something extraordinary has happened involving {manager}'s kicker."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: td_dst_02
+  trigger: {kind: TOUCHDOWN, position: D/ST}
+  tone: [hype]
+  weight: 3
+  cooldown: 1200
+  text: "The defence takes it back! {manager} gets {delta} from eleven people he cannot name."
+  roast_level: 1
+  audio: horn_03
+  voice: pbp
+
+# --- situational, second batch --------------------------------------------
+
+- id: td_flex_02
+  trigger: {kind: TOUCHDOWN, slot: FLEX}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "The flex scores. {manager} will call that a considered decision."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_flex_03
+  trigger: {kind: TOUCHDOWN, slot: FLEX}
+  tone: [dry]
+  weight: 2
+  cooldown: 1140
+  text: "{delta} out of the flex, which is the seat {manager} agonised over for a week."
+  roast_level: 1
+  audio: horn_02
+  voice: colour
+- id: td_bench_04
+  trigger: {kind: TOUCHDOWN, starter: false}
+  tone: [dry]
+  roast_level: 1
+  weight: 4
+  cooldown: 900
+  text: "{player} scores, on the bench, for nobody. {manager} saw that happen."
+  audio: trombone
+  voice: colour
+- id: td_bench_05
+  trigger: {kind: TOUCHDOWN, starter: false}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1020
+  text: "Six points that {manager} owns and cannot have. The bench giveth nothing."
+  audio: trombone
+  voice: colour
+- id: td_bench_06
+  trigger: {kind: TOUCHDOWN, starter: false}
+  tone: [corny]
+  roast_level: 1
+  weight: 3
+  cooldown: 1080
+  text: "That one is {manager}'s, technically, in the way a photograph of a meal is dinner."
+  audio: trombone
+  voice: colour
+- id: td_redzone_03
+  trigger: {kind: TOUCHDOWN, red_zone: true}
+  tone: [hype]
+  weight: 3
+  cooldown: 960
+  text: "From the goal line, {player}! {manager} can sit back down."
+  audio: horn_02
+  voice: pbp
+- id: td_redzone_04
+  trigger: {kind: TOUCHDOWN, red_zone: true}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "They got it in. {player} scores and {manager} stops holding his breath."
+  audio: horn_02
+  voice: pbp
+- id: td_q4_03
+  trigger: {kind: TOUCHDOWN, quarter: {gte: 4}}
+  tone: [hype]
+  weight: 3
+  cooldown: 960
+  text: "Late, late touchdown for {player}. {manager} was already writing it off."
+  roast_level: 1
+  audio: horn_03
+  voice: pbp
+- id: td_q4_04
+  trigger: {kind: TOUCHDOWN, quarter: {gte: 4}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Fourth quarter six for {manager}. This is why nobody leaves early."
+  audio: horn_03
+  voice: colour
+- id: td_q1_02
+  trigger: {kind: TOUCHDOWN, quarter: {lte: 1}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "Early points for {manager}. There are several hours in which to ruin this."
+  roast_level: 1
+  audio: horn_01
+  voice: colour
+- id: td_q2_01
+  trigger: {kind: TOUCHDOWN, quarter: 2}
+  tone: [corny]
+  weight: 2
+  cooldown: 1080
+  text: "Before the half, {player} scores. {manager} gets {delta} and a sandwich."
+  audio: horn_01
+  voice: pbp
+- id: td_q3_01
+  trigger: {kind: TOUCHDOWN, quarter: 3}
+  tone: [dry]
+  weight: 2
+  cooldown: 1080
+  text: "Third quarter touchdown for {player}. {manager} is back in the room."
+  roast_level: 1
+  audio: horn_02
+  voice: colour

@@ -52,3 +52,166 @@
   text: "{lead} points. This stopped being a matchup some time ago."
   audio: horn_03
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+
+- id: clinch_06
+  trigger: {kind: CLINCH}
+  tone: [hype]
+  weight: 4
+  cooldown: 1500
+  text: "{manager} is safe. {lead} up and nothing left to worry about."
+  audio: horn_03
+  voice: pbp
+- id: clinch_07
+  trigger: {kind: CLINCH}
+  tone: [dry]
+  weight: 3
+  cooldown: 1500
+  text: "{win_pct} percent. {manager} can stop refreshing."
+  audio: horn_03
+  voice: colour
+- id: clinch_08
+  trigger: {kind: CLINCH}
+  tone: [corny]
+  weight: 3
+  cooldown: 1500
+  text: "That one is done. {manager} by {lead}."
+  audio: horn_03
+  voice: colour
+- id: clinch_09
+  trigger: {kind: CLINCH}
+  tone: [dry]
+  weight: 3
+  cooldown: 1500
+  text: "{manager} has it. The rest of the afternoon is a formality."
+  audio: horn_03
+  voice: colour
+- id: clinch_10
+  trigger: {kind: CLINCH}
+  tone: [corny]
+  weight: 3
+  cooldown: 1500
+  text: "{lead} clear. {manager} is now free to have opinions about other people's matchups."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: clinch_11
+  trigger: {kind: CLINCH}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1800
+  text: "{manager} wins, and will describe it as a nervy one."
+  audio: horn_03
+  voice: colour
+- id: clinch_12
+  trigger: {kind: CLINCH}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "Mathematically settled. {manager} by {lead}."
+  audio: horn_03
+  voice: colour
+- id: clinch_13
+  trigger: {kind: CLINCH}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "{manager} can put the phone down now. {manager} will not put the phone down."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: clinch_14
+  trigger: {kind: CLINCH}
+  tone: [hype]
+  weight: 2
+  cooldown: 1800
+  text: "That is {manager} home and dry at {win_pct} percent."
+  audio: horn_03
+  voice: pbp
+- id: clinch_15
+  trigger: {kind: CLINCH}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "{lead} up with the simulator out of ideas. Well played, {manager}."
+  audio: horn_03
+  voice: colour
+- id: clinch_16
+  trigger: {kind: CLINCH}
+  tone: [savage]
+  roast_level: 2
+  weight: 2
+  cooldown: 1800
+  text: "{manager} has won a fantasy football match. Somebody tell him it is not an achievement."
+  audio: horn_03
+  voice: colour
+- id: clinch_17
+  trigger: {kind: CLINCH}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "Safe. {manager} by {lead}, and the celebrating has started."
+  audio: horn_03
+  voice: colour
+- id: clinch_narrow_01
+  trigger: {kind: CLINCH, lead: {lte: 12}}
+  tone: [hype]
+  weight: 4
+  cooldown: 1500
+  text: "{manager} holds on by {lead}. That was closer than he is going to admit."
+  roast_level: 1
+  audio: horn_03
+  voice: pbp
+- id: clinch_narrow_02
+  trigger: {kind: CLINCH, lead: {lte: 12}}
+  tone: [dry]
+  weight: 3
+  cooldown: 1800
+  text: "{lead} in it at the end. {manager} will call that comfortable."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: clinch_big_02
+  trigger: {kind: CLINCH, lead: {gte: 40}}
+  tone: [dry]
+  weight: 3
+  cooldown: 1800
+  text: "{lead} points. {manager} could have started nine kickers and still won."
+  roast_level: 1
+  audio: horn_03
+  voice: colour
+- id: clinch_big_03
+  trigger: {kind: CLINCH, lead: {gte: 60}}
+  tone: [savage]
+  roast_level: 2
+  weight: 3
+  cooldown: 1800
+  text: "{lead}. At this point it is not a win, it is a weather event."
+  audio: horn_03
+  voice: colour
+- id: clinch_big_04
+  trigger: {kind: CLINCH, lead: {gte: 40}}
+  tone: [corny]
+  weight: 2
+  cooldown: 1800
+  text: "{manager} is {lead} clear and nobody needed the simulator to say so."
+  audio: horn_03
+  voice: colour
+- id: clinch_early_01
+  trigger: {kind: CLINCH, opponent_in_play: {gte: 5}}
+  tone: [corny]
+  weight: 3
+  cooldown: 1800
+  text: "Settled already, with {opponent_in_play} of the other side still to play. {manager} has the day off."
+  audio: horn_03
+  voice: colour
+- id: clinch_early_02
+  trigger: {kind: CLINCH, opponent_in_play: {gte: 5}}
+  tone: [dry]
+  weight: 2
+  cooldown: 1800
+  text: "{manager} is safe with hours to spare, which is its own kind of anticlimax."
+  audio: horn_03
+  voice: colour

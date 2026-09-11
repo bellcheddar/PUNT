@@ -25,3 +25,105 @@
   text: "{manager} loses {player} from the {slot}."
   audio: ""
   voice: colour
+
+# --- second batch ----------------------------------------------------------
+# Flat, and staying flat. A real person has been hurt; the house rule about
+# roasting managers rather than players applies most here, and the honest version
+# of "most" is "entirely".
+
+- id: inj_04
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 4
+  cooldown: 900
+  text: "{player} is listed {status}. He is in {manager}'s {slot}."
+  audio: ""
+  voice: colour
+- id: inj_05
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 3
+  cooldown: 960
+  text: "{manager}'s {slot} has picked up an injury designation."
+  audio: ""
+  voice: colour
+- id: inj_06
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 3
+  cooldown: 1020
+  text: "Status change for {player}: {status}."
+  audio: ""
+  voice: colour
+- id: inj_07
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 3
+  cooldown: 1020
+  text: "{player} is {status}, which affects {manager}."
+  audio: ""
+  voice: colour
+- id: inj_08
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 2
+  cooldown: 1080
+  text: "Injury news: {player}, {manager}'s {slot}."
+  audio: ""
+  voice: colour
+- id: inj_09
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 2
+  cooldown: 1080
+  text: "{player} will not be back. {manager} is on {total}."
+  audio: ""
+  voice: colour
+- id: inj_10
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 2
+  cooldown: 1140
+  text: "That is {player} out of the game, and out of {manager}'s afternoon."
+  audio: ""
+  voice: colour
+- id: inj_11
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 2
+  cooldown: 1140
+  text: "{manager} loses his {slot} to an injury."
+  audio: ""
+  voice: colour
+- id: inj_12
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 2
+  cooldown: 1200
+  text: "{player} is down. {status}."
+  audio: ""
+  voice: colour
+- id: inj_13
+  trigger: {kind: INJURY}
+  tone: [flat]
+  weight: 2
+  cooldown: 1200
+  text: "No further points expected from {player} today."
+  audio: ""
+  voice: colour
+- id: inj_out_01
+  trigger: {kind: INJURY, status: OUT}
+  tone: [flat]
+  weight: 4
+  cooldown: 1020
+  text: "{player} is out. Whatever {manager} had projected there is gone."
+  audio: ""
+  voice: colour
+- id: inj_out_02
+  trigger: {kind: INJURY, status: OUT}
+  tone: [flat]
+  weight: 3
+  cooldown: 1140
+  text: "Ruled out: {player}, {manager}'s {slot}."
+  audio: ""
+  voice: colour
