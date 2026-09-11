@@ -58,8 +58,22 @@ TEAM = Feed(
     name="mTeam", views=("mTeam", "mSettings"), ttl=21_600,
     purpose="Team names, abbreviations, uploaded logo URLs, owner display names, division",
 )
+#: The season grid. NOTE the view is `mMatchup`, not `mSchedule`: there is no
+#: such view as mSchedule, and asking for it returns a perfectly valid response
+#: with no `schedule` key in it at all -- no error, no empty list, just an
+#: absence. Every downstream reader then degraded exactly as designed, and the
+#: Multiverse tab said "the schedule feed is missing", which was true and
+#: unhelpful, for the whole build.
+#:
+#: It survived because the SYNTHETIC FIXTURE answered to whatever PUNT asked
+#: for. `tools/make_fixture.py` files its payload under this feed's `name`, so
+#: the replay returned a schedule for a view ESPN has never served. A fixture
+#: generated from the client's own assumptions cannot contradict them.
+#:
+#: `name` stays "mSchedule" deliberately: it is the cache and replay key, and
+#: the committed recording is filed under it.
 SCHEDULE = Feed(
-    name="mSchedule", views=("mSchedule", "mTeam"), ttl=3_600,
+    name="mSchedule", views=("mMatchup", "mTeam"), ttl=3_600,
     purpose="Season grid for all-play, luck and simulations",
 )
 SCOREBOARD = Feed(
