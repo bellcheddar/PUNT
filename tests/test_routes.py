@@ -96,3 +96,34 @@ def test_a_missing_page_still_shows_the_tab_bar(client, no_network):
     response = client.get("/definitely-not-a-tab")
     assert response.status_code == 404
     assert b"tabbar" in response.data
+
+
+def test_view_models_produce_text_not_markup(client, no_network):
+    """A view model's strings are text, and Jinja escapes them.
+
+    An HTML entity written into one -- "A &mdash; B" -- comes out on the page as
+    the literal characters `&mdash;`, because the ampersand is escaped. It looked
+    fine in the Python and wrong on the bar screen, which is the only place it
+    was visible.
+    """
+    import re
+
+    from views.viewmodels import cheer_view, receipts_view, swing_view, watch_now
+
+    snap = client.application.extensions["punt"].repo.snapshot()
+
+    with client.application.app_context():
+        strings: list[str] = []
+        for row in watch_now(snap):
+            strings.extend(v for v in row.values() if isinstance(v, str))
+        for row in cheer_view(snap, team_id=1):
+            strings.extend(v for v in row.values() if isinstance(v, str))
+        for row in receipts_view(snap)["rows"]:
+            strings.extend(v for v in row.values() if isinstance(v, str))
+        for row in swing_view(snap)["rows"]:
+            strings.extend(v for v in row.values() if isinstance(v, str))
+
+    entity = re.compile(r"&(?:[a-zA-Z]+|#\d+);")
+    offenders = [s for s in strings if entity.search(s)]
+    assert not offenders, f"HTML entities in view-model text: {offenders[:3]}"
+    assert strings, "the view models produced no text to check"

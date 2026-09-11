@@ -14,7 +14,7 @@ import time
 from flask import Blueprint, Response, jsonify, render_template, request
 
 from views.state import snapshot, state
-from views.viewmodels import album_view, cheer_view, matchup_view, moments_view
+from views.viewmodels import album_view, cheer_view, matchup_view, moments_view, watch_now
 
 bp = Blueprint("api", __name__)
 
@@ -113,6 +113,12 @@ def partial_cheer():
 
     snap = snapshot()
     return render_template("partials/cheer.html", cheer=cheer_view(snap, _team_param()), snap=snap)
+
+
+@bp.route("/partials/watchnow")
+def partial_watchnow():
+    snap = snapshot()
+    return render_template("partials/watchnow.html", watch=watch_now(snap), snap=snap)
 
 
 @bp.route("/api/recap")

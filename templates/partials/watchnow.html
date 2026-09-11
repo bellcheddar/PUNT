@@ -1,0 +1,17 @@
+{# What is worth looking up for, in order. Deliberately short: a rail of ten
+   things is a list, and a list is something nobody reads from across a room. #}
+{% if watch %}
+<ul class="rail">
+  {% for row in watch %}
+  <li class="rail-item rail-item--{{ row.kind }}">
+    <span class="rail-flag">{{ row.flag }}</span>
+    <span class="rail-text">{{ row.text }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="empty">
+  <strong>Nothing urgent</strong>
+  Close matchups and red-zone drives appear here.
+</div>
+{% endif %}

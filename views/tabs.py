@@ -11,6 +11,7 @@ from flask import Blueprint, render_template, request
 from views.state import snapshot, state
 from views.viewmodels import (
     album_view,
+    watch_now,
     cheer_view,
     matchup_view,
     moments_view,
@@ -109,4 +110,5 @@ def multiverse():
 def big_board():
     """The bar screen. Always TV-shaped regardless of the query parameter."""
     snap = snapshot()
-    return render_template("tabs/big_board.html", snap=snap, matchups=matchup_view(snap), force_tv=True)
+    return render_template("tabs/big_board.html", snap=snap,
+                           matchups=matchup_view(snap), watch=watch_now(snap), force_tv=True)

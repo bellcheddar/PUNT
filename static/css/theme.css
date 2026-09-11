@@ -63,14 +63,32 @@
  * type. Phase 5 owns making this genuinely readable from twelve feet; this makes
  * it honest in the meantime. Safe here because TV mode has no fixed chrome.
  *
- * 1.6 rather than the 2.2 the plan asks for: at 2.2 a 720p bar screen fits two
- * and a half of the five matchups, and there is nothing yet to rotate the rest
- * into view. Phase 5 brings the auto-rotating carousel, which is what makes the
- * larger scale work. */
+ * Back to the 2.2 the plan asks for, now that the Big Board shows one matchup at
+ * a time: it ran at 1.6 while all five were on screen at once, because at 2.2 a
+ * 720p screen fits two and a half of them. */
 :root[data-tv='1'] {
   --tabbar-height: 0px;
-  zoom: 1.6;
+  --header-height: 34px;
+  zoom: 2.2;
 }
+
+/* At 2.2x the chrome is 2.2x too, and a 720p screen does not have the room. The
+ * banners in particular are written for a phone held at arm's length, not for a
+ * television across a bar: full width and three lines of explanation there is a
+ * third of the screen spent on something nobody is reading. */
+:root[data-tv='1'] .banner {
+  margin: 6px 14px 0;
+  padding: 5px 10px;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:root[data-tv='1'] main { padding: 8px 14px 14px; }
+:root[data-tv='1'] .stack > * + * { margin-top: 8px; }
+:root[data-tv='1'] .panel { padding: 10px 14px; }
+:root[data-tv='1'] .panel-title { margin-bottom: 6px; }
+:root[data-tv='1'] .wordmark { font-size: 20px; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -606,6 +624,88 @@ main { padding: 12px 14px 24px; }
   padding: 10px 18px; min-height: 44px;
   font: inherit; color: var(--ink-faint);
   background: none; border: 0; cursor: pointer;
+}
+
+/* ---------- the big board ---------- */
+
+/* One matchup at a time. The others stay in the DOM rather than being removed,
+ * so an htmx swap does not have to rebuild them and the rotation can resume
+ * mid-cycle without a flash. */
+.board-window .matchup { display: none; }
+.board-window .matchup--shown { display: block; animation: board-in 420ms ease; }
+.board-window .matchup + .matchup { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.board-dots { float: right; display: flex; gap: 5px; align-items: center; }
+.board-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border-bright);
+  transition: background 200ms ease;
+}
+.board-dot--on { background: var(--magenta); }
+
+@keyframes board-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* The takeover. Covers the board for the loudest moments, because the board's
+ * whole purpose is to be legible from across a room and a touchdown should not
+ * require anybody to find the right row first. */
+.takeover {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 6%;
+  background: linear-gradient(128deg, #1e73be 0%, #9b51e0 52%, #ff2fd0 100%);
+  animation: takeover-in 320ms cubic-bezier(.2,1.1,.4,1);
+}
+.takeover--gone { animation: takeover-out 400ms ease forwards; }
+.takeover--bench_disaster { background: linear-gradient(128deg, #4a4a4a, #8d1f2c); }
+.takeover--goose_egg      { background: linear-gradient(128deg, #3a3f48, #5a5f68); }
+.takeover--doom           { background: linear-gradient(128deg, #401018, #8d1f2c); }
+
+.takeover-kind {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .3em;
+  color: rgba(255,255,255,.75);
+}
+.takeover-text {
+  font-family: var(--font-display); font-size: 34px; line-height: 1.08;
+  color: #fff; text-wrap: balance;
+}
+.takeover-who {
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: .16em;
+  color: rgba(255,255,255,.88);
+}
+
+@keyframes takeover-in  { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+@keyframes takeover-out { to { opacity: 0; transform: scale(1.03); } }
+
+/* ---------- the watch-now rail ---------- */
+
+.rail { list-style: none; margin: 0; padding: 0; }
+.rail-item {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 10px; align-items: baseline;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.rail-item:first-child { border-top: 0; }
+.rail-flag {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
+  color: var(--ink-faint); white-space: nowrap;
+}
+.rail-item--redzone .rail-flag { color: var(--magenta); }
+.rail-item--close .rail-flag { color: var(--amber); }
+.rail-item--alone .rail-flag { color: var(--brand-bright); }
+.rail-text { font-size: 13px; color: var(--ink-dim); }
+
+@media (prefers-reduced-motion: reduce) {
+  .board-window .matchup--shown, .takeover, .takeover--gone { animation: none; }
 }
 
 /* ---------- the red-zone countdown ---------- */

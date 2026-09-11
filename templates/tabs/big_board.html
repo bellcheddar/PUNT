@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 {% block title %}PUNT &middot; Big Board{% endblock %}
 {% block content %}
-<section class="panel">
-  <h2 class="panel-title">Week {{ snap.scoring_period }}</h2>
-  <div hx-get="{{ url_for('api.partial_scorebar') }}"
+{# The bar screen. One matchup at a time, rotating, which is what makes the
+   larger type scale workable: at 2.2x a 720p screen fits two and a half of five
+   matchups, so before the carousel existed the scale had to be turned down. #}
+<section class="panel board" data-board data-rotate="12">
+  <h2 class="panel-title">
+    Week {{ snap.scoring_period }}
+    <span class="board-dots" aria-hidden="true">
+      {% for m in matchups %}<span class="board-dot"></span>{% endfor %}
+    </span>
+  </h2>
+
+  <div class="board-window"
+       hx-get="{{ url_for('api.partial_scorebar') }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/scorebar.html" %}
+  </div>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Watch now</h2>
+  <div hx-get="{{ url_for('api.partial_watchnow') }}"
+       hx-trigger="every {{ poll_seconds }}s"
+       hx-swap="innerHTML">
+    {% include "partials/watchnow.html" %}
   </div>
 </section>
 {% endblock %}

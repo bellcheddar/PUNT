@@ -65,6 +65,7 @@
 <script src="{{ url_for('static', filename='js/howler.min.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/audio.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/countdown.js') }}?v={{ asset_version }}" defer></script>
+<script src="{{ url_for('static', filename='js/board.js') }}?v={{ asset_version }}" defer></script>
 </head>
 <body data-tab="{{ request.endpoint.split('.')[-1] if request.endpoint else '' }}">
 

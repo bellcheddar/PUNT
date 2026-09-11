@@ -344,6 +344,68 @@ def multiverse_view(snap: LeagueSnapshot) -> dict[str, Any]:
     return {"odds": [], "magic_numbers": [], "scenarios": []}
 
 
+def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
+    """What is worth looking up for, most urgent first.
+
+    Ordered by how soon it resolves rather than by how big it is: a drive inside
+    the five settles in ninety seconds and a four-point matchup settles in three
+    hours, so the drive goes first even though the matchup matters more.
+    """
+    rows: list[dict[str, Any]] = []
+
+    for game in snap.red_zone_games:
+        if not game.possession:
+            continue
+        owners = sorted({
+            (snap.team(side.team_id).manager if snap.team(side.team_id) else "?")
+            for matchup in snap.matchups for side in (matchup.home, matchup.away)
+            for player in side.starters if player.pro_team_id == game.pro_team_id
+        })
+        if not owners:
+            continue
+        rows.append({
+            "kind": "redzone", "flag": "RED ZONE",
+            "text": f"{game.abbrev} inside the five \u00b7 {', '.join(owners[:3])}",
+            "sort": 0,
+        })
+
+    probabilities = probabilities_for(snap)
+    for matchup in snap.live_matchups or snap.matchups:
+        probability = probabilities[matchup.id]
+        if probability.settled:
+            continue
+        home = snap.team(matchup.home.team_id)
+        away = snap.team(matchup.away.team_id)
+        if not home or not away:
+            continue
+        margin = abs(matchup.home.total - matchup.away.total)
+        # A coin flip is worth watching; a 90/10 is not, however close the score.
+        if 0.25 < probability.home_win < 0.75:
+            rows.append({
+                "kind": "close", "flag": f"{margin:.1f} IN IT",
+                "text": f"{away.manager} v {home.manager} \u00b7 "
+                        f"{probability.home_win * 100:.0f}% either way",
+                "sort": 1 + abs(0.5 - probability.home_win),
+            })
+
+    for matchup in snap.live_matchups or snap.matchups:
+        for side, other in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
+            team = snap.team(side.team_id)
+            if not team or side.in_play == 0 or other.in_play > 0:
+                continue
+            # One side finished and the other still playing is the tensest state
+            # in fantasy football and the score alone does not show it.
+            rows.append({
+                "kind": "alone", "flag": "LAST MAN",
+                "text": f"{team.manager} has {side.in_play} left; "
+                        f"{(snap.team(other.team_id).manager if snap.team(other.team_id) else '?')} has none",
+                "sort": 2,
+            })
+
+    rows.sort(key=lambda r: r["sort"])
+    return rows[:limit]
+
+
 def moments_view(live, limit: int = 25) -> list[dict[str, Any]]:
     """The commentary feed. Phase 4 replaces the plain descriptions with the
     phrase bank; the shape is the same either way."""
