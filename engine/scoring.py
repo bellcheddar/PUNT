@@ -85,14 +85,24 @@ class OptimalLineup:
 def eligible_slots(player: Player, declared: Sequence[int] | None = None) -> frozenset[int]:
     """Which seats this player may occupy.
 
-    Prefers what ESPN said. The fallback exists because `eligibleSlots` travels
-    with some views and not others, and a player with no declared eligibility
-    would otherwise be excluded from the optimal lineup entirely, which quietly
-    *understates* bench regret -- the one direction that makes the app less
-    funny rather than wrong in a way anyone would notice.
+    ESPN's own answer first, from `eligibleSlots` on the payload. The table below
+    is a fallback for when that field is absent, because it travels with some
+    views and not others, and a player with no eligibility at all would be
+    excluded from the optimal lineup entirely -- which quietly *understates*
+    bench regret, the one direction that makes the app less funny rather than
+    wrong in a way anybody would notice.
+
+    The fallback was, for a while, the only path that ever ran: the field was in
+    the payload, the parser dropped it, and nothing passed the override. So the
+    headline number of the whole app was computed against a guess at the league's
+    rules rather than the league's rules. A guess is right for most players and
+    wrong for exactly the interesting ones -- anybody with dual eligibility, and
+    any league running a superflex.
     """
     if declared:
         return frozenset(int(s) for s in declared)
+    if player.eligible_slots:
+        return frozenset(player.eligible_slots)
     return frozenset(FALLBACK_ELIGIBILITY.get(player.position, (20,)))
 
 
@@ -198,11 +208,6 @@ def _swaps(players: Sequence[Player], seats: Sequence[LineupSlot]) -> list[tuple
 
 def _started_total(players: Iterable[Player]) -> float:
     return round(sum(p.points for p in players if p.is_starter), 2)
-
-
-def bench_regret(side: Side, starting_slots: Sequence[int]) -> float:
-    """Points left on the bench, exactly."""
-    return optimal_lineup(side.players, starting_slots).regret
 
 
 @dataclass

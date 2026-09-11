@@ -14,9 +14,9 @@ import random
 import pytest
 
 from engine.scoring import (
+    FALLBACK_ELIGIBILITY,
     AllPlayRecord,
     all_play,
-    bench_regret,
     luck_index,
     optimal_lineup,
 )
@@ -151,3 +151,71 @@ def test_luck_is_expressed_in_wins():
     argue with, which is the entire point of the figure."""
     assert luck_index(actual_wins=7, all_play_pct=0.52, weeks=10) == 1.8
     assert luck_index(actual_wins=3, all_play_pct=0.52, weeks=10) == -2.2
+
+
+# --------------------------------------------------------------------------
+# eligibility
+# --------------------------------------------------------------------------
+
+def test_espn_eligibility_is_used_when_the_payload_carries_it():
+    """`eligibleSlots` is the league's own rule. Guessing from position is a
+    fallback for when it is absent, not a substitute.
+
+    For a long while the fallback was the only path that ever ran: the field was
+    in the payload, the parser dropped it, and nothing passed the override. On
+    this league the two agreed exactly -- zero difference across all ten
+    managers -- because the slots they disagree about are ones it does not run.
+    A latent bug is still a bug; it simply waits for a different league.
+    """
+    from engine.scoring import eligible_slots
+
+    # A running back the league has also made eligible at wide receiver.
+    dual = Player(id=1, name="dual", slot_id=BENCH, position="RB", pro_team="X",
+                  eligible_slots=(2, 4, 23, 20))
+    assert eligible_slots(dual) == frozenset({2, 4, 23, 20})
+    assert 4 in eligible_slots(dual), "ESPN said WR and the guess would not have"
+
+    # With nothing declared, the table stands in.
+    guessed = Player(id=2, name="guessed", slot_id=BENCH, position="RB", pro_team="X")
+    assert eligible_slots(guessed) == frozenset(FALLBACK_ELIGIBILITY["RB"])
+
+
+def test_a_superflex_league_needs_the_real_rules():
+    """The case the guess gets wrong, and the reason this matters.
+
+    In a superflex league the flex accepts a quarterback, so the optimal lineup
+    starts two. The position table says a quarterback may only fill QB, so the
+    guess cannot see the second one as a flex option at all.
+
+    It does not report zero -- it still spots the straight swap of one QB for the
+    other, which was this test's first and wrong expectation. It reports 6 where
+    the truth is 20, which is the more insidious failure: a number that looks
+    like an answer.
+    """
+    from engine.scoring import eligible_slots
+
+    QB_SLOT, SUPERFLEX = 0, 23
+    slots = [QB_SLOT, SUPERFLEX]
+
+    starter = Player(id=1, name="first", slot_id=QB_SLOT, position="QB", pro_team="X",
+                     points=18.0, eligible_slots=(0, 23, 20))
+    filler = Player(id=2, name="filler", slot_id=SUPERFLEX, position="RB", pro_team="X",
+                    points=4.0, eligible_slots=(2, 23, 20))
+    benched_qb = Player(id=3, name="second", slot_id=BENCH, position="QB", pro_team="X",
+                        points=24.0, eligible_slots=(0, 23, 20))
+
+    players = [starter, filler, benched_qb]
+    with_rules = optimal_lineup(players, slots)
+    assert with_rules.total == 42.0, "the superflex should be filled by the benched QB"
+    assert with_rules.regret == 20.0
+
+    # And what the guess would have said.
+    from dataclasses import replace
+
+    guessed = optimal_lineup([replace(p, eligible_slots=()) for p in players], slots)
+    assert guessed.regret == 6.0, "the guess still finds the straight swap of one QB for the other"
+    assert guessed.total == 28.0
+    assert with_rules.regret - guessed.regret == 14.0, (
+        "the position table cannot see that a superflex takes a quarterback, so it "
+        "understates this manager's regret by 14 points"
+    )

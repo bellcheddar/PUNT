@@ -115,6 +115,12 @@ class Player:
     position: str
     pro_team: str
     pro_team_id: int = 0
+    #: The slots ESPN says this player may fill. The league's own rule, not a
+    #: guess from his position -- which matters because the optimal lineup, and
+    #: therefore bench regret, is only legal if it respects the real one. A
+    #: player listed eligible at both RB and WR, or a league running a superflex,
+    #: cannot be inferred from `defaultPositionId`.
+    eligible_slots: tuple[int, ...] = ()
     points: float = 0.0
     projected: float = 0.0
     injury: str = ""
@@ -199,6 +205,13 @@ class Player:
         except (TypeError, ValueError):
             pro_team = ""
 
+        eligible: list[int] = []
+        for slot in _list(raw.get("eligibleSlots")):
+            try:
+                eligible.append(int(slot))
+            except (TypeError, ValueError):
+                continue
+
         points, projected = _split_stats(raw.get("stats"), scoring_period)
         if projected == 0.0 and points == 0.0 and raw:
             problems.append("no week stats")
@@ -220,7 +233,8 @@ class Player:
 
         return cls(
             id=pid, name=name, slot_id=slot_id, position=position,
-            pro_team=pro_team, pro_team_id=pro_team_id, points=points,
+            pro_team=pro_team, pro_team_id=pro_team_id,
+            eligible_slots=tuple(eligible), points=points,
             projected=projected, injury=injury, problems=problems,
         )
 
