@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 260 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 267 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 260 tests, no network, no cookies
+python3 -m pytest                             # 267 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -106,9 +106,9 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/recap.py` | Grounded weekly write-up. Every numeral and proper noun must appear in the fact pack; three rejected samples fall back to the template. |
 | `engine/speech.py` | Phrase audio cached by the hash of what is spoken, rendered on a pool as soon as the server picks the line. |
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
-| `views/`, `templates/`, `static/` | Seven tabs plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
+| `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 260 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 267 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

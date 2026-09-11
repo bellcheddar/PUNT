@@ -84,7 +84,7 @@ Three properties are design constraints rather than niceties:
 - **Bench-aware.** `BENCH_DISASTER` is invisible in the score, so it has its own detection
   path off the optimal lineup rather than falling out of a points delta.
 
-### Two numbers that are not the score
+### 🎯 Two numbers that are not the score
 
 Both exist because the obvious number turned out to measure something else.
 

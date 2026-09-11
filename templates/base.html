@@ -29,7 +29,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PUNT">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
-<link rel="icon" href="{{ url_for('static', filename='icons/icon-192.png') }}" sizes="192x192">
+{# The tab icon. SVG first, because every current browser prefers it and it is
+   the one that stays sharp on a 4K display; the two PNGs are the fallback and
+   the only thing older Safari will take. The 16 and 32 are drawn differently
+   from the big ones on purpose: the laces collapse into a dark blob at that
+   size and the whole thing reads as an eye, so the small sizes are the
+   silhouette alone. See `football()` in tools/make_icons.py. #}
+<link rel="icon" href="{{ url_for('static', filename='icons/favicon.svg') }}?v={{ asset_version }}" type="image/svg+xml">
+<link rel="icon" href="{{ url_for('static', filename='icons/favicon-32.png') }}?v={{ asset_version }}" sizes="32x32" type="image/png">
+<link rel="icon" href="{{ url_for('static', filename='icons/favicon-16.png') }}?v={{ asset_version }}" sizes="16x16" type="image/png">
 <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='splash/splash-1320x2868.png') }}"
       media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
 <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='splash/splash-1206x2622.png') }}"

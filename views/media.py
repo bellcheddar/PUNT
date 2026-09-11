@@ -9,7 +9,7 @@ import threading
 from collections import OrderedDict
 from pathlib import Path
 
-from flask import Blueprint, Response, abort, redirect, send_file
+from flask import Blueprint, Response, abort, current_app, redirect, send_file, send_from_directory
 
 from views.state import snapshot
 
@@ -62,6 +62,22 @@ def phrase_audio(digest: str):
     response = send_file(path, mimetype="audio/mpeg", conditional=True)
     response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     return response
+
+
+@bp.route("/favicon.ico")
+def favicon():
+    """The icon a browser asks for whether or not the page links to one.
+
+    Every `<link rel="icon">` in the head is honoured, and then a browser still
+    requests `/favicon.ico` at the root in some contexts: a bookmark, a
+    developer-tools panel, an OS-level shortcut. Unanswered that is a 404 in the
+    log on every visit. Served as the 32 px PNG rather than a real ICO, which
+    every browser in the last decade accepts.
+    """
+    return send_from_directory(
+        Path(current_app.root_path, "static", "icons"), "favicon-32.png",
+        mimetype="image/png", max_age=86400,
+    )
 
 
 @bp.route("/sw.js")

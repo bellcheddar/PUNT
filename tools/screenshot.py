@@ -39,17 +39,20 @@ STEADY = "punt=steady&team=5"
 
 #: (filename stem, path, viewport width, viewport height, alt text, steady?)
 SHOTS = [
-    # Taller than a phone on purpose: the Today tab is three panels and a 844 px
-    # capture shows only the first, which makes the README's hero image an
-    # advert for a scoreboard rather than for the app.
-    ("today", "/", 390, 1560, "The Today tab on a phone: five live matchups with the phone owner's own team marked, who is in trouble, and the live commentary feed", True),
-    ("album", "/album", 390, 844, "Ten manager cards in a two-by-five grid, tiered epic, rare, common or cursed by this week's score, each tinted in that team's own colour", True),
-    ("pack", "/album", 390, 844, "The weekly pack, sealed: a foil packet with the wordmark, the week and the card count, waiting to be ripped", False),
+    # The whole page on a phone, and it has to be tall: PUNT is one document
+    # now, and an 844 px capture shows the cards and nothing else, which makes
+    # the README's hero image an advert for a sticker album rather than for the
+    # app. There is no `pack` shot any more -- the pack rip was removed, cards
+    # load face-up -- and a screenshot of a feature that no longer exists is
+    # worse than none, because it is a confident claim that happens to be false.
+    ("home", "/", 390, 2200, "PUNT on a phone: ten manager cards tiered by form, the week's matchups with live scores, bench regret, who is in trouble, and the commentary feed, all on one page", True),
+    ("album", "/album", 390, 900, "Ten manager cards, two to a row, each tinted in that team's own colour and tiered epic, rare, common or cursed, with the form rating printed under the score", True),
+    ("desktop", "/", 1280, 1500, "The same page on a desktop: five cards to a row, the week's matchups two to a row, and the panels paired left and right", True),
     ("chooser", "/", 390, 1000, "First run: pick which of the ten managers is holding this phone. Kept locally, with no account to make", False),
-    ("cheer", "/cheer", 390, 844, "The Cheer tab: for every live NFL game, whether you should be cheering, booing or conflicted, and exactly why", True),
-    ("multiverse", "/multiverse", 390, 1100, "The Multiverse tab: playoff odds from simulating the rest of the season against the real fixture list, with the playoff cut drawn across the table", True),
-    ("swing", "/swing", 390, 844, "The Swing tab: live Monte Carlo win probability and the day's biggest swings", True),
-    ("receipts", "/receipts", 390, 844, "The Receipts tab: every manager ranked by points left on the bench, with the exact swap that cost them", True),
+    ("cheer", "/cheer", 390, 844, "The Cheer panel: every NFL fixture of the week with the fantasy points still to come out of it, and which head-to-heads each one decides", True),
+    ("multiverse", "/multiverse", 390, 1100, "Playoff odds from simulating the rest of the season against the real fixture list, with the playoff cut drawn across the table", True),
+    ("swing", "/swing", 390, 844, "Live Monte Carlo win probability and the day's biggest swings", True),
+    ("receipts", "/receipts", 390, 844, "Every manager ranked by points left on the bench, with the exact swap that cost them", True),
     ("big-board", "/big-board?tv=1", 1280, 720, "The Big Board in TV mode: the whole slate on the bar screen", True),
 ]
 
