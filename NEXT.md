@@ -3,7 +3,11 @@
 Live state of the build. The plan is `docs/punt_build_spec_v1.md`; this file says
 what is actually done and what the next session should pick up.
 
-## Status: all six phases built. 214 tests, 1 skipped, all offline.
+## Status: live at https://punt.mdeller.com since 2026-09-11.
+
+All six phases built. 216 tests, 1 skipped, all offline. Running on the demo
+recording until the league credentials are handed over: see
+[docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
@@ -32,13 +36,11 @@ blocked on a decision about the code.
 
 | What | Needs | Why it is not done |
 |---|---|---|
-| **Deploy to `punt.mdeller.com`** | `sudo` on the droplet | Outward-facing, on a box serving eleven other apps. `deploy/` is written and tested; the droplet has not been touched. |
-| **Phase 2's second gate** | `LEAGUE_ID`, `ESPN_S2`, `ESPN_SWID` | Reconciling bench regret by hand against two real ESPN box scores. Everything else in Phase 2 passes against the fixture. |
+| **Phase 2's second gate** | `LEAGUE_ID`, `ESPN_S2`, `ESPN_SWID` | Reconciling bench regret by hand against two real ESPN box scores. Everything else in Phase 2 passes against the fixture. Hand them over with `bash deploy/set-credentials.sh`; see [docs/credentials.md](credentials.md). |
 | **Phase 3's 60 fps gate** | A real iPhone | Simulators do not reproduce the frame cost of ten foil cards. |
 | **Phase 4's mute-toggle gate** | A real iPhone | Nor the iOS audio-session behaviour, which is where this app is most fragile. |
 | **Piper** | Installing it on the droplet | It is the shipping TTS backend; macOS `say` is the local stand-in and the no-backend path is supported. |
 | **The recap's model path** | `ollama pull qwen2.5:1.5b-instruct` (~1 GB) | The validator and the retry loop are driven against stub backends on every `deadcode.py` run, so the logic is exercised; only a real model's output is not. |
-| **The launcher entry** | The deploy above | Deliberately deferred: an entry in `mdeller-landing/apps.json` pointing at a host with no service is a broken link on the front page. |
 | **Whether real recordings may ever be committed** | A decision | `.gitignore` tracks only `demo-*`, on the assumption that ten managers' ESPN display names should not be in a public repo. |
 | **The wordmark** | A decision | The spec says to commission it from the vibe-icon skill once the card geometry is locked. It is locked. |
 
@@ -95,7 +97,18 @@ funniest event in the app would pass by asserting nothing.
 
 ## Deployment
 
-**`deploy/` is written and tested; the droplet has not been touched.**
+**Provisioned and deployed 2026-09-11.** Certificate, http2 and the launcher
+entry are all in place. To ship a change:
+
+```bash
+bash deploy/deploy.sh
+```
+
+It runs the whole test suite first and refuses to ship if anything fails, then
+verifies three separate things about the running service afterwards, because
+any one of them alone can pass over a failed deploy.
+
+The first-time setup, kept here because it is idempotent and safe to re-run:
 
 ```bash
 scp -r deploy root@45.55.102.228:/tmp/punt-deploy
@@ -109,8 +122,16 @@ chatMCD). `provision.sh` refuses to install if anything is already listening, an
 `tests/test_deploy_config.py` refuses if the number drifts apart across the three
 files that mention it.
 
-`punt.mdeller.com` resolves to the droplet and nginx answers on :80, but there is no
-vhost, no certificate and no service, so TLS currently serves another app's certificate.
+The vhost splits `/static/`. CSS, JS and fonts are only ever requested with a `?v=`
+stamp, so they get the droplet's shared long-cache snippet (immutable, a year) and
+gzip. Icons, splash screens, the manifest and the audio sprites are fetched
+*without* a stamp, by the manifest and by howler, so those stay at thirty days: a
+year-old icon pinned on every returning phone is not a cache, it is a bug.
+
+The HTML `no-cache` header is set by the app, not by nginx. `add_header` appends
+rather than replaces, so the vhost version arrived alongside the team-logo routes'
+own `public, max-age=86400`, and a browser joins repeated Cache-Control field lines
+into one value where `no-cache` wins. Every logo was revalidated on every page load.
 
 **One gunicorn worker with threads**, not several processes: the live feed's poller and
 Moment buffer are per-process, so a second worker doubles the upstream poll rate and gives

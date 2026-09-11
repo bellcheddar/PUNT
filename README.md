@@ -2,11 +2,11 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-214%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+[![live](https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&logoColor=white)](https://punt.mdeller.com) ![python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![gunicorn](https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white) ![nginx](https://img.shields.io/badge/nginx-1.24-009639?logo=nginx&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.34.2-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-216%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
-<td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
+<td>🌐 <b>App</b></td><td><a href="https://punt.mdeller.com" target="_blank" rel="noopener noreferrer">punt.mdeller.com</a></td>
 <td>✉️ <b>Contact</b></td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
 <td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/PUNT" target="_blank" rel="noopener noreferrer">bellcheddar/PUNT</a></td>
 </tr>
@@ -517,11 +517,21 @@ without a reload.*
 
 ### Deployment and open questions
 
-- [ ] **Deploy to `punt.mdeller.com`.** DNS already resolves to the droplet and nginx answers on port
-      80, but there is no vhost, no certificate and no service yet. Needs a port allocation, a systemd
-      unit, an nginx vhost with the http2 patch, certbot, and an entry in the launcher
+- [x] **Deploy to `punt.mdeller.com`.** Live since 2026-09-11 on port 8011, with a certificate,
+      http2, the shared long-cache snippet on the stamped assets, and an entry in the launcher.
+      Three things that were wrong and only visible once it was serving: every team logo was
+      revalidated on every page load (nginx `add_header` APPENDS, so the vhost's `no-cache` joined
+      the logo routes' own `max-age` and won); the offline shell precached unstamped URLs the page
+      never requests, so the PWA came up with no CSS at all; and `/api/diagnostics` published the
+      last four characters of a live session cookie
 - [ ] **Real league credentials.** Everything through Phase 4 builds and tests without them, but
-      reconciling bench regret by hand against two known weeks needs real box scores
+      reconciling bench regret by hand against two known weeks needs real box scores. Hand them
+      over with `bash deploy/set-credentials.sh`, which keeps the cookies out of this Mac, out of
+      `ps`, out of shell history and out of any transcript: see `docs/credentials.md`
+- [x] **Settle the superflex question.** No superflex and no QB-accepting flex (2026-09-11), so
+      the eligibility bug was latent and never live: no bench-regret figure anybody saw was wrong.
+      Still worth having fixed, because the answer lives in ESPN's settings where a commissioner
+      can change it between seasons, and the app reads it now rather than remembering it
 - [ ] **Decide whether real recordings may ever be committed.** Currently `.gitignore` tracks only
       `demo-*`, on the assumption that ten managers' ESPN display names should not be in a public
       repository
