@@ -809,9 +809,10 @@ def _week_in_summary(snap: LeagueSnapshot) -> list[dict[str, Any]]:
 
     hottest = max(cards, key=lambda c: c["beating"])
     if hottest["beating"]:
+        n = hottest["beating"]
         line("HOT", hottest,
-             f"{hottest['name']} have {hottest['beating']} starters beating projection",
-             str(hottest["beating"]), True)
+             f"{hottest['name']} have {n} starter{'' if n == 1 else 's'} beating projection",
+             str(n), True)
 
     multiverse = multiverse_view(snap)
     if multiverse.get("available") and multiverse["rows"]:

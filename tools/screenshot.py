@@ -45,9 +45,9 @@ SHOTS = [
     # app. There is no `pack` shot any more -- the pack rip was removed, cards
     # load face-up -- and a screenshot of a feature that no longer exists is
     # worse than none, because it is a confident claim that happens to be false.
-    ("home", "/", 390, 2200, "PUNT on a phone: ten manager cards tiered by form, the week's matchups with live scores, bench regret, who is in trouble, and the commentary feed, all on one page", True),
+    ("home", "/", 390, 2300, "PUNT on a phone: a live ticker of what has just moved, ten manager cards tiered by form, the week's matchups with live scores, bench regret, who is in trouble, and the commentary feed, all on one page", True),
     ("album", "/album", 390, 900, "Ten manager cards, two to a row, each tinted in that team's own colour and tiered epic, rare, common or cursed, with the form rating printed under the score", True),
-    ("desktop", "/", 1280, 1500, "The same page on a desktop: five cards to a row, the week's matchups two to a row, and the panels paired left and right", True),
+    ("desktop", "/", 1280, 1560, "The same page on a desktop: the LATEST ticker along the top, five cards to a row, the week's matchups two to a row, and the panels paired left and right", True),
     ("chooser", "/", 390, 1000, "First run: pick which of the ten managers is holding this phone. Kept locally, with no account to make", False),
     ("cheer", "/cheer", 390, 844, "The Cheer panel: every NFL fixture of the week with the fantasy points still to come out of it, and which head-to-heads each one decides", True),
     ("multiverse", "/multiverse", 390, 1100, "Playoff odds from simulating the rest of the season against the real fixture list, with the playoff cut drawn across the table", True),
