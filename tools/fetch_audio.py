@@ -47,7 +47,7 @@ RATE = 44_100
 #: what "dull, like a tone through a blanket" measures as.
 BANDS = {
     "tap": (0.02, 1.0), "flip": (0.01, 1.0), "rip": (0.05, 1.0),
-    "scratch": (0.30, 1.0), "buzzer": (0.10, 1.0), "chime": (0.02, 1.0),
+    "scratch": (0.05, 1.0), "buzzer": (0.10, 1.0), "chime": (0.02, 1.0),
     "horn_01": (0.10, 0.70), "horn_02": (0.10, 0.70), "horn_03": (0.10, 0.70),
     "crowd": (0.15, 0.90), "trombone": (0.04, 0.60), "whoosh": (0.20, 0.95),
     "riser": (0.05, 0.90), "doom": (0.0, 0.10),
