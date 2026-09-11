@@ -13,7 +13,7 @@ from typing import Any
 
 from flask import current_app
 
-from config import Config
+from config import SEEN_MOMENTS, Config
 from engine.commentary import Commentator, PhraseBank
 from engine.events import EventEngine
 from engine.live import LiveFeed
@@ -46,7 +46,7 @@ class PuntState:
             self.live = LiveFeed(
                 fetch=lambda: self.repo.snapshot(live=True),
                 poll_seconds=self.cfg.poll_seconds,
-                engine=EventEngine(),
+                engine=EventEngine(seen_path=SEEN_MOMENTS),
                 commentator=_commentator(self.cfg),
                 speech=self.speech,
             )

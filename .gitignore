@@ -30,6 +30,11 @@ venv/
 data/recordings/*/
 !data/recordings/demo-*/
 
+# Which Moments have already fired. Written every poll that produces one, read
+# at startup so a restart mid-Sunday does not replay the afternoon. Derived, and
+# specific to one deployment's league.
+data/state/
+
 # Pre-synthesised TTS. Built at deploy time from data/phrases, never tracked:
 # it is several hundred megabytes of derived audio.
 static/audio/phrase/

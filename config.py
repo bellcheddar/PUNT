@@ -19,6 +19,15 @@ REPO_ROOT = Path(__file__).resolve().parent
 DATA_DIR = REPO_ROOT / "data"
 RECORDINGS_DIR = DATA_DIR / "recordings"
 PHRASES_DIR = DATA_DIR / "phrases"
+STATE_DIR = DATA_DIR / "state"
+
+#: Which Moments have already fired, so a restart does not replay the afternoon.
+#:
+#: A deploy, a crash or a systemd restart on a Sunday used to hand every phone in
+#: the bar the whole day again -- seventy-three touchdown horns in a row. The
+#: engine could always persist this and nothing ever asked it to: the feature was
+#: reachable only from its own unit test.
+SEEN_MOMENTS = STATE_DIR / "seen-moments.json"
 STATIC_DIR = REPO_ROOT / "static"
 
 #: The fixture that ships with the repo. A fresh clone with no cookies at all

@@ -233,7 +233,7 @@ class EventEngine:
             now = probabilities.get(team_id)
             before = self._win_prob.get(team_id)
             if now is None or before is None:
-                continue
+                continue  # cold: a team whose win probability was not in the previous poll
             swing = round(now - before, 4)
             # Only ever in the play's own favour. A touchdown that coincided with
             # the opponent scoring more leaves the team's probability *down* for
@@ -255,7 +255,7 @@ class EventEngine:
     def persist(self) -> None:
         """Write the dedupe set so a restart does not replay the afternoon."""
         if not self.seen_path:
-            return
+            return  # cold: the app always gives the engine a path; a test may not
         try:
             self.seen_path.parent.mkdir(parents=True, exist_ok=True)
             self.seen_path.write_text(json.dumps(sorted(self.seen)), encoding="utf-8")
@@ -276,7 +276,7 @@ class EventEngine:
                 for player in side.players:
                     previous = self._players.get(player.id)
                     if previous is None:
-                        continue
+                        continue  # cold: a player who was not on the roster last poll: a waiver add mid-Sunday
 
                     delta = round(player.points - previous.points, 2)
                     context = {
@@ -402,7 +402,7 @@ class EventEngine:
             for side in (home, away):
                 before = self._team_totals.get(side.team_id)
                 if before is None:
-                    continue
+                    continue  # cold: a team with no total from the previous poll
                 team = snapshot.team(side.team_id)
                 for threshold in TEAM_MILESTONES:
                     if before < threshold <= side.total:
@@ -423,7 +423,7 @@ class EventEngine:
         week = snapshot.scoring_period
         slots = snapshot.settings.starting_slots
         if not slots:
-            return out
+            return out  # cold: a league with no starting slots is not a league
 
         for matchup in snapshot.matchups:
             for side in (matchup.home, matchup.away):
@@ -470,7 +470,7 @@ class EventEngine:
             for side, opponent in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
                 probability = probabilities.get(side.team_id)
                 if probability is None:
-                    continue
+                    continue  # cold: every side in the fixture has a win probability
                 team = snapshot.team(side.team_id)
                 manager = team.manager if team else f"team {side.team_id}"
 

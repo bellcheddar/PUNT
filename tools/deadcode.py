@@ -86,6 +86,13 @@ def executable_lines(path: Path) -> set[int]:
             continue          # a docstring
         if isinstance(node, ast.AnnAssign) and node.value is None:
             continue          # a bare annotation
+        if isinstance(node, (ast.If, ast.While)) and node.test.lineno != node.lineno:
+            # `if (` on its own line never gets a trace event: the interpreter
+            # reports the line of the condition's first operand. Three detectors
+            # -- injury, goose egg, lead change -- were reported as never having
+            # run while the golden file counted the moments they had produced.
+            lines.add(node.test.lineno)
+            continue
         lines.add(node.lineno)
     return lines
 
@@ -133,7 +140,8 @@ def drive_a_sunday() -> None:
     client = EspnClient(transport=transport, season=2025, league_id="demo", cache=TTLCache())
     repo = LeagueRepository(client)
     bank = PhraseBank.load(PHRASES_DIR)
-    engine = EventEngine(simulate_draws=40)
+    state_dir = Path(tempfile.mkdtemp(prefix="punt-deadcode-state-"))
+    engine = EventEngine(simulate_draws=40, seen_path=state_dir / "seen-moments.json")
     commentator = Commentator(bank, roast_level=2)
     # A real speech cache, with the backend switched off. The shipping path asks
     # for a URL as soon as the server picks the line, which is what hides the
@@ -309,6 +317,19 @@ def drive_a_sunday() -> None:
         if feed.moments:
             feed._commentate(feed.moments[-1], week=11)
     feed.commentator.say = was
+
+    # What happens on the next start. The poller writes the dedupe set every time
+    # it fires something, so a deploy at four o'clock does not hand the bar the
+    # whole afternoon again.
+    EventEngine(simulate_draws=40, seen_path=state_dir / "seen-moments.json")
+    corrupt = state_dir / "half-written.json"
+    corrupt.write_text("{not json", encoding="utf-8")
+    with quiet("engine.events"):
+        EventEngine(simulate_draws=40, seen_path=corrupt)
+        # And a state directory that cannot be written -- a read-only volume, or
+        # the wrong owner after a deploy. It must not take the poll down with it.
+        unwritable = EventEngine(simulate_draws=40, seen_path=Path("/dev/null/seen.json"))
+        unwritable.persist()
 
     pack = build(snapshot, feed.notable)
     recap = generate(pack, backend=None)

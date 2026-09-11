@@ -7,6 +7,7 @@ flaky when it does not.
 
 from __future__ import annotations
 
+import json
 import queue
 
 from config import DEMO_RECORDING
@@ -141,3 +142,49 @@ def test_a_red_zone_drive_nobody_owns_is_not_announced(no_network):
     for event in events:
         if event["data"]["state"] == "enter":
             assert event["data"]["involved"]
+
+
+def test_a_restart_mid_sunday_replays_nothing(no_network, tmp_path):
+    """The wiring, not the mechanism.
+
+    `EventEngine` could always persist its dedupe set and `test_events.py` proved
+    it worked, but nothing in the application ever passed it a path or called
+    `persist()`: the whole feature was reachable only from its own unit test. A
+    deploy at four o'clock therefore handed every phone in the bar the entire
+    afternoon again, seventy-three touchdown horns in a row. This asserts the
+    wiring rather than the mechanism, because the wiring is what was missing.
+    """
+    seen = tmp_path / "seen.json"
+    feed, transport, _ = make_feed()
+    feed.engine.seen_path = seen
+
+    transport.clock.seek(3 * 3600)
+    feed.poll_once()
+    for position in range(3 * 3600 + 300, 5 * 3600, 300):
+        transport.clock.seek(position)
+        feed.poll_once()
+
+    assert feed.moments, "two hours of a Sunday produced no moments"
+    assert seen.is_file(), "the poll never wrote the dedupe set"
+
+    restarted, transport2, _ = make_feed()
+    restarted.engine.seen_path = seen
+    restarted.engine.seen = set(json.loads(seen.read_text("utf-8")))
+    transport2.clock.seek(3 * 3600)
+    restarted.poll_once()
+    for position in range(3 * 3600 + 300, 5 * 3600, 300):
+        transport2.clock.seek(position)
+        restarted.poll_once()
+
+    assert not restarted.moments, "a restart replayed the afternoon"
+
+
+def test_the_app_gives_the_engine_somewhere_to_persist_to():
+    """The line that was missing. `EventEngine()` with no seen_path silently
+    never persists, and nothing downstream complains."""
+    import inspect
+
+    import views.state
+
+    source = inspect.getsource(views.state.PuntState.start_live)
+    assert "seen_path" in source, "start_live built an engine that cannot survive a restart"

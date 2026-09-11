@@ -200,6 +200,10 @@ class LiveFeed:
                 if line is not None:
                     payload["line"] = self._with_speech(line)
                 self._broadcast({"event": "moment", "data": payload})
+            # Written on every poll that fired something rather than at shutdown,
+            # because the restart this protects against is usually the kind that
+            # does not get to run a shutdown hook.
+            self.engine.persist()
         self._redzone_events(snapshot)
         self._broadcast({
             "event": "tick",
