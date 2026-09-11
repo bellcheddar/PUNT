@@ -42,13 +42,19 @@ blocked on a decision about the code.
 | **Whether real recordings may ever be committed** | A decision | `.gitignore` tracks only `demo-*`, on the assumption that ten managers' ESPN display names should not be in a public repo. |
 | **The wordmark** | A decision | The spec says to commission it from the vibe-icon skill once the card geometry is locked. It is locked. |
 
-### One open question
+### The one open question is closed
 
-**Does the league run a superflex, or any flex that accepts a quarterback?** It decides
-whether a bug that is now fixed was ever live. The optimal lineup used to be computed
-against a *guess* at slot eligibility rather than the `eligibleSlots` ESPN sends. On this
-league's slots the guess and the truth agree exactly, so nothing was ever wrong on screen.
-In a superflex the guess reports 6 points of bench regret where the truth is 20.
+**No superflex, and no flex that accepts a quarterback** (Marc, 2026-09-11). So the
+eligibility bug was latent and never live: the optimal lineup used to be computed against a
+*guess* at slot eligibility rather than the `eligibleSlots` ESPN sends, and on this league's
+slots the guess and the truth agree exactly. No bench-regret figure anybody ever saw was
+wrong.
+
+It is still worth having fixed, and not only for tidiness. The answer is a property of the
+league's settings, not of the code, and a commissioner can change it between seasons in
+about four clicks -- at which point the guess would report 6 points of bench regret where
+the truth is 20, on the headline number of the whole app, silently. The app now reads the
+league's own rule, so that is no longer a thing anybody has to remember.
 
 ## What exists
 

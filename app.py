@@ -102,6 +102,10 @@ def _register_asset_version(app: Flask) -> None:
     if STATIC_DIR.is_dir():
         newest = max((p.stat().st_mtime for p in STATIC_DIR.rglob("*") if p.is_file()), default=0.0)
     version = str(int(newest))
+    # On the config as well as in the template context: the service worker has to
+    # precache the same stamped URLs the templates emit, and it is served by a
+    # route rather than rendered by Jinja.
+    app.config["ASSET_VERSION"] = version
 
     @app.context_processor
     def inject_asset_version():

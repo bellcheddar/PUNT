@@ -236,3 +236,44 @@ def test_a_response_that_chose_its_own_cache_lifetime_keeps_it(client):
 
     worker = client.get("/sw.js")
     assert worker.headers.get_all("Cache-Control") == ["no-cache, must-revalidate"]
+
+
+def test_the_offline_shell_precaches_the_urls_the_page_actually_asks_for(client):
+    """The service worker's shell has to carry the same stamp the page emits.
+
+    `caches.match` compares the whole URL including the query string. Precached
+    as '/static/css/theme.css' while the page asks for
+    '/static/css/theme.css?v=<the stamp>', every shell entry was cached under a
+    URL nothing ever requests. Online the miss falls straight through to the
+    network and nobody notices; offline -- the entire reason a service worker is
+    here -- the cached page came up with no CSS, no fonts and no JavaScript.
+    """
+    import re
+
+    worker = client.get("/sw.js").get_data(as_text=True)
+    assert "__ASSET_VERSION__" not in worker, "the stamp was never substituted"
+
+    declared = re.search(r"const STAMP = '(\d+)'", worker)
+    assert declared, "the worker has no asset stamp in it"
+    stamp = declared.group(1)
+
+    page = client.get("/").get_data(as_text=True)
+    assert set(re.findall(r"\?v=(\d+)", page)) == {stamp}, (
+        "the worker precaches a different version from the one the page requests"
+    )
+
+    # The cache name moves with it, or `activate` evicts nothing and a deploy
+    # leaves last month's assets in there for ever.
+    assert "const VERSION = `punt-${STAMP}`" in worker
+
+    # Resolve the shell the way the browser will, and check every entry is a URL
+    # this app really serves. A precached 404 is a silent hole in offline mode:
+    # `cache.add` is called individually precisely so one bad entry does not take
+    # the rest down with it, which also means nothing reports it.
+    shell = re.search(r"const SHELL = \[(.*?)\];", worker, re.S)
+    assert shell, "no shell to check"
+    urls = re.findall(r"[`\'](/[^`\']*)[`\']", shell.group(1))
+    assert len(urls) >= 10, f"only {len(urls)} shell entries found"
+    for url in urls:
+        resolved = url.replace("${STAMP}", stamp)
+        assert client.get(resolved).status_code == 200, f"{resolved} is precached and does not 200"

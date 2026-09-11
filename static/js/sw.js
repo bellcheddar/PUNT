@@ -14,14 +14,31 @@
  * network and nowhere else.
  */
 
-const VERSION = 'punt-v1';
+/* Substituted by the /sw.js route with the same asset version the templates
+ * stamp their own URLs with. Unsubstituted it reads "dev", which is what you get
+ * if you fetch this file from /static/js/ rather than from the root -- so the
+ * file stays valid JavaScript either way.
+ *
+ * It has to be the same stamp, and the shell has to carry it. Precached
+ * unstamped, every one of these was cached under a URL the page never requests:
+ * the page asks for theme.css?v=<the stamp>, `caches.match` compares the whole
+ * URL including the query, and misses. Online nobody noticed, because the miss
+ * falls through to the network. Offline -- which is the entire reason this file
+ * exists -- the cached page came up with no CSS, no fonts and no JavaScript.
+ *
+ * Putting the stamp in VERSION as well is what makes `activate` do anything: a
+ * constant cache name meant the old entries were never evicted, and a deploy
+ * left last month's assets in there for ever.
+ */
+const STAMP = '__ASSET_VERSION__';
+const VERSION = `punt-${STAMP}`;
 const SHELL = [
   '/',
   '/album',
-  '/static/css/theme.css',
-  '/static/css/fonts.css',
-  '/static/js/htmx.min.js',
-  '/static/js/app.js',
+  `/static/css/theme.css?v=${STAMP}`,
+  `/static/css/fonts.css?v=${STAMP}`,
+  `/static/js/htmx.min.js?v=${STAMP}`,
+  `/static/js/app.js?v=${STAMP}`,
   '/static/icons/icon-192.png',
   '/static/fonts/anton-400-latin.woff2',
   '/static/fonts/inter-400-latin.woff2',

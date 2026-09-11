@@ -97,7 +97,10 @@ def eligible_slots(player: Player, declared: Sequence[int] | None = None) -> fro
     headline number of the whole app was computed against a guess at the league's
     rules rather than the league's rules. A guess is right for most players and
     wrong for exactly the interesting ones -- anybody with dual eligibility, and
-    any league running a superflex.
+    any league running a superflex. The Feathers Sunday League does not run one
+    (asked and answered, 2026-09-11), so this was latent rather than live -- but
+    the answer lives in ESPN's settings, where a commissioner can change it
+    between seasons, and the app now reads it rather than remembering it.
     """
     if declared:
         return frozenset(int(s) for s in declared)  # cold: the eligibility override is a test seam; the app reads it off the player

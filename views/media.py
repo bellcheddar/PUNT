@@ -7,6 +7,7 @@ import logging
 import re
 import threading
 from collections import OrderedDict
+from pathlib import Path
 
 from flask import Blueprint, Response, abort, redirect, send_file
 
@@ -73,9 +74,19 @@ def service_worker():
     also deliberately not cached: a worker that cannot be replaced is a worker
     you live with for ever.
     """
-    from flask import current_app  # noqa: PLC0415
+    from flask import Response, current_app  # noqa: PLC0415
 
-    response = send_file(current_app.root_path + "/static/js/sw.js", mimetype="text/javascript")
+    # Read and substituted rather than sent from disk, because the shell it
+    # precaches has to carry the same `?v=` stamp the templates put on their own
+    # URLs. `caches.match` compares the whole URL including the query, so an
+    # unstamped shell is cached under URLs the page never asks for: online the
+    # miss falls through to the network and nobody notices, and offline -- the
+    # entire reason this file exists -- the page comes up with no CSS at all.
+    source = Path(current_app.root_path, "static", "js", "sw.js").read_text("utf-8")
+    stamp = current_app.config.get("ASSET_VERSION", "dev")
+    body = source.replace("__ASSET_VERSION__", str(stamp))
+
+    response = Response(body, mimetype="text/javascript")
     response.headers["Cache-Control"] = "no-cache, must-revalidate"
     response.headers["Service-Worker-Allowed"] = "/"
     return response
