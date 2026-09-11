@@ -3,18 +3,29 @@
 Live state of the build. The plan is `docs/punt_build_spec_v1.md`; this file says
 what is actually done and what the next person (or the next session) should pick up.
 
-## Status: Phase 2 complete
+## Status: Phases 1-4 complete
 
-**Phase 1** ("a full recorded Sunday replays at 60x with no network and no cookies")
-and **Phase 2** ("a plausible Moment timeline, and bench regret reconciled") both pass,
-as `tests/test_phase1_acceptance.py` and `tests/test_phase2_acceptance.py`. Watch either:
+Phases 1 to 4 are built. Watch any of them:
 
 ```bash
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
+python3 tools/transcript.py                   # the commentary it would have said
+python3 tools/phrase_lint.py                  # where the phrase bank is thin
+python3 tools/screenshot.py --check-overflow  # no horizontal overflow at 390px
 ```
 
-The half of the Phase 2 gate that needs real ESPN box scores is skipped and named.
+Three parts of the acceptance criteria are **not** met and are not met for the same
+reason each time -- they need something this machine does not have:
+
+| Gate | Needs |
+|---|---|
+| Phase 2: bench regret vs two real ESPN box scores | League credentials |
+| Phase 3: 60 fps with ten cards on a real phone | A real phone |
+| Phase 4: the mute toggle on iOS, and Piper | A real iPhone; Piper on the droplet |
+
+Everything else passes, as `tests/test_phase1_acceptance.py` and
+`tests/test_phase2_acceptance.py`. 147 tests, 1 skipped, all offline.
 
 ### What exists
 

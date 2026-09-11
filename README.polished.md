@@ -2,7 +2,7 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-120%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-2%20of%206%20complete-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-147%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-4%20of%206%20complete-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -105,6 +105,59 @@ scoring is lumpy -- a touchdown is a six-point step -- so a manager needing 22 p
 a player projected for 8 is a long shot rather than a zero. A normal approximation puts
 almost no weight there, which would make the Legendary card (a win from under 10%)
 impossible to mint and would fire DOOM far too early.
+
+## 🔊 The commentary and the noise
+
+Live play calls come from a deterministic phrase bank, not a model. The latency
+budget is under 100 ms and the requirement is that a line can never invent a score;
+a model fails both, and is perfectly capable of announcing a touchdown that did not
+happen. Every number in every line is substituted from the Moment that triggered it,
+so there is nowhere for an invented one to come from.
+
+```bash
+python3 tools/transcript.py                    # the afternoon's commentary
+python3 tools/phrase_lint.py                   # validate the bank
+python3 tools/make_audio.py                    # regenerate the stings
+python3 tools/make_audio.py --preview horn_03  # one sound, to listen to
+```
+
+Lines are chosen on the **server** and pushed with the Moment. Ten phones in one
+room have to hear the same sentence for the same touchdown; picking client-side
+would give ten different ones.
+
+### Every sound is synthesised here
+
+The broadcast themes are copyrighted compositions owned by the networks, and so are
+fight songs and stadium recordings. What the spec allows is self-made stings in the
+brass-and-timpani idiom, which is a genre convention rather than a protected work.
+So all fourteen are made by `tools/make_audio.py` out of oscillators and noise:
+nothing is sampled, nothing is downloaded, every asset is ours outright, and
+`static/audio/LICENCES.md` cannot drift out of date.
+
+The brass is a stack of detuned saws under a closing lowpass, which is what makes it
+read as brass rather than as a synth chord. The whole sprite is 228 kB.
+
+Speech is cached by the hash of exactly what is spoken, and synthesis starts when
+the *server* picks the line rather than when a phone asks for the file, which hides
+the latency behind the SSE round trip.
+
+### Three things that were measured, not assumed
+
+- **Repetition.** The first transcript run showed 236 lines from 75 distinct phrases
+  with the closest repeat exactly 8 Moments apart, which is `cooldown: 240` divided
+  by the 30 s poll: the mechanism working perfectly at a badly chosen setting.
+  Retuning moved the closest repeat to 26 Moments and dropped the worst line from 11
+  uses to 7.
+- **Clipping.** Web Audio hard-clips at the destination, and the spec's nominal bus
+  levels sum to 1.42 with music fully ducked. Rescaled so all four buses ducked under
+  a play call sum to exactly 1.0, with a test that reads the levels out of the
+  JavaScript and asserts both that and the priority order, because the first attempt
+  satisfied the sum and silently inverted the order.
+- **The loop bed's seam.** Its check compares the join against the 99th percentile of
+  sample steps elsewhere, and found that the one-pole lowpass starting from zero state
+  made the loop click every eight seconds, for four hours. The first version of the
+  check compared the first sample to the last, which is one ordinary sample step, and
+  flagged a perfectly good loop.
 
 ## 🚀 Quick start
 
@@ -255,7 +308,7 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                       # 120 tests, no network, no cookies
+python3 -m pytest                       # 147 tests, no network, no cookies
 python3 tools/screenshot.py --check-overflow   # needs the app running
 ```
 
@@ -386,19 +439,31 @@ rip is genuinely satisfying.*
 *Acceptance: a 60x replay produces a coherent audio track with no clipping, no overlap and no repeated
 line inside its cooldown, and the mute toggle works instantly on iOS.*
 
-- [ ] **Phrase bank, 400+ lines.** Below that the repetition becomes obvious inside one afternoon.
-      Trigger matching, cooldowns, roast-level filtering and weighted sampling, seeded per
-      `(week, moment.id)` so a Sunday replays identically in tests
-- [ ] **Piper TTS as a build step.** Two voices, the whole bank pre-synthesised at deploy time so live
-      playback is a static file fetch
-- [ ] **Howler buses and ducking.** Music ducking to 0.12 under commentary is most of what makes it
-      sound produced rather than noisy
-- [ ] **The unlock gate.** One "tap to kick off" splash that unlocks the AudioContext and requests
-      gyroscope permission together, because both need the same user gesture
-- [ ] **Red-zone countdown overlay.** Beat-matched pulse and a riser, cancelled cleanly if the drive
-      ends without a score
-- [ ] **`static/audio/LICENCES.md`.** Every asset gets a line: source URL and licence. No broadcast
-      themes, no fight songs, no commercially released tracks, no orphan files
+- [x] **The selection algorithm.** Trigger matching, cooldowns, roast-level filtering and weighted
+      sampling, seeded per `(week, moment.id)` so a Sunday replays identically. Silence is a valid
+      answer: small moments go quiet rather than repeat, big ones speak anyway
+- [x] **`tools/phrase_lint.py`.** Catches the three things that go wrong invisibly: a line asking for
+      a slot its Moment kind never provides, a trigger keyed on a field that does not exist, and a
+      category with no roast_level 0 line, which goes silent the moment a commissioner turns the
+      roasting down
+- [x] **Fourteen stings, synthesised from scratch**, plus a seamless eight-second loop bed. Nothing
+      sampled, nothing downloaded
+- [x] **Howler buses and ducking**, with the gain structure asserted arithmetically rather than
+      trusted as taste
+- [x] **The unlock gate**, granting the AudioContext and the gyroscope from one tap, because asking
+      twice is how the second request gets refused
+- [x] **Speech**, cached by the hash of what is spoken, rendered on a pool as soon as the server picks
+      the line, and a supported no-op where no backend exists
+- [x] **Red-zone countdown overlay**, opening only when somebody in the league owns a player on the
+      drive, and closing either way
+- [x] **`static/audio/LICENCES.md`**, which cannot drift because everything in it is generated
+- [ ] **258 more phrase lines** to reach the spec's 400. `tools/phrase_lint.py` reports the shortfall
+      per category and `tools/transcript.py` measures what it costs: currently 64% of lines said are
+      a repeat, with the worst line heard 7 times in an afternoon
+- [ ] **Install Piper on the droplet.** It is the shipping TTS backend; macOS `say` stands in locally
+      so the pipeline is testable end to end, but it is not on the server
+- [ ] **Verify the mute toggle on a real iPhone.** Part of the acceptance criterion and not
+      reproducible in a simulator, so it belongs with the Phase 6 device matrix
 
 ### Phase 5 — Recap and the remaining tabs
 
