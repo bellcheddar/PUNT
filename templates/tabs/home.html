@@ -32,7 +32,14 @@
 {# --- bench regret on the left, everything else stacked on the right ----
    One grid, two columns, so both sides finish at the same height whichever
    has more in it. #}
+{# Two columns, each an explicit stack. Bench regret and Playoff odds were
+   dropped in as bare children of the grid alongside the right-hand stack, which
+   makes THREE children of a two-column grid: the second lands top-right and the
+   third wraps to the second row on the left. A grid never complains, it just
+   puts things somewhere. #}
 <div class="columns">
+
+  <div class="column-stack">
 
   <section class="panel">
     <h2 class="panel-title">Bench regret</h2>
@@ -56,6 +63,29 @@
       <div class="empty"><strong>No receipts yet</strong>Nobody has done anything regrettable.</div>
     {% endif %}
   </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Playoff odds</h2>
+    {% if multiverse.available %}
+      <table class="rows">
+        <thead><tr><th>Team</th><th class="num">W-L</th><th class="num">Odds</th><th>Needs</th></tr></thead>
+        <tbody>
+        {% for row in multiverse.rows %}
+          <tr class="tappable {% if loop.index == multiverse.playoff_places %}cut{% endif %}" data-team="{{ row.id }}">
+            <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ loop.index }}. {{ row.team }}</td>
+            <td class="num">{{ row.record }}</td>
+            <td class="num">{{ (row.odds * 100) | round | int }}%</td>
+            <td class="verdict-cell">{{ row.verdict }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty"><strong>No season grid</strong>The schedule feed is missing.</div>
+    {% endif %}
+  </section>
+
+  </div>
 
   <div class="column-stack">
 
@@ -100,27 +130,6 @@
          hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
       {% include "partials/cheer.html" %}
     </div>
-  </section>
-
-  <section class="panel">
-    <h2 class="panel-title">Playoff odds</h2>
-    {% if multiverse.available %}
-      <table class="rows">
-        <thead><tr><th>Team</th><th class="num">W-L</th><th class="num">Odds</th><th>Needs</th></tr></thead>
-        <tbody>
-        {% for row in multiverse.rows %}
-          <tr class="tappable {% if loop.index == multiverse.playoff_places %}cut{% endif %}" data-team="{{ row.id }}">
-            <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ loop.index }}. {{ row.team }}</td>
-            <td class="num">{{ row.record }}</td>
-            <td class="num">{{ (row.odds * 100) | round | int }}%</td>
-            <td class="verdict-cell">{{ row.verdict }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <div class="empty"><strong>No season grid</strong>The schedule feed is missing.</div>
-    {% endif %}
   </section>
 
   </div>

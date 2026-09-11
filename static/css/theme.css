@@ -617,16 +617,26 @@ main { padding: 12px 14px 24px; }
 /* ---------- commentary feed ---------- */
 
 .feed { list-style: none; margin: 0; padding: 0; }
+/* Two columns, two rows, and the text spans both rows of the second.
+   The team chip was added as a THIRD child of a two-column grid, so it took the
+   second column and shoved the line itself into an implicit third -- which gets
+   whatever is left over, which on a desktop was a narrow ribbon of words. A
+   grid does not refuse extra children, it invents somewhere to put them. */
 .feed-item {
   display: grid;
-  grid-template-columns: 74px minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 84px minmax(0, 1fr);
+  grid-template-areas:
+    "kind text"
+    "team text";
+  gap: 2px 10px;
   align-items: baseline;
   padding: 8px 0;
   border-top: 1px solid var(--border);
 }
+
 .feed-item:first-child { border-top: 0; }
 .feed-kind {
+  grid-area: kind;
   font-family: var(--font-mono);
   font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--ink-faint);
@@ -640,7 +650,7 @@ main { padding: 12px 14px 24px; }
 .feed-item--clinch .feed-kind { color: var(--green); }
 .feed-item--lead_change .feed-kind { color: var(--magenta); }
 .feed-item--goose_egg .feed-kind { color: var(--ink-faint); }
-.feed-text { font-size: 13px; color: var(--ink-dim); }
+.feed-text { grid-area: text; align-self: start; font-size: 13px; line-height: 1.45; color: var(--ink-dim); }
 .feed-text b { color: var(--ink); font-weight: 600; }
 
 .rows td.num .sub { text-align: right; }
@@ -1197,12 +1207,15 @@ main { padding: 12px 14px 24px; }
 .feed-wrap, .scroll-wrap {
   max-height: 340px;
   overflow-y: auto;
-  /* `overflow-y: auto` alone computes overflow-x to `auto` as well, and the
-     scrollbar then ate the right edge of the verdict chips: "CONFLICTED"
-     rendered as "CONFLICT". Hidden, plus room for the bar itself. */
   overflow-x: hidden;
-  padding-right: 4px;
+  scrollbar-gutter: stable;
 }
+
+/* "CONFLICTED" is a 79 px chip, and every numeric column in this stylesheet is
+   66 px wide -- so it was clipped, and two rounds of guessing at scrollbar
+   padding did not touch it because the scrollbar was never the problem. Measured
+   rather than eyeballed: chip 79 px in a 66 px cell. */
+.cheer-rows th:last-child, .cheer-rows td:last-child { width: 92px; }
 
 /* Everything that has more to say when you touch it says so. A row that looks
    identical to a dead one and does something when tapped is worse than a row
@@ -1453,6 +1466,7 @@ main { padding: 12px 14px 24px; }
 
 /* Whose Moment this is, on every line in the feed. */
 .feed-team {
+  grid-area: team;
   font-family: var(--font-mono);
   font-size: 9.5px;
   letter-spacing: .04em;
