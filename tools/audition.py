@@ -68,10 +68,46 @@ def measurements() -> dict[str, dict]:
     return out
 
 
+def slices() -> dict[str, str]:
+    """Each sting as its own base64 wav, cut from the built sprite.
+
+    One file per button, played by an ordinary <audio> element. The first
+    version of this page used Web Audio: inline the whole sprite, decode it once
+    with `decodeAudioData`, and play slices out of the buffer. Every button did
+    nothing, and it took three wrong diagnoses to find out why.
+
+    `fetch()` from a file:// page is a CORS error, which was real and fixed by
+    inlining. Then the inlined version still did nothing, and the probe said
+    `bytes.length === 0` -- which is not a bug either: `decodeAudioData` DETACHES
+    the ArrayBuffer you hand it, so reading the array afterwards always says
+    zero. The actual fault was that `decodeAudioData` never called back at all on
+    the 223 kB sprite, while decoding a 3 kB file in the same browser worked.
+
+    So: no Web Audio. An <audio> element with a data: URI needs no fetch, no
+    decode call, no ArrayBuffer, and no AudioContext waiting on a user gesture to
+    leave `suspended`. It plays in a click handler, which is the only thing this
+    page has to do. WAV rather than mp3 so there is no second encode between the
+    sprite and your ears.
+    """
+    sprite = json.loads((AUDIO / "sprite.json").read_text())["sprite"]
+    out = {}
+    with tempfile.TemporaryDirectory() as work:
+        decoded = Path(work) / "s.wav"
+        subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", str(AUDIO / "sprite.mp3"),
+                        "-ac", "1", "-ar", "44100", str(decoded)], check=True)
+        for name, (start_ms, length_ms) in sprite.items():
+            cut = Path(work) / f"{name}.wav"
+            subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", str(decoded),
+                            "-ss", f"{start_ms / 1000:.3f}", "-t", f"{length_ms / 1000:.3f}",
+                            str(cut)], check=True)
+            out[name] = base64.b64encode(cut.read_bytes()).decode("ascii")
+    return out
+
+
 def render() -> str:
     sprite = json.loads((AUDIO / "sprite.json").read_text())["sprite"]
-    b64 = base64.b64encode((AUDIO / "sprite.mp3").read_bytes()).decode("ascii")
     stats = measurements()
+    clips = slices()
     sources = json.loads((ROOT / "data" / "audio_sources.json").read_text())
     sampled = sources.get("sounds", {})
     downloads = sources.get("downloads", {})
@@ -86,13 +122,14 @@ def render() -> str:
         else:
             where = "synthesised in <code>tools/make_audio.py</code>"
             tag = '<span class="old">synth</span>'
-        dull = ' class="dull"' if m["hf"] < 0.10 and name not in ("doom", "trombone", "flip", "tap") else ""
+        dull = ' class="num dull"' if (m["hf"] < 0.10 and name not in ("doom", "trombone", "flip", "tap")) else ' class="num"'
         rows.append(f"""
     <tr>
-      <td><button data-s="{name}">{name}</button> {tag}</td>
+      <td><button data-s="{name}">{name}</button> {tag}
+          <audio id="a-{name}" preload="auto" src="data:audio/wav;base64,{clips[name]}"></audio></td>
       <td class="role">{ROLES.get(name, "")}</td>
       <td class="num">{m['ms']} ms</td>
-      <td class="num"{dull}>{m['hf']:.1%}</td>
+      <td{dull}>{m['hf']:.1%}</td>
       <td class="num">{m['edge']:.4f}</td>
       <td class="src">{where}</td>
     </tr>""")
@@ -104,7 +141,7 @@ def render() -> str:
         margin:0; padding:32px 20px; }}
  main {{ max-width:940px; margin:0 auto; }}
  h1 {{ font-size:22px; margin:0 0 4px; }}
- p.lede {{ color:#93a0b8; margin:0 0 24px; max-width:66ch; }}
+ p.lede {{ color:#93a0b8; margin:0 0 24px; max-width:68ch; }}
  table {{ width:100%; border-collapse:collapse; font-size:14px; }}
  th {{ text-align:left; font:11px/1 ui-monospace,monospace; letter-spacing:.1em;
        text-transform:uppercase; color:#7c8aa5; padding:0 10px 8px; }}
@@ -114,22 +151,26 @@ def render() -> str:
  td.role {{ color:#93a0b8; }}
  td.src {{ color:#7c8aa5; font-size:12.5px; }}
  a {{ color:#7aa2ff; }}
+ audio {{ display:none; }}
  button {{ font:600 14px ui-monospace,monospace; background:#1d2740; color:#e8ecf5;
            border:1px solid #35446a; border-radius:7px; padding:7px 13px; cursor:pointer;
            min-width:104px; text-align:left; }}
  button:hover {{ background:#27355a; }}
  button.on {{ background:#e0348b; border-color:#e0348b; color:#fff; }}
+ button.bad {{ background:#5a1d2a; border-color:#a03050; }}
  .new {{ color:#4ad991; font:10px ui-monospace,monospace; }}
  .old {{ color:#7c8aa5; font:10px ui-monospace,monospace; }}
  .key {{ color:#7c8aa5; font-size:13px; margin-top:22px; }}
+ .all {{ margin-bottom:18px; }}
 </style>
 <main>
 <h1>Audition the stings</h1>
-<p class="lede">Straight off the built sprite, so this is exactly what the bar hears,
-mp3 encoding and all. <strong>HF</strong> is the fraction of each sound's energy above
-2&nbsp;kHz: under 10% is what "dull, like a tone through a blanket" measures as, flagged
-in orange except where dark is the point. <strong>Edge</strong> is the amplitude at the
-end of the window; anything above about 0.02 clicks.</p>
+<p class="lede">Cut straight out of the built sprite, so this is what the bar hears.
+<strong>HF</strong> is the fraction of each sound's energy above 2&nbsp;kHz: under 10% is
+what "dull, like a tone through a blanket" measures as, flagged orange except where being
+dark is the point. <strong>Edge</strong> is the amplitude where the playback window ends;
+above about 0.02 it clicks.</p>
+<p class="all"><button id="play-all">play all in order</button></p>
 <table>
 <thead><tr><th>Sting</th><th>Used for</th><th>Length</th><th>HF&gt;2kHz</th><th>Edge</th><th>Source</th></tr></thead>
 <tbody>{''.join(rows)}
@@ -138,43 +179,28 @@ end of the window; anything above about 0.02 clicks.</p>
 A spectrum cannot tell whether a horn sounds like a touchdown.</p>
 </main>
 <script>
-// The sprite is inlined as base64 rather than fetched. This page is opened as a
-// file:// URL by double-clicking it, and fetch() from a file:// origin is a CORS
-// error in every browser -- so every button silently did nothing. Inlining costs
-// about a third more bytes on a local tool page and makes it work on a
-// double-click, which is the only way anybody is going to open it.
-const SPRITE = {json.dumps(sprite)};
-const MP3 = "{b64}";
-
-const ctx = new (window.AudioContext || window.webkitAudioContext)();
-const bytes = Uint8Array.from(atob(MP3), c => c.charCodeAt(0));
-let buffer = null;
-const load = new Promise((resolve, reject) => {{
-  // The callback form as well as the promise: Safari still resolves this one.
-  const done = ctx.decodeAudioData(bytes.buffer, d => {{ buffer = d; resolve(); }}, reject);
-  if (done && done.then) done.then(d => {{ buffer = d; resolve(); }}, reject);
-}});
-load.catch(e => {{
-  document.querySelector('.key').textContent = 'Could not decode the sprite: ' + e;
-}});
-
-document.querySelectorAll('button[data-s]').forEach(btn => {{
-  btn.addEventListener('click', async () => {{
-    try {{
-      await load;
-      await ctx.resume();
-      const [start, length] = SPRITE[btn.dataset.s];
-      const src = ctx.createBufferSource();
-      src.buffer = buffer;
-      src.connect(ctx.destination);
-      src.start(0, start / 1000, length / 1000);
-      btn.classList.add('on');
-      setTimeout(() => btn.classList.remove('on'), length);
-    }} catch (e) {{
-      btn.textContent = 'failed';
-      console.error(e);
-    }}
+// No Web Audio, no fetch, no decodeAudioData: see slices() in tools/audition.py
+// for the three separate reasons the first version of this page was silent.
+function play(name) {{
+  const el = document.getElementById('a-' + name);
+  const btn = document.querySelector(`button[data-s="${{name}}"]`);
+  el.currentTime = 0;
+  return el.play().then(() => {{
+    btn.classList.add('on');
+    return new Promise(r => {{ el.onended = () => {{ btn.classList.remove('on'); r(); }}; }});
+  }}).catch(e => {{
+    btn.classList.add('bad');
+    btn.textContent = name + ' failed';
+    console.error(name, e);
   }});
+}}
+document.querySelectorAll('button[data-s]').forEach(b =>
+  b.addEventListener('click', () => play(b.dataset.s)));
+document.getElementById('play-all').addEventListener('click', async () => {{
+  for (const b of document.querySelectorAll('button[data-s]')) {{
+    await play(b.dataset.s);
+    await new Promise(r => setTimeout(r, 180));
+  }}
 }});
 </script>
 """
