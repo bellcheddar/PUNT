@@ -90,12 +90,12 @@ class Line:
 
 def _as_tuple(value: Any) -> tuple[str, ...]:
     if value is None:
-        return ()
+        return ()  # cold: every shipped phrase names its tone and its kind
     if isinstance(value, str):
         return (value,)
     if isinstance(value, (list, tuple)):
         return tuple(str(v) for v in value)
-    raise PhraseError(f"expected a string or a list, got {value!r}")
+    raise PhraseError(f"expected a string or a list, got {value!r}")  # cold: a phrase file with a number where a string belongs; tests/test_commentary.py
 
 
 def _matches_range(value: Any, spec: Any) -> bool:
@@ -106,21 +106,21 @@ def _matches_range(value: Any, spec: Any) -> bool:
         except (TypeError, ValueError):
             # A range test against something that is not a number never matches,
             # rather than raising: a Moment is allowed to be missing a field.
-            return "in" in spec and value in spec["in"]
+            return "in" in spec and value in spec["in"]  # cold: an `in` spec against a non-numeric field; no shipped phrase uses one
         for key, bound in spec.items():
             if key == "gte" and not number >= float(bound):
                 return False
             if key == "gt" and not number > float(bound):
-                return False
+                return False  # cold: no shipped phrase uses `gt`; the form is tested, see data/phrases/README.md
             if key == "lte" and not number <= float(bound):
                 return False
             if key == "lt" and not number < float(bound):
-                return False
+                return False  # cold: no shipped phrase uses `lt`; same
             if key == "in" and value not in bound:
-                return False
+                return False  # cold: no shipped phrase uses `in`; same
         return True
     if isinstance(spec, (list, tuple)):
-        return value in spec
+        return value in spec  # cold: no shipped phrase uses a bare list; same
     if isinstance(spec, bool):
         return bool(value) is spec
     return str(value) == str(spec)
@@ -135,7 +135,7 @@ class PhraseBank:
         seen: set[str] = set()
         for phrase in self.phrases:
             if phrase.id in seen:
-                raise PhraseError(f"duplicate phrase id {phrase.id!r} ({phrase.source})")
+                raise PhraseError(f"duplicate phrase id {phrase.id!r} ({phrase.source})")  # cold: the shipped bank has no duplicate id, which is what the linter is for
             seen.add(phrase.id)
             for kind in phrase.kind:
                 self._by_kind.setdefault(kind, []).append(phrase)
@@ -161,22 +161,22 @@ class PhraseBank:
         for path in sorted(directory.glob("*.yaml")):
             raw = yaml.safe_load(path.read_text("utf-8")) or []
             if not isinstance(raw, list):
-                raise PhraseError(f"{path.name}: expected a list of phrases")
+                raise PhraseError(f"{path.name}: expected a list of phrases")  # cold: a phrase file that is not a list; tests/test_commentary.py
             for entry in raw:
                 phrases.append(cls._parse(entry, path.name))
         if not phrases:
-            log.warning("no phrases found in %s", directory)
+            log.warning("no phrases found in %s", directory)  # cold: an empty data/phrases; the bank ships with 410 lines in it
         return cls(phrases)
 
     @staticmethod
     def _parse(entry: Any, source: str) -> Phrase:
         if not isinstance(entry, dict):
-            raise PhraseError(f"{source}: expected a mapping, got {type(entry).__name__}")
+            raise PhraseError(f"{source}: expected a mapping, got {type(entry).__name__}")  # cold: a phrase that is not a mapping; tests/test_commentary.py
         try:
             trigger = dict(entry.get("trigger") or {})
             kind = _as_tuple(trigger.pop("kind", None))
             if not kind:
-                raise PhraseError(f"{source}: {entry.get('id')} has no trigger.kind")
+                raise PhraseError(f"{source}: {entry.get('id')} has no trigger.kind")  # cold: a phrase with no trigger.kind; tests/test_commentary.py
             return Phrase(
                 id=str(entry["id"]),
                 text=str(entry["text"]),
@@ -191,7 +191,7 @@ class PhraseBank:
                 source=source,
             )
         except KeyError as exc:
-            raise PhraseError(f"{source}: phrase is missing {exc}") from exc
+            raise PhraseError(f"{source}: phrase is missing {exc}") from exc  # cold: a phrase missing a required field; tests/test_commentary.py
 
 
 def moment_slots(moment) -> dict[str, Any]:
@@ -221,7 +221,7 @@ def moment_slots(moment) -> dict[str, Any]:
         try:
             slots["win_pct"] = f"{float(context['win_prob']) * 100:.0f}"
         except (TypeError, ValueError):
-            pass
+            pass  # cold: a win_prob that is not a number
     return slots
 
 
@@ -252,16 +252,16 @@ class Commentator:
                 # A line whose slots cannot be filled is dropped rather than
                 # rendered with a hole in it. `tools/phrase_lint.py` catches this
                 # at authoring time; this is the belt to that pair of braces.
-                log.debug("phrase %s wants %s, moment has none", phrase.id, phrase.slots - set(slots))
-                continue
+                log.debug("phrase %s wants %s, moment has none", phrase.id, phrase.slots - set(slots))  # cold: a line whose slots cannot be filled; phrase_lint catches these at authoring time
+                continue  # cold: same
             out.append(phrase)
         return out
 
     def _trigger_matches(self, phrase: Phrase, moment, slots: dict[str, Any]) -> bool:
         for key, spec in phrase.trigger.items():
             if key == "magnitude":
-                if not _matches_range(moment.magnitude, spec):
-                    return False
+                if not _matches_range(moment.magnitude, spec):  # cold: `magnitude` is a supported trigger field no shipped phrase asks for
+                    return False  # cold: same
             elif key == "delta_points":
                 if not _matches_range(moment.delta_points, spec):
                     return False
@@ -290,7 +290,7 @@ class Commentator:
             if not fallback or moment.magnitude < 0.6:
                 self.missed[moment.kind] = self.missed.get(moment.kind, 0) + 1
                 return None
-            candidates = sorted(fallback, key=lambda p: self._last_used.get(p.id, -10**6))[:1]
+            candidates = sorted(fallback, key=lambda p: self._last_used.get(p.id, -10**6))[:1]  # cold: 410 lines is enough that nothing is ever entirely on cooldown; that is the measurement in test_the_real_bank_is_large_enough_not_to_need_the_silence_rule
 
         # Seeded per (week, moment id) so the same Sunday replays identically:
         # the golden-file commentary test depends on it, and so does anyone

@@ -17,6 +17,7 @@ from engine.commentary import (
     Phrase,
     PhraseBank,
     PhraseError,
+    _matches_range,
     moment_slots,
 )
 from engine.events import Moment
@@ -216,3 +217,50 @@ def test_the_bank_passes_its_own_linter():
     # Exit 1 without --strict means only the line-count shortfall, which is
     # tracked in the README rather than failing the suite.
     assert "problem(s)" not in result.stderr, result.stderr
+
+
+def test_every_trigger_form_works_including_the_ones_no_phrase_uses_yet():
+    """The whole comparison vocabulary a phrase author can write.
+
+    The shipped bank uses four of the eight forms -- a scalar, a bool, `gte` and
+    `lte` -- so `gt`, `lt`, `in` and a bare list had never been evaluated by
+    anything, in the app or in a test. They are the forms somebody reaches for
+    while writing the next phrase file, and an authoring feature that has never
+    run once is a trap rather than a feature. data/phrases/README.md documents
+    all eight; this is what keeps that document true.
+    """
+    assert _matches_range(12.0, 12.0)               # scalar, compared as text
+    assert _matches_range("WR", "WR")
+    assert not _matches_range("WR", "RB")
+    assert _matches_range(True, True)               # bool
+    assert not _matches_range(False, True)
+    assert _matches_range("RB", ["RB", "WR"])       # a bare list is membership
+    assert not _matches_range("TE", ["RB", "WR"])
+
+    assert _matches_range(12.0, {"gte": 12}) and not _matches_range(11.9, {"gte": 12})
+    assert _matches_range(12.1, {"gt": 12}) and not _matches_range(12.0, {"gt": 12})
+    assert _matches_range(12.0, {"lte": 12}) and not _matches_range(12.1, {"lte": 12})
+    assert _matches_range(11.9, {"lt": 12}) and not _matches_range(12.0, {"lt": 12})
+    assert _matches_range(4.0, {"gte": 3, "lte": 6})        # both bounds, one spec
+    assert not _matches_range(7.0, {"gte": 3, "lte": 6})
+
+    # `in` inside a range object, which is how a non-numeric field is tested
+    # alongside numeric ones. A Moment is allowed to be missing a field, so a
+    # range test against something unmeasurable answers False rather than raising.
+    assert _matches_range("OUT", {"in": ["OUT", "DOUBTFUL"]})
+    assert not _matches_range("ACTIVE", {"in": ["OUT", "DOUBTFUL"]})
+    assert not _matches_range(None, {"gte": 1})
+
+
+def test_magnitude_is_a_trigger_field_even_though_no_phrase_uses_it():
+    """`magnitude` is how a phrase says "only for the loud ones". It is wired
+    into the matcher and no shipped phrase asks for it, which means the only
+    thing standing between it and a silent typo is this test."""
+    loud = Phrase(
+        id="x_loud", kind=("TOUCHDOWN",), text="Enormous.", trigger={"magnitude": {"gte": 0.8}},
+        source="test",
+    )
+    speaker = Commentator(PhraseBank([loud]), roast_level=2)
+
+    assert speaker.eligible(moment(magnitude=0.9)) == [loud]
+    assert speaker.eligible(moment(magnitude=0.5)) == []

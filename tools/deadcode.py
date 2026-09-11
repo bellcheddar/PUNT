@@ -331,6 +331,17 @@ def drive_a_sunday() -> None:
         unwritable = EventEngine(simulate_draws=40, seen_path=Path("/dev/null/seen.json"))
         unwritable.persist()
 
+    # Startup logs the size of the bank, and the diagnostics page and the linter
+    # both ask it what it covers.
+    len(bank), bank.kinds, bank.counts()
+
+    # A league that asked for the safe setting. Every line above the configured
+    # roast level has to be filtered out, and the driver's own commentator runs
+    # at the top level where nothing is.
+    polite = Commentator(bank, roast_level=0)
+    for moment_ in feed.recent(limit=40):
+        polite.eligible(moment_)
+
     pack = build(snapshot, feed.notable)
     recap = generate(pack, backend=None)
     validate(recap.text, pack)
