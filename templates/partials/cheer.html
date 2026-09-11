@@ -23,7 +23,7 @@
         {% if personal %}
           <span class="verdict">{{ row.verdict }}</span>
         {% else %}
-          <span class="verdict verdict--stake">{{ row.at_stake | points }}</span>
+          <span class="verdict">{{ row.at_stake | points }}</span>
           <span class="sub stake-kind">{{ 'delivered' if row.stake_kind == 'scored' else 'to come' }}</span>
         {% endif %}
       </td>
