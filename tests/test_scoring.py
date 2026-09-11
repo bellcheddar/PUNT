@@ -19,6 +19,7 @@ from engine.scoring import (
     all_play,
     luck_index,
     optimal_lineup,
+    standings,
 )
 from espn.models import Player
 
@@ -219,3 +220,32 @@ def test_a_superflex_league_needs_the_real_rules():
         "the position table cannot see that a superflex takes a quarterback, so it "
         "understates this manager's regret by 14 points"
     )
+
+
+def test_a_tied_week_counts_as_half_a_win_everywhere(recording, no_network):
+    """Week 4 of the fixture ends level, deliberately.
+
+    A fantasy tie is rare, real, and the single most argued-about outcome in any
+    league. Every layer handles one -- the payload writes "TIE", the record
+    carries ties, the table weights them at half a win, all-play counts them
+    separately -- and none of it had ever run against the fixture, because ten
+    gaussian draws a week never land on the same two decimal places.
+    """
+    from espn.cache import TTLCache
+    from espn.client import EspnClient, LeagueRepository
+    from espn.replay import ReplayTransport
+
+    transport = ReplayTransport.load(recording.name, speed=0.0)
+    transport.clock.seek(int(transport.recording.duration))
+    client = EspnClient(transport=transport, season=2025, league_id="demo", cache=TTLCache())
+    snapshot = LeagueRepository(client).snapshot()
+
+    table = standings(snapshot)
+    tied = [r for r in table if r.ties]
+    assert len(tied) == 2, "the planted tie is missing from the season"
+    assert all(r.all_play.ties for r in tied), "an all-play tie was counted as a win or a loss"
+
+    # Half a win each, which is what puts them either side of a team on the same
+    # whole-number record.
+    for record in tied:
+        assert record.wins + 0.5 * record.ties == record.wins + 0.5

@@ -175,6 +175,19 @@ def test_a_legendary_card_can_actually_be_minted(no_network):
     for card in legendary:
         assert card["season_high"] or (card["winning"] and card["week_low"] < 0.10)
 
+    # Both routes into Legendary, at the final whistle. The season-high one used
+    # to be unreachable there and only there: ESPN marks the week complete the
+    # moment the last game ends, so the week being played joined settled_weeks
+    # and a team's own live score entered its own season best. "Beat your season
+    # high" then read "beat your own score", which is false for everybody. The
+    # card was visible all afternoon and gone at the whistle, which is exactly
+    # backwards for a trophy, and the disjunct above passed the whole time.
+    assert any(c["season_high"] for c in legendary), (
+        "no season-high Legendary card at settle: the current week is being "
+        "counted as part of its own season best again"
+    )
+    assert any(c["winning"] and c["week_low"] < 0.10 for c in legendary)
+
     # And the other half: dipping below 10% and losing is not legendary, it is
     # just losing. Several managers bottomed out at 0.0% in this fixture.
     losers_who_dipped = [
