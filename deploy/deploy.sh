@@ -65,7 +65,12 @@ sleep 2
 "${SSH_CMD[@]}" "$DROPLET_SSH" 'systemctl is-active --quiet punt-web.service' \
   && echo "    unit: active" || { echo "    unit: NOT ACTIVE"; exit 1; }
 
-"${SSH_CMD[@]}" "$DROPLET_SSH" "stat -c '    code: %y' ${DROPLET_PATH}/app.py"
+# The NEWEST file, not app.py. Stat'ing one named file that changes on maybe one
+# deploy in five reports a stale timestamp for every other one, which is the
+# opposite of what this line is for.
+"${SSH_CMD[@]}" "$DROPLET_SSH" "find ${DROPLET_PATH} -path ${DROPLET_PATH}/.venv -prune -o \
+  -path '*/__pycache__' -prune -o -type f -printf '%T@ %TY-%Tm-%Td %TH:%TM:%TS %p\n' 2>/dev/null \
+  | sort -rn | head -1 | cut -d' ' -f2-3 | sed 's/^/    newest: /'"
 
 code=$(curl -fsS -o /dev/null -w '%{http_code}' "https://${SERVER_NAME}/healthz" || echo 000)
 echo "    healthz: $code"

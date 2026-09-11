@@ -138,9 +138,15 @@ def test_the_deploy_verifies_the_new_build_is_actually_serving():
     build."""
     deploy = (DEPLOY / "deploy.sh").read_text("utf-8")
     assert "is-active" in deploy
-    assert "stat -c" in deploy
     assert "/healthz" in deploy
     assert "/partials/watchnow" in deploy, "no check for a route only the new build serves"
+
+    # A timestamp off the NEWEST file. This asserted `stat -c` on app.py, which
+    # changes on about one deploy in five, so the line reported a stale
+    # timestamp for every other one and was reassuring rather than informative.
+    assert "-printf" in deploy and "sort -rn" in deploy, \
+        "the freshness check must find the newest file, not stat one named file"
+    assert "/app.py\"" not in deploy, "back to stat'ing a file that rarely changes"
 
 
 def test_secrets_and_derived_files_are_never_shipped():
