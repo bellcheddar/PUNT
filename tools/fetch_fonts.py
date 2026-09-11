@@ -22,7 +22,12 @@ ROOT = Path(__file__).resolve().parent.parent
 FONT_DIR = ROOT / "static" / "fonts"
 CSS_PATH = ROOT / "static" / "css" / "fonts.css"
 
-FAMILIES = "family=Anton&family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;500"
+#: Inter 700 is deliberately absent. The design uses 400 and 600 only, and
+#: `b, strong` is styled to 600 -- without that, an unstyled `<b>` pulls a whole
+#: extra 48 kB face that nothing in the stylesheet ever asks for.
+#: Roboto Mono 500 is kept: it is declared but only fetched if something selects
+#: it, so it costs repository size and no transfer.
+FAMILIES = "family=Anton&family=Inter:wght@400;600&family=Roboto+Mono:wght@400;500"
 CSS_URL = f"https://fonts.googleapis.com/css2?{FAMILIES}&display=swap"
 
 # Google serves a different stylesheet per user agent. This one asks for the

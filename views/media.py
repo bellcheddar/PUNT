@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import logging
 import re
+import threading
+from collections import OrderedDict
 
 from flask import Blueprint, Response, abort, redirect, send_file
 
@@ -18,6 +20,19 @@ bp = Blueprint("media", __name__)
 #: long cache is safe. A manager who changes their logo waits a day for it,
 #: which is a better trade than ten phones re-fetching ten images every poll.
 LOGO_CACHE_SECONDS = 86_400
+
+#: Proxied logos, in this process, so the browser cache is not the only one.
+#:
+#: Measured before this existed: each `/img/team/N` took 600 to 900 ms, because
+#: every request went to ESPN's CDN again. Ten phones opening the album is a
+#: hundred upstream image fetches for ten images, on a first load, over the
+#: bar's wifi. The browser's own cache does not help the first visit and does not
+#: help the tenth phone at all.
+#:
+#: Failures are cached too, and that is the more important half: a logo URL that
+#: 404s costs the same 900 ms as one that works, every time, for the whole season.
+_LOGO_CACHE: "OrderedDict[int, tuple[bytes, str] | None]" = OrderedDict()
+LOGO_CACHE_ENTRIES = 64
 
 
 @bp.route("/audio/phrase/<digest>.mp3")
@@ -76,11 +91,18 @@ def team_logo(team_id: int):
     those on the server, where the answer is a redirect to the monogram fallback
     instead of a broken card.
     """
+    cached = _cache_get(team_id)
+    if cached is not None:
+        if cached is _MISS:
+            return redirect(f"/img/monogram/{team_id}", code=302)
+        return _logo_response(*cached)
+
     snap = snapshot()
     team = snap.team(team_id)
     if team is None:
         abort(404)
     if not team.logo:
+        _cache_put(team_id, _MISS)
         return redirect(f"/img/monogram/{team_id}", code=302)
 
     try:
@@ -94,14 +116,42 @@ def team_logo(team_id: int):
             raise ValueError(f"content type {content_type!r}")
     except Exception as exc:  # noqa: BLE001
         log.info("logo proxy fell back to monogram for team %s: %s", team_id, exc)
+        _cache_put(team_id, _MISS)
         return redirect(f"/img/monogram/{team_id}", code=302)
 
+    _cache_put(team_id, (response.content, content_type))
+    return _logo_response(response.content, content_type)
+
+
+#: Sentinel for "this team has no usable logo", so the failure is cached as
+#: firmly as a success.
+_MISS = object()
+_LOGO_LOCK = threading.Lock()
+
+
+def _cache_get(team_id: int):
+    with _LOGO_LOCK:
+        entry = _LOGO_CACHE.get(team_id)
+        if entry is not None:
+            _LOGO_CACHE.move_to_end(team_id)
+        return entry
+
+
+def _cache_put(team_id: int, value) -> None:
+    with _LOGO_LOCK:
+        _LOGO_CACHE[team_id] = value
+        _LOGO_CACHE.move_to_end(team_id)
+        while len(_LOGO_CACHE) > LOGO_CACHE_ENTRIES:
+            _LOGO_CACHE.popitem(last=False)
+
+
+def _logo_response(content: bytes, content_type: str) -> Response:
     return Response(
-        response.content,
+        content,
         mimetype=content_type,
         headers={
             "Cache-Control": f"public, max-age={LOGO_CACHE_SECONDS}",
-            "ETag": hashlib.sha256(response.content).hexdigest()[:16],
+            "ETag": hashlib.sha256(content).hexdigest()[:16],
         },
     )
 

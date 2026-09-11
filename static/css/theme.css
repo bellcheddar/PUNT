@@ -124,6 +124,12 @@ body {
 header, nav, .chrome { user-select: none; }
 a { color: var(--brand-bright); text-decoration: none; }
 
+/* Emphasis is semibold, not bold. `<b>` and `<strong>` default to 700, and the
+ * design never asks for 700 anywhere -- so an unstyled `<b>` in the commentary
+ * feed was pulling a whole extra 48 kB font face that nothing else used.
+ * Measured: the browser fetched inter-700-latin.woff2 on every page load. */
+b, strong { font-weight: 600; }
+
 /* A focus ring that can actually be seen on this ground. The browser default is
  * a 1px `auto` outline, which on a near-black page is close to invisible --
  * measured, not assumed: tools/a11y.py reported `focus=auto 1px` on every route.

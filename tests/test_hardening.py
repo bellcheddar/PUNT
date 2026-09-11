@@ -372,3 +372,100 @@ def test_nothing_in_the_repository_is_a_downloaded_sound():
                if p.is_file() and p.suffix in (".mp3", ".ogg")}
     assert shipped <= {"sprite.mp3", "sprite.ogg", "bed.mp3", "bed.ogg"}, \
         f"an audio file nobody accounted for: {shipped}"
+
+
+# --------------------------------------------------------------------------
+# the logo proxy
+# --------------------------------------------------------------------------
+
+def test_a_logo_is_fetched_from_espn_once_not_once_per_request(flaky_app, no_network):
+    """Measured before this cache existed: every `/img/team/N` took 600 to 900 ms
+    because each one went to ESPN's CDN again.
+
+    Ten phones opening the album is a hundred upstream image fetches for ten
+    images, on a first load, over the bar's wifi. The browser's own cache does
+    not help the first visit and does not help the tenth phone at all.
+    """
+    import views.media as media
+
+    app, _, _ = flaky_app
+    media._LOGO_CACHE.clear()
+
+    calls = []
+
+    class FakeResponse:
+        status_code = 200
+        content = b"\x89PNG\r\n\x1a\n" + b"0" * 200
+        headers = {"Content-Type": "image/png"}
+
+    def fake_get(url, timeout=6):
+        calls.append(url)
+        return FakeResponse()
+
+    import sys
+    import types
+
+    stub = types.ModuleType("requests")
+    stub.get = fake_get
+    original = sys.modules.get("requests")
+    sys.modules["requests"] = stub
+    try:
+        web = app.test_client()
+        codes = [web.get("/img/team/1").status_code for _ in range(10)]
+    finally:
+        if original is not None:
+            sys.modules["requests"] = original
+        else:
+            sys.modules.pop("requests", None)
+
+    assert codes == [200] * 10
+    assert len(calls) == 1, f"{len(calls)} upstream fetches for one logo"
+
+
+def test_a_broken_logo_is_not_re_fetched_all_season(flaky_app, no_network):
+    """The more important half. A logo URL that 404s costs the same 900 ms as one
+    that works, every single time, for the whole season -- and two of the ten
+    managers never upload one at all."""
+    import sys
+    import types
+
+    import views.media as media
+
+    app, _, _ = flaky_app
+    media._LOGO_CACHE.clear()
+
+    calls = []
+
+    def always_fails(url, timeout=6):
+        calls.append(url)
+        raise OSError("connection refused")
+
+    stub = types.ModuleType("requests")
+    stub.get = always_fails
+    original = sys.modules.get("requests")
+    sys.modules["requests"] = stub
+    try:
+        web = app.test_client()
+        codes = [web.get("/img/team/1").status_code for _ in range(6)]
+    finally:
+        if original is not None:
+            sys.modules["requests"] = original
+        else:
+            sys.modules.pop("requests", None)
+
+    assert codes == [302] * 6, "a broken logo should redirect to the monogram"
+    assert len(calls) == 1, f"{len(calls)} upstream attempts for a logo known to be broken"
+
+
+def test_the_logo_cache_cannot_grow_without_bound(flaky_app, no_network):
+    """A ten-team league needs ten entries; the bound exists so a season of
+    renames, or a malformed team id, cannot turn it into a leak."""
+    import views.media as media
+
+    media._LOGO_CACHE.clear()
+    for team_id in range(media.LOGO_CACHE_ENTRIES + 25):
+        media._cache_put(team_id, media._MISS)
+    assert len(media._LOGO_CACHE) == media.LOGO_CACHE_ENTRIES
+    # Oldest evicted, newest kept.
+    assert 0 not in media._LOGO_CACHE
+    assert (media.LOGO_CACHE_ENTRIES + 24) in media._LOGO_CACHE

@@ -2,7 +2,7 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-199%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-202%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -310,10 +310,12 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                       # 199 tests, no network, no cookies
+python3 -m pytest                       # 202 tests, no network, no cookies
 python3 tools/screenshot.py --check-overflow   # needs the app running
 python3 tools/a11y.py                          # contrast, no browser needed
 python3 tools/a11y.py --page                   # focus rings, targets, live regions
+python3 tools/perf.py                          # payload budgets
+python3 tools/perf.py --page                   # frame cost, subresources, paint timings
 ```
 
 Every test runs against the committed recording with sockets disabled by a fixture, so "replays with
@@ -432,8 +434,9 @@ rip is genuinely satisfying.*
 - [ ] **PWA shell.** Manifest, service worker, iOS legacy meta tags and generated splash screens,
       safe-area insets, overscroll and tap-highlight suppression. Fantasy data must never be served
       stale from a service worker
-- [ ] **Self-host the fonts.** A third-party font origin costs a second of first paint on exactly the
-      shared wifi this app is designed for
+- [x] **Self-host the fonts.** A third-party font origin costs a second of first paint on exactly the
+      shared wifi this app is designed for. Measured afterwards: 142 kB of faces actually fetched,
+      down from 190 once `b, strong` was styled to 600 and the unused 700 weight stopped shipping
 - [ ] **Keep the running minimum win probability per week.** Legendary is currently checked at render
       time, so a manager who was under 10% earlier and is comfortable now does not qualify. The spec
       wants the week's low-water mark
