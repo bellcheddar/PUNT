@@ -307,24 +307,24 @@ class OllamaBackend:
                 names = {m.get("name", "") for m in json.load(response).get("models", [])}
             return any(name.startswith(self.model.split(":")[0]) for name in names)
         except Exception:  # noqa: BLE001
-            return False
+            return False  # cold: ollama is running on this machine, so the connection does not fail; it just has no matching model
 
     def generate(self, prompt: str, temperature: float = 0.85, max_tokens: int = 200) -> str:
-        import json  # noqa: PLC0415
-        import urllib.request  # noqa: PLC0415
+        import json  # noqa: PLC0415  # cold: OllamaBackend.generate: needs the model pulled (ollama pull qwen2.5:1.5b-instruct)
+        import urllib.request  # noqa: PLC0415  # cold: same
 
-        body = json.dumps({
+        body = json.dumps({  # cold: same
             "model": self.model,
             "prompt": prompt,
             "stream": False,
             "options": {"temperature": temperature, "num_predict": max_tokens},
         }).encode()
-        request = urllib.request.Request(
+        request = urllib.request.Request(  # cold: same
             f"{self.host}/api/generate", data=body,
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(request, timeout=45) as response:
-            return json.load(response).get("response", "")
+        with urllib.request.urlopen(request, timeout=45) as response:  # cold: same
+            return json.load(response).get("response", "")  # cold: same
 
 
 class MLXBackend:
@@ -341,15 +341,15 @@ class MLXBackend:
             import mlx_lm  # noqa: F401, PLC0415
         except ImportError:
             return False
-        return True
+        return True  # cold: mlx_lm is not installed here
 
     def generate(self, prompt: str, temperature: float = 0.85, max_tokens: int = 200) -> str:
-        from mlx_lm import generate as mlx_generate, load  # noqa: PLC0415
+        from mlx_lm import generate as mlx_generate, load  # noqa: PLC0415  # cold: MLXBackend.generate: needs mlx_lm and the weights
 
-        if self._loaded is None:
-            self._loaded = load(self.model)
-        model, tokenizer = self._loaded
-        return mlx_generate(model, tokenizer, prompt=prompt, max_tokens=max_tokens, verbose=False)
+        if self._loaded is None:  # cold: same
+            self._loaded = load(self.model)  # cold: same
+        model, tokenizer = self._loaded  # cold: same
+        return mlx_generate(model, tokenizer, prompt=prompt, max_tokens=max_tokens, verbose=False)  # cold: same
 
 
 def pick_backend(cfg) -> Backend | None:

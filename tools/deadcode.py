@@ -290,6 +290,77 @@ def _drive_the_live_transport() -> None:
             pass
 
 
+def _drive_the_recap_guard(pack) -> None:
+    """The validator, against text that fails it.
+
+    Every numeral and every proper noun in a recap has to appear in the fact
+    pack, and that rule is the only thing standing between a language model and
+    a scoreboard. It had never once rejected anything here: the templated recap
+    is grounded by construction, so the guard ran and always passed. A guard
+    that has only ever seen good input is not a guard.
+    """
+    from engine.recap import Recap, generate, pick_backend, validate
+
+    # An invented score, an invented player, a thousands separator and a
+    # trailing zero -- "1,204" and "1204" and "1204.0" are the same claim, and
+    # all three have to be checked against the pack the same way.
+    liar = ("Chidi put up 1,204.50 and Fernando Gallowglass ran for three scores. "
+            "Bacon was the story of the day. "
+            "Marguerite")
+    rejections = validate(liar, pack)
+    assert rejections, "the validator accepted an invented score and an invented player"
+    for rejection in rejections:
+        str(rejection)
+    Recap(text=liar, source="model", attempts=3, rejections=rejections).to_json()
+
+    class Fibber:
+        """A model that says something untrue three times running."""
+
+        name = "fibber"
+
+        def available(self):
+            return True
+
+        def generate(self, prompt, temperature=0.85, max_tokens=200):
+            return liar
+
+    class Broken:
+        name = "broken"
+
+        def available(self):
+            return True
+
+        def generate(self, prompt, temperature=0.85, max_tokens=200):
+            raise RuntimeError("the model server went away mid-sentence")
+
+    class Honest:
+        name = "honest"
+
+        def available(self):
+            return True
+
+        def generate(self, prompt, temperature=0.85, max_tokens=200):
+            return "A week of football happened, and somebody won."
+
+    with quiet("engine.recap"):
+        # Three rejected samples, then the honest conclusion that this week's
+        # facts are not ones it can write about safely: fall back to the
+        # template. Not a retry loop around a flaky API.
+        assert generate(pack, backend=Fibber()).source == "template"
+        assert generate(pack, backend=Broken()).source == "template"
+        assert generate(pack, backend=Honest()).source == "model"
+
+    # And the backend picker, on a machine with neither model installed.
+    class Cfg:
+        recap_backend = "mlx"
+
+    pick_backend(Cfg())
+    Cfg.recap_backend = "ollama"
+    pick_backend(Cfg())
+    Cfg.recap_backend = "nothing-by-that-name"
+    pick_backend(Cfg())
+
+
 def _drive_the_replay_harness() -> None:
     """The recorder, the clock, and a recording that is not the demo one.
 
@@ -714,6 +785,7 @@ def drive_a_sunday() -> None:
     recap = generate(pack, backend=None)
     validate(recap.text, pack)
     templated(pack)
+    _drive_the_recap_guard(feed.factpack(snapshot) or pack)
     feed.factpack(snapshot)
     feed.recent(10)
     feed.stats()
