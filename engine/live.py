@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Iterator
 
 from engine.commentary import Commentator, Line, PhraseBank
+from engine.factpack import FactPack, build as build_factpack
 from engine.speech import SpeechCache
 from engine.events import EventEngine, Moment
 from espn.models import LeagueSnapshot
@@ -87,6 +88,15 @@ class LiveFeed:
         self.failures = 0
         self.last_poll_at: float | None = None
         self.last_error: str = ""
+
+        #: The week's rare Moments, kept whole, plus exact counts of all of them.
+        #: The rolling `moments` buffer holds the last two hours and is the wrong
+        #: source for a weekly recap: by Monday it contains the tail of Sunday
+        #: night and nothing else. These are the kinds the fact pack actually
+        #: reads, and there are only ever a few dozen of them in a week.
+        self.week: int | None = None
+        self.notable: list[Moment] = []
+        self.week_counts: dict[str, int] = {}
 
         #: pro_team_id -> what we knew when the drive reached the red zone.
         #: Diffed each poll to open and close the countdown overlay.
@@ -173,7 +183,7 @@ class LiveFeed:
         self.polls += 1
         self.last_poll_at = time.time()
 
-        moments = self.engine.ingest(snapshot)
+        self._accumulate(snapshot, moments := self.engine.ingest(snapshot))
         if moments:
             self.moments.extend(moments)
             for moment in moments:
@@ -197,6 +207,37 @@ class LiveFeed:
         self.failures = 0
         self.last_error = ""
         return moments
+
+    #: Moment kinds the weekly fact pack reads. Everything else is counted but
+    #: not kept: there are 117 big plays in a Sunday and the recap needs the
+    #: number, not the list.
+    NOTABLE = frozenset({"GOOSE_EGG", "DOOM", "CLINCH", "LEAD_CHANGE", "BENCH_DISASTER"})
+
+    #: A ceiling, so a pathological week cannot grow this without bound.
+    MAX_NOTABLE = 400
+
+    def _accumulate(self, snapshot: LeagueSnapshot, moments: list[Moment]) -> None:
+        """Keep the week's rare Moments and exact per-kind counts."""
+        if snapshot.scoring_period != self.week:
+            self.week = snapshot.scoring_period
+            self.notable = []
+            self.week_counts = {}
+        for moment in moments:
+            self.week_counts[moment.kind] = self.week_counts.get(moment.kind, 0) + 1
+            if moment.kind in self.NOTABLE and len(self.notable) < self.MAX_NOTABLE:
+                self.notable.append(moment)
+
+    def factpack(self, snapshot: LeagueSnapshot | None = None) -> FactPack | None:
+        """The week as facts, or nothing if there is not a week yet."""
+        snapshot = snapshot or self.snapshot
+        if snapshot is None or not snapshot.teams:
+            return None
+        pack = build_factpack(snapshot, self.notable)
+        # Counts come from the accumulator rather than from `notable`, which is
+        # deliberately a subset: the recap says "74 touchdowns" and there is no
+        # list of 74 touchdowns anywhere in memory.
+        pack.counts = {kind.lower(): count for kind, count in sorted(self.week_counts.items())}
+        return pack
 
     #: A points jump at least this big while a drive was inside the five is a
     #: touchdown rather than a two-yard carry. The same threshold the event

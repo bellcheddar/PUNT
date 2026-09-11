@@ -1,0 +1,22 @@
+{# The week's write-up.
+
+   Generated prose is the one thing in this app that could state a number that
+   did not happen, so where it came from is shown rather than hidden: a reader
+   who can see "written from the fact pack" knows exactly how much to trust it. #}
+{% if recap %}
+<p class="recap">{{ recap.text }}</p>
+<p class="recap-source">
+  {%- if recap.source == 'model' -%}
+    Written by a local model and checked against {{ pack.numbers() | length }} facts.
+    {% if recap.attempts > 1 %}Took {{ recap.attempts }} attempts to say only true things.{% endif %}
+  {%- else -%}
+    Assembled from the week's facts. No model is installed, so nothing here was written:
+    every number came out of the box score.
+  {%- endif -%}
+</p>
+{% else %}
+<div class="empty">
+  <strong>No recap yet</strong>
+  The week's write-up is assembled once there is a week to write up.
+</div>
+{% endif %}

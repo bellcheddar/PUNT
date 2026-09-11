@@ -107,6 +107,34 @@ def stream():
     )
 
 
+@bp.route("/api/recap")
+def api_recap():
+    from engine.recap import generate, pick_backend, validate  # noqa: PLC0415
+
+    st = state()
+    pack = st.live.factpack() if st.live else None
+    if pack is None:
+        return jsonify({"ok": False, "error": "no week yet"}), 404
+    recap = generate(pack, backend=pick_backend(st.cfg))
+    return jsonify({
+        "ok": True,
+        "week": pack.week,
+        "recap": recap.to_json(),
+        "validates": not validate(recap.text, pack),
+        "facts": pack.to_json(),
+    })
+
+
+@bp.route("/partials/recap")
+def partial_recap():
+    from engine.recap import generate, pick_backend  # noqa: PLC0415
+
+    st = state()
+    pack = st.live.factpack() if st.live else None
+    recap = generate(pack, backend=pick_backend(st.cfg)) if pack else None
+    return render_template("partials/recap.html", recap=recap, pack=pack)
+
+
 @bp.route("/partials/moments")
 def partial_moments():
     """The commentary feed as a fragment.

@@ -2,6 +2,13 @@
 {% block title %}PUNT &middot; Receipts{% endblock %}
 {% block content %}
 <section class="panel">
+  <h2 class="panel-title">The week, in short</h2>
+  <div hx-get="{{ url_for('api.partial_recap') }}" hx-trigger="load" hx-swap="innerHTML">
+    <div class="empty"><strong>Writing it up</strong>One moment.</div>
+  </div>
+</section>
+
+<section class="panel">
   <h2 class="panel-title">Bench regret</h2>
   {% if receipts.rows %}
     <table class="rows">

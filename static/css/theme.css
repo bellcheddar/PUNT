@@ -748,6 +748,13 @@ main { padding: 12px 14px 24px; }
 .pack--ripped .pack-foil { transform: scaleY(1.16) translateY(-8%); opacity: 0; }
 .pack--ripped .pack-button { opacity: 0; transition: opacity 200ms ease; }
 
+.recap { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.recap-source {
+  margin: 10px 0 0;
+  font-family: var(--font-mono); font-size: 10px; line-height: 1.5;
+  color: var(--ink-faint);
+}
+
 .album-note {
   margin: 14px 0 0;
   font-size: 12px;
