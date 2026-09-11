@@ -32,18 +32,30 @@ if they disagree.
 | `trombone` | Bench disasters and goose eggs. The sad one | [Freesound #175409 — wah wah sad trombone.wav](https://freesound.org/people/kirbydx/sounds/175409/) by kirbydx on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `whoosh` | Big plays | [Freesound #683096 — Woosh](https://freesound.org/people/florianreichelt/sounds/683096/) by florianreichelt on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
-## Why CC0 only
+## Why CC0 for effects, and CC-BY only for music
 
-Not a stylistic preference. This repository is public and MIT, so an asset with
-an attribution requirement puts an obligation on everyone who clones it, and one
-with a non-commercial clause makes the repository undistributable. CC0 is the
-only licence with neither. `tests/test_audio_sources.py` refuses anything else.
+Two rules, because one could not produce the app.
+
+Sound effects are **CC0 only**. This repository is public and MIT, so an asset
+with an attribution requirement puts an obligation on everyone who clones it,
+one they will not know they have, and a non-commercial clause would make the
+repository undistributable.
+
+Music may be **CC-BY**. The sports-broadcast idiom does not exist under CC0: it
+gives you epic percussion, taiko and marching snare, but no melodic brass-rock
+theme, and a CC0 search for "rock anthem" returns nothing at all. Attribution
+is acceptable there precisely because this file is generated from the manifest
+the builder reads, and `tools/make_licences.py --check` fails the build when the
+two disagree: the obligation travels with the repository by construction rather
+than by anyone remembering. `tests/test_audio_sources.py` enforces both rules,
+including that no *effect* may be CC-BY.
 
 None of this covers the things that are actually off limits, which are not a
-licensing question at all: the broadcast themes for Sunday and Monday night
-football are copyrighted compositions owned by the networks, as are team fight
-songs and stadium anthem recordings. No CC0 archive contains them, and none may
-be ripped in.
+licensing question at all: the Sunday Night Football theme and "Gonna Fly Now"
+are copyrighted compositions owned by NBC and by Bill Conti's publisher, as are
+team fight songs and stadium anthem recordings. The **idiom** is a genre
+convention and is fair game. The tunes are not. No archive used here contains
+them and none may be ripped in.
 
 ## Provenance
 

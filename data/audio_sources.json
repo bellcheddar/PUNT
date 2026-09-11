@@ -1,6 +1,6 @@
 {
   "_comment": "Where every sampled sound in the sprite comes from, and the proof. tools/fetch_audio.py downloads each `url` once, checks it against `sha256`, and extracts `member` if it is an archive. static/audio/LICENCES.md is GENERATED from this file, so the credits cannot drift away from the audio the way a hand-written list does. A sound with no entry here is synthesised by tools/make_audio.py and is ours outright.",
-  "_licences": "CC0 only. Not a stylistic preference: this repository is public and MIT, so an asset carrying an attribution requirement puts an obligation on everyone who clones it, and one carrying a non-commercial clause makes the repository undistributable. CC0 is the only licence with neither. Every entry is checked by tests/test_audio_sources.py.",
+  "_licences": "SOUND EFFECTS: CC0 only. This repository is public and MIT, so an asset carrying an attribution requirement puts an obligation on everyone who clones it, and one carrying a non-commercial clause makes the repository undistributable. MUSIC (the bed_* entries): CC0 or CC-BY. The sports-broadcast idiom does not exist under CC0 -- it gives you epic percussion, taiko and marching snare, but no melodic brass-rock theme, and a CC0 search for 'rock anthem' returns literally nothing. Attribution is acceptable there because static/audio/LICENCES.md is GENERATED from this file and tools/make_licences.py --check fails the build if the two disagree: the obligation travels with the repository by construction rather than by anyone remembering. Enforced by tests/test_audio_sources.py.",
   "_gates": "Each sound must also survive tools/fetch_audio.py --check: no edge discontinuity, and high-frequency energy in the band its role needs. An archive is not automatically better than synthesis -- three of Kenney's own interface sounds have exactly 0.0% of their energy above 2 kHz, which is the same dullness this work set out to fix.",
   "downloads": {
     "kenney_interface": {
@@ -221,5 +221,6 @@
       "why": "A real vinyl scratch. Kenney's was brighter at 94% but synthetic; this is the record actually stopping."
     }
   },
-  "_previews": "Freesound entries point at the HQ preview mp3, not the original wav. Only originals need OAuth2, and for stings that end up inside a 128 kbps sprite the preview is not the limiting factor -- the sprite's own encoding is."
+  "_previews": "Freesound entries point at the HQ preview mp3, not the original wav. Only originals need OAuth2, and for stings that end up inside a 128 kbps sprite the preview is not the limiting factor -- the sprite's own encoding is.",
+  "_forbidden": "Not a licensing question and no archive here contains them: the Sunday Night Football theme and 'Gonna Fly Now' are copyrighted compositions owned by NBC and by Bill Conti's publisher, as are team fight songs and stadium anthem recordings. The IDIOM is a genre convention and is fair game. The tunes are not."
 }

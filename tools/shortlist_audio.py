@@ -36,6 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from freesound import CC0, FFMPEG, ROOT, measure, token  # noqa: E402
 
 OUT = ROOT / "docs" / "shortlist.html"
+MUSIC_OUT = ROOT / "docs" / "shortlist-music.html"
 CACHE = ROOT / "data" / "audio_cache" / "candidates"
 
 #: What to ask for, per sting. Several short queries rather than one long one:
@@ -54,6 +55,22 @@ QUERIES = {
     "doom":    ["dark drone", "ominous", "low drone"],
     "buzzer":  ["buzzer", "wrong answer buzzer", "game show buzzer"],
     "scratch": ["record scratch", "vinyl scratch", "scratch dj"],
+}
+
+#: The two beds. Music is the one place CC-BY is allowed: the sports-broadcast
+#: idiom simply does not exist under CC0 -- it gives you epic percussion, taiko
+#: and marching snare, but no melodic brass-rock theme. Attribution is safe here
+#: because LICENCES.md is generated from the manifest and a test stops it
+#: drifting, so the obligation travels with the repo by construction.
+MUSIC = {
+    "bed_epic": ["epic orchestral", "epic trailer music", "action rock",
+                 "brass fanfare music", "orchestral loop", "epic drums loop"],
+    "bed_party": ["hip hop beat", "funk groove", "house loop", "boom bap",
+                  "breakbeat", "party beat"],
+}
+MUSIC_ROLES = {
+    "bed_epic": "The Sunday-night theme. Under the Big Board and the pack rip",
+    "bed_party": "The watch-party bed. Under the afternoon, quietly",
 }
 
 ROLES = {
@@ -86,10 +103,11 @@ BANDS = {
 }
 
 
-def search(query: str, seconds: float, limit: int) -> list[dict]:
+def search(query: str, seconds: float, limit: int, licence: str = CC0,
+           low: float = 0.2) -> list[dict]:
     params = {
         "query": query,
-        "filter": f"{CC0} duration:[0.2 TO {seconds}]",
+        "filter": f"{licence} duration:[{low} TO {seconds}]",
         "fields": "id,name,username,license,duration,channels,samplerate,previews,url",
         # Downloads, not rating. Rating surfaced a Prague metro train horn and a
         # 1941 Buick; downloads surfaced the airhorn with seventeen thousand uses.

@@ -75,20 +75,52 @@ def render(spec: dict) -> str:
             licence = "Ours outright, MIT"
         lines.append(f"| `{name}` | {role} | {source} | {licence} |")
 
+    attributed = sorted(
+        (k, e) for k, e in downloads.items() if e["licence"] != "CC0 1.0"
+    )
+    if attributed:
+        lines += [
+            "",
+            "## Attribution",
+            "",
+            "**These credits are required.** They are part of the licence on the music",
+            "below, and this file is what discharges that obligation for anyone who",
+            "clones the repository. It is generated, so it cannot fall out of step with",
+            "what is actually in the sprite.",
+            "",
+        ]
+        for _key, entry in attributed:
+            lines.append(
+                f"- *[{entry['source']}]({entry['page']})* by **{entry['author']}**, "
+                f"licensed [{entry['licence']}]({entry['licence_url']})."
+            )
+
     lines += [
         "",
-        "## Why CC0 only",
+        "## Why CC0 for effects, and CC-BY only for music",
         "",
-        "Not a stylistic preference. This repository is public and MIT, so an asset with",
-        "an attribution requirement puts an obligation on everyone who clones it, and one",
-        "with a non-commercial clause makes the repository undistributable. CC0 is the",
-        "only licence with neither. `tests/test_audio_sources.py` refuses anything else.",
+        "Two rules, because one could not produce the app.",
+        "",
+        "Sound effects are **CC0 only**. This repository is public and MIT, so an asset",
+        "with an attribution requirement puts an obligation on everyone who clones it,",
+        "one they will not know they have, and a non-commercial clause would make the",
+        "repository undistributable.",
+        "",
+        "Music may be **CC-BY**. The sports-broadcast idiom does not exist under CC0: it",
+        "gives you epic percussion, taiko and marching snare, but no melodic brass-rock",
+        "theme, and a CC0 search for \"rock anthem\" returns nothing at all. Attribution",
+        "is acceptable there precisely because this file is generated from the manifest",
+        "the builder reads, and `tools/make_licences.py --check` fails the build when the",
+        "two disagree: the obligation travels with the repository by construction rather",
+        "than by anyone remembering. `tests/test_audio_sources.py` enforces both rules,",
+        "including that no *effect* may be CC-BY.",
         "",
         "None of this covers the things that are actually off limits, which are not a",
-        "licensing question at all: the broadcast themes for Sunday and Monday night",
-        "football are copyrighted compositions owned by the networks, as are team fight",
-        "songs and stadium anthem recordings. No CC0 archive contains them, and none may",
-        "be ripped in.",
+        "licensing question at all: the Sunday Night Football theme and \"Gonna Fly Now\"",
+        "are copyrighted compositions owned by NBC and by Bill Conti's publisher, as are",
+        "team fight songs and stadium anthem recordings. The **idiom** is a genre",
+        "convention and is fair game. The tunes are not. No archive used here contains",
+        "them and none may be ripped in.",
         "",
         "## Provenance",
         "",

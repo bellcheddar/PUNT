@@ -26,22 +26,52 @@ def spec() -> dict:
     return json.loads(MANIFEST.read_text("utf-8"))
 
 
-def test_every_sampled_sound_is_cc0(spec):
-    """CC0 only, and not as a matter of taste.
+ALLOWED = {"CC0 1.0", "CC-BY 4.0"}
 
-    This repository is public and MIT. An asset with an attribution requirement
-    puts an obligation on everyone who clones it -- one they will not know they
-    have -- and one with a non-commercial clause makes the whole repository
-    undistributable. CC0 is the only licence with neither.
+
+def _is_music(spec: dict, download_key: str) -> bool:
+    """A source is music if the only sounds using it are the bed_* entries."""
+    users = [name for name, s in spec["sounds"].items() if s["from"] == download_key]
+    return bool(users) and all(name.startswith("bed_") for name in users)
+
+
+def test_sound_effects_are_cc0_and_music_may_be_cc_by(spec):
+    """Two rules, because one rule could not produce the app Marc asked for.
+
+    Effects are CC0 only. This repository is public and MIT, so an asset with an
+    attribution requirement puts an obligation on everyone who clones it -- one
+    they will not know they have -- and a non-commercial clause would make the
+    whole thing undistributable.
+
+    Music is allowed CC-BY. The sports-broadcast idiom simply does not exist
+    under CC0: it gives you epic percussion, taiko and marching snare, and a CC0
+    search for "rock anthem" returns nothing at all. Attribution is acceptable
+    there precisely because LICENCES.md is generated from this manifest and
+    `make_licences.py --check` fails the build when they disagree -- the
+    obligation travels with the repository by construction.
     """
     assert spec["downloads"], "no sources declared"
     for key, entry in spec["downloads"].items():
-        assert entry["licence"] == "CC0 1.0", (
-            f"{key} is {entry['licence']}. Only CC0 may be committed here; see the "
-            f"_licences note in data/audio_sources.json"
-        )
-        assert entry["licence_url"].startswith("https://creativecommons.org/publicdomain/zero/")
+        assert entry["licence"] in ALLOWED, f"{key} is {entry['licence']}, which is neither"
         assert entry["author"] and entry["page"], f"{key} has no attributable origin"
+
+        if entry["licence"] == "CC0 1.0":
+            assert "publicdomain/zero" in entry["licence_url"]
+            continue
+
+        assert _is_music(spec, key), (
+            f"{key} is CC-BY and is used for a sound effect. Only the bed_* music "
+            f"entries may carry an attribution requirement; see _licences in "
+            f"data/audio_sources.json"
+        )
+        assert "licenses/by/" in entry["licence_url"], entry["licence_url"]
+
+
+def test_the_forbidden_tunes_are_written_down(spec):
+    """The one rule that is not about licences at all, kept where it is read."""
+    note = spec.get("_forbidden", "")
+    assert "copyrighted compositions" in note
+    assert "idiom" in note.lower(), "the distinction between the idiom and the tune is the point"
 
 
 def test_every_source_is_pinned_to_exact_bytes(spec):
