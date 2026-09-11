@@ -16,6 +16,7 @@ to sound like a splash of gravel.
 
 from __future__ import annotations
 
+import base64
 import json
 import shutil
 import subprocess
@@ -69,6 +70,7 @@ def measurements() -> dict[str, dict]:
 
 def render() -> str:
     sprite = json.loads((AUDIO / "sprite.json").read_text())["sprite"]
+    b64 = base64.b64encode((AUDIO / "sprite.mp3").read_bytes()).decode("ascii")
     stats = measurements()
     sources = json.loads((ROOT / "data" / "audio_sources.json").read_text())
     sampled = sources.get("sounds", {})
@@ -136,22 +138,42 @@ end of the window; anything above about 0.02 clicks.</p>
 A spectrum cannot tell whether a horn sounds like a touchdown.</p>
 </main>
 <script>
+// The sprite is inlined as base64 rather than fetched. This page is opened as a
+// file:// URL by double-clicking it, and fetch() from a file:// origin is a CORS
+// error in every browser -- so every button silently did nothing. Inlining costs
+// about a third more bytes on a local tool page and makes it work on a
+// double-click, which is the only way anybody is going to open it.
 const SPRITE = {json.dumps(sprite)};
+const MP3 = "{b64}";
+
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const bytes = Uint8Array.from(atob(MP3), c => c.charCodeAt(0));
 let buffer = null;
-const load = fetch('../static/audio/sprite.mp3')
-  .then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)).then(d => buffer = d);
+const load = new Promise((resolve, reject) => {{
+  // The callback form as well as the promise: Safari still resolves this one.
+  const done = ctx.decodeAudioData(bytes.buffer, d => {{ buffer = d; resolve(); }}, reject);
+  if (done && done.then) done.then(d => {{ buffer = d; resolve(); }}, reject);
+}});
+load.catch(e => {{
+  document.querySelector('.key').textContent = 'Could not decode the sprite: ' + e;
+}});
+
 document.querySelectorAll('button[data-s]').forEach(btn => {{
   btn.addEventListener('click', async () => {{
-    await load;
-    await ctx.resume();
-    const [start, length] = SPRITE[btn.dataset.s];
-    const src = ctx.createBufferSource();
-    src.buffer = buffer;
-    src.connect(ctx.destination);
-    src.start(0, start / 1000, length / 1000);
-    btn.classList.add('on');
-    setTimeout(() => btn.classList.remove('on'), length);
+    try {{
+      await load;
+      await ctx.resume();
+      const [start, length] = SPRITE[btn.dataset.s];
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      src.start(0, start / 1000, length / 1000);
+      btn.classList.add('on');
+      setTimeout(() => btn.classList.remove('on'), length);
+    }} catch (e) {{
+      btn.textContent = 'failed';
+      console.error(e);
+    }}
   }});
 }});
 </script>
