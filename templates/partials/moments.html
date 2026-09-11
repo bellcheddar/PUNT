@@ -7,7 +7,7 @@
 <ul class="feed">
   {% for m in moments %}
   <li class="feed-item feed-item--{{ m.kind | lower }}" style="--mag: {{ m.magnitude }}{% if m.hue is not none %}; --hue: {{ m.hue }}{% endif %}"
-      {% if m.team_id %}data-team="{{ m.team_id }}"{% endif %}>
+      data-sheet="{{ url_for('api.detail_moment', moment_id=m.id) }}">
     <span class="feed-kind">{{ m.kind.replace('_', ' ') }}</span>
     {# Whose. A hundred and three of the four hundred and ten phrase lines name
        no team, and fifty of those are filler that never should. Attributing the

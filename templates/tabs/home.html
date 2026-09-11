@@ -48,7 +48,7 @@
         <thead><tr><th>Team</th><th class="num-wide">Score</th><th class="num-narrow">Left</th></tr></thead>
         <tbody>
         {% for row in receipts.rows %}
-          <tr class="tappable" data-team="{{ row.id }}">
+          <tr class="tappable" data-sheet="{{ url_for('api.detail_regret', team_id=row.id) }}">
             <td>
               <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}
               {% if row.worst_swap %}<span class="sub">{{ row.worst_swap }}</span>{% endif %}
@@ -71,7 +71,8 @@
         <thead><tr><th>Team</th><th class="num">W-L</th><th class="num">Odds</th><th>Needs</th></tr></thead>
         <tbody>
         {% for row in multiverse.rows %}
-          <tr class="tappable {% if loop.index == multiverse.playoff_places %}cut{% endif %}" data-team="{{ row.id }}">
+          <tr class="tappable {% if loop.index == multiverse.playoff_places %}cut{% endif %}"
+              data-sheet="{{ url_for('api.detail_odds', team_id=row.id) }}">
             <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ loop.index }}. {{ row.team }}</td>
             <td class="num">{{ row.record }}</td>
             <td class="num">{{ (row.odds * 100) | round | int }}%</td>
@@ -96,7 +97,7 @@
         <thead><tr><th>Team</th><th class="num">Score</th><th class="num">+/-</th><th class="num">Win</th></tr></thead>
         <tbody>
         {% for row in swing.rows if row.deficit < 0 %}
-          <tr class="tappable" data-team="{{ row.id }}">
+          <tr class="tappable" data-sheet="{{ url_for('api.detail_trouble', team_id=row.id) }}">
             <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
             <td class="num">{{ row.score | points }}</td>
             <td class="num neg">{{ row.deficit | signed }}</td>

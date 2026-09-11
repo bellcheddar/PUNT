@@ -8,8 +8,10 @@
     {%- else %}{{ card.monogram }}{% endif -%}
   </span>
   <span class="sheet-id">
-    <b>{{ card.manager }}</b>
-    <span>{{ card.name }} &middot; {{ card.record }}</span>
+    {# Team first. The league calls itself by its team names everywhere else on
+       the page and the sheet was the one place still led by a username. #}
+    <b>{{ card.name }}</b>
+    <span>{{ card.manager }} &middot; {{ card.record }}</span>
   </span>
   <span class="sheet-score">
     <b>{{ card.total | points }}</b>

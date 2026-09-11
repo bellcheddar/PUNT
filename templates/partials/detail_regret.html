@@ -1,0 +1,49 @@
+{% if d %}
+{% with hue=d.hue, logo=d.logo, monogram=d.monogram, title=d.team,
+        subtitle=d.manager ~ ' · ' ~ d.record, figure=d.regret | points,
+        figure_label='left on the bench', figure_class='neg' if d.regret > 25 else '' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Played</dt><dd>{{ d.actual | points }}</dd></div>
+  <div><dt>Best possible</dt><dd>{{ d.optimal | points }}</dd></div>
+</dl>
+
+{% if d.might_have %}
+<h4 class="sheet-group">What each swap was worth</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for s in d.might_have %}
+    <tr>
+      <td>{{ s.benched }} <span class="sub">for {{ s.started }} at {{ s.slot }}</span></td>
+      <td class="num">{{ s.benched_points | points }}<span class="sub">was {{ s.started_points | points }}</span></td>
+      <td class="num neg">+{{ s.gain | points }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<h4 class="sheet-group">The lineup that would have scored {{ d.optimal | points }}</h4>
+{# The optimal lineup is a maximum-weight matching, so these seats are the
+   solver's answer rather than a list of swaps. A seat filled by somebody who
+   was actually benched is marked, because that is where the points went. #}
+<table class="rows sheet-roster">
+  <tbody>
+  {% for seat in d.seats %}
+    <tr>
+      <td class="slot">{{ seat.slot }}</td>
+      <td>{{ seat.name }}{% if not seat.started %} <span class="tag-bench">was benched</span>{% endif %}</td>
+      <td class="num">{{ seat.points | points }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if not d.exact %}
+<p class="sheet-note">The league's slot rules could not be read in full, so this
+is the best lineup under the standard ones.</p>
+{% endif %}
+{% else %}
+<div class="empty"><strong>Nothing to show</strong>That team is not in this week.</div>
+{% endif %}

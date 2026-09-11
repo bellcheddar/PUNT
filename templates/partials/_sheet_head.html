@@ -1,0 +1,18 @@
+{# The header every detail sheet opens with: crest, title, and one number that
+   is the point of that sheet. Shared so five sheets cannot drift apart. #}
+<div class="sheet-head" style="--hue: {{ hue }}">
+  <span class="crest">
+    {%- if logo %}<img src="{{ logo }}" alt="" width="34" height="34">
+    {%- else %}{{ monogram or '?' }}{% endif -%}
+  </span>
+  <span class="sheet-id">
+    <b>{{ title }}</b>
+    <span>{{ subtitle }}</span>
+  </span>
+  {% if figure %}
+  <span class="sheet-score">
+    <b class="{{ figure_class or '' }}">{{ figure }}</b>
+    <span>{{ figure_label }}</span>
+  </span>
+  {% endif %}
+</div>

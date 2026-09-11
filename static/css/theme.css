@@ -1477,3 +1477,34 @@ main { padding: 12px 14px 24px; }
   max-width: 14ch;
 }
 .feed-item[data-team] { cursor: pointer; }
+
+/* --- the detail sheets --------------------------------------------------- */
+.sheet-stats--wide { grid-template-columns: minmax(0, 1fr); }
+.sheet-said {
+  margin: 0 0 8px;
+  font-size: 15px; line-height: 1.45;
+  color: var(--ink);
+}
+.tag-bench {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.sheet-roster .dot { margin-right: 4px; }
+
+/* Where the simulated seasons finished. A bar per seed, the playoff places
+   lit: "60% to make it" and "60% to make it as the six seed" are very
+   different afternoons and the single percentage cannot tell them apart. */
+.seed-bars { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 3px; }
+.seed-bars li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint);
+}
+.seed-no { text-align: right; }
+.seed-pct { text-align: right; }
+.seed-bar { height: 7px; border-radius: 4px; background: var(--bg-sunken); overflow: hidden; }
+.seed-bar i { display: block; height: 100%; background: var(--ink-faint); border-radius: 4px; }
+.seed--in .seed-bar i { background: var(--green); }
+.seed--in { color: var(--ink-dim); }

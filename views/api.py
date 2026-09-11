@@ -14,7 +14,18 @@ import time
 from flask import Blueprint, Response, jsonify, render_template, request
 
 from views.state import snapshot, state
-from views.viewmodels import album_view, cheer_view, matchup_view, moments_view, watch_now
+from views.viewmodels import (
+    album_view,
+    cheer_view,
+    game_detail,
+    matchup_view,
+    moment_detail,
+    moments_view,
+    odds_detail,
+    regret_detail,
+    trouble_detail,
+    watch_now,
+)
 
 bp = Blueprint("api", __name__)
 
@@ -129,6 +140,49 @@ def partial_team(team_id: int):
     cards = album_view(snap, state().live)
     card = next((c for c in cards if c["id"] == team_id), None)
     return render_template("partials/team.html", card=card, snap=snap)
+
+
+# --------------------------------------------------------------------------
+# the detail sheets, one kind per panel
+#
+# Separate routes rather than one parameterised one: each answers a different
+# question and needs different data, and a single endpoint switching on a `kind`
+# argument would be five functions sharing a signature for no benefit.
+# --------------------------------------------------------------------------
+
+@bp.route("/partials/detail/regret/<int:team_id>")
+def detail_regret(team_id: int):
+    snap = snapshot()
+    return render_template("partials/detail_regret.html",
+                           d=regret_detail(snap, team_id), snap=snap)
+
+
+@bp.route("/partials/detail/trouble/<int:team_id>")
+def detail_trouble(team_id: int):
+    snap = snapshot()
+    return render_template("partials/detail_trouble.html",
+                           d=trouble_detail(snap, team_id), snap=snap)
+
+
+@bp.route("/partials/detail/moment/<moment_id>")
+def detail_moment(moment_id: str):
+    snap = snapshot()
+    return render_template("partials/detail_moment.html",
+                           d=moment_detail(state().live, moment_id, snap=snap), snap=snap)
+
+
+@bp.route("/partials/detail/game/<int:pro_team_id>")
+def detail_game(pro_team_id: int):
+    snap = snapshot()
+    return render_template("partials/detail_game.html",
+                           d=game_detail(snap, pro_team_id), snap=snap)
+
+
+@bp.route("/partials/detail/odds/<int:team_id>")
+def detail_odds(team_id: int):
+    snap = snapshot()
+    return render_template("partials/detail_odds.html",
+                           d=odds_detail(snap, team_id), snap=snap)
 
 
 @bp.route("/partials/watchnow")

@@ -267,6 +267,8 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
 
         rows.append({
             "fixture": f"{game.opponent or '?'} at {game.abbrev}",
+            # Which NFL team, so the row can open that game's detail.
+            "pro_team_id": pro_team_id,
             "state": game.state,
             "finished": game.finished,
             "live": game.live,
@@ -316,6 +318,7 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
             if team is None:
                 continue  # cold: same: every side in the fixture has a team behind it
             rows.append({
+                "id": team.id,
                 "manager": team.manager,
                 "team": team.name,
                 "hue": team.hue,
@@ -383,6 +386,13 @@ def receipts_view(snap: LeagueSnapshot) -> dict[str, Any]:
         weeks = max(1, team.wins + team.losses + team.ties)
         rows.append(
             {
+                # The team id, so a row can open something. Without it the
+                # template rendered `data-team=""` and the row was decorated as
+                # tappable and did nothing -- which is the exact failure the
+                # comment on `.tappable` warns about, shipped the wrong way
+                # round. `url_for` with an int converter is what finally raised
+                # it; an empty attribute never will.
+                "id": team.id,
                 "manager": team.manager,
                 "team": team.name,
                 "hue": team.hue,
@@ -555,6 +565,8 @@ def moments_view(live, limit: int = 25, snap: LeagueSnapshot | None = None) -> l
     for moment in live.recent(limit=limit):
         line = live.line_for(moment)
         out.append({
+            # The Moment's own id, so a feed line can open the play behind it.
+            "id": moment.id,
             "kind": moment.kind,
             "magnitude": round(moment.magnitude, 2),
             "teams": moment.teams,
@@ -572,3 +584,272 @@ def moments_view(live, limit: int = 25, snap: LeagueSnapshot | None = None) -> l
             "tone": list(line.tone) if line else [],
         })
     return out
+
+
+# --------------------------------------------------------------------------
+# the detail sheets
+#
+# Each panel on the page opens its own kind of detail, because "more about this
+# row" means something different in each: a bench-regret row is about a lineup,
+# a cheer row is about an NFL game, a commentary line is about one play. They
+# are separate view models rather than one wide one so that a sheet cannot
+# quietly start showing a number the panel it came from does not have.
+# --------------------------------------------------------------------------
+
+def regret_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """One manager's whole lineup decision, not just the worst swap.
+
+    The panel shows the single most expensive mistake. This shows the working:
+    every seat, who is in it, who was available for it, and what each swap was
+    worth. The optimal lineup is a maximum-weight matching, so the seats do not
+    come out in roster order and "swap these two" is often not what the solver
+    actually did -- which is exactly why it is worth showing.
+    """
+    team = snap.team(team_id)
+    matchup = snap.matchup_for(team_id)
+    side = matchup.side_for(team_id) if matchup else None
+    if team is None or side is None:
+        return {}
+
+    slots = snap.settings.starting_slots
+    lineup = optimal_lineup(side.players, slots)
+    seated = {seat.player.id for seat in lineup.seats if seat.player} if lineup else set()
+
+    bench = sorted((p for p in side.bench), key=lambda p: -p.points)
+    starters = sorted(side.starters, key=lambda p: -p.points)
+
+    # What each bench player would have been worth in the seat its owner
+    # actually filled worst. Not the solver's answer, the readable version of it.
+    might_have = []
+    for benched in bench[:8]:
+        beaten = [s for s in starters if s.points < benched.points
+                  and _slot_allows(snap, s, benched)]
+        if not beaten:
+            continue
+        worst = min(beaten, key=lambda s: s.points)
+        might_have.append({
+            "benched": benched.name,
+            "benched_points": round(benched.points, 2),
+            "started": worst.name,
+            "started_points": round(worst.points, 2),
+            "slot": worst.slot,
+            "gain": round(benched.points - worst.points, 2),
+        })
+    might_have.sort(key=lambda r: -r["gain"])
+
+    return {
+        "team": team.name, "manager": team.manager, "hue": team.hue, "id": team.id,
+        "logo": team.logo, "monogram": team.monogram, "record": team.record,
+        "actual": round(side.total, 2),
+        "optimal": round(lineup.total, 2) if lineup else round(side.total, 2),
+        "regret": round(lineup.regret, 2) if lineup else 0.0,
+        "exact": lineup.exact if lineup else True,
+        "seats": [
+            {"slot": seat.slot,
+             "name": seat.player.name if seat.player else "empty",
+             "points": round(seat.player.points, 2) if seat.player else 0.0,
+             "started": bool(seat.player and seat.player.is_starter)}
+            for seat in (lineup.seats if lineup else [])
+        ],
+        "left_out": [
+            {"name": p.name, "points": round(p.points, 2), "slot": p.slot,
+             "position": p.position}
+            for p in bench if p.id not in seated and p.points > 0
+        ][:10],
+        "might_have": might_have[:6],
+    }
+
+
+def _slot_allows(snap: LeagueSnapshot, started, benched) -> bool:
+    """Whether the benched player could legally have taken that seat."""
+    from engine.scoring import eligible_slots  # noqa: PLC0415 - avoids a cycle
+
+    return started.slot_id in eligible_slots(benched)
+
+
+def trouble_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """Why this team is losing, and what is left that could change it."""
+    team = snap.team(team_id)
+    matchup = snap.matchup_for(team_id)
+    if team is None or matchup is None:
+        return {}
+    side = matchup.side_for(team_id)
+    other = matchup.opponent_of(team_id)
+    opponent = snap.team(other.team_id) if other else None
+    probability = probabilities_for(snap).get(matchup.id)
+
+    def remaining(a_side) -> list[dict[str, Any]]:
+        return sorted(
+            ({"name": p.name, "slot": p.slot, "pro_team": p.pro_team,
+              "points": round(p.points, 2), "projected": round(p.projected, 2),
+              "remaining": round(p.remaining, 2)}
+             for p in a_side.starters if p.remaining > 0),
+            key=lambda p: -p["remaining"],
+        )
+
+    return {
+        "team": team.name, "manager": team.manager, "hue": team.hue, "id": team.id,
+        "logo": team.logo, "monogram": team.monogram,
+        "opponent": opponent.name if opponent else "?",
+        "opponent_id": other.team_id if other else None,
+        "opponent_hue": opponent.hue if opponent else 0,
+        "score": round(side.total, 2), "opponent_score": round(other.total, 2) if other else 0.0,
+        "deficit": round(side.total - (other.total if other else 0), 2),
+        "win_prob": probability.for_team(team_id) if probability else None,
+        "projected": round(probability.mean_for(team_id), 2) if probability else None,
+        "opponent_projected": (round(probability.mean_for(other.team_id), 2)
+                               if probability and other else None),
+        "in_play": side.in_play, "opponent_in_play": other.in_play if other else 0,
+        "mine": remaining(side)[:8],
+        "theirs": remaining(other)[:8] if other else [],
+    }
+
+
+def moment_detail(live, moment_id: str, snap: LeagueSnapshot | None = None) -> dict[str, Any]:
+    """One play, in full.
+
+    The feed is one line because a feed has to be. Everything the engine knew
+    when it fired is here instead: what it measured, how loud it decided that
+    was, what it moved, and the line it chose to say about it.
+    """
+    if live is None:
+        return {}
+    moment = next((m for m in live.recent(limit=200) if m.id == moment_id), None)
+    if moment is None:
+        return {}
+    line = live.line_for(moment)
+    team_id = moment.team_ids[0] if moment.team_ids else None
+    team = snap.team(team_id) if snap is not None and team_id else None
+
+    # The context dict is whatever that detector recorded, and it differs by
+    # kind. Rendered as-is rather than mapped onto fixed fields, because a
+    # mapping would have to be updated every time a detector learns something
+    # and would quietly drop whatever it had not heard of.
+    facts = []
+    for key, value in sorted((moment.context or {}).items()):
+        if isinstance(value, float):
+            value = f"{value:.2f}".rstrip("0").rstrip(".")
+        facts.append({"label": key.replace("_", " "), "value": value})
+
+    return {
+        "kind": moment.kind.replace("_", " "),
+        "team": moment.teams[0] if moment.teams else None,
+        "team_id": team_id,
+        "hue": team.hue if team else None,
+        "logo": team.logo if team else "",
+        "monogram": team.monogram if team else "",
+        "player": moment.player,
+        "delta": round(moment.delta_points, 2),
+        "magnitude": round(moment.magnitude, 2),
+        "win_prob_delta": (round(moment.win_prob_delta * 100, 1)
+                           if moment.win_prob_delta else None),
+        "at": moment.ts.strftime("%H:%M:%S"),
+        "said": line.text if line else "",
+        "voice": line.voice if line else "",
+        "audio": line.audio if line else "",
+        "tone": ", ".join(line.tone) if line and line.tone else "",
+        "facts": facts,
+    }
+
+
+def game_detail(snap: LeagueSnapshot, pro_team_id: int) -> dict[str, Any]:
+    """One NFL game, and every player in the league who is in it.
+
+    The Cheer panel says whether you want this to happen. This says exactly who
+    decides that: both rosters' players in this fixture, whose they are, and
+    what each has scored -- which is the thing people actually shout about.
+    """
+    game = snap.games.get(pro_team_id)
+    if game is None:
+        return {}
+    sides = {game.abbrev, game.opponent or ""}
+    pro_ids = {tid for tid, g in snap.games.items() if g.abbrev in sides}
+
+    owned = []
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            team = snap.team(side.team_id)
+            for player in side.players:
+                if player.pro_team_id not in pro_ids:
+                    continue
+                owned.append({
+                    "name": player.name, "slot": player.slot, "position": player.position,
+                    "pro_team": player.pro_team, "points": round(player.points, 2),
+                    "projected": round(player.projected, 2),
+                    "starter": player.is_starter, "done": player.game_over,
+                    "team": team.name if team else "?", "team_id": side.team_id,
+                    "hue": team.hue if team else 0,
+                })
+    owned.sort(key=lambda p: (not p["starter"], -p["points"]))
+
+    return {
+        "fixture": f"{game.opponent or '?'} at {game.abbrev}",
+        "state": game.state, "finished": game.finished, "live": game.live,
+        "when": ("final" if game.finished
+                 else f"Q{game.period} {game.clock}" if game.live else "not started"),
+        "red_zone": game.red_zone, "possession": game.possession,
+        "score": game.score,
+        "players": owned,
+        "starters": sum(1 for p in owned if p["starter"]),
+        "managers": len({p["team_id"] for p in owned}),
+    }
+
+
+def odds_detail(snap: LeagueSnapshot, team_id: int, draws: int = 2500) -> dict[str, Any]:
+    """Where one team finishes, across every simulated season.
+
+    The panel is a single percentage. A percentage is the answer to "will I make
+    it" and no help at all with "what do I need", so this is the seed
+    distribution, the rest of the fixture list, and the record the simulator
+    thinks it is heading for.
+    """
+    if not snap.season_schedule:
+        return {}
+    team = snap.team(team_id)
+    if team is None:
+        return {}
+    odds = playoff_odds(snap, draws=draws).get(team_id)
+    table = {r.team_id: r for r in standings(snap)}
+    record = table.get(team_id)
+    places = snap.settings.playoff_team_count or 6
+    current = snap.settings.current_matchup_period
+
+    fixtures = []
+    for week, games in sorted(snap.season_weeks().items()):
+        if week < current:
+            continue
+        for matchup in games:
+            if team_id not in matchup.team_ids:
+                continue
+            other = matchup.opponent_of(team_id)
+            rival = snap.team(other.team_id) if other else None
+            rival_record = table.get(other.team_id) if other else None
+            fixtures.append({
+                "week": week,
+                "opponent": rival.name if rival else "?",
+                "opponent_id": other.team_id if other else None,
+                "hue": rival.hue if rival else 0,
+                "record": rival_record.record if rival_record else "",
+                "this_week": week == current,
+            })
+
+    return {
+        "team": team.name, "manager": team.manager, "hue": team.hue, "id": team.id,
+        "logo": team.logo, "monogram": team.monogram,
+        "record": record.record if record else "",
+        "points_for": round(record.points_for, 1) if record else 0.0,
+        "all_play": record.all_play.record if record else "",
+        "luck": round(record.luck, 1) if record else 0.0,
+        "odds": round(odds.odds * 100, 1) if odds else None,
+        "mean_wins": round(odds.mean_wins, 1) if odds else None,
+        "magic": odds.magic_number if odds else None,
+        "clinched": odds.clinched if odds else False,
+        "eliminated": odds.eliminated if odds else False,
+        "remaining": odds.remaining if odds else 0,
+        "places": places,
+        "seeds": [{"seed": seed, "pct": round(share * 100, 1)}
+                  for seed, share in sorted((odds.seed_odds if odds else {}).items())
+                  if share > 0.004],
+        "fixtures": fixtures,
+        "draws": draws,
+    }

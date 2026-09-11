@@ -1,0 +1,43 @@
+{% if d %}
+{% with hue=d.hue, logo=d.logo, monogram=d.monogram, title=d.team or d.kind,
+        subtitle=d.kind ~ ' · ' ~ d.at,
+        figure=('+' ~ (d.delta | points)) if d.delta else none,
+        figure_label='points' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+{% if d.said %}
+<p class="sheet-said">&ldquo;{{ d.said }}&rdquo;</p>
+<p class="sheet-note">
+  {{ d.voice or 'pbp' }} voice{% if d.tone %}, {{ d.tone }}{% endif %}{% if d.audio %},
+  over the {{ d.audio }} sting{% endif %}. Chosen from the phrase bank, never written:
+  every number in it came off the box score.
+</p>
+{% endif %}
+
+<dl class="sheet-stats">
+  {% if d.player %}<div><dt>Player</dt><dd>{{ d.player }}</dd></div>{% endif %}
+  {# Magnitude is the engine's own 0-1 reading of how loud this was, and it is
+     the same number the audio bus scales its horn off -- so a sting that felt
+     too quiet has a number you can point at. #}
+  <div><dt>Magnitude</dt><dd>{{ (d.magnitude * 100) | round | int }}%</dd></div>
+  {% if d.win_prob_delta %}
+  <div><dt>Swung the match</dt><dd>{{ d.win_prob_delta }} pts</dd></div>
+  {% endif %}
+  <div><dt>At</dt><dd>{{ d.at }}</dd></div>
+</dl>
+
+{% if d.facts %}
+<h4 class="sheet-group">What the detector recorded</h4>
+{# Rendered as whatever that detector stored rather than mapped onto fixed
+   fields: the nine kinds record different things, and a mapping would silently
+   drop whatever it had not been taught about. #}
+<dl class="sheet-stats sheet-stats--wide">
+  {% for f in d.facts %}
+  <div><dt>{{ f.label }}</dt><dd>{{ f.value }}</dd></div>
+  {% endfor %}
+</dl>
+{% endif %}
+{% else %}
+<div class="empty"><strong>Gone</strong>That moment has scrolled out of the buffer.</div>
+{% endif %}

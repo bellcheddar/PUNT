@@ -1,0 +1,41 @@
+{% if d %}
+{% with hue=d.hue, logo=d.logo, monogram=d.monogram, title=d.team,
+        subtitle='trailing ' ~ d.opponent, figure=d.deficit | signed,
+        figure_label='behind', figure_class='neg' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Score</dt><dd>{{ d.score | points }}</dd></div>
+  <div><dt>{{ d.opponent }}</dt><dd>{{ d.opponent_score | points }}</dd></div>
+  {% if d.win_prob is not none %}
+  <div><dt>Win chance</dt><dd>{{ (d.win_prob * 100) | round | int }}%</dd></div>
+  {% endif %}
+  {% if d.projected is not none %}
+  <div><dt>Projected</dt><dd>{{ d.projected | points }} v {{ d.opponent_projected | points }}</dd></div>
+  {% endif %}
+  <div><dt>Yet to play</dt><dd>{{ d.in_play }} v {{ d.opponent_in_play }}</dd></div>
+</dl>
+
+{# Who can still change it, on both sides, ordered by how much is left rather
+   than by how much has been scored: the question is what happens next. #}
+{% for label, players in (('Still to come for ' ~ d.team, d.mine),
+                          ('Still to come for ' ~ d.opponent, d.theirs)) %}
+  {% if players %}
+  <h4 class="sheet-group">{{ label }}</h4>
+  <table class="rows sheet-roster">
+    <tbody>
+    {% for p in players %}
+      <tr>
+        <td class="slot">{{ p.slot }}</td>
+        <td>{{ p.name }}<span class="sub">{{ p.pro_team }}</span></td>
+        <td class="num">{{ p.points | points }}<span class="sub">{{ p.remaining | points }} left</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+{% endfor %}
+{% else %}
+<div class="empty"><strong>Nothing to show</strong>No matchup for that team this week.</div>
+{% endif %}

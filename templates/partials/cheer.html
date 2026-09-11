@@ -3,7 +3,8 @@
   <thead><tr><th>Game</th><th class="num">Verdict</th></tr></thead>
   <tbody>
   {% for row in cheer %}
-    <tr class="cheer cheer--{{ row.verdict | lower }}{% if row.finished %} cheer--done{% endif %}">
+    <tr class="cheer tappable cheer--{{ row.verdict | lower }}{% if row.finished %} cheer--done{% endif %}"
+        data-sheet="{{ url_for('api.detail_game', pro_team_id=row.pro_team_id) }}">
       <td>
         {{ row.fixture }}{% if row.red_zone %} <span class="cheer-flag">RED ZONE</span>{% endif %}
         {# `when` rather than a raw quarter and clock: a finished game showed

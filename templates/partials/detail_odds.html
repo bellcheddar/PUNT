@@ -1,0 +1,57 @@
+{% if d %}
+{% with hue=d.hue, logo=d.logo, monogram=d.monogram, title=d.team,
+        subtitle=d.manager ~ ' · ' ~ d.record,
+        figure=(d.odds | string) ~ '%', figure_label='to make the playoffs' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Projected record</dt><dd>{{ d.mean_wins }} wins</dd></div>
+  <div><dt>Games left</dt><dd>{{ d.remaining }}</dd></div>
+  <div><dt>Points for</dt><dd>{{ d.points_for }}</dd></div>
+  <div><dt>All-play</dt><dd>{{ d.all_play }}</dd></div>
+  {# Luck is the gap between the record and the all-play record: how many wins
+     the schedule handed over, or took away. #}
+  <div><dt>Luck</dt><dd>{{ d.luck | signed }} wins</dd></div>
+  <div><dt>Needs</dt>
+    <dd>{% if d.clinched %}nothing, in
+        {% elif d.eliminated %}nothing, out
+        {% elif d.magic is not none %}{{ d.magic }} more win{{ '' if d.magic == 1 else 's' }}
+        {% else %}help{% endif %}</dd></div>
+</dl>
+
+{% if d.seeds %}
+<h4 class="sheet-group">Where {{ d.draws }} simulated seasons finished</h4>
+{# The bar is the share of seasons ending on that seed. The playoff cut is drawn
+   across it, because "60% to make it" and "60% to make it as the six seed" are
+   very different afternoons. #}
+<ul class="seed-bars">
+  {% for s in d.seeds %}
+  <li class="{% if s.seed <= d.places %}seed--in{% endif %}">
+    <span class="seed-no">{{ s.seed }}</span>
+    <span class="seed-bar"><i style="width: {{ s.pct }}%"></i></span>
+    <span class="seed-pct">{{ s.pct }}%</span>
+  </li>
+  {% endfor %}
+</ul>
+<p class="sheet-note">Top {{ d.places }} make the playoffs.</p>
+{% endif %}
+
+{% if d.fixtures %}
+<h4 class="sheet-group">The rest of the season</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for f in d.fixtures %}
+    <tr class="tappable" data-team="{{ f.opponent_id }}">
+      <td class="slot">wk {{ f.week }}</td>
+      <td><span class="dot" style="--hue: {{ f.hue }}"></span>{{ f.opponent }}
+        {%- if f.this_week %} <span class="tag-bench">this week</span>{% endif %}</td>
+      <td class="num">{{ f.record }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% else %}
+<div class="empty"><strong>No season grid</strong>The schedule feed has not arrived.</div>
+{% endif %}

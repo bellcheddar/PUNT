@@ -1,0 +1,39 @@
+{% if d %}
+{% with hue=200, monogram='NFL', title=d.fixture,
+        subtitle=d.when ~ (' · red zone' if d.red_zone else ''),
+        figure=d.starters, figure_label='starters in it' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>State</dt><dd>{{ d.when }}</dd></div>
+  <div><dt>Managers with a stake</dt><dd>{{ d.managers }}</dd></div>
+  {% if d.possession %}<div><dt>Possession</dt><dd>{{ d.possession }}</dd></div>{% endif %}
+</dl>
+
+{% if d.players %}
+<h4 class="sheet-group">Everyone in the league who is in this game</h4>
+{# Starters first, then the bench: a bench player in this fixture changes
+   nobody's score and is still the reason somebody in the room is shouting. #}
+<table class="rows sheet-roster">
+  <tbody>
+  {% for p in d.players %}
+    <tr class="tappable" data-team="{{ p.team_id }}">
+      <td class="slot">{{ p.slot }}</td>
+      <td>
+        {{ p.name }}
+        <span class="sub"><span class="dot" style="--hue: {{ p.hue }}"></span>{{ p.team }}
+          &middot; {{ p.pro_team }}{% if not p.starter %} &middot; bench{% endif %}</span>
+      </td>
+      <td class="num">{{ p.points | points }}<span class="sub">{{ 'final' if p.done else 'proj ' ~ (p.projected | points) }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="sheet-note">Nobody in the league has a player in this one, which is
+why it reads as NOTHING on the Cheer panel.</p>
+{% endif %}
+{% else %}
+<div class="empty"><strong>No such game</strong>That fixture is not on this week's scoreboard.</div>
+{% endif %}

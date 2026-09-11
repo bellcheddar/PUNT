@@ -69,6 +69,16 @@ class WinProbability:
     def away_win(self) -> float:
         return round(1.0 - self.home_win, 4)
 
+    def mean_for(self, team_id: int) -> float:
+        """The simulated final score for one side. `for_team` gives the odds;
+        this gives the number those odds were computed from, which is what a
+        reader actually wants when asking how far behind they are."""
+        if team_id == self.home_id:
+            return self.home_mean
+        if team_id == self.away_id:
+            return self.away_mean
+        return 0.0  # cold: nothing asks a matchup about a team that is not in it
+
     def for_team(self, team_id: int) -> float:
         if team_id == self.home_id:
             return self.home_win

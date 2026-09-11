@@ -14,16 +14,16 @@
 
   let openFor = null;
 
-  async function open(teamId) {
-    openFor = teamId;
+  async function open(url) {
+    openFor = url;
     body.innerHTML = '<div class="empty">Loading…</div>';
     if (!dialog.open) dialog.showModal();
     try {
-      const response = await fetch(`/partials/team/${teamId}`, { headers: { 'HX-Request': 'true' } });
+      const response = await fetch(url, { headers: { 'HX-Request': 'true' } });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       // A slow answer for a sheet the reader has already closed or moved on
       // from must not overwrite what they are looking at now.
-      if (openFor !== teamId || !dialog.open) return;
+      if (openFor !== url || !dialog.open) return;
       body.innerHTML = await response.text();
     } catch (error) {
       body.innerHTML = '<div class="empty"><strong>Could not load that</strong>'
@@ -36,12 +36,19 @@
     if (event.target.closest('[data-sheet-close]')) { dialog.close(); return; }
     // Never hijack a real link or a control that already does something.
     if (event.target.closest('a, button, input, select, summary')) return;
-    const owner = event.target.closest('[data-team]');
+
+    // `data-sheet` names the endpoint outright, so a row can open whatever kind
+    // of detail belongs to the panel it is in: a bench-regret row opens the
+    // whole optimal lineup, a cheer row opens that NFL game. `data-team` is the
+    // fallback and still opens the team, which is right for a card and for a
+    // score row where the team IS the subject.
+    const owner = event.target.closest('[data-sheet], [data-team]');
     if (!owner || !dialog) return;
-    const id = owner.dataset.team;
-    if (!id) return;
+    const url = owner.dataset.sheet
+      || (owner.dataset.team ? `/partials/team/${owner.dataset.team}` : null);
+    if (!url) return;
     event.preventDefault();
-    open(id);
+    open(url);
     if (window.PUNT_AUDIO) window.PUNT_AUDIO.play('tap', { magnitude: 0.35, bus: 'ui' });
   });
 
