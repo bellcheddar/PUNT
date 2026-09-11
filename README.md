@@ -497,8 +497,20 @@ user, and `?tv=1` is readable from twelve feet.*
 *Acceptance: pulling the network cable mid-Sunday degrades gracefully on every tab and recovers
 without a reload.*
 
-- [ ] **Failure states end to end.** Wifi loss, stale banners, the cookie-expiry path, and ten
-      concurrent clients against one upstream poll
+- [x] **Failure states end to end.** Wifi loss, stale banners, the cookie-expiry path, a poll that
+      raises, a half-written capture, a full disk and ten concurrent clients against one upstream
+      poll are all driven every time `tools/deadcode.py` runs, which is how they stopped being
+      hypothetical. The backoff ladder in particular had had two real bugs in it and was reachable
+      from nothing
+- [x] **Every line of the app runs during a simulated Sunday.** `tools/deadcode.py` reports zero
+      never-executed lines across `engine/`, `espn/` and `views/viewmodels.py`; the seventy-nine that
+      cannot be reached each carry a `# cold:` comment saying why. Getting there found six features
+      that looked finished and had never once executed, each with a passing test beside it: INJURY,
+      the Legendary card tier, ESPN's real lineup eligibility, the dedupe set that stops a restart
+      replaying the whole afternoon, half the phrase-trigger vocabulary, and the recap validator's
+      rejection path. It also found the tool lying three ways: `sys.settrace` is per-thread, `if (`
+      on its own line never gets a trace event, and rendering the view models only at the final
+      whistle marks every mid-afternoon branch cold
 - [ ] **Licence audit** of every audio asset before launch
 - [ ] **Real-device matrix.** Simulators do not reproduce the iOS audio or gyroscope permission
       behaviour, which is precisely where this app is most fragile
