@@ -91,7 +91,7 @@ class Transport(Protocol):
     def fetch(
         self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None
     ) -> dict[str, Any]:
-        ...
+        ...  # cold: a Protocol body: there is nothing here to run
 
 
 @dataclass
@@ -383,8 +383,8 @@ def build_client(cfg, cache: TTLCache | None = None) -> EspnClient:
     elif cfg.can_reach_espn:
         transport = LiveTransport(espn_s2=cfg.espn_s2, espn_swid=cfg.espn_swid)
         if cfg.record:
-            transport = RecordingTransport(inner=transport)
-            log.info("ESPN transport: live, recording to %s", transport.directory)
+            transport = RecordingTransport(inner=transport)  # cold: RECORD=1 against the live league, which writes real managers' names to disk
+            log.info("ESPN transport: live, recording to %s", transport.directory)  # cold: same
         else:
             log.info("ESPN transport: live (league %s, season %s)", cfg.league_id, cfg.season)
     else:

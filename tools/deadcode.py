@@ -45,12 +45,7 @@ EXTRA_FILES = ["views/viewmodels.py"]
 #: Lines that are *meant* never to run in a replay, with the reason. Anything
 #: here is excluded from the report rather than silently tolerated, so the list
 #: is the honest inventory of what a replay cannot reach.
-EXPECTED_COLD = {
-    "espn/client.py": "LiveTransport: the real network, unreachable in a replay",
-    "espn/replay.py": "RecordingTransport: writes captures, only used with RECORD=1",
-    "engine/speech.py": "the TTS backends; exercised by tests/test_speech.py",
-    "engine/recap.py": "the model backends; neither ollama nor mlx is installed",
-}
+EXPECTED_COLD: dict[str, str] = {}
 
 #: A line carrying this marker is cold on purpose, and the rest of the comment
 #: says why. Written in the source rather than in a list of line numbers here,
@@ -226,6 +221,166 @@ def _drive_a_bad_afternoon() -> None:
     empty.apply_game_states({})                 # no scoreboard: nothing to join on
     pair.home.players = list(bare.players)
     empty.apply_game_states({99: GameState(pro_team_id=99, abbrev="ZZZ")})
+
+
+def _drive_the_live_transport() -> None:
+    """The code that only ever runs against ESPN.
+
+    Every line here executes exclusively in production, against an undocumented
+    endpoint that changes without notice, and a replay reaches none of it -- so
+    it was excused wholesale as "the real network" and never looked at again.
+    That is backwards: code that only runs where nobody is watching is the code
+    most worth driving.
+
+    No socket is opened. The session is built for real, because that is where the
+    cookie handling lives, and then the response objects are stubbed.
+    """
+    import requests
+
+    from espn import feeds
+    from espn.client import AuthExpired, LiveTransport, UpstreamError
+
+    # The SWID brace dance: ESPN sets the cookie wrapped in braces and rejects it
+    # without them, and a value pasted out of a browser's storage inspector has
+    # them stripped about half the time.
+    transport = LiveTransport(espn_s2="s2", espn_swid="1234-5678")
+    session = transport._get_session()
+    assert session.cookies.get("SWID", domain=".espn.com") == "{1234-5678}"
+    transport._get_session()            # cached: built once per process
+
+    class Response:
+        def __init__(self, status=200, payload=None, raises=None):
+            self.status_code = status
+            self._payload = payload
+            self._raises = raises
+
+        def json(self):
+            if self._raises:
+                raise self._raises
+            return self._payload
+
+    class Session:
+        """Stands in for `requests.Session`, one queued response at a time."""
+
+        def __init__(self, outcomes):
+            self.outcomes = list(outcomes)
+
+        def get(self, url, params=None, timeout=None, headers=None):
+            outcome = self.outcomes.pop(0)
+            if isinstance(outcome, Exception):
+                raise outcome
+            return outcome
+
+    outcomes = [
+        requests.ConnectionError("name resolution failed"),   # the venue's wifi
+        requests.RequestException("something else entirely"),
+        Response(401),                                        # the cookies expired
+        Response(500),
+        Response(200, raises=ValueError("not json")),
+        Response(200, payload=[{"id": 1}]),                   # ESPN's list envelope
+        Response(200, payload=[]),                            # which, empty, means logged out
+        Response(200, payload="a string"),
+        Response(200, payload={"id": 1}),
+    ]
+    transport._session = Session(outcomes)
+    for _ in range(len(outcomes)):
+        try:
+            transport.fetch(feeds.TEAM, 2025, "1", 11)
+        except (UpstreamError, AuthExpired):
+            pass
+
+
+def _drive_a_bad_upstream() -> None:
+    """ESPN having a bad afternoon, and the app being started without cookies.
+
+    The backoff ladder, the degraded-snapshot reporting and `build_client` are
+    all application code that a clean replay never touches, and the file-level
+    exclusion for espn/client.py was hiding all three behind "the live network".
+    The backoff has had two real bugs in it -- a local wifi drop treated like an
+    ESPN outage, and a ceiling that was not one because the jitter was applied
+    after the clamp -- and neither was reachable from this tool.
+    """
+    from config import DEMO_RECORDING, Config
+    from espn import feeds
+    from espn.cache import TTLCache
+    from espn.client import (
+        AuthExpired, EspnClient, LeagueRepository, UpstreamError, build_client,
+    )
+    from espn.replay import ReplayTransport
+
+    # The factory the app actually uses, on all three of its branches. The first
+    # is what a fresh clone takes: no LEAGUE_ID, no cookies, falling back to the
+    # shipped demo recording, which is the Phase 1 acceptance criterion.
+    with quiet("espn.client"):
+        build_client(Config())
+        build_client(Config(replay=DEMO_RECORDING, replay_speed=0.0))
+        # Constructing a LiveTransport opens nothing: the session is lazy, which
+        # is the whole reason `requests` is imported inside the method.
+        build_client(Config(league_id="1", espn_s2="s2", espn_swid="swid"))
+
+    _drive_the_live_transport()
+
+    class Broken:
+        """A transport that fails the way ESPN does."""
+
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def fetch(self, feed, season, league_id, scoring_period=None):
+            self.calls += 1
+            if feed.name == "nfl_scoreboard":
+                raise UpstreamError("nfl: HTTP 500", status=500)
+            raise UpstreamError("the cable came out", local=True)
+
+    with quiet("espn.client", "espn.cache"):
+        broken = EspnClient(transport=Broken(), season=2025, league_id="demo",
+                            cache=TTLCache())
+        # Every feed fails with a cold cache, so the snapshot comes back as a
+        # list of problems rather than as an exception. This is the banner the
+        # bar screen shows when ESPN is the thing that is broken.
+        LeagueRepository(broken).snapshot()
+
+        # The ladder: a local failure and a remote one have different ceilings,
+        # because plugging the cable back in should not cost five minutes.
+        for _ in range(4):
+            broken._record_failure(local=True)
+        for _ in range(4):
+            broken._record_failure(local=False)
+        assert broken.backing_off
+        broken.backoff_remaining
+        # And a request made while backing off never reaches the network.
+        broken.cache.invalidate()
+        broken.get(feeds.TEAM)
+        broken.clear_backoff()
+
+        # Expired cookies. The auth state flips once and remembers when, the
+        # failure counter moves, and every snapshot from then on carries the
+        # reason on the stale banner rather than just going quiet.
+        class Expired:
+            def fetch(self, feed, season, league_id, scoring_period=None):
+                raise AuthExpired("mTeam: ESPN returned an empty list")
+
+        locked = EspnClient(transport=Expired(), season=2025, league_id="demo",
+                            cache=TTLCache())
+        LeagueRepository(locked).snapshot()
+        locked.auth.mark_expired("still expired")   # second time: already known
+
+        # And an upstream that fails in a way nobody anticipated, which must
+        # still be recorded as a failure rather than escaping the poll.
+        class Weird:
+            def fetch(self, feed, season, league_id, scoring_period=None):
+                raise ZeroDivisionError("a library did something surprising")
+
+        odd = EspnClient(transport=Weird(), season=2025, league_id="demo", cache=TTLCache())
+        odd.get(feeds.TEAM)
+
+        # Then it comes back. A success clears the counter, so the next blip
+        # starts the ladder from the bottom rather than from where it left off.
+        good = EspnClient(transport=ReplayTransport.load(DEMO_RECORDING, speed=0.0),
+                          season=2025, league_id="demo", cache=TTLCache())
+        good._record_failure()
+        good.get(feeds.SETTINGS)
+        good.stats()
 
 
 def drive_a_sunday() -> None:
@@ -450,6 +605,7 @@ def drive_a_sunday() -> None:
         polite.eligible(moment_)
 
     _drive_a_bad_afternoon()
+    _drive_a_bad_upstream()
 
     pack = build(snapshot, feed.notable)
     build_prompt(pack)          # what a model would be handed, backend or not
