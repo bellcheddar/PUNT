@@ -1,15 +1,87 @@
 {% if d %}
 {% with hue=200, monogram='NFL', title=d.fixture,
         subtitle=d.when ~ (' · red zone' if d.red_zone else ''),
-        figure=d.starters, figure_label='starters in it' %}
+        figure=d.at_stake | points,
+        figure_label=('points delivered' if d.stake_kind == 'scored' else 'points still to come') %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
 
 <dl class="sheet-stats">
   <div><dt>State</dt><dd>{{ d.when }}</dd></div>
-  <div><dt>Managers with a stake</dt><dd>{{ d.managers }}</dd></div>
+  <div><dt>Starters in it</dt><dd>{{ d.starters }}</dd></div>
+  {# Two different counts and they are not interchangeable: a bench player in
+     this fixture belongs to a manager who is watching it and to nobody who is
+     scoring from it. Labelling both "teams with a stake" made the sheet read
+     4 starters across 6 teams, which is arithmetic nobody can follow. #}
+  <div><dt>Teams scoring from it</dt><dd>{{ d.exposure | length }}</dd></div>
+  <div><dt>Teams watching it</dt><dd>{{ d.managers }}</dd></div>
+  <div><dt>Head-to-heads it swings</dt><dd>{{ d.swings | length }}</dd></div>
+  <div><dt>Scored so far</dt><dd>{{ d.scored | points }}</dd></div>
   {% if d.possession %}<div><dt>Possession</dt><dd>{{ d.possession }}</dd></div>{% endif %}
 </dl>
+
+{# What the number on the panel actually is. It is the one thing a figure in a
+   pill cannot say for itself, and without it "75.9" reads as a score. #}
+<p class="sheet-note">
+  {% if d.stake_kind == 'scored' %}
+    This one is over. It put <strong>{{ d.scored | points }}</strong> fantasy points
+    on the board across {{ d.managers }} team{{ '' if d.managers == 1 else 's' }}.
+  {% else %}
+    <strong>{{ d.at_stake | points }}</strong> is what every league starter in this
+    fixture is still projected to score. It is the size of the bet: how much the
+    league's totals can still move because of this one game.
+  {% endif %}
+</p>
+
+{% if d.swings %}
+<h4 class="sheet-group">What it decides</h4>
+{# Size and consequence are different things. A fixture can be worth eighty
+   points and settle nothing, if all eighty belong to one manager who is forty
+   ahead already. These are the head-to-heads with a starter on BOTH sides, so
+   this game moves the margin between them and not just both their totals. #}
+<div class="swing-list">
+  {% for s in d.swings %}
+  <div class="swing">
+    <div class="swing-head">
+      <span class="swing-label">{{ s.label }}</span>
+      <span class="swing-net {{ 'swing-net--even' if s.net | abs < 1 else '' }}">
+        {% if s.net | abs < 1 %}level
+        {% else %}{{ s.net | abs | points }} towards
+          {{ s.sides[0].team if s.net > 0 else s.sides[1].team }}{% endif %}
+      </span>
+    </div>
+    {% for side in s.sides %}
+    <div class="swing-side tappable" data-team="{{ side.team_id }}">
+      <span class="dot" style="--hue: {{ side.hue }}"></span>
+      <span class="swing-team">{{ side.team }}</span>
+      <span class="swing-players">{{ side.players | join(', ') or 'nobody' }}</span>
+      <span class="swing-pts">{{ side.live | points }}<span class="sub">to come</span></span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% elif d.exposure %}
+<p class="sheet-note">No head-to-head has a starter on both sides of this one, so
+it changes totals without changing any margin directly.</p>
+{% endif %}
+
+{% if d.exposure %}
+<h4 class="sheet-group">Who is exposed</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for e in d.exposure %}
+    <tr class="tappable" data-team="{{ e.team_id }}">
+      <td>
+        <span class="dot" style="--hue: {{ e.hue }}"></span>{{ e.team }}
+        <span class="sub">{{ e.players | join(', ') }}</span>
+      </td>
+      <td class="num">{{ e.live | points }}<span class="sub">{{ e.scored | points }} so far</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
 
 {% if d.players %}
 <h4 class="sheet-group">Everyone in the league who is in this game</h4>
@@ -32,7 +104,7 @@
 </table>
 {% else %}
 <p class="sheet-note">Nobody in the league has a player in this one, which is
-why it reads as NOTHING on the Cheer panel.</p>
+why the panel gives it nothing at stake.</p>
 {% endif %}
 {% else %}
 <div class="empty"><strong>No such game</strong>That fixture is not on this week's scoreboard.</div>

@@ -29,6 +29,17 @@ STATE_DIR = DATA_DIR / "state"
 #: engine could always persist this and nothing ever asked it to: the feature was
 #: reachable only from its own unit test.
 SEEN_MOMENTS = STATE_DIR / "seen-moments.json"
+
+#: Every week this league has played, as PUNT saw it happen.
+#:
+#: Not a cache of ESPN. ESPN will serve a past week's box score for as long as
+#: the league exists; what it will never give back is the afternoon -- the
+#: Moments the engine detected as they happened, the commentary it chose, and
+#: what the optimal lineup WAS before anybody edited a roster. A settled week
+#: read back from ESPN in March is a column of totals however loud it was at the
+#: time. Beside `data/state/`, so it is gitignored: ten real people's names and
+#: scores do not belong in a public repository.
+HISTORY_DB = STATE_DIR / "history.sqlite3"
 STATIC_DIR = REPO_ROOT / "static"
 
 #: The fixture that ships with the repo. A fresh clone with no cookies at all

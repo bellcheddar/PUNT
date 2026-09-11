@@ -123,6 +123,11 @@
 
   function connect() {
     if (stream || !('EventSource' in window)) return;
+    // Nothing to listen to on an archived week. The stream carries whatever is
+    // happening NOW, so a page showing week 9 would sound a horn for a
+    // touchdown in week 11 and refresh a feed that is deliberately frozen --
+    // the one place where "live" and "the page you are looking at" come apart.
+    if (document.body?.dataset.archive === '1') return;
     stream = new EventSource('/stream');
 
     stream.addEventListener('moment', (event) => {
@@ -243,6 +248,19 @@
       });
     }
   });
+
+  // The week menu submits itself. The form works without this -- it has a real
+  // submit button -- so this is progressive enhancement in the strict sense:
+  // the button is only hidden once the handler that replaces it is attached.
+  function wireWeekPicker() {
+    document.querySelectorAll('[data-week-picker]').forEach((form) => {
+      if (form.dataset.auto) return;
+      form.dataset.auto = '1';
+      form.querySelector('select')?.addEventListener('change', () => form.submit());
+    });
+  }
+  document.addEventListener('DOMContentLoaded', wireWeekPicker);
+  wireWeekPicker();
 
   window.addEventListener('load', connect);
 

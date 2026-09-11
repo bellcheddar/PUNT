@@ -620,6 +620,27 @@ class LeagueSettings:
     current_matchup_period: int = 1
     problems: list[str] = field(default_factory=list)
 
+    def title_for(self, season: int) -> str:
+        """The league's name with the season it is actually being played in.
+
+        Leagues get named once and carry the founding year for ever: this one is
+        called "Logan House 2023" in ESPN and is playing the 2026 season, so the
+        header read three years out of date. A trailing four-digit year is
+        replaced rather than appended, and a name with no year in it simply
+        gains one.
+
+        Only a *trailing* year, and only a plausible one. "Legion 1984" is a
+        joke somebody made on purpose and lives in the middle of nothing; a year
+        at the end, within a few of the season being played, is a stamp.
+        """
+        import re  # noqa: PLC0415
+
+        stem = self.name.strip()
+        match = re.search(r"\s+(\d{4})$", stem)
+        if match and abs(int(match.group(1)) - season) <= 12:
+            stem = stem[: match.start()].rstrip()
+        return f"{stem} {season}" if stem else str(season)
+
     @property
     def starting_slots(self) -> list[int]:
         """Every starting slot the league runs, one entry per seat, ordered the

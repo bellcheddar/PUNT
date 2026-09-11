@@ -78,6 +78,37 @@ Three properties are design constraints rather than niceties:
 - **Bench-aware.** `BENCH_DISASTER` is invisible in the score, so it has its own detection
   path off the optimal lineup rather than falling out of a points delta.
 
+### Two numbers that are not the score
+
+Both exist because the obvious number turned out to measure something else.
+
+**Form**, out of 100, is what the ten cards are ranked on. Ordering an album by
+points at three in the afternoon mostly ranks managers by how many of their
+players happened to kick off at one o'clock, which is not a thing anybody did.
+Four parts, weighted, summing to one:
+
+| Part | Weight | What it asks |
+|---|---|---|
+| Pace | 0.35 | points against what was *due by now* — every starter's projection prorated by how much of his real NFL game has been played |
+| Winning | 0.25 | the live chance of taking the head-to-head, because a 60-point week is a bad week if the opponent has 90 |
+| Lineup | 0.20 | the share of the best possible score that was actually started |
+| Scale | 0.20 | this score against the best in the league, because a big score is still an achievement |
+
+Pace is capped at twice the prorated projection before it is normalised: without
+a cap, one kickoff return in the first quarter, when the denominator is tiny,
+pins that team at the top of the album until teatime. Before the first snap every
+part that measures performance is neutral rather than zero, because nothing has
+been measured yet.
+
+**At stake**, on the Cheer panel, is the fantasy points still to come out of one
+NFL fixture. It replaced a column that read `STAKE` on all sixteen rows, which is
+a label and not information: a room deciding which of fourteen televisions to
+look at learned nothing from it. Each row is also banded by consequence rather
+than by size — whether both halves of somebody's head-to-head have a starter in
+that game, which is the difference between a fixture worth a lot of points and a
+fixture that decides the week. Tapping one opens both: who is exposed, and which
+head-to-heads it swings and by how much.
+
 ### Optimal lineup, and why greedy is wrong
 
 Bench regret is the optimal legal lineup minus what was actually started, and everything
@@ -216,8 +247,10 @@ PUNT/
 │   ├── models.py               # total parsers: Team, Player, Matchup, GameState
 │   └── replay.py               # recorder and replay transport
 ├── engine/                     # Phase 2: events, scoring, simulation, commentary
+│   └── history.py              # every week as it happened, in one SQLite file
 ├── data/
 │   ├── phrases/                # Phase 4: YAML phrase banks
+│   ├── state/                  # gitignored: the dedupe set and the season's history
 │   └── recordings/             # captured payloads; the demo Sunday is committed
 ├── static/                     # css, vendored js, audio (Phase 4)
 ├── templates/                  # base, tabs/, partials/
@@ -238,7 +271,7 @@ this app has a server: the Flask process holds them and the ten phones hold noth
 
 | Feed | Cache TTL | Purpose |
 |---|---|---|
-| `mSettings` | Season | Scoring items, playoff seeds, roster slots, the members block |
+| `mSettings` | 10 min | Scoring items, playoff seeds, roster slots, the members block — and `scoringPeriodId`, which is why the TTL is minutes and not the season it used to be: cached for a day, the week rolls over on a Tuesday and the app keeps serving the finished Sunday until Wednesday |
 | `mTeam` | 6 hours | Team names, abbreviations, uploaded logos, owner display names |
 | `mSchedule` | 1 hour | Season grid, for all-play, luck and simulations |
 | `mMatchupScore` + `mBoxscore` | 30 s | Per-slot player points and projected remainder |
@@ -310,7 +343,7 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                       # 214 tests, no network, no cookies
+python3 -m pytest                       # 260 tests, no network, no cookies
 python3 tools/screenshot.py --check-overflow   # needs the app running
 python3 tools/a11y.py                          # contrast, no browser needed
 python3 tools/a11y.py --page                   # focus rings, targets, live regions
@@ -535,6 +568,24 @@ without a reload.*
 - [ ] **Decide whether real recordings may ever be committed.** Currently `.gitignore` tracks only
       `demo-*`, on the assumption that ten managers' ESPN display names should not be in a public
       repository
+
+### The season
+
+- [x] **Follow the week automatically.** The scoring period was always read from ESPN and
+      `mSettings` was always cached for a day, so the week rolled over on a Tuesday morning and
+      PUNT kept serving the finished Sunday until Wednesday with nothing looking broken. Ten
+      minutes now. The live feed empties all six of its per-week stores when the period moves;
+      three of them used to be missed, which shows up a fortnight later as last Sunday's
+      commentary under this Sunday's scores
+- [x] **Record every week.** `data/state/history.sqlite3`, written on every poll and once more at
+      the rollover. Not a cache of ESPN, which still has the box scores: it is the half ESPN
+      cannot give back — the Moments as they were detected, the commentary that was chosen, and
+      what the optimal lineup *was* before anybody edited a roster
+- [x] **A week menu in the header.** The live week is the empty value in it, so a URL with no week
+      follows the season and a bookmark of week 11 is still week 11 in December. An archived page
+      says so and does not open the stream
+- [ ] **A season view.** Ten weeks of stored form, regret and luck is a table nobody has drawn
+      yet. The data is there from the first Sunday this runs for real
 
 ## ⚠️ Known risks
 

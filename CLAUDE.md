@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 214 tests, offline
+python3 -m pytest                              # 260 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -26,7 +26,7 @@ python3 tools/deadcode.py                      # which lines never run during a 
 **Run `deadcode.py` after adding a feature, and keep it at zero.** It is not test
 coverage: it drives a whole simulated Sunday and reports what the application never
 reached. Everything under `engine/`, `espn/` and `views/viewmodels.py` currently runs, and
-the seventy-nine lines that do not each carry a `# cold:` comment saying why. So a new cold
+the eighty lines that do not each carry a `# cold:` comment saying why. So a new cold
 line means one of two things, and both need doing rather than noting: wire the feature up,
 or mark the line with the reason it cannot be reached.
 

@@ -3,7 +3,7 @@
 {% block content %}
 <section class="panel">
   <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; ten cards</h2>
-  <div hx-get="{{ url_for('api.partial_album') }}"
+  <div hx-get="{{ url_for('api.partial_album', week=chosen_week) }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/album_grid.html" %}

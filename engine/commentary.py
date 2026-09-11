@@ -309,7 +309,13 @@ class Commentator:
             if not fallback or moment.magnitude < 0.6:
                 self.missed[moment.kind] = self.missed.get(moment.kind, 0) + 1
                 return None
-            candidates = sorted(fallback, key=lambda p: self._last_used.get(p.id, -10**6))[:1]  # cold: 410 lines is enough that nothing is ever entirely on cooldown; that is the measurement in test_the_real_bank_is_large_enough_not_to_need_the_silence_rule
+            # Least recently used, so a repeat is at least the furthest thing
+            # from what was last said. Not reachable with the shipped bank --
+            # 410 lines is enough that the cooldown never empties a kind, which
+            # is what test_the_real_bank_is_large_enough_not_to_need_the_silence_rule
+            # measures -- but a league that writes its own bank can have four
+            # lines for a kind, and then this is the whole behaviour.
+            candidates = sorted(fallback, key=lambda p: self._last_used.get(p.id, -10**6))[:1]
 
         # Seeded per (week, moment id) so the same Sunday replays identically:
         # the golden-file commentary test depends on it, and so does anyone

@@ -44,6 +44,7 @@ def inject_chrome():
     accidentally omit TV support.
     """
     st = state()
+    live = snapshot()
     return {
         "TABS": TABS,
         "tv": request.args.get("tv") == "1",
@@ -51,6 +52,15 @@ def inject_chrome():
         "replay": st.replay.describe() if st.replay is not None else None,
         "poll_seconds": st.cfg.poll_seconds,
         "roast_level": st.cfg.roast_level,
+        "chosen_week": _week_param(),
+        # From the live snapshot, not the page's. A page showing week 9 still
+        # needs to know that week 11 is the one in progress, or the menu cannot
+        # mark it. This is a cache hit: every route has already fetched it.
+        "week_menu": st.weeks(live),
+        # Which week is actually in progress, so a page rendering an older one
+        # can say so. Not `snap.scoring_period`, which on an archive page is the
+        # archived week and would make the test always false.
+        "live_week": live.scoring_period,
     }
 
 
@@ -68,7 +78,7 @@ def today():
     One document fixes that by construction, and the panels turn out to fit
     beside each other anyway.
     """
-    snap = snapshot()
+    snap = snapshot(_week_param())
     live = state().live
     return render_template(
         "tabs/home.html",
@@ -85,14 +95,32 @@ def today():
 
 @bp.route("/album")
 def album():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("tabs/album.html", snap=snap, album=album_view(snap, state().live))
 
 
 @bp.route("/cheer")
 def cheer():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("tabs/cheer.html", snap=snap, cheer=cheer_view(snap, _team_param()))
+
+
+def _week_param() -> int | None:
+    """Which week the page is being asked for, or None for whatever is live.
+
+    None rather than the current number on purpose: the difference between
+    "week 11" and "this week, which happens to be 11" is the whole point of the
+    menu. A page pinned to 11 by a bookmark would still be showing week 11 in
+    December; a page with no week in the URL follows the season on its own.
+    """
+    raw = request.args.get("week", "")
+    try:
+        week = int(raw)
+    except (TypeError, ValueError):
+        return None
+    # ESPN numbers scoring periods from 1, and an 18 game season plus playoffs
+    # does not reach 30. A silly number is a typed URL, not a week.
+    return week if 1 <= week <= 30 else None
 
 
 def _team_param() -> int | None:
@@ -110,25 +138,25 @@ def _team_param() -> int | None:
 
 @bp.route("/swing")
 def swing():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("tabs/swing.html", snap=snap, swing=swing_view(snap, state().live))
 
 
 @bp.route("/receipts")
 def receipts():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("tabs/receipts.html", snap=snap, receipts=receipts_view(snap))
 
 
 @bp.route("/multiverse")
 def multiverse():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("tabs/multiverse.html", snap=snap, multiverse=multiverse_view(snap))
 
 
 @bp.route("/big-board")
 def big_board():
     """The bar screen. Always TV-shaped regardless of the query parameter."""
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("tabs/big_board.html", snap=snap,
                            matchups=matchup_view(snap), watch=watch_now(snap), force_tv=True)

@@ -20,13 +20,43 @@
 </div>
 
 <dl class="sheet-stats">
+  <div><dt>Form</dt><dd>{{ card.form | round | int }} / 100</dd></div>
+  <div><dt>Album rank</dt><dd>#{{ card.rank }} of {{ card.field }}</dd></div>
   <div><dt>Bench regret</dt><dd class="{% if card.bench_regret > 25 %}neg{% endif %}">{{ card.bench_regret | points }}</dd></div>
   <div><dt>Best possible</dt><dd>{{ card.optimal | points }}</dd></div>
   <div><dt>Still to play</dt><dd>{{ card.in_play }}</dd></div>
+  <div><dt>Beating projection</dt><dd>{{ card.beating }} starter{{ '' if card.beating == 1 else 's' }}</dd></div>
+  <div><dt>Due by now</dt><dd>{{ card.expected | points }}</dd></div>
   {% if card.win_prob is not none %}
   <div><dt>Win chance</dt><dd>{{ (card.win_prob * 100) | round | int }}%</dd></div>
   {% endif %}
 </dl>
+
+{# What the album is actually ordered on, broken into its four parts. The card
+   prints one number; this is the only place that says where it came from, and
+   without it "why is a 46-point team above a 50-point team" has no answer. #}
+{% if card.form_parts %}
+<h4 class="sheet-group">Where the form comes from</h4>
+<div class="form-bars">
+  {% for key, label, note in (
+       ('pace',   'Pace',    'points against what was due by now'),
+       ('win',    'Winning', 'live chance of taking the head-to-head'),
+       ('lineup', 'Lineup',  'share of the best possible score started'),
+       ('scale',  'Scale',   'this score against the best in the league')) %}
+  <div class="form-bar">
+    <span class="form-bar-label">{{ label }}</span>
+    <span class="form-bar-track">
+      <span class="form-bar-fill" style="width: {{ (card.form_parts[key] * 100) | round | int }}%"></span>
+    </span>
+    <span class="form-bar-pct">{{ (card.form_parts[key] * 100) | round | int }}%</span>
+    <span class="form-bar-note">{{ note }} &middot; worth {{ (form_weights[key] * 100) | round | int }}</span>
+  </div>
+  {% endfor %}
+</div>
+<p class="sheet-note">Pace is the part that does not simply reward an early
+kick-off: every starter's projection is prorated by how much of his real game
+has been played, so a lineup that has not started yet is not behind.</p>
+{% endif %}
 
 {% if card.worst_swap %}
 <p class="sheet-note">

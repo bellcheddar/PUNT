@@ -501,6 +501,11 @@ main { padding: 12px 14px 24px; }
              overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .card-score { font-family: var(--font-display); font-size: 30px; line-height: .95; }
 .card-stats { font-family: var(--font-mono); font-size: 9px; color: var(--ink-dim); line-height: 1.5; }
+/* The one figure on the card that is not a score. Brightened because it is what
+ * the album is sorted on, and a reader who cannot find it cannot explain the
+ * order. Not coloured by value: ten cards each tinted in their own team's hue
+ * already carry as much colour as a 9px line can survive. */
+.card-form { color: var(--ink); }
 
 .card-crest {
   flex: 1;
@@ -1005,8 +1010,26 @@ main { padding: 12px 14px 24px; }
 .cheer--cheer .verdict      { background: rgba(0,208,132,.18); color: var(--green); }
 .cheer--boo .verdict        { background: rgba(255,77,94,.16); color: var(--red); }
 .cheer--conflicted .verdict { background: rgba(252,185,0,.16); color: var(--amber); }
-.cheer--stake .verdict      { background: rgba(74,159,212,.16); color: var(--brand-bright); }
 .cheer--nothing .verdict    { background: rgba(255,255,255,.05); color: var(--ink-faint); }
+
+/* The league-wide column is a number, not a word, so the chip is banded by how
+ * much the game decides rather than by whether you want it to happen. Four
+ * bands and not a continuous scale: a bar full of people reads a colour across
+ * the room and a gradient at arm's length. Consequence first, size second --
+ * `hot` is a fixture with both halves of two head-to-heads in it. */
+.cheer--heat-hot .verdict   { background: rgba(255,77,94,.18);  color: var(--red); }
+.cheer--heat-warm .verdict  { background: rgba(252,185,0,.16);  color: var(--amber); }
+.cheer--heat-cool .verdict  { background: rgba(74,159,212,.16); color: var(--brand-bright); }
+.cheer--heat-none .verdict  { background: rgba(255,255,255,.05); color: var(--ink-faint); }
+.cheer--heat-done .verdict  { background: rgba(255,255,255,.06); color: var(--ink-dim); }
+.cheer--heat-none td        { color: var(--ink-faint); }
+/* The unit under the figure. Without it "75.9" is a score, a projection or a
+ * margin depending on who is reading. */
+.stake-kind {
+  display: block; margin-top: 1px;
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em;
+  color: var(--ink-faint); text-transform: uppercase;
+}
 .cheer--nothing td          { color: var(--ink-faint); }
 .cheer-flag {
   font-family: var(--font-mono); font-size: 8px; letter-spacing: .14em;
@@ -1352,24 +1375,64 @@ main { padding: 12px 14px 24px; }
   gap: 12px;
   align-items: stretch;
 }
-.columns > .panel { margin: 0; display: flex; flex-direction: column; }
 .column-stack { display: flex; flex-direction: column; gap: 12px; }
-.column-stack > .panel { margin: 0; }
+.column-stack > .panel { margin: 0; display: flex; flex-direction: column; }
+/* Both columns are stretched to the same height by the grid, but a flex column
+ * whose items are all content-sized leaves the difference as a gap under the
+ * last panel -- so Cheer ended well short of the bottom of Playoff odds beside
+ * it, and the page finished on a ragged step. The last panel in each stack
+ * takes the slack instead. It is the last one on purpose: growing a middle
+ * panel would push the ones under it around every time a score moved.
+ *
+ * The selectors below were `.columns > .panel`, which stopped matching anything
+ * the moment the two stacks were introduced -- the grid's children are the
+ * stacks now, not the panels. They were dead, not wrong, which is worse: the
+ * comment beside them still described behaviour the page no longer had. */
+.column-stack > .panel:last-child { flex: 1 1 auto; min-height: 0; }
+
+/* Which column decides the height. It has to be the left one, and that is not
+ * the default: a grid row is as tall as its tallest item, so sixteen Cheer rows
+ * set the height and the Playoff odds panel beside them stretched to match with
+ * four hundred pixels of empty panel under its last row. Cheer is the only
+ * thing on the page whose length is decided by the NFL rather than by the
+ * league -- ten teams is always ten rows, a week is thirteen games or sixteen.
+ *
+ * `height: 0` takes the right-hand stack out of the row's sizing entirely, so
+ * the row comes to the left column's height; `min-height: 100%` then gives it
+ * that height back to lay out in. Only above the breakpoint: with one column
+ * there is nothing to line up with and a zero-height stack would collapse. */
+@media (min-width: 620px) {
+  .columns > .column-stack:last-child { height: 0; min-height: 100%; }
+}
+.column-stack > .panel:last-child > .scroll-wrap,
+.column-stack > .panel:last-child > .feed-wrap {
+  flex: 1 1 auto;
+  min-height: 140px;
+  /* The 340px cap is what stops a sixteen-row Cheer doubling the column. Once
+   * the panel is being sized by the column instead, the cap is what stops it
+   * *reaching* the bottom, so it has to come off here and only here. */
+  max-height: none;
+}
 /* The two columns end level because the grid stretches them, and that is all
    the stretching that is wanted. Making the TABLE fill as well was a mistake:
    a table told to be 100% tall distributes the slack across its rows, so bench
    regret came out double-spaced against a right column that was not. The panel
    is tall; the rows keep their own height and the space falls at the bottom,
    where empty space belongs. */
-.columns > .panel > .rows { flex: 0 0 auto; }
+.column-stack > .panel > .rows { flex: 0 0 auto; }
 /* Bench regret has ten rows against four stacked panels, so the column it sits
    in is roughly twice as tall as the table in it. Rather than leave half of it
    blank, the rows breathe into the space they are given -- up to a limit, so
    this cannot turn into the double-spacing that came of stretching the table
    itself. */
-.columns > .panel .rows.regret td { padding-top: 9px; padding-bottom: 9px; }
+.column-stack > .panel .rows.regret td { padding-top: 9px; padding-bottom: 9px; }
 @media (max-width: 619px) {
   .columns { grid-template-columns: minmax(0, 1fr); }
+  /* One column, so there is no neighbour to line up with and nothing to fill:
+   * the cap goes back on, or the phone gets a sixteen-row table to scroll past
+   * on the way to the footer. */
+  .column-stack > .panel:last-child > .scroll-wrap,
+  .column-stack > .panel:last-child > .feed-wrap { max-height: 340px; }
 }
 
 /* --- the wordmark's foil ------------------------------------------------
@@ -1409,7 +1472,7 @@ main { padding: 12px 14px 24px; }
 }
 
 /* --- the backronym ------------------------------------------------------- */
-.header-league { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-league { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .backronym {
   font-size: 9.5px;
   /* It has to fit whole or not at all: truncated to "Tras..." the T is gone,
@@ -1508,3 +1571,133 @@ main { padding: 12px 14px 24px; }
 .seed-bar i { display: block; height: 100%; background: var(--ink-faint); border-radius: 4px; }
 .seed--in .seed-bar i { background: var(--green); }
 .seed--in { color: var(--ink-dim); }
+
+/* The swing block on a game sheet. Two rows inside one bordered group, because
+ * the pair is the unit: "Ferrets 12.4, Badgers 3.1" only means anything read
+ * together, and two independent rows in a flat list read as two facts. */
+.swing-list { display: grid; gap: 8px; margin: 0 0 12px; }
+.swing {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: rgba(255,255,255,.02);
+}
+.swing-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  margin-bottom: 5px;
+}
+.swing-label { font-size: 12px; font-weight: 600; min-width: 0; }
+.swing-net {
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .06em;
+  color: var(--amber); white-space: nowrap; text-align: right;
+}
+.swing-net--even { color: var(--ink-faint); }
+.swing-side {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) 56px;
+  grid-template-areas: "dot team pts" "dot players pts";
+  align-items: center;
+  column-gap: 6px;
+  padding: 3px 0;
+}
+.swing-side .dot { grid-area: dot; }
+.swing-team { grid-area: team; font-size: 12px; }
+.swing-players {
+  grid-area: players;
+  font-size: 10.5px; color: var(--ink-faint);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.swing-pts {
+  grid-area: pts; text-align: right;
+  font-family: var(--font-mono); font-size: 12px;
+}
+.swing-pts .sub { font-size: 8px; }
+
+/* The form breakdown on a team sheet. Bars rather than four more numbers in the
+ * stats grid: the question they answer is "which part is dragging this down",
+ * which is a comparison, and comparing four percentages written as text means
+ * reading them all and holding them in your head. */
+.form-bars { display: grid; gap: 8px; margin: 0 0 12px; }
+.form-bar {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 36px;
+  grid-template-areas: "label track pct" "note note note";
+  align-items: center;
+  column-gap: 8px;
+}
+.form-bar-label { grid-area: label; font-size: 11.5px; }
+.form-bar-track {
+  grid-area: track;
+  height: 6px; border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+.form-bar-fill {
+  display: block; height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright));
+}
+.form-bar-pct {
+  grid-area: pct; text-align: right;
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-dim);
+}
+.form-bar-note {
+  grid-area: note;
+  font-family: var(--font-mono); font-size: 8.5px; color: var(--ink-faint);
+  margin-top: 1px;
+}
+
+/* The week menu, on the league line in the header.
+ *
+ * A native <select> and not a custom menu. It is one control used once a week,
+ * on a phone, one-handed, probably in a bar: iOS gives a native select a
+ * full-height wheel that a thumb cannot miss, and every hand-rolled dropdown in
+ * this position would be a smaller target than the one the platform ships. The
+ * appearance is reset so it sits on the header ground rather than arriving as a
+ * grey system rectangle, but nothing about its behaviour is replaced. */
+.header-line { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.header-week { flex-shrink: 0; }
+
+.week-picker { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.week-picker select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  /* Room on the right for the chevron drawn behind it. */
+  padding: 2px 20px 2px 8px;
+  cursor: pointer;
+  /* A chevron as a gradient pair rather than an SVG: the CSP allows no external
+   * images and a data URI for two lines is more bytes than the lines. */
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--ink-dim) 50%),
+    linear-gradient(135deg, var(--ink-dim) 50%, transparent 50%);
+  background-position: calc(100% - 11px) 52%, calc(100% - 7px) 52%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+.week-picker select:focus-visible { outline: 2px solid var(--brand-bright); outline-offset: 1px; }
+/* The options themselves are drawn by the platform, which on some of them takes
+ * the page's colours and on others does not. Setting both stops white-on-white. */
+.week-picker option { background: var(--bg-raised); color: var(--ink); }
+.week-picker button {
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+/* Hidden only once the script that makes it unnecessary has run. Hiding it in
+ * the stylesheet would leave a no-JS visitor with a menu that does nothing. */
+.week-picker[data-auto] button { display: none; }
+
+/* A week that is not the live one. The page is a record rather than a
+ * scoreboard, and it should not look identical to the one that is moving. */
+.banner--archive { background: rgba(74,159,212,.10); border-color: var(--brand); }

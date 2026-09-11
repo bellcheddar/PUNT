@@ -67,7 +67,8 @@
 <script src="{{ url_for('static', filename='js/sheet.js') }}?v={{ asset_version }}" defer></script>
 <script src="{{ url_for('static', filename='js/board.js') }}?v={{ asset_version }}" defer></script>
 </head>
-<body data-tab="{{ request.endpoint.split('.')[-1] if request.endpoint else '' }}">
+<body data-tab="{{ request.endpoint.split('.')[-1] if request.endpoint else '' }}"
+      data-archive="{{ '1' if (chosen_week and chosen_week != live_week) else '0' }}">
 
 <header class="app-header chrome">
   {# The wordmark carries the same foil the cards do: one rotated gradient
@@ -77,13 +78,45 @@
     <span class="wordmark-text">PUNT</span>
   </a>
   <div class="header-meta">
-    <span class="header-league">
-      {%- if snap and snap.settings.name -%}
-        {{ snap.settings.name }} &middot; week {{ snap.scoring_period }}
-      {%- else -%}
-        loading
-      {%- endif -%}
-    </span>
+    <div class="header-line">
+      <span class="header-league">
+        {%- if snap and snap.settings.name -%}
+          {#- The league name carries the year it was created, not the year being
+             played: ESPN keeps "Logan House 2023" forever. `title_for` swaps it
+             for the season on screen. -#}
+          {{ snap.settings.title_for(snap.season) }}
+        {%- else -%}
+          loading
+        {%- endif -%}
+      </span>
+      {# The week, as a menu when there is more than one to choose from. A GET
+         form and a real <select>, so it works before any JavaScript loads and
+         uses the platform's own picker -- which on a phone is a full-height
+         wheel rather than ten small things to hit with a thumb. The submit
+         button is for the no-JS case; app.js submits on change and hides it,
+         so nobody has to tap twice. #}
+      {% if snap and (week_menu | length > 1 or chosen_week) %}
+      <form class="week-picker" method="get" action="{{ url_for('tabs.today') }}" data-week-picker>
+        {% if request.args.get('team') %}<input type="hidden" name="team" value="{{ request.args.get('team') }}">{% endif %}
+        {% if tv %}<input type="hidden" name="tv" value="1">{% endif %}
+        <label class="sr-only" for="week-select">Week</label>
+        <select id="week-select" name="week">
+          {% for w in week_menu %}
+          {# The live week is the empty value, not its own number. A URL with no
+             week in it follows the season on its own; one pinned to 11 is still
+             showing week 11 in December. #}
+          <option value="{{ '' if w.current else w.week }}"
+                  {% if (w.current and not chosen_week) or chosen_week == w.week %}selected{% endif %}>
+            week {{ w.week }}{% if w.current %} &middot; live{% elif w.settled %} &middot; final{% endif %}
+          </option>
+          {% endfor %}
+        </select>
+        <button type="submit">Go</button>
+      </form>
+      {% elif snap %}
+      <span class="header-week">&middot; week {{ snap.scoring_period }}</span>
+      {% endif %}
+    </div>
     {# The backronym, with the four letters that spell the name lit. It is what
        the app is called and nobody would guess it from the wordmark alone. #}
     <span class="backronym" aria-label="Play-by-play, Uproar, Numbers and Trash-talk">
@@ -98,6 +131,16 @@
 </header>
 
 {% block banners %}
+  {# An archived week has to announce itself. Every other signal on this page --
+     the scores, the clock, the commentary -- looks exactly the same whether it
+     is moving or finished, and somebody who picked week 9 an hour ago and left
+     the phone on the bar would have no way to tell. #}
+  {% if chosen_week and snap and chosen_week != live_week %}
+    <div class="banner banner--archive">
+      <strong>Week {{ chosen_week }}, finished.</strong> Nothing here is moving.
+      <a href="{{ url_for('tabs.today') }}">Back to this week</a>.
+    </div>
+  {% endif %}
   {% if mode == 'demo' %}
     <div class="banner banner--demo">
       <strong>Demo data.</strong> No ESPN credentials are set, so this is the recorded

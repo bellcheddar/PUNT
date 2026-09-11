@@ -12,6 +12,7 @@ blank panel waiting for a module that does not exist yet.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from engine.scoring import all_play, luck_index, optimal_lineup, standings
@@ -124,9 +125,16 @@ def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
             best_week.get(team.id) and card["total"] > best_week[team.id]
         )
         card["winning"] = bool(probability is not None and probability > 0.5)
+        card.update(_pace(snap, side))
         cards.append(card)
 
-    cards.sort(key=lambda c: c["total"], reverse=True)
+    _rate(cards)
+    # Form, not the raw score. Ordering ten cards by points at three in the
+    # afternoon mostly ranks them by how many of their players happened to kick
+    # off at one o'clock, which is not a thing anybody did. `total` stays as the
+    # tie-break, because two identical ratings should still fall out in a stable
+    # and explicable order rather than by dictionary insertion.
+    cards.sort(key=lambda c: (c["form"], c["total"]), reverse=True)
     for rank, card in enumerate(cards):
         card["rank"] = rank + 1
         card["tier"] = _tier(
@@ -135,6 +143,132 @@ def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
             season_high=card["season_high"],
         )
     return cards
+
+
+#: What the form rating is made of. Four parts, and they answer four different
+#: questions that the single number on the front of the card used to conflate:
+#:
+#:   pace    are these players beating what was expected of them SO FAR -- the
+#:           one component that does not reward a team simply for having kicked
+#:           off earlier, because the expectation is prorated by how much of
+#:           each real game has actually been played.
+#:   lineup  did the manager start the right people. Points sitting on a bench
+#:           were available and were not taken.
+#:   win     is the head-to-head being won. A 60-point week is a bad week if the
+#:           opponent has 90, and this is the only part that knows that.
+#:   scale   the raw total, kept because a big score IS an achievement and a
+#:           rating that ignored it would call a 40-point team with a perfect
+#:           lineup the best in the league.
+#:
+#: They sum to 1.0 and a test enforces it: the rating is presented out of 100
+#: and a set of weights summing to 0.9 would quietly make 100 unreachable.
+FORM_WEIGHTS = {"pace": 0.35, "win": 0.25, "lineup": 0.20, "scale": 0.20}
+
+#: Pace is capped here before normalising. Doubling the prorated projection is
+#: already a remarkable afternoon; without a cap, one player returning a kickoff
+#: in the first quarter -- when the denominator is tiny -- gives a pace of nine
+#: and pins that team at the top of the album until teatime.
+PACE_CAP = 2.0
+
+
+def _rate(cards: list[dict[str, Any]]) -> None:
+    """Give every card a 0-100 form rating, in place.
+
+    One pass over all ten, like rarity, because two of the four parts are
+    relative: `scale` is measured against the best score in the league this week
+    and there is no such thing as a team's own scale in isolation.
+    """
+    best = max((c["total"] for c in cards), default=0.0)
+    for card in cards:
+        pace = card["pace"]
+        optimal = card["optimal"]
+        parts = {
+            # No prorated expectation yet means no game has kicked off. Neutral
+            # rather than zero: before the first snap every team is equally
+            # unproven, and zeroing it would rank the album by the other three
+            # parts while pretending it had measured something.
+            "pace": 0.5 if pace is None else min(pace, PACE_CAP) / PACE_CAP,
+            "win": 0.5 if card["win_prob"] is None else card["win_prob"],
+            "lineup": (card["total"] / optimal) if optimal > 0 else 1.0,
+            "scale": (card["total"] / best) if best > 0 else 0.0,
+        }
+        card["form_parts"] = {k: round(v, 3) for k, v in parts.items()}
+        card["form"] = round(
+            100 * sum(FORM_WEIGHTS[k] * v for k, v in parts.items()), 1
+        )
+
+
+def _pace(snap: LeagueSnapshot, side: Side | None) -> dict[str, Any]:
+    """Points scored against points that should have been scored BY NOW.
+
+    The naive version divides by the whole projection, which measures nothing on
+    a Sunday afternoon: a team whose starters all kick off at one o'clock and a
+    team whose starters all kick off at four have wildly different scores at
+    three and identical prospects, and the album spent the afternoon ranking the
+    first lot above the second for it. So each starter's projection is prorated
+    by how much of his actual NFL game has been played, and the sum of those is
+    what the team is measured against.
+
+    A player with no game on the scoreboard -- a bye, a scratch, a pro team the
+    feed did not send -- contributes to neither side of the ratio. Counting his
+    projection as due would punish his manager for a fixture list, and counting
+    it as delivered would reward him for nothing.
+    """
+    if side is None:
+        return {"pace": None, "expected": 0.0, "beating": 0}
+
+    expected = 0.0
+    beating = 0
+    for player in side.starters:
+        game = snap.games.get(player.pro_team_id)
+        if game is None:
+            continue
+        share = _elapsed(game)
+        if share <= 0:
+            continue
+        due = player.projected * share
+        expected += due
+        if player.points > due:
+            beating += 1
+
+    return {
+        "pace": round(side.total / expected, 3) if expected >= 1.0 else None,
+        "expected": round(expected, 2),
+        "beating": beating,
+    }
+
+
+#: A regulation NFL game, in minutes. Overtime is deliberately not modelled: it
+#: would push `_elapsed` past 1.0 and make a finished game look unfinished, and
+#: the branch that matters here is "has this game been played", which overtime
+#: does not change.
+GAME_MINUTES = 60.0
+
+
+def _elapsed(game) -> float:
+    """How much of one NFL game has been played, from 0 to 1.
+
+    Read from the period and the play clock rather than from wall time, because
+    a live feed's idea of kickoff is not reliable and the clock is the thing
+    every screen in the bar is already showing.
+    """
+    if game.finished:
+        return 1.0
+    if not game.live or not game.period:
+        return 0.0
+    # The clock counts DOWN within a quarter, so the elapsed part of the current
+    # quarter is what is missing from it. A malformed or empty clock is treated
+    # as the quarter having just started, which errs towards a smaller
+    # denominator and so towards a flattering pace -- the alternative errs
+    # towards dividing by something that has not happened yet.
+    left = 15.0
+    try:
+        minutes, _, seconds = str(game.clock or "15:00").partition(":")
+        left = float(minutes) + float(seconds or 0) / 60.0
+    except ValueError:
+        pass  # cold: ESPN has never sent a clock that is not mm:ss
+    played = (game.period - 1) * 15.0 + max(0.0, 15.0 - left)
+    return max(0.0, min(1.0, played / GAME_MINUTES))
 
 
 def _best_previous_week(snap: LeagueSnapshot) -> dict[int, float]:
@@ -239,18 +373,35 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
 
         # Both halves of the fixture carry players, so collect from each.
         involved = list(stakes.get(pro_team_id, []))
+        pro_ids = {pro_team_id}
         for other_id, other in snap.games.items():
             if other.abbrev == game.opponent:
                 involved += stakes.get(other_id, [])
+                pro_ids.add(other_id)
 
         mine = [p for tid, _, p in involved if tid == team_id]
         theirs = [p for tid, _, p in involved if opponent_id is not None and tid == opponent_id]
         others = sorted({m for tid, m, _ in involved if tid not in (team_id, opponent_id)})
 
+        stake = _fixture_stake(snap, pro_ids)
+
         if team_id is None:
-            verdict = "STAKE" if involved else ""
-            reason = (f"{len(involved)} starter{'s' if len(involved) != 1 else ''} "
-                      f"across {len(set(tid for tid, _, _ in involved))} teams")
+            # Not a verdict at all, because with no team chosen there is nothing
+            # to be for or against. Every row used to read STAKE, which told a
+            # room of ten people exactly nothing about which television to look
+            # at. What they actually want is the size of the bet: how many
+            # fantasy points are still on the field here, and whether this game
+            # has both halves of somebody's head-to-head in it.
+            verdict = ""
+            who = (f"{stake['starters']} starter{'' if stake['starters'] == 1 else 's'}, "
+                   f"{stake['teams']} team{'' if stake['teams'] == 1 else 's'}")
+            if stake["swings"]:
+                reason = (f"{who} \u00b7 decides "
+                          f"{', '.join(s['label'] for s in stake['swings'][:2])}")
+            elif stake["starters"]:
+                reason = f"{who} \u00b7 {_stake_phrase(stake, game.finished)}"
+            else:
+                reason = "Nobody in the league has a starter in this one."
         elif mine and theirs:
             verdict = "CONFLICTED"
             reason = (f"You have {_names(mine)}. Your opponent has {_names(theirs)}.")
@@ -283,15 +434,25 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
             "mine": [p.name for p in mine],
             "theirs": [p.name for p in theirs],
             "others": others,
+            # What the pill shows when nobody has chosen a team: points rather
+            # than a word. A finished game has none left, so it shows what it
+            # delivered instead -- the same quantity in the past tense, which is
+            # what "final" means for a stake.
+            "at_stake": stake["scored"] if game.finished else stake["live"],
+            "stake_kind": "scored" if game.finished else "live",
+            "heat": _stake_heat(stake, game.finished),
+            "starters": stake["starters"],
+            "teams": stake["teams"],
+            "swings": [s["label"] for s in stake["swings"]],
         })
 
     # Live first, then still to come, then done: the question "do I want this to
     # happen" is only live for a game that has not finished, and a finished one
     # is a result rather than a stake.
-    order = {"CONFLICTED": 0, "CHEER": 1, "BOO": 2, "STAKE": 3, "NOTHING": 4}
+    order = {"CONFLICTED": 0, "CHEER": 1, "BOO": 2, "NOTHING": 4}
     state_order = {True: 0, False: 1}
     rows.sort(key=lambda r: (r["finished"], state_order[bool(r["live"])],
-                             order.get(r["verdict"], 9), r["fixture"]))
+                             order.get(r["verdict"], 3), -r["at_stake"], r["fixture"]))
     return rows
 
 
@@ -301,6 +462,88 @@ def _names(players: list) -> str:
     if len(names) <= 2:
         return " and ".join(names)
     return f"{', '.join(names[:2])} and {len(names) - 2} more"
+
+
+def _fixture_stake(snap: LeagueSnapshot, pro_ids: set[int]) -> dict[str, Any]:
+    """How much one NFL game matters to the fantasy league.
+
+    "Matters" has two parts and they are not the same. The first is size: the
+    fantasy points still to come out of this fixture, which is what makes a game
+    worth looking up at. The second is consequence: whether both halves of a
+    head-to-head have starters in it, which is what makes a game worth *arguing*
+    about. A fixture with eight starters all belonging to one manager is a big
+    stake and decides nothing; a fixture with one starter each side of the
+    league's closest matchup is a small stake that decides the week. Both are
+    returned, and nothing here collapses them into a single number, because the
+    collapse is exactly what made every row read the same.
+    """
+    per_team: dict[int, dict[str, Any]] = {}
+    swings: list[dict[str, Any]] = []
+
+    for matchup in snap.live_matchups or snap.matchups:
+        pair = []
+        for side in (matchup.home, matchup.away):
+            team = snap.team(side.team_id)
+            inside = [p for p in side.starters if p.pro_team_id in pro_ids]
+            entry = {
+                "team_id": side.team_id,
+                "team": team.name if team else f"team {side.team_id}",
+                "manager": team.manager if team else "",
+                "hue": team.hue if team else 0,
+                "players": [p.name for p in inside],
+                "count": len(inside),
+                "scored": round(sum(p.points for p in inside), 2),
+                "live": round(sum(p.remaining for p in inside), 2),
+            }
+            pair.append(entry)
+            if inside:
+                per_team[side.team_id] = entry
+        if pair[0]["count"] and pair[1]["count"]:
+            # Both managers are invested, so this game moves the margin between
+            # them rather than just both their totals. `net` is signed towards
+            # the first side: positive means the fixture favours them.
+            swings.append({
+                "label": f"{pair[0]['team']} v {pair[1]['team']}",
+                "sides": pair,
+                "net": round(pair[0]["live"] - pair[1]["live"], 2),
+            })
+
+    swings.sort(key=lambda s: -(s["sides"][0]["live"] + s["sides"][1]["live"]))
+    exposure = sorted(per_team.values(), key=lambda e: (-e["live"], -e["scored"]))
+    return {
+        "starters": sum(e["count"] for e in exposure),
+        "teams": len(exposure),
+        "scored": round(sum(e["scored"] for e in exposure), 2),
+        "live": round(sum(e["live"] for e in exposure), 2),
+        "swings": swings,
+        "exposure": exposure,
+    }
+
+
+def _stake_phrase(stake: dict[str, Any], finished: bool) -> str:
+    """The half-sentence that goes after the starter count."""
+    if finished:
+        return f"{stake['scored']:.1f} delivered"
+    if stake["live"] <= 0:
+        return "nothing left to come"
+    return f"{stake['live']:.1f} still to come"
+
+
+def _stake_heat(stake: dict[str, Any], finished: bool) -> str:
+    """Which of four bands the pill is painted in.
+
+    Banded on consequence first and size second, in that order, because a room
+    deciding which screen to watch cares more that a game is deciding somebody's
+    week than that it is worth a lot of points to one manager who is already
+    forty ahead.
+    """
+    if finished or not stake["starters"]:
+        return "done" if finished else "none"
+    if len(stake["swings"]) >= 2:
+        return "hot"
+    if stake["swings"] or stake["live"] >= 20:
+        return "warm"
+    return "cool"
 
 
 def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
@@ -586,6 +829,41 @@ def moments_view(live, limit: int = 25, snap: LeagueSnapshot | None = None) -> l
     return out
 
 
+def stored_moments(store, snap: LeagueSnapshot, limit: int = 200) -> list[dict[str, Any]]:
+    """The commentary feed for a week that has already finished.
+
+    Shaped exactly like `moments_view`, because the same template renders both
+    and a fragment that quietly lacked a field would show an empty line rather
+    than an error. The fields that only exist while a play is live -- the
+    magnitude the engine measured it at, the audio sting it chose -- come back
+    empty, which is honest: they were properties of the moment it happened.
+
+    Newest first, matching the live feed, so the two do not read in opposite
+    directions depending on which week is selected.
+    """
+    hues = {t.id: t.hue for t in snap.teams}
+    week = store.week(snap.season, snap.scoring_period)
+    out = []
+    for row in reversed(week.get("moments", [])[-limit:]):
+        team_id = row.get("team_id")
+        out.append({
+            "id": row["id"],
+            "kind": row["kind"],
+            "magnitude": 0.0,
+            "teams": [row["team"]] if row["team"] else [],
+            "team_id": team_id,
+            "hue": hues.get(team_id),
+            "player": row["player"],
+            "delta": row["delta"],
+            "context": json.loads(row["payload"] or "{}"),
+            "ts": row["at"],
+            "text": row["said"],
+            "audio": "",
+            "tone": [],
+        })
+    return out
+
+
 # --------------------------------------------------------------------------
 # the detail sheets
 #
@@ -782,6 +1060,7 @@ def game_detail(snap: LeagueSnapshot, pro_team_id: int) -> dict[str, Any]:
                 })
     owned.sort(key=lambda p: (not p["starter"], -p["points"]))
 
+    stake = _fixture_stake(snap, pro_ids)
     return {
         "fixture": f"{game.opponent or '?'} at {game.abbrev}",
         "state": game.state, "finished": game.finished, "live": game.live,
@@ -792,6 +1071,13 @@ def game_detail(snap: LeagueSnapshot, pro_team_id: int) -> dict[str, Any]:
         "players": owned,
         "starters": sum(1 for p in owned if p["starter"]),
         "managers": len({p["team_id"] for p in owned}),
+        # The same analysis the Cheer panel's figure comes from, so the sheet
+        # explains the number that was tapped rather than a second opinion of it.
+        "at_stake": stake["scored"] if game.finished else stake["live"],
+        "stake_kind": "scored" if game.finished else "live",
+        "scored": stake["scored"], "live_points": stake["live"],
+        "swings": stake["swings"], "exposure": stake["exposure"],
+        "heat": _stake_heat(stake, game.finished),
     }
 
 

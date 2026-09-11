@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 216 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 260 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 214 tests, no network, no cookies
+python3 -m pytest                             # 260 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -26,8 +26,38 @@ python3 tools/perf.py                         # the blocking path
 ```
 
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
-and `views/viewmodels.py`. The seventy-nine it cannot reach each carry a `# cold:`
+and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## The season, not just the Sunday
+
+Three things landed together, because they are the same feature seen from three
+sides.
+
+**The week rolls over on its own.** It always read `scoringPeriodId` from ESPN,
+and mSettings was cached for a day -- so the period changed on a Tuesday morning
+and PUNT carried on serving the Sunday that had already finished until some time
+on Wednesday, with nothing looking broken. The TTL is ten minutes now. The live
+feed empties everything that is per-week when the period moves: the Moment
+buffer, the chosen lines, the red-zone overlays, the notable list, the counts and
+the win-probability lows. Three of those six used to be cleared and three did
+not, which looks fine on the Tuesday and puts last Sunday's commentary under this
+Sunday's scores the following weekend. The dedupe set is deliberately kept: every
+Moment id is hashed with its week.
+
+**Every week is written down**, to `data/state/history.sqlite3` (gitignored, and
+`engine/history.py` is the whole of it). Not a cache of ESPN, which will serve a
+past box score for as long as the league exists. It is the half ESPN cannot give
+back: the Moments the engine detected as they happened, the commentary it chose,
+and what the optimal lineup *was* before anybody edited a roster. Written on
+every poll, so there is no final whistle to miss, and once more at the rollover
+before the buffer is emptied.
+
+**The week is selectable** from a menu on the league line in the header. The live
+week is the empty value in that menu, not its own number, so a URL with no week
+in it follows the season and a bookmark of week 11 is still week 11 in December.
+An archived page says so in a banner and does not open the SSE stream: everything
+else on the page looks identical whether it is moving or finished.
 
 ## What is left, and all of it needs Marc
 
@@ -75,9 +105,10 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/commentary.py` | Retrieval-only phrase bank: 410 lines, cooldowns, roast levels, weighted sampling, seeded per `(week, moment.id)`. |
 | `engine/recap.py` | Grounded weekly write-up. Every numeral and proper noun must appear in the fact pack; three rejected samples fall back to the template. |
 | `engine/speech.py` | Phrase audio cached by the hash of what is spoken, rendered on a pool as soon as the server picks the line. |
+| `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | Seven tabs plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 214 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 260 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

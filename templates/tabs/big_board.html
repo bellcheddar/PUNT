@@ -13,7 +13,7 @@
   </h2>
 
   <div class="board-window"
-       hx-get="{{ url_for('api.partial_scorebar') }}"
+       hx-get="{{ url_for('api.partial_scorebar', week=chosen_week) }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/scorebar.html" %}
@@ -22,7 +22,7 @@
 
 <section class="panel">
   <h2 class="panel-title">Watch now</h2>
-  <div hx-get="{{ url_for('api.partial_watchnow') }}"
+  <div hx-get="{{ url_for('api.partial_watchnow', week=chosen_week) }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/watchnow.html" %}

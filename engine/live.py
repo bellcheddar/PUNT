@@ -72,8 +72,20 @@ class LiveFeed:
         engine: EventEngine | None = None,
         commentator: Commentator | None = None,
         speech: SpeechCache | None = None,
+        on_week_change: Callable[[int | None, LeagueSnapshot], None] | None = None,
+        after_poll: Callable[[LeagueSnapshot], None] | None = None,
     ) -> None:
         self.fetch = fetch
+        #: Called at the end of every successful poll, after the Moments have
+        #: been detected and broadcast. Broadcasting first is deliberate: the
+        #: phones in the room get the touchdown before anything touches a disk.
+        self.after_poll = after_poll
+        #: Called with (the week that just ended, the first snapshot of the new
+        #: one) the moment ESPN's scoring period moves on. The hook exists so
+        #: the feed does not have to know what a database is: everything it
+        #: keeps is per-week and in memory, and something else decides whether
+        #: the week that just ended is worth writing down.
+        self.on_week_change = on_week_change
         self.poll_seconds = max(5.0, poll_seconds)
         self.engine = engine or EventEngine()
         # The line is chosen on the server, not on each phone. Ten phones in one
@@ -216,6 +228,13 @@ class LiveFeed:
                 },
             },
         })
+        if self.after_poll is not None:
+            try:
+                self.after_poll(snapshot)
+            except Exception:  # noqa: BLE001
+                # Same rule as the week-change hook: a recorder that cannot
+                # write must not take the scoreboard down with it.
+                log.exception("the after-poll hook failed")
         self.failures = 0
         self.last_error = ""
         return moments
@@ -231,10 +250,7 @@ class LiveFeed:
     def _accumulate(self, snapshot: LeagueSnapshot, moments: list[Moment]) -> None:
         """Keep the week's rare Moments and exact per-kind counts."""
         if snapshot.scoring_period != self.week:
-            self.week = snapshot.scoring_period
-            self.notable = []
-            self.week_counts = {}
-            self.week_low = {}
+            self._roll(snapshot)
 
         for team_id, probability in self.engine.win_probabilities.items():
             previous = self.week_low.get(team_id)
@@ -244,6 +260,43 @@ class LiveFeed:
             self.week_counts[moment.kind] = self.week_counts.get(moment.kind, 0) + 1
             if moment.kind in self.NOTABLE and len(self.notable) < self.MAX_NOTABLE:
                 self.notable.append(moment)
+
+    def _roll(self, snapshot: LeagueSnapshot) -> None:
+        """ESPN has moved to a new scoring period. Start again.
+
+        The rollover happens on a Tuesday morning with nobody watching, so this
+        has to be automatic and it has to be complete. Three of these used to be
+        cleared and three did not, which is the kind of half-reset that looks
+        fine on the Tuesday and produces last Sunday's commentary underneath
+        this Sunday's scores on the following weekend, when the two-hour buffer
+        finally has something to push out.
+        """
+        ended, self.week = self.week, snapshot.scoring_period
+        if ended is not None:
+            log.info("week %s has ended; rolling on to week %s", ended, self.week)
+
+        # Per-week and therefore emptied. `notable` and `week_counts` feed the
+        # recap, `week_low` mints Legendary cards, `moments` and `lines` are the
+        # commentary feed, and `_redzone` is a live overlay that cannot possibly
+        # still be open a week later.
+        self.notable = []
+        self.week_counts = {}
+        self.week_low = {}
+        self.moments.clear()
+        self.lines.clear()
+        self._redzone.clear()
+
+        # Deliberately NOT cleared: the event engine's set of fired ids. Every
+        # Moment id is hashed with its week, so last week's ids cannot suppress
+        # this week's plays, and throwing the set away would mean a restart
+        # during the rollover replays whatever it had already announced.
+        if self.on_week_change is not None:
+            try:
+                self.on_week_change(ended, snapshot)
+            except Exception:  # noqa: BLE001
+                # A failed write must not stop the scores. The hook is a record
+                # of the afternoon; the afternoon is the product.
+                log.exception("the week-change hook failed")
 
     def factpack(self, snapshot: LeagueSnapshot | None = None) -> FactPack | None:
         """The week as facts, or nothing if there is not a week yet."""

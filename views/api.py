@@ -14,7 +14,9 @@ import time
 from flask import Blueprint, Response, jsonify, render_template, request
 
 from views.state import snapshot, state
+from views.tabs import _team_param, _week_param
 from views.viewmodels import (
+    FORM_WEIGHTS,
     album_view,
     cheer_view,
     game_detail,
@@ -23,6 +25,7 @@ from views.viewmodels import (
     moments_view,
     odds_detail,
     regret_detail,
+    stored_moments,
     trouble_detail,
     watch_now,
 )
@@ -68,14 +71,14 @@ def partial_matchup(matchup_id: int):
 
 @bp.route("/partials/album")
 def partial_album():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("partials/album_grid.html",
                            album=album_view(snap, state().live), snap=snap)
 
 
 @bp.route("/partials/scorebar")
 def partial_scorebar():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("partials/scorebar.html", matchups=matchup_view(snap), snap=snap)
 
 
@@ -121,9 +124,7 @@ def stream():
 
 @bp.route("/partials/cheer")
 def partial_cheer():
-    from views.tabs import _team_param  # noqa: PLC0415
-
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("partials/cheer.html", cheer=cheer_view(snap, _team_param()), snap=snap)
 
 
@@ -139,7 +140,12 @@ def partial_team(team_id: int):
     snap = snapshot()
     cards = album_view(snap, state().live)
     card = next((c for c in cards if c["id"] == team_id), None)
-    return render_template("partials/team.html", card=card, snap=snap)
+    if card is not None:
+        # The rank is out of however many teams the league actually has, which
+        # is not always ten: a nine-team league would otherwise read "#9 of 10".
+        card["field"] = len(cards)
+    return render_template("partials/team.html", card=card, snap=snap,
+                           form_weights=FORM_WEIGHTS)
 
 
 # --------------------------------------------------------------------------
@@ -187,7 +193,7 @@ def detail_odds(team_id: int):
 
 @bp.route("/partials/watchnow")
 def partial_watchnow():
-    snap = snapshot()
+    snap = snapshot(_week_param())
     return render_template("partials/watchnow.html", watch=watch_now(snap), snap=snap)
 
 
@@ -225,8 +231,17 @@ def partial_moments():
 
     A fallback for a phone whose SSE connection has dropped: the feed keeps
     filling on the 30 s poll rather than going silent until a reload."""
+    # The live feed's buffer is this week's by construction, so a page pinned to
+    # an older week must not have it swapped in underneath: it would put this
+    # Sunday's commentary beside that Sunday's scores. The stored lines are what
+    # that week actually said, and they are what the fragment serves instead.
+    week = _week_param()
+    snap = snapshot(week)
+    if week is not None and week != snapshot().scoring_period:
+        return render_template("partials/moments.html",
+                               moments=stored_moments(state().store(), snap), snap=snap)
     return render_template("partials/moments.html",
-                           moments=moments_view(state().live, snap=snapshot()))
+                           moments=moments_view(state().live, snap=snap), snap=snap)
 
 
 @bp.route("/api/diagnostics")

@@ -50,8 +50,21 @@ class Feed:
         return ":".join(parts)
 
 
+#: Ten minutes, not the day it used to be, and the reason is one field.
+#:
+#: Almost everything in mSettings is set once in August and never touched --
+#: scoring items, roster slots, playoff seeds -- which is what a 24 hour TTL was
+#: reasoning about. But it also carries `scoringPeriodId`, and that single field
+#: decides which week the entire application is showing. Cached for a day, the
+#: scoring period rolls over on a Tuesday morning and PUNT carries on serving
+#: the Sunday that has already finished until some time on Wednesday. Nothing
+#: looks broken, so nobody thinks to restart it.
+#:
+#: Ten minutes costs six requests an hour, against a poller already making a
+#: hundred and twenty. No `live_ttl`: this feed is never fetched with `live`
+#: set, and a second number here would only be a thing to get wrong later.
 SETTINGS = Feed(
-    name="mSettings", views=("mSettings",), ttl=86_400,
+    name="mSettings", views=("mSettings",), ttl=600,
     purpose="Scoring items, playoff seeds, tiebreakers, roster slots, the members block",
 )
 TEAM = Feed(

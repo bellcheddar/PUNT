@@ -7,7 +7,7 @@
      The first paint is the league-wide view, which is what the bar screen wants
      anyway and what somebody who has not picked a team sees. #}
   <div id="cheer"
-       hx-get="{{ url_for('api.partial_cheer') }}"
+       hx-get="{{ url_for('api.partial_cheer', week=chosen_week) }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/cheer.html" %}

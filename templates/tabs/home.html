@@ -10,7 +10,7 @@
 {# --- the cards, first and small --------------------------------------- #}
 <section class="panel panel--cards">
   <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; ten cards</h2>
-  <div hx-get="{{ url_for('api.partial_album') }}"
+  <div hx-get="{{ url_for('api.partial_album', week=chosen_week) }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/album_grid.html" %}
@@ -22,7 +22,7 @@
 <section class="panel">
   <h2 class="panel-title">Week {{ snap.scoring_period }} &middot; live</h2>
   <div class="matchup-grid"
-       hx-get="{{ url_for('api.partial_scorebar') }}"
+       hx-get="{{ url_for('api.partial_scorebar', week=chosen_week) }}"
        hx-trigger="every {{ poll_seconds }}s"
        hx-swap="innerHTML">
     {% include "partials/scorebar.html" %}
@@ -114,7 +114,7 @@
   <section class="panel">
     <h2 class="panel-title">Commentary</h2>
     <div class="feed-wrap"
-         hx-get="{{ url_for('api.partial_moments') }}"
+         hx-get="{{ url_for('api.partial_moments', week=chosen_week) }}"
          hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
       {% include "partials/moments.html" %}
     </div>
@@ -127,7 +127,7 @@
        right-hand column past twice the height of the left and leave a void
        beside it. #}
     <div class="scroll-wrap"
-         hx-get="{{ url_for('api.partial_cheer') }}"
+         hx-get="{{ url_for('api.partial_cheer', week=chosen_week) }}"
          hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
       {% include "partials/cheer.html" %}
     </div>

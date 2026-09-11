@@ -6,7 +6,7 @@
      front of the content on a page somebody opens forty times on a Sunday. #}
   <article class="card card--{{ c.tier }}" style="--hue: {{ c.hue }}"
            data-reveal="{{ loop.index0 }}" data-tier="{{ c.tier }}"
-           data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points, {{ c.tier }}">
+           data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points, form {{ c.form | round | int }} of 100, {{ c.tier }}">
     <div class="card-face card-face--front">
       <div>
         <div class="card-tier">{{ c.tier }}{% if c.rank %}<span class="card-rank">#{{ c.rank }}</span>{% endif %}</div>
@@ -25,7 +25,12 @@
         <div class="card-stats">
           {{ c.manager }}<br>
           {{ c.record }} &middot; PROJ {{ c.projected | points }}<br>
-          BENCH {{ c.bench_regret | points }}
+          {# The card is ordered by FORM and not by the big number above it, so
+             the big number cannot be the only one on the card: a #2 card
+             showing a higher score than the #1 beside it reads as a bug unless
+             the thing it was actually ranked on is printed too. #}
+          <span class="card-form">FORM {{ c.form | round | int }}</span>
+          &middot; BENCH {{ c.bench_regret | points }}
         </div>
       </div>
     </div>

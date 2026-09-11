@@ -659,9 +659,34 @@ def drive_a_sunday() -> None:
     # every time somebody ran this tool.
     speech = SpeechCache(directory=Path(tempfile.mkdtemp(prefix="punt-deadcode-")))
     speech.backend.kind = "none"
+    # A real history store, in a temp directory. The hooks are wired the way
+    # the application wires them, because the thing worth exercising is not
+    # `History` on its own but the poll writing to it -- and the rollover, which
+    # in production happens once a week at four in the morning.
+    from engine.history import History  # noqa: PLC0415
+
+    history = History(state_dir / "history.sqlite3")
+    rolled: list[int] = []
+
+    def record_the_week(snap):
+        slots = snap.settings.starting_slots
+        lineups = {
+            side.team_id: optimal_lineup(side.players, slots)
+            for m in (snap.live_matchups or snap.matchups)
+            for side in (m.home, m.away)
+        }
+        history.record(snap, lineups)
+        history.remember(snap.season, snap.scoring_period,
+                         feed.recent(limit=500), feed.lines)
+
+    def week_changed(ended, snap):
+        rolled.append(ended or 0)
+        history.remember(snap.season, ended or 0, feed.recent(limit=500), feed.lines)
+
     feed = LiveFeed(fetch=lambda: (client.cache.invalidate(), repo.snapshot())[1],
                     poll_seconds=30, engine=engine, commentator=commentator,
-                    speech=speech)
+                    speech=speech, after_poll=record_the_week,
+                    on_week_change=week_changed)
 
     # The view models are rendered all afternoon, not only at the end of it, so
     # this keeps eight snapshots spread across the day as well as the settled
@@ -697,8 +722,9 @@ def drive_a_sunday() -> None:
     # engine produced a report full of false positives -- `Team.monogram` and
     # `Side.bench` looked dead and are used on every card.
     from views.viewmodels import (
-        album_view, cheer_view, matchup_view, moments_view, multiverse_view,
-        receipts_view, swing_view, watch_now,
+        album_view, cheer_view, game_detail, matchup_view, moment_detail,
+        moments_view, multiverse_view, odds_detail, receipts_view,
+        regret_detail, swing_view, trouble_detail, watch_now,
     )
 
     for view_of in [snapshot] + afternoons:
@@ -715,6 +741,17 @@ def drive_a_sunday() -> None:
             cheer_view(view_of, team_id=team.id)
         cheer_view(view_of, team_id=None)
         watch_now(view_of)
+        # The five detail sheets. They are a third of `viewmodels.py` and none
+        # of them was driven here, so eighty-eight lines sat cold and the report
+        # said so the first time anybody ran it after they landed. Every team
+        # rather than the first, for the same reason as Cheer above: half the
+        # branches in these are properties of a pairing.
+        for team in view_of.teams:
+            regret_detail(view_of, team.id)
+            trouble_detail(view_of, team.id)
+            odds_detail(view_of, team.id, draws=40)
+        for pro_team_id in view_of.games:
+            game_detail(view_of, pro_team_id)
     # Once, and at a realistic draw count. Forty draws is enough to prove the
     # plumbing and not enough to produce a magic number: `_magic_number` wants
     # thirty seasons in a bucket before it will commit, so every playoff verdict
@@ -728,6 +765,13 @@ def drive_a_sunday() -> None:
         multiverse_view(afternoons[len(afternoons) // 2], draws=400)
     moments_view(feed)
     moments_view(None)          # the tab before the first poll returns
+    # One sheet per Moment kind, plus one id that does not exist: the sheet is
+    # opened from a feed item that may have scrolled out of the buffer by the
+    # time the tap lands, and that is the miss path.
+    for moment in feed.recent(limit=200):
+        moment_detail(feed, moment.id, snapshot)
+    moment_detail(feed, "no-such-moment", snapshot)
+    moment_detail(None, "anything")
 
     # A league with no `mSchedule` -- a single-week recording, or an ESPN outage
     # mid-season. The multiverse tab has to say so rather than render zeros.
@@ -849,6 +893,34 @@ def drive_a_sunday() -> None:
     for moment_ in feed.recent(limit=40):
         polite.eligible(moment_)
 
+    # A bank with nothing left to say. The shipped one has 410 lines and the
+    # cooldown never empties it, which is the measurement the acceptance test
+    # makes -- so the branch that runs when it does was reachable only from a
+    # league with a hand-written bank of one line per kind. Same Moment twice:
+    # the second time everything eligible is on cooldown, and the answer is the
+    # least recently used line for a big moment and silence for a small one.
+    # The phrase has to be one that is actually eligible for this Moment, not
+    # merely indexed under its kind: a bank of one line the trigger rejects
+    # takes the empty-fallback branch instead and the interesting one stays
+    # cold. That is how this was wrong the first time.
+    loud = Commentator(bank, roast_level=3)
+    spoken, only = None, []
+    for candidate in feed.recent(limit=200):
+        if candidate.magnitude < 0.6:
+            continue
+        only = loud.eligible(candidate)[:1]
+        if only:
+            spoken = candidate
+            break
+    if spoken is not None:
+        thin = Commentator(PhraseBank(only), roast_level=3)
+        thin.say(spoken, week=11)
+        thin.say(spoken, week=11)               # on cooldown: the fallback line
+        quiet_one = copy.copy(spoken)
+        quiet_one.magnitude = 0.1
+        thin.say(quiet_one, week=11)            # too small to be worth repeating
+        thin.say(quiet_one, week=11)            # and nothing eligible at all
+
     _drive_a_bad_afternoon()
     _drive_a_bad_upstream()
     _drive_the_replay_harness()
@@ -865,6 +937,102 @@ def drive_a_sunday() -> None:
     feed.stats()
     client.stats()
     snapshot.all_problems()
+
+    # --- the week machinery, last ------------------------------------------
+    # Last on purpose. The rollover empties the Moment buffer and the notable
+    # list, and the recap above is built from both: staging it any earlier
+    # reported four lines of `factpack` and four of `recap` as dead, which they
+    # were, because the driver had thrown away the week they describe.
+    from views.viewmodels import (  # noqa: PLC0415
+        _elapsed, _pace, _stake_phrase, game_detail, odds_detail, regret_detail,
+        stored_moments, trouble_detail,
+    )
+
+    if snapshot is not None:
+        stored_moments(history, snapshot)
+        history.week(snapshot.season, snapshot.scoring_period)
+        history.weeks(snapshot.season)
+        history.available, history.stats()
+
+        # The league name carries the year the league was CREATED and the header
+        # shows the season being played, so "Logan House 2023" has to come out
+        # as "Logan House 2026". The demo league is not named after a year, so
+        # the branch that strips one needs a league that is.
+        dated = copy.copy(snapshot.settings)
+        dated.name = "Logan House 2023"
+        dated.title_for(snapshot.season)
+        snapshot.settings.title_for(snapshot.season)
+
+        # A team with no fixture this week, and a starter whose NFL game is not
+        # on the scoreboard: a bye in an odd-sized league, and a bye week.
+        _pace(snapshot, None)
+        byes = copy.copy(snapshot)
+        byes.games = {}
+        _pace(byes, snapshot.matchups[0].home)
+        _elapsed(next(iter(snapshot.games.values())))
+        _stake_phrase({"live": 0.0, "scored": 0.0}, finished=False)
+
+        # A fixture nobody in the league has a starter in. It happens on a
+        # Thursday night most weeks and never in a ten-team recording.
+        nobody = copy.copy(snapshot)
+        nobody.matchups = []
+        cheer_view(nobody)
+
+        # Every sheet, asked for something that is not there. A detail URL
+        # outlives the row it was opened from: the Moment scrolls out of the
+        # buffer, the tab is restored an hour later, somebody types the number.
+        regret_detail(snapshot, 9999)
+        trouble_detail(snapshot, 9999)
+        game_detail(snapshot, 9999)
+        odds_detail(snapshot, 9999, draws=40)
+        no_grid = copy.copy(snapshot)
+        no_grid.season_schedule = []
+        odds_detail(no_grid, snapshot.teams[0].id, draws=40)
+
+        # And the rollover itself: ESPN moves the scoring period and the feed
+        # follows, writing the week down before it empties itself.
+        next_week = copy.copy(snapshot)
+        next_week.scoring_period = snapshot.scoring_period + 1
+        feed.fetch = lambda: next_week
+        feed.poll_once()
+        assert rolled, "the rollover hook never fired"
+
+        # Both hooks failing. A recorder that cannot write must not take the
+        # scoreboard down with it, and that is two `log.exception` lines that
+        # nothing else reaches.
+        def _refuse(*_args):
+            raise RuntimeError("the disk is full")
+
+        feed.after_poll = _refuse
+        feed.on_week_change = _refuse
+        week_after = copy.copy(next_week)
+        week_after.scoring_period = next_week.scoring_period + 1
+        feed.fetch = lambda: week_after
+        with quiet("engine.live"):
+            feed.poll_once()
+
+    # A store that cannot be opened at all, and one that breaks after it has
+    # been. The first is a read-only volume; the second is what a disk filling
+    # up mid-Sunday looks like from in here.
+    with quiet("engine.history"):
+        broken = History(state_dir / "seen-moments.json" / "nested" / "history.sqlite3")
+    if snapshot is not None:
+        broken.record(snapshot)
+        broken.remember(snapshot.season, 1, [], {})
+    broken.weeks(2025)
+    broken.week(2025, 1)
+    broken.stats()
+
+    if snapshot is not None and history._db is not None:
+        history._db.close()             # every call below now raises sqlite3.Error
+        with quiet("engine.history"):
+            history.record(snapshot)
+            history.remember(snapshot.season, snapshot.scoring_period,
+                             feed.recent(limit=5), feed.lines)
+        history.weeks(snapshot.season)
+        history.week(snapshot.season, snapshot.scoring_period)
+        history.stats()
+
 
 
 def main() -> int:
