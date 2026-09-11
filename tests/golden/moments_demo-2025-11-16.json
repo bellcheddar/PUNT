@@ -11,7 +11,7 @@
   ],
   "player": "Trey Ashgrove",
   "delta_points": 12.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0663,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -84,34 +84,6 @@
   "ts": 1020
  },
  {
-  "id": "eee75ab5e6a1b43b7a62",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.75,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Gray Kettleby",
-  "delta_points": 8.4,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "NYG",
-   "pro_opponent": "NYJ",
-   "total": 8.4,
-   "starter": true,
-   "quarter": 1,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 4"
-  },
-  "ts": 1080
- },
- {
   "id": "8e5bbe08013e74479856",
   "kind": "BIG_PLAY",
   "magnitude": 0.517,
@@ -151,7 +123,7 @@
   ],
   "player": "Vance Oakhurst",
   "delta_points": 8.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0287,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -179,7 +151,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 2.5,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0137,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -194,6 +166,34 @@
    "down_distance": "1rd & 6"
   },
   "ts": 1560
+ },
+ {
+  "id": "5bbed512d392f350af7b",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.983,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Dax Fairbrother",
+  "delta_points": 11.2,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "BUF",
+   "pro_opponent": "ATL",
+   "total": 11.2,
+   "starter": false,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "2rd & 5"
+  },
+  "ts": 1740
  },
  {
   "id": "7816b7f9038cb50e21bb",
@@ -222,6 +222,34 @@
    "down_distance": "2rd & 3"
   },
   "ts": 1860
+ },
+ {
+  "id": "bb81ed8cd7676a6a7983",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.833,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Cove Eversley",
+  "delta_points": 9.4,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "QB",
+   "pro_team": "NYG",
+   "pro_opponent": "NYJ",
+   "total": 9.4,
+   "starter": false,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "2rd & 4"
+  },
+  "ts": 1980
  },
  {
   "id": "1b85b0aed701dcb61cb8",
@@ -263,7 +291,7 @@
   ],
   "player": "Quill Oakhurst",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0012,
   "context": {
    "week": 11,
    "slot": "K",
@@ -459,7 +487,7 @@
   ],
   "player": "Arlo Ziegler",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0175,
   "context": {
    "week": 11,
    "slot": "K",
@@ -505,6 +533,62 @@
   "ts": 3420
  },
  {
+  "id": "ec39bac3053e1349793a",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.444,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Gray Kettleby",
+  "delta_points": 4.4,
+  "win_prob_delta": 0.0112,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "NYG",
+   "pro_opponent": "NYJ",
+   "total": 5.5,
+   "starter": true,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "2rd & 4"
+  },
+  "ts": 3540
+ },
+ {
+  "id": "ef212077a19f04afa78f",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.942,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Nate Braithwaite",
+  "delta_points": 10.7,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "CLE",
+   "pro_opponent": "DET",
+   "total": 11.8,
+   "starter": false,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "3rd & 14"
+  },
+  "ts": 3600
+ },
+ {
   "id": "f03512d6aeed93a9c37c",
   "kind": "BIG_PLAY",
   "magnitude": 0.506,
@@ -533,6 +617,34 @@
   "ts": 3660
  },
  {
+  "id": "86e601089f626e247843",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.617,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Gray Kettleby",
+  "delta_points": 6.8,
+  "win_prob_delta": 0.0375,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "NYG",
+   "pro_opponent": "NYJ",
+   "total": 12.3,
+   "starter": true,
+   "quarter": 2,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "1rd & 4"
+  },
+  "ts": 3780
+ },
+ {
   "id": "50cd3e9665d0c56669c2",
   "kind": "TOUCHDOWN",
   "magnitude": 0.795,
@@ -544,7 +656,7 @@
   ],
   "player": "Hollis Dunmore",
   "delta_points": 8.94,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0075,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -589,6 +701,34 @@
   "ts": 4260
  },
  {
+  "id": "057894dfea973287fdcc",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.428,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Gray Kettleby",
+  "delta_points": 4.1,
+  "win_prob_delta": 0.0412,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "NYG",
+   "pro_opponent": "NYJ",
+   "total": 16.4,
+   "starter": true,
+   "quarter": 2,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "1rd & 4"
+  },
+  "ts": 4380
+ },
+ {
   "id": "ceda105a1aeabbcae4e8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.642,
@@ -600,7 +740,7 @@
   ],
   "player": "Delroy Hartnell",
   "delta_points": 7.1,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0387,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -673,9 +813,9 @@
   "ts": 4980
  },
  {
-  "id": "91059e85fb33f88063fd",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.842,
+  "id": "25e7de9b445b90f3e602",
+  "kind": "INJURY",
+  "magnitude": 0.6,
   "managers": [
    "Chidi"
   ],
@@ -683,7 +823,7 @@
    2
   ],
   "player": "Dax Applewhite",
-  "delta_points": 9.5,
+  "delta_points": 0.0,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
@@ -691,14 +831,15 @@
    "position": "RB",
    "pro_team": "ATL",
    "pro_opponent": "BUF",
-   "total": 9.7,
+   "total": 0.2,
    "starter": true,
    "quarter": 2,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "4rd & 8"
+   "down_distance": "4rd & 8",
+   "status": "OUT"
   },
-  "ts": 5160
+  "ts": 5100
  },
  {
   "id": "8c9297eca9d7dddf8365",
@@ -712,7 +853,7 @@
   ],
   "player": "Bo Ashgrove",
   "delta_points": 6.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0075,
   "context": {
    "week": 11,
    "slot": "K",
@@ -768,7 +909,7 @@
   ],
   "player": "Zeke Eversley",
   "delta_points": 2.41,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0037,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -813,34 +954,6 @@
   "ts": 5340
  },
  {
-  "id": "21850d7a0082a5b83144",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.456,
-  "managers": [
-   "Theo"
-  ],
-  "team_ids": [
-   9
-  ],
-  "player": "Pax Yarrowmead",
-  "delta_points": 4.6,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "NE",
-   "pro_opponent": "NO",
-   "total": 4.6,
-   "starter": true,
-   "quarter": 2,
-   "clock": "14:50",
-   "red_zone": true,
-   "down_distance": "1rd & 3"
-  },
-  "ts": 5340
- },
- {
   "id": "d93aa148c1e9f3ee296d",
   "kind": "BIG_PLAY",
   "magnitude": 0.417,
@@ -867,58 +980,6 @@
    "down_distance": "1rd & 4"
   },
   "ts": 5400
- },
- {
-  "id": "88b27e67e05341b30c86",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.983,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Nate Braithwaite",
-  "delta_points": 11.2,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "CLE",
-   "pro_opponent": "DET",
-   "total": 15.9,
-   "starter": false,
-   "quarter": 2,
-   "clock": "14:50",
-   "red_zone": true,
-   "down_distance": "2rd & 8"
-  },
-  "ts": 5460
- },
- {
-  "id": "b944bc1100d2c01d15b1",
-  "kind": "BENCH_DISASTER",
-  "magnitude": 0.665,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Nate Braithwaite",
-  "delta_points": 15.9,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "FLEX",
-   "started": "Marlo Ravensworth",
-   "started_points": 0.0,
-   "benched": "Nate Braithwaite",
-   "benched_points": 15.9,
-   "regret": 18.6
-  },
-  "ts": 5460
  },
  {
   "id": "362b584589ad278c3b61",
@@ -960,7 +1021,7 @@
   ],
   "player": "Brix Longstaff",
   "delta_points": 7.83,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.045,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -1044,7 +1105,7 @@
   ],
   "player": "Delroy Hartnell",
   "delta_points": 7.36,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.135,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1089,6 +1150,34 @@
   "ts": 6060
  },
  {
+  "id": "efc770e0f4dfa51f6f07",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.366,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Cass Stonebridge",
+  "delta_points": 2.98,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "K",
+   "position": "K",
+   "pro_team": "MIA",
+   "pro_opponent": "MIN",
+   "total": 2.98,
+   "starter": true,
+   "quarter": 2,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "2rd & 2"
+  },
+  "ts": 6180
+ },
+ {
   "id": "ff6ee808a8dc1fe0f282",
   "kind": "BIG_PLAY",
   "magnitude": 0.517,
@@ -1128,7 +1217,7 @@
   ],
   "player": "Fitz Marchbank",
   "delta_points": 9.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0088,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -1141,34 +1230,6 @@
    "clock": "15:00",
    "red_zone": false,
    "down_distance": "4rd & 14"
-  },
-  "ts": 6600
- },
- {
-  "id": "c1beec9570f8474fd2bf",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.7,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Brix Garrowby",
-  "delta_points": 7.8,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "TE",
-   "position": "TE",
-   "pro_team": "IND",
-   "pro_opponent": "TEN",
-   "total": 9.2,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 2"
   },
   "ts": 6600
  },
@@ -1199,6 +1260,58 @@
    "down_distance": "2rd & 4"
   },
   "ts": 6600
+ },
+ {
+  "id": "b944bc1100d2c01d15b1",
+  "kind": "BENCH_DISASTER",
+  "magnitude": 0.7,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Nate Braithwaite",
+  "delta_points": 18.0,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "FLEX",
+   "started": "Marlo Ravensworth",
+   "started_points": 0.6,
+   "benched": "Nate Braithwaite",
+   "benched_points": 18.6,
+   "regret": 28.3
+  },
+  "ts": 6780
+ },
+ {
+  "id": "8d8d5621a820df803a4a",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.558,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Nate Braithwaite",
+  "delta_points": 6.1,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "CLE",
+   "pro_opponent": "DET",
+   "total": 18.6,
+   "starter": false,
+   "quarter": 3,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "4rd & 12"
+  },
+  "ts": 6780
  },
  {
   "id": "8a1600744ca4c8ac6baa",
@@ -1240,7 +1353,7 @@
   ],
   "player": "Wilder Bellweather",
   "delta_points": 9.2,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.015,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1369,34 +1482,6 @@
   "ts": 7080
  },
  {
-  "id": "fcaf507291cf0a859d15",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.493,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Dax Applewhite",
-  "delta_points": 5.27,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "RB",
-   "position": "RB",
-   "pro_team": "ATL",
-   "pro_opponent": "BUF",
-   "total": 14.97,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 14"
-  },
-  "ts": 7260
- },
- {
   "id": "4365a16971df09deb1ec",
   "kind": "TOUCHDOWN",
   "magnitude": 0.65,
@@ -1436,7 +1521,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 10.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0312,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -1464,7 +1549,7 @@
   ],
   "player": "Ander Fenwick",
   "delta_points": 9.92,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0837,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1492,7 +1577,7 @@
   ],
   "player": "Cody Eversley",
   "delta_points": 5.19,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0587,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -1509,60 +1594,57 @@
   "ts": 7560
  },
  {
-  "id": "d4e5a2443bfe4bd7509c",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.422,
+  "id": "48cea2726351b8554991",
+  "kind": "BENCH_DISASTER",
+  "magnitude": 0.735,
   "managers": [
    "Chidi"
   ],
   "team_ids": [
    2
   ],
-  "player": "Marlo Ravensworth",
-  "delta_points": 4.0,
+  "player": "Nate Braithwaite",
+  "delta_points": 20.1,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "FLEX",
-   "position": "RB",
-   "pro_team": "CIN",
-   "pro_opponent": "CHI",
-   "total": 4.0,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 4"
+   "started": "Marlo Ravensworth",
+   "started_points": 0.6,
+   "benched": "Nate Braithwaite",
+   "benched_points": 20.7,
+   "regret": 30.4
   },
   "ts": 7740
  },
  {
-  "id": "e2d8eee9978cb558a47a",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.9,
+  "id": "76dfaf1677fbc3f560ed",
+  "kind": "MILESTONE",
+  "magnitude": 0.45,
   "managers": [
-   "Noor"
+   "Chidi"
   ],
   "team_ids": [
-   3
+   2
   ],
-  "player": "Cove Eversley",
-  "delta_points": 10.2,
+  "player": "Nate Braithwaite",
+  "delta_points": 2.1,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
-   "position": "QB",
-   "pro_team": "NYG",
-   "pro_opponent": "NYJ",
-   "total": 10.1,
+   "position": "RB",
+   "pro_team": "CLE",
+   "pro_opponent": "DET",
+   "total": 20.7,
    "starter": false,
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 8"
+   "down_distance": "4rd & 12",
+   "threshold": 20.0
   },
-  "ts": 7800
+  "ts": 7740
  },
  {
   "id": "225cc855a652ef88b4ba",
@@ -1660,7 +1742,7 @@
   ],
   "player": "Trey Ashgrove",
   "delta_points": 5.56,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0912,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -1706,34 +1788,6 @@
   "ts": 8280
  },
  {
-  "id": "65cc56588e28298dcd65",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.396,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Marlo Longstaff",
-  "delta_points": 3.53,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "D/ST",
-   "position": "D/ST",
-   "pro_team": "NE",
-   "pro_opponent": "NO",
-   "total": 3.53,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
-  },
-  "ts": 8280
- },
- {
   "id": "1d9add4b833a70841db5",
   "kind": "TOUCHDOWN",
   "magnitude": 0.658,
@@ -1773,7 +1827,7 @@
   ],
   "player": "Bo Jessop",
   "delta_points": 6.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0401,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -1818,6 +1872,34 @@
   "ts": 8640
  },
  {
+  "id": "b1025f35782535f1fb82",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.35,
+  "managers": [
+   "Theo"
+  ],
+  "team_ids": [
+   9
+  ],
+  "player": "Pax Yarrowmead",
+  "delta_points": 2.7,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "NE",
+   "pro_opponent": "NO",
+   "total": 6.1,
+   "starter": true,
+   "quarter": 3,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "4rd & 6"
+  },
+  "ts": 8820
+ },
+ {
   "id": "3d2fdf871c9089dd855b",
   "kind": "BIG_PLAY",
   "magnitude": 0.341,
@@ -1829,7 +1911,7 @@
   ],
   "player": "Zeke Wetherby",
   "delta_points": 2.53,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0463,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -1846,9 +1928,9 @@
   "ts": 8820
  },
  {
-  "id": "d582041556db1ea7b69d",
+  "id": "6b8392b08d9aec2b473d",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.51,
+  "magnitude": 0.529,
   "managers": [
    "Marguerite",
    "Theo"
@@ -1859,20 +1941,20 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.01,
+  "win_prob_delta": 0.0288,
   "context": {
    "week": 11,
    "matchup": 5,
-   "margin": 0.91,
-   "home": 25.29,
+   "margin": 1.0,
+   "home": 25.2,
    "away": 26.2
   },
   "ts": 8880
  },
  {
-  "id": "f0a0bccc04f24d23b133",
+  "id": "35844f6a8810a2009ad2",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.51,
+  "magnitude": 0.552,
   "managers": [
    "Theo",
    "Marguerite"
@@ -1883,12 +1965,12 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.01,
+  "win_prob_delta": 0.0525,
   "context": {
    "week": 11,
    "matchup": 5,
-   "margin": 2.99,
-   "home": 29.29,
+   "margin": 2.9,
+   "home": 29.2,
    "away": 26.3
   },
   "ts": 8940
@@ -1934,7 +2016,7 @@
   ],
   "player": "Marlo Jessop",
   "delta_points": 4.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0525,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -1962,7 +2044,7 @@
   ],
   "player": "Delroy Marchbank",
   "delta_points": 13.2,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1675,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -2032,58 +2114,6 @@
   "ts": 9120
  },
  {
-  "id": "2f138d5a0a83dfbf886e",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.725,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Lonnie Eversley",
-  "delta_points": 8.1,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "NO",
-   "pro_opponent": "NE",
-   "total": 15.3,
-   "starter": false,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 6"
-  },
-  "ts": 9180
- },
- {
-  "id": "f14b8d9f45d5fd24bef9",
-  "kind": "BENCH_DISASTER",
-  "magnitude": 0.655,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Lonnie Eversley",
-  "delta_points": 15.3,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "RB",
-   "started": "Micah Braithwaite",
-   "started_points": 0.0,
-   "benched": "Lonnie Eversley",
-   "benched_points": 15.3,
-   "regret": 38.0
-  },
-  "ts": 9180
- },
- {
   "id": "35b5c621f27ad1ec43a3",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -2095,7 +2125,7 @@
   ],
   "player": "Quill Oakhurst",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0238,
   "context": {
    "week": 11,
    "slot": "K",
@@ -2112,58 +2142,6 @@
   "ts": 9240
  },
  {
-  "id": "bb4e94f7da897f2f86f4",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.742,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Nate Braithwaite",
-  "delta_points": 8.3,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "CLE",
-   "pro_opponent": "DET",
-   "total": 23.5,
-   "starter": false,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 7"
-  },
-  "ts": 9660
- },
- {
-  "id": "48cea2726351b8554991",
-  "kind": "BENCH_DISASTER",
-  "magnitude": 0.725,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Nate Braithwaite",
-  "delta_points": 19.5,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "FLEX",
-   "started": "Marlo Ravensworth",
-   "started_points": 4.0,
-   "benched": "Nate Braithwaite",
-   "benched_points": 23.5,
-   "regret": 23.7
-  },
-  "ts": 9660
- },
- {
   "id": "11156ef910bc568f3101",
   "kind": "TOUCHDOWN",
   "magnitude": 0.608,
@@ -2175,7 +2153,7 @@
   ],
   "player": "Rico Eastcott",
   "delta_points": 6.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0337,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -2203,7 +2181,7 @@
   ],
   "player": "Silas Crowfoot",
   "delta_points": 5.45,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0325,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2220,31 +2198,30 @@
   "ts": 9660
  },
  {
-  "id": "76dfaf1677fbc3f560ed",
-  "kind": "MILESTONE",
-  "magnitude": 0.45,
+  "id": "d4e5a2443bfe4bd7509c",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.389,
   "managers": [
    "Chidi"
   ],
   "team_ids": [
    2
   ],
-  "player": "Nate Braithwaite",
-  "delta_points": 8.3,
-  "win_prob_delta": 0.0,
+  "player": "Marlo Ravensworth",
+  "delta_points": 3.4,
+  "win_prob_delta": 0.0812,
   "context": {
    "week": 11,
-   "slot": "BE",
+   "slot": "FLEX",
    "position": "RB",
-   "pro_team": "CLE",
-   "pro_opponent": "DET",
-   "total": 23.5,
-   "starter": false,
+   "pro_team": "CIN",
+   "pro_opponent": "CHI",
+   "total": 4.0,
+   "starter": true,
    "quarter": 4,
    "clock": "14:50",
    "red_zone": false,
-   "down_distance": "1rd & 7",
-   "threshold": 20.0
+   "down_distance": "4rd & 8"
   },
   "ts": 9660
  },
@@ -2289,7 +2266,7 @@
   ],
   "player": "Cass Braithwaite",
   "delta_points": 5.93,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.11,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -2362,9 +2339,9 @@
   "ts": 9840
  },
  {
-  "id": "1126750c0f35fa126d52",
+  "id": "e2291ec21f4c85611683",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.506,
+  "magnitude": 0.515,
   "managers": [
    "Marguerite",
    "Theo"
@@ -2375,12 +2352,12 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.0063,
+  "win_prob_delta": -0.015,
   "context": {
    "week": 11,
    "matchup": 5,
-   "margin": 0.38,
-   "home": 34.74,
+   "margin": 0.37,
+   "home": 34.75,
    "away": 35.12
   },
   "ts": 9840
@@ -2414,6 +2391,35 @@
   "ts": 9900
  },
  {
+  "id": "76b6cbd84160aed88fc2",
+  "kind": "INJURY",
+  "magnitude": 0.6,
+  "managers": [
+   "Theo"
+  ],
+  "team_ids": [
+   9
+  ],
+  "player": "Ash Braithwaite",
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "DEN",
+   "pro_opponent": "DAL",
+   "total": 0.0,
+   "starter": true,
+   "quarter": 0,
+   "clock": "0:00",
+   "red_zone": false,
+   "down_distance": "",
+   "status": "DOUBTFUL"
+  },
+  "ts": 9900
+ },
+ {
   "id": "23d082cd74a9e9c0536d",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -2425,7 +2431,7 @@
   ],
   "player": "Bo Ashgrove",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0988,
   "context": {
    "week": 11,
    "slot": "K",
@@ -2466,34 +2472,6 @@
   "ts": 10140
  },
  {
-  "id": "83af90b9a275e370dad8",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.625,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Dax Fairbrother",
-  "delta_points": 6.9,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "BUF",
-   "pro_opponent": "ATL",
-   "total": 14.7,
-   "starter": false,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "3rd & 4"
-  },
-  "ts": 10140
- },
- {
   "id": "c7ad1fdad4217388acaf",
   "kind": "BIG_PLAY",
   "magnitude": 0.434,
@@ -2505,7 +2483,7 @@
   ],
   "player": "Knox Greenhalgh",
   "delta_points": 4.22,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1087,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -2654,34 +2632,6 @@
   "ts": 10260
  },
  {
-  "id": "5a92944960323d58d63a",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.372,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Dax Fairbrother",
-  "delta_points": 3.1,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "BUF",
-   "pro_opponent": "ATL",
-   "total": 17.8,
-   "starter": false,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "3rd & 4"
-  },
-  "ts": 10320
- },
- {
   "id": "9e1157d78ac402f617ae",
   "kind": "TOUCHDOWN",
   "magnitude": 0.709,
@@ -2749,7 +2699,7 @@
   ],
   "player": "Otis Eastcott",
   "delta_points": 6.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0499,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -2794,6 +2744,34 @@
   "ts": 10500
  },
  {
+  "id": "6225beb4fdbe83923268",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.632,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Ellis Wetherby",
+  "delta_points": 6.98,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "MIA",
+   "pro_opponent": "MIN",
+   "total": 8.28,
+   "starter": false,
+   "quarter": 4,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "1rd & 5"
+  },
+  "ts": 10620
+ },
+ {
   "id": "e8c37a4ea7a3130df9c5",
   "kind": "TOUCHDOWN",
   "magnitude": 0.583,
@@ -2805,7 +2783,7 @@
   ],
   "player": "Quinn Fairbrother",
   "delta_points": 6.4,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0237,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -2822,34 +2800,6 @@
   "ts": 10680
  },
  {
-  "id": "6989bf1d0902c81797e7",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.46,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Ellis Wetherby",
-  "delta_points": 4.68,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "MIA",
-   "pro_opponent": "MIN",
-   "total": 8.28,
-   "starter": false,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "1rd & 5"
-  },
-  "ts": 10680
- },
- {
   "id": "a02ab809044ca583d7b0",
   "kind": "TOUCHDOWN",
   "magnitude": 0.765,
@@ -2861,7 +2811,7 @@
   ],
   "player": "Xander Pemberton",
   "delta_points": 8.58,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0251,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2917,7 +2867,7 @@
   ],
   "player": "Gray Ilkeston",
   "delta_points": 3.25,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0188,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -2990,6 +2940,58 @@
   "ts": 11580
  },
  {
+  "id": "47330d69a84530e3cd83",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.725,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Lonnie Eversley",
+  "delta_points": 8.1,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "NO",
+   "pro_opponent": "NE",
+   "total": 17.2,
+   "starter": false,
+   "quarter": 4,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "4rd & 13"
+  },
+  "ts": 11640
+ },
+ {
+  "id": "f14b8d9f45d5fd24bef9",
+  "kind": "BENCH_DISASTER",
+  "magnitude": 0.687,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Lonnie Eversley",
+  "delta_points": 17.2,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "RB",
+   "started": "Micah Braithwaite",
+   "started_points": 0.0,
+   "benched": "Lonnie Eversley",
+   "benched_points": 17.2,
+   "regret": 42.51
+  },
+  "ts": 11640
+ },
+ {
   "id": "e7b06ceb77f788f71b8e",
   "kind": "BIG_PLAY",
   "magnitude": 0.462,
@@ -3001,7 +3003,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 4.72,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.065,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3100,34 +3102,6 @@
    "down_distance": "4rd & 8"
   },
   "ts": 11700
- },
- {
-  "id": "69a13c68a78f61ed2b90",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.359,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Gray Kettleby",
-  "delta_points": 2.86,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "NYG",
-   "pro_opponent": "NYJ",
-   "total": 17.46,
-   "starter": true,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "3rd & 15"
-  },
-  "ts": 11760
  },
  {
   "id": "f42e7706d780bf55249e",
@@ -3234,6 +3208,34 @@
   "ts": 11940
  },
  {
+  "id": "fa9de042d7744972d2f4",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.658,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Dax Fairbrother",
+  "delta_points": 7.3,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "BUF",
+   "pro_opponent": "ATL",
+   "total": 17.8,
+   "starter": false,
+   "quarter": 4,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "3rd & 4"
+  },
+  "ts": 11940
+ },
+ {
   "id": "d609da6b337517e81667",
   "kind": "BIG_PLAY",
   "magnitude": 0.48,
@@ -3290,34 +3292,6 @@
   "ts": 12000
  },
  {
-  "id": "6b27cac43a126495848b",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.642,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Micah Pemberton",
-  "delta_points": 7.1,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "RB",
-   "position": "RB",
-   "pro_team": "DAL",
-   "pro_opponent": "DEN",
-   "total": 7.1,
-   "starter": true,
-   "quarter": 1,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "1rd & 1"
-  },
-  "ts": 12060
- },
- {
   "id": "96520ad894aa78f2afe1",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -3346,6 +3320,34 @@
   "ts": 12060
  },
  {
+  "id": "9604f3914ce128f5681c",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.45,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Ander Wetherby",
+  "delta_points": 4.5,
+  "win_prob_delta": 0.005,
+  "context": {
+   "week": 11,
+   "slot": "QB",
+   "position": "QB",
+   "pro_team": "LAC",
+   "pro_opponent": "ARI",
+   "total": 4.5,
+   "starter": true,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "4rd & 8"
+  },
+  "ts": 12120
+ },
+ {
   "id": "f2fc4f2e5803b6210dc2",
   "kind": "BIG_PLAY",
   "magnitude": 0.368,
@@ -3372,6 +3374,34 @@
    "down_distance": "3rd & 4"
   },
   "ts": 12120
+ },
+ {
+  "id": "b49ec13ebc734b31e01a",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.808,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Micah Pemberton",
+  "delta_points": 9.1,
+  "win_prob_delta": 0.005,
+  "context": {
+   "week": 11,
+   "slot": "RB",
+   "position": "RB",
+   "pro_team": "DAL",
+   "pro_opponent": "DEN",
+   "total": 9.1,
+   "starter": true,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "1rd & 1"
+  },
+  "ts": 12240
  },
  {
   "id": "9a8dbbb9b7dcc09c2a30",
@@ -3473,110 +3503,6 @@
   "ts": 12300
  },
  {
-  "id": "f7720f929a93e9a5513f",
-  "kind": "TOUCHDOWN",
-  "magnitude": 1.0,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Ander Wetherby",
-  "delta_points": 12.3,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "QB",
-   "position": "QB",
-   "pro_team": "LAC",
-   "pro_opponent": "ARI",
-   "total": 12.3,
-   "starter": true,
-   "quarter": 1,
-   "clock": "13:19",
-   "red_zone": false,
-   "down_distance": "4rd & 8"
-  },
-  "ts": 12360
- },
- {
-  "id": "b16d16e66fa20c6845de",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.508,
-  "managers": [
-   "Theo",
-   "Marguerite"
-  ],
-  "team_ids": [
-   9,
-   10
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.0075,
-  "context": {
-   "week": 11,
-   "matchup": 5,
-   "margin": 2.88,
-   "home": 47.66,
-   "away": 44.78
-  },
-  "ts": 12540
- },
- {
-  "id": "8d9d41bdcd17a1213228",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.372,
-  "managers": [
-   "Theo"
-  ],
-  "team_ids": [
-   9
-  ],
-  "player": "Ash Braithwaite",
-  "delta_points": 3.1,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "DEN",
-   "pro_opponent": "DAL",
-   "total": 5.3,
-   "starter": true,
-   "quarter": 1,
-   "clock": "13:19",
-   "red_zone": false,
-   "down_distance": "1rd & 1"
-  },
-  "ts": 12540
- },
- {
-  "id": "47427922a168665dd482",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.524,
-  "managers": [
-   "Marguerite",
-   "Theo"
-  ],
-  "team_ids": [
-   10,
-   9
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.0237,
-  "context": {
-   "week": 11,
-   "matchup": 5,
-   "margin": 1.52,
-   "home": 47.66,
-   "away": 49.18
-  },
-  "ts": 12600
- },
- {
   "id": "7a871c33c95223d7d76c",
   "kind": "BIG_PLAY",
   "magnitude": 0.511,
@@ -3616,7 +3542,7 @@
   ],
   "player": "Wes Inglewood",
   "delta_points": 4.4,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0213,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3717,6 +3643,34 @@
   "ts": 13080
  },
  {
+  "id": "f8078e4d58c791075be9",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.411,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Micah Pemberton",
+  "delta_points": 3.8,
+  "win_prob_delta": 0.1088,
+  "context": {
+   "week": 11,
+   "slot": "RB",
+   "position": "RB",
+   "pro_team": "DAL",
+   "pro_opponent": "DEN",
+   "total": 14.6,
+   "starter": true,
+   "quarter": 1,
+   "clock": "13:19",
+   "red_zone": false,
+   "down_distance": "1rd & 1"
+  },
+  "ts": 13260
+ },
+ {
   "id": "a17db12f6e026aa5380a",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -3756,7 +3710,7 @@
   ],
   "player": "Brix Eversley",
   "delta_points": 3.3,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0013,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -3784,7 +3738,7 @@
   ],
   "player": "Cass Huddleston",
   "delta_points": 5.4,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0425,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -3799,34 +3753,6 @@
    "down_distance": "1rd & 1"
   },
   "ts": 13860
- },
- {
-  "id": "d327c959e5f670e1051f",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.406,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Micah Fenwick",
-  "delta_points": 3.7,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "LV",
-   "pro_opponent": "LAR",
-   "total": 3.7,
-   "starter": false,
-   "quarter": 1,
-   "clock": "13:19",
-   "red_zone": false,
-   "down_distance": "3rd & 1"
-  },
-  "ts": 13920
  },
  {
   "id": "1cb5928d64bd0d65a5c5",
@@ -3885,6 +3811,34 @@
   "ts": 13980
  },
  {
+  "id": "176123508d96ccd2b8f6",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.372,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Micah Fenwick",
+  "delta_points": 3.1,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "LV",
+   "pro_opponent": "LAR",
+   "total": 3.1,
+   "starter": false,
+   "quarter": 1,
+   "clock": "13:19",
+   "red_zone": false,
+   "down_distance": "3rd & 1"
+  },
+  "ts": 13980
+ },
+ {
   "id": "a6ae8e7eb777dbf48a2a",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -3896,7 +3850,7 @@
   ],
   "player": "Juno Crowfoot",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0025,
   "context": {
    "week": 11,
    "slot": "K",
@@ -3913,6 +3867,34 @@
   "ts": 14040
  },
  {
+  "id": "56d54b2eec7ab150d2dd",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.45,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Jax Kettleby",
+  "delta_points": 4.5,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "TE",
+   "pro_team": "JAX",
+   "pro_opponent": "SEA",
+   "total": 5.9,
+   "starter": false,
+   "quarter": 1,
+   "clock": "13:19",
+   "red_zone": false,
+   "down_distance": "3rd & 2"
+  },
+  "ts": 14520
+ },
+ {
   "id": "e1c076bdcb8c93614ec0",
   "kind": "TOUCHDOWN",
   "magnitude": 0.958,
@@ -3924,7 +3906,7 @@
   ],
   "player": "Ash Inglewood",
   "delta_points": 10.9,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.01,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -3997,32 +3979,32 @@
   "ts": 15000
  },
  {
-  "id": "68d88446ce16f8040717",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.406,
+  "id": "d66409a30f2cb813a7d0",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.65,
   "managers": [
    "Noor"
   ],
   "team_ids": [
    3
   ],
-  "player": "Ander Wetherby",
-  "delta_points": 3.7,
-  "win_prob_delta": 0.0,
+  "player": "Marlo Thackeray",
+  "delta_points": 7.2,
+  "win_prob_delta": 0.0225,
   "context": {
    "week": 11,
-   "slot": "QB",
-   "position": "QB",
-   "pro_team": "LAC",
-   "pro_opponent": "ARI",
-   "total": 16.7,
-   "starter": true,
+   "slot": "BE",
+   "position": "WR",
+   "pro_team": "LV",
+   "pro_opponent": "LAR",
+   "total": 7.4,
+   "starter": false,
    "quarter": 2,
    "clock": "15:00",
    "red_zone": false,
    "down_distance": "4rd & 3"
   },
-  "ts": 15060
+  "ts": 15360
  },
  {
   "id": "35c20ec87109dace434d",
@@ -4051,6 +4033,34 @@
    "down_distance": "4rd & 1"
   },
   "ts": 15360
+ },
+ {
+  "id": "11349e31134acbd85db1",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.592,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Knox Thackeray",
+  "delta_points": 6.5,
+  "win_prob_delta": 0.0887,
+  "context": {
+   "week": 11,
+   "slot": "FLEX",
+   "position": "RB",
+   "pro_team": "LV",
+   "pro_opponent": "LAR",
+   "total": 9.9,
+   "starter": true,
+   "quarter": 2,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "4rd & 3"
+  },
+  "ts": 15540
  },
  {
   "id": "d15d1c4a6d6081aa154b",
@@ -4189,53 +4199,32 @@
   "ts": 15900
  },
  {
-  "id": "b732d61fa401ec129afe",
+  "id": "34ad161f20136db287f2",
   "kind": "BIG_PLAY",
-  "magnitude": 0.389,
+  "magnitude": 0.367,
   "managers": [
    "Chidi"
   ],
   "team_ids": [
    2
   ],
-  "player": "Ellis Fairbrother",
-  "delta_points": 3.4,
-  "win_prob_delta": 0.0,
+  "player": "Rennie Vaughan-Rees",
+  "delta_points": 3.0,
+  "win_prob_delta": 0.0088,
   "context": {
    "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "JAX",
-   "pro_opponent": "SEA",
-   "total": 4.0,
-   "starter": false,
+   "slot": "K",
+   "position": "K",
+   "pro_team": "GB",
+   "pro_opponent": "KC",
+   "total": 6.0,
+   "starter": true,
    "quarter": 2,
    "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "4rd & 2"
+   "red_zone": false,
+   "down_distance": "4rd & 15"
   },
   "ts": 16080
- },
- {
-  "id": "0006dbd49bb5b6b78162",
-  "kind": "DOOM",
-  "magnitude": 0.85,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.0024,
-  "context": {
-   "week": 11,
-   "win_prob": 0.0488,
-   "deficit": 27.5,
-   "opponent_in_play": 2
-  },
-  "ts": 16140
  },
  {
   "id": "ff7b91584caad115a8be",
@@ -4277,7 +4266,7 @@
   ],
   "player": "Bram Ziegler",
   "delta_points": 4.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0425,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -4390,7 +4379,7 @@
   ],
   "player": "Delroy Yarrowmead",
   "delta_points": 4.3,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0224,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -4435,58 +4424,58 @@
   "ts": 18120
  },
  {
-  "id": "dddad3ade9981efac232",
+  "id": "1c893de720c0da94f67d",
   "kind": "BIG_PLAY",
-  "magnitude": 0.342,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Nash Hartnell",
-  "delta_points": 2.55,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "WR",
-   "pro_team": "ARI",
-   "pro_opponent": "LAC",
-   "total": 4.65,
-   "starter": false,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 15"
-  },
-  "ts": 18300
- },
- {
-  "id": "cac201d3e185461bdbff",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.643,
+  "magnitude": 0.406,
   "managers": [
    "Noor"
   ],
   "team_ids": [
    3
   ],
-  "player": "Knox Thackeray",
-  "delta_points": 7.12,
+  "player": "Micah Braithwaite",
+  "delta_points": 3.7,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
-   "slot": "FLEX",
+   "slot": "RB",
    "position": "RB",
-   "pro_team": "LV",
-   "pro_opponent": "LAR",
-   "total": 11.52,
+   "pro_team": "SEA",
+   "pro_opponent": "JAX",
+   "total": 6.7,
    "starter": true,
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "3rd & 6"
+   "down_distance": "4rd & 5"
+  },
+  "ts": 18360
+ },
+ {
+  "id": "75bee4fd869b9d23811d",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.683,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Jax Ashgrove",
+  "delta_points": 7.6,
+  "win_prob_delta": 0.0963,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "BAL",
+   "pro_opponent": "HOU",
+   "total": 12.1,
+   "starter": true,
+   "quarter": 3,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "4rd & 1"
   },
   "ts": 18420
  },
@@ -4517,34 +4506,6 @@
    "down_distance": "3rd & 6"
   },
   "ts": 18480
- },
- {
-  "id": "9d6197e7fde49bf7f120",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.367,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Rennie Vaughan-Rees",
-  "delta_points": 3.0,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "K",
-   "position": "K",
-   "pro_team": "GB",
-   "pro_opponent": "KC",
-   "total": 7.0,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "2rd & 5"
-  },
-  "ts": 18540
  },
  {
   "id": "4ed4875f0c0d699188d1",
@@ -4695,7 +4656,7 @@
   ],
   "player": "Marlo Inglewood",
   "delta_points": 4.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0012,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -4712,34 +4673,6 @@
   "ts": 19260
  },
  {
-  "id": "5c564286bc759f4334d1",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.367,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Rennie Vaughan-Rees",
-  "delta_points": 3.0,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "K",
-   "position": "K",
-   "pro_team": "GB",
-   "pro_opponent": "KC",
-   "total": 10.0,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": true,
-   "down_distance": "2rd & 5"
-  },
-  "ts": 19440
- },
- {
   "id": "d42f0cad028ba2c965d7",
   "kind": "TOUCHDOWN",
   "magnitude": 0.975,
@@ -4751,7 +4684,7 @@
   ],
   "player": "Bram Braithwaite",
   "delta_points": 11.1,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0138,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -4779,7 +4712,7 @@
   ],
   "player": "Wes Inglewood",
   "delta_points": 5.1,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0388,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -4794,6 +4727,34 @@
    "down_distance": "4rd & 5"
   },
   "ts": 19680
+ },
+ {
+  "id": "5c564286bc759f4334d1",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.367,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Rennie Vaughan-Rees",
+  "delta_points": 3.0,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "K",
+   "position": "K",
+   "pro_team": "GB",
+   "pro_opponent": "KC",
+   "total": 10.0,
+   "starter": true,
+   "quarter": 3,
+   "clock": "15:00",
+   "red_zone": true,
+   "down_distance": "2rd & 5"
+  },
+  "ts": 19800
  },
  {
   "id": "3e1b20c68fe3dbcbe056",
@@ -4856,7 +4817,7 @@
   ],
   "player": "Brix Eversley",
   "delta_points": 4.43,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0025,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -4926,32 +4887,60 @@
   "ts": 19980
  },
  {
-  "id": "19e49252b685d3125548",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.783,
+  "id": "ba95ffd905f9447be638",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.422,
   "managers": [
    "Noor"
   ],
   "team_ids": [
    3
   ],
-  "player": "Jax Ashgrove",
-  "delta_points": 8.8,
+  "player": "Micah Fenwick",
+  "delta_points": 3.99,
+  "win_prob_delta": 0.0125,
+  "context": {
+   "week": 11,
+   "slot": "BE",
+   "position": "RB",
+   "pro_team": "LV",
+   "pro_opponent": "LAR",
+   "total": 8.79,
+   "starter": false,
+   "quarter": 4,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "1rd & 3"
+  },
+  "ts": 20340
+ },
+ {
+  "id": "ee3d091846137b793bd8",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.608,
+  "managers": [
+   "Noor"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": "Micah Braithwaite",
+  "delta_points": 6.69,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "BAL",
-   "pro_opponent": "HOU",
-   "total": 18.3,
+   "slot": "RB",
+   "position": "RB",
+   "pro_team": "SEA",
+   "pro_opponent": "JAX",
+   "total": 9.39,
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 11"
+   "down_distance": "2rd & 1"
   },
-  "ts": 20640
+  "ts": 20400
  },
  {
   "id": "f1772bd7c31408a17544",
@@ -5010,34 +4999,6 @@
   "ts": 20640
  },
  {
-  "id": "1279c688f5f5e7ae0195",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.511,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Micah Braithwaite",
-  "delta_points": 5.6,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "RB",
-   "position": "RB",
-   "pro_team": "SEA",
-   "pro_opponent": "JAX",
-   "total": 6.9,
-   "starter": true,
-   "quarter": 4,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 1"
-  },
-  "ts": 20760
- },
- {
   "id": "f767f23fd0a611165dc1",
   "kind": "MILESTONE",
   "magnitude": 0.45,
@@ -5065,86 +5026,6 @@
    "threshold": 20.0
   },
   "ts": 20760
- },
- {
-  "id": "395de948f4399c41ffdd",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.835,
-  "managers": [
-   "Noor",
-   "Ollie"
-  ],
-  "team_ids": [
-   3,
-   4
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": 0.335,
-  "context": {
-   "week": 11,
-   "matchup": 2,
-   "margin": 1.24,
-   "home": 75.28,
-   "away": 74.04
-  },
-  "ts": 20820
- },
- {
-  "id": "3adfe46470387a5a1a72",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.583,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Micah Pemberton",
-  "delta_points": 6.39,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "RB",
-   "position": "RB",
-   "pro_team": "DAL",
-   "pro_opponent": "DEN",
-   "total": 18.99,
-   "starter": true,
-   "quarter": 4,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 7"
-  },
-  "ts": 20820
- },
- {
-  "id": "6c96500d24fbbee5c15e",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.411,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Marlo Thackeray",
-  "delta_points": 3.8,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "WR",
-   "pro_team": "LV",
-   "pro_opponent": "LAR",
-   "total": 9.9,
-   "starter": false,
-   "quarter": 4,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "1rd & 3"
-  },
-  "ts": 20880
  },
  {
   "id": "5c59fc3f520450c0e97e",
@@ -5175,9 +5056,33 @@
   "ts": 21180
  },
  {
-  "id": "3eb6b22d1b6aa080ad82",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.4,
+  "id": "a36cf595a914e8a53f7d",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.834,
+  "managers": [
+   "Noor",
+   "Ollie"
+  ],
+  "team_ids": [
+   3,
+   4
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.3338,
+  "context": {
+   "week": 11,
+   "matchup": 2,
+   "margin": 8.83,
+   "home": 82.87,
+   "away": 74.04
+  },
+  "ts": 21240
+ },
+ {
+  "id": "df2848d816990e217499",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.575,
   "managers": [
    "Noor"
   ],
@@ -5185,8 +5090,8 @@
    3
   ],
   "player": "Ander Wetherby",
-  "delta_points": 3.6,
-  "win_prob_delta": 0.0,
+  "delta_points": 6.3,
+  "win_prob_delta": 0.3338,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -5203,9 +5108,9 @@
   "ts": 21240
  },
  {
-  "id": "25dd2c0a741bed799140",
-  "kind": "MILESTONE",
-  "magnitude": 0.45,
+  "id": "ecb9965400639e5a2e13",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.506,
   "managers": [
    "Noor"
   ],
@@ -5213,7 +5118,7 @@
    3
   ],
   "player": "Jax Ashgrove",
-  "delta_points": 2.6,
+  "delta_points": 5.5,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
@@ -5221,15 +5126,14 @@
    "position": "WR",
    "pro_team": "BAL",
    "pro_opponent": "HOU",
-   "total": 20.9,
+   "total": 19.8,
    "starter": true,
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "4rd & 11",
-   "threshold": 20.0
+   "down_distance": "4rd & 11"
   },
-  "ts": 21300
+  "ts": 21240
  },
  {
   "id": "0b46fe81db6409ed1f72",
@@ -5258,62 +5162,6 @@
    "down_distance": "2rd & 1"
   },
   "ts": 21300
- },
- {
-  "id": "e1b5993c2b197f9ec387",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.344,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Jax Ashgrove",
-  "delta_points": 2.6,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "BAL",
-   "pro_opponent": "HOU",
-   "total": 20.9,
-   "starter": true,
-   "quarter": 4,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 11"
-  },
-  "ts": 21300
- },
- {
-  "id": "4ce260e01fb5d33965bc",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.338,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Micah Braithwaite",
-  "delta_points": 2.49,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "RB",
-   "position": "RB",
-   "pro_team": "SEA",
-   "pro_opponent": "JAX",
-   "total": 9.39,
-   "starter": true,
-   "quarter": 4,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 1"
-  },
-  "ts": 21660
  },
  {
   "id": "c7900127fb1f0fe5b560",
@@ -5384,7 +5232,7 @@
   ],
   "player": "Delroy Ashgrove",
   "delta_points": 3.93,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0462,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -5401,32 +5249,33 @@
   "ts": 21840
  },
  {
-  "id": "da02d9d54372569d7918",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.37,
+  "id": "25dd2c0a741bed799140",
+  "kind": "MILESTONE",
+  "magnitude": 0.45,
   "managers": [
    "Noor"
   ],
   "team_ids": [
    3
   ],
-  "player": "Marlo Thackeray",
-  "delta_points": 3.06,
+  "player": "Jax Ashgrove",
+  "delta_points": 1.2,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
-   "slot": "BE",
+   "slot": "WR",
    "position": "WR",
-   "pro_team": "LV",
-   "pro_opponent": "LAR",
-   "total": 12.96,
-   "starter": false,
+   "pro_team": "BAL",
+   "pro_opponent": "HOU",
+   "total": 21.0,
+   "starter": true,
    "quarter": 4,
    "clock": "15:00",
    "red_zone": false,
-   "down_distance": "1rd & 3"
+   "down_distance": "4rd & 11",
+   "threshold": 20.0
   },
-  "ts": 21840
+  "ts": 21900
  },
  {
   "id": "8f015e862dfaf4c89e14",
@@ -5440,11 +5289,11 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.005,
+  "win_prob_delta": -0.0213,
   "context": {
    "week": 11,
-   "win_prob": 0.0475,
-   "deficit": 6.22,
+   "win_prob": 0.0425,
+   "deficit": 18.81,
    "opponent_in_play": 5
   },
   "ts": 22140
@@ -5518,7 +5367,7 @@
   ],
   "player": "Marlo Inglewood",
   "delta_points": 5.97,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0075,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5546,7 +5395,7 @@
   ],
   "player": "Quinn Crowfoot",
   "delta_points": 11.45,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.055,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5563,6 +5412,30 @@
   "ts": 22320
  },
  {
+  "id": "c15e62cebeba93828432",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.555,
+  "managers": [
+   "Bex",
+   "Chidi"
+  ],
+  "team_ids": [
+   1,
+   2
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.055,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 7.78,
+   "home": 82.09,
+   "away": 74.31
+  },
+  "ts": 22320
+ },
+ {
   "id": "0550360a515bd5bf1cab",
   "kind": "CLINCH",
   "magnitude": 0.75,
@@ -5574,11 +5447,11 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.0237,
+  "win_prob_delta": 0.02,
   "context": {
    "week": 11,
-   "win_prob": 0.9912,
-   "lead": 16.25,
+   "win_prob": 0.985,
+   "lead": 28.84,
    "opponent_in_play": 5
   },
   "ts": 22380
@@ -5595,7 +5468,7 @@
   ],
   "player": "Cove Marchbank",
   "delta_points": 7.67,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1162,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -5644,7 +5517,7 @@
   ],
   "player": "Wes Inglewood",
   "delta_points": 5.66,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.02,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -5681,34 +5554,6 @@
    "benched": "Ellis Danforth",
    "benched_points": 15.05,
    "regret": 39.49
-  },
-  "ts": 22500
- },
- {
-  "id": "6a241ad4326bae5021e2",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.433,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Ellis Fairbrother",
-  "delta_points": 4.19,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "JAX",
-   "pro_opponent": "SEA",
-   "total": 9.49,
-   "starter": false,
-   "quarter": 4,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "2rd & 1"
   },
   "ts": 22500
  },
@@ -5794,25 +5639,25 @@
   "ts": 22620
  },
  {
-  "id": "47f2ca13414153a995c6",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.657,
+  "id": "6a241ad4326bae5021e2",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.483,
   "managers": [
    "Chidi"
   ],
   "team_ids": [
    2
   ],
-  "player": "Jax Kettleby",
-  "delta_points": 7.28,
+  "player": "Ellis Fairbrother",
+  "delta_points": 5.09,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
-   "position": "TE",
+   "position": "RB",
    "pro_team": "JAX",
    "pro_opponent": "SEA",
-   "total": 9.28,
+   "total": 9.49,
    "starter": false,
    "quarter": 4,
    "clock": "15:00",
@@ -5900,6 +5745,56 @@
   "ts": 22800
  },
  {
+  "id": "dd56cb9b8912ee4b5b34",
+  "kind": "GOOSE_EGG",
+  "magnitude": 0.7,
+  "managers": [
+   "Theo"
+  ],
+  "team_ids": [
+   9
+  ],
+  "player": "Ash Braithwaite",
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "DEN",
+   "pro_opponent": "DAL",
+   "total": 0.0,
+   "starter": true,
+   "quarter": 4,
+   "clock": "0:00",
+   "red_zone": false,
+   "down_distance": "",
+   "projected": 10.65
+  },
+  "ts": 22800
+ },
+ {
+  "id": "6ef71bc7a4414a8ecd14",
+  "kind": "DOOM",
+  "magnitude": 0.85,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.035,
+  "context": {
+   "week": 11,
+   "win_prob": 0.0387,
+   "deficit": 14.58,
+   "opponent_in_play": 2
+  },
+  "ts": 27300
+ },
+ {
   "id": "24a8a19d3442f109d416",
   "kind": "TOUCHDOWN",
   "magnitude": 0.617,
@@ -5911,7 +5806,7 @@
   ],
   "player": "Vance Underhill",
   "delta_points": 6.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.035,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -5926,6 +5821,55 @@
    "down_distance": "3rd & 12"
   },
   "ts": 27300
+ },
+ {
+  "id": "14bbd100f1c4ebe0c81c",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.472,
+  "managers": [
+   "Chidi"
+  ],
+  "team_ids": [
+   2
+  ],
+  "player": "Rennie Marchbank",
+  "delta_points": 4.9,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "SF",
+   "pro_opponent": "PHI",
+   "total": 4.9,
+   "starter": true,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "3rd & 12"
+  },
+  "ts": 27660
+ },
+ {
+  "id": "b603501e2dad5551358c",
+  "kind": "CLINCH",
+  "magnitude": 0.75,
+  "managers": [
+   "Bex"
+  ],
+  "team_ids": [
+   1
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0125,
+  "context": {
+   "week": 11,
+   "win_prob": 0.99,
+   "lead": 10.68,
+   "opponent_in_play": 1
+  },
+  "ts": 27720
  },
  {
   "id": "1a23408442561a478a9c",
@@ -6089,34 +6033,6 @@
   "ts": 30840
  },
  {
-  "id": "68c6ba196aaade42a6a0",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.592,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Quinn Danforth",
-  "delta_points": 6.5,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "PHI",
-   "pro_opponent": "SF",
-   "total": 9.9,
-   "starter": true,
-   "quarter": 2,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 5"
-  },
-  "ts": 31440
- },
- {
   "id": "04f934b8c66c1ef5a3f1",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
@@ -6173,28 +6089,32 @@
   "ts": 32340
  },
  {
-  "id": "838302a9a56e5624f739",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.5,
+  "id": "69a8ba551a8472fba1e0",
+  "kind": "TOUCHDOWN",
+  "magnitude": 0.783,
   "managers": [
-   "Bex",
-   "Chidi"
+   "Noor"
   ],
   "team_ids": [
-   1,
-   2
+   3
   ],
-  "player": null,
-  "delta_points": 0.0,
+  "player": "Quinn Danforth",
+  "delta_points": 8.8,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
-   "matchup": 1,
-   "margin": 1.62,
-   "home": 93.99,
-   "away": 92.37
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "PHI",
+   "pro_opponent": "SF",
+   "total": 10.6,
+   "starter": true,
+   "quarter": 2,
+   "clock": "14:50",
+   "red_zone": false,
+   "down_distance": "4rd & 5"
   },
-  "ts": 33360
+  "ts": 32940
  },
  {
   "id": "02b0f91281a60bb12402",
@@ -6310,32 +6230,32 @@
   "ts": 33840
  },
  {
-  "id": "e88d0ec9c2a264d00e50",
-  "kind": "TOUCHDOWN",
-  "magnitude": 0.992,
+  "id": "10138a628ab763bd2267",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.391,
   "managers": [
-   "Noor"
+   "Chidi"
   ],
   "team_ids": [
-   3
+   2
   ],
-  "player": "Lonnie Oakhurst",
-  "delta_points": 11.3,
+  "player": "Rennie Marchbank",
+  "delta_points": 3.44,
   "win_prob_delta": 0.0,
   "context": {
    "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "PHI",
-   "pro_opponent": "SF",
-   "total": 11.3,
-   "starter": false,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "SF",
+   "pro_opponent": "PHI",
+   "total": 8.34,
+   "starter": true,
    "quarter": 3,
    "clock": "15:00",
    "red_zone": false,
    "down_distance": "4rd & 5"
   },
-  "ts": 34920
+  "ts": 34980
  },
  {
   "id": "ac0a0bb9f8d55c131b01",
@@ -6385,34 +6305,6 @@
    "team": true
   },
   "ts": 35280
- },
- {
-  "id": "af5f51e4fad517a30ef0",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.428,
-  "managers": [
-   "Chidi"
-  ],
-  "team_ids": [
-   2
-  ],
-  "player": "Rennie Marchbank",
-  "delta_points": 4.1,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "SF",
-   "pro_opponent": "PHI",
-   "total": 7.3,
-   "starter": true,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 9"
-  },
-  "ts": 36300
  },
  {
   "id": "fe60dc88a05aac547328",
@@ -6519,34 +6411,6 @@
    "down_distance": "4rd & 9"
   },
   "ts": 36720
- },
- {
-  "id": "58ad7c4570d8743cec5e",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.375,
-  "managers": [
-   "Noor"
-  ],
-  "team_ids": [
-   3
-  ],
-  "player": "Lonnie Oakhurst",
-  "delta_points": 3.15,
-  "win_prob_delta": 0.0,
-  "context": {
-   "week": 11,
-   "slot": "BE",
-   "position": "RB",
-   "pro_team": "PHI",
-   "pro_opponent": "SF",
-   "total": 14.45,
-   "starter": false,
-   "quarter": 4,
-   "clock": "14:50",
-   "red_zone": false,
-   "down_distance": "4rd & 9"
-  },
-  "ts": 38100
  },
  {
   "id": "cc8d1ec548b7bf3833b7",

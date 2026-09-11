@@ -274,6 +274,7 @@ class Athlete:
     __slots__ = (
         "id", "name", "position", "pro_team_id", "window", "slot",
         "projected", "target", "points", "plays", "_next",
+        "injury_at", "injury_status", "_status",
     )
 
     def __init__(self, pid, name, position, pro_team_id, slot, projected, target):
@@ -292,6 +293,14 @@ class Athlete:
         #: (minute, delta, kind), built up front by `schedule_plays`.
         self.plays: list[tuple[int, float, str]] = []
         self._next = 0
+        #: When this player's afternoon ends early, and how it is reported.
+        #: Planted rather than random: without one, `injuryStatus` is "ACTIVE"
+        #: for every player all day, the INJURY detector never fires, and fifteen
+        #: phrase lines plus a whole branch of the engine have never run against
+        #: the data path they exist for.
+        self.injury_at: int | None = None
+        self.injury_status: str = "OUT"
+        self._status = "ACTIVE"
 
     @property
     def is_starter(self) -> bool:
@@ -346,6 +355,12 @@ class Athlete:
 
     def advance_to(self, t: int) -> list[tuple[float, str]]:
         """Every play that has happened by minute `t` and not yet been applied."""
+        if self.injury_at is not None and t >= self.injury_at:
+            # Reported hurt, and done scoring. A player who keeps accumulating
+            # points after being ruled out would make the feed contradict itself.
+            self._status = self.injury_status
+            self._next = len(self.plays)
+            return []
         fired: list[tuple[float, str]] = []
         while self._next < len(self.plays) and self.plays[self._next][0] <= t:
             _, delta, kind = self.plays[self._next]
@@ -367,7 +382,7 @@ class Athlete:
                     "defaultPositionId": self.position,
                     "proTeamId": self.pro_team_id,
                     "eligibleSlots": eligible,
-                    "injuryStatus": "ACTIVE",
+                    "injuryStatus": self._status,
                     "stats": [
                         {
                             "scoringPeriodId": SCORING_PERIOD,
@@ -447,6 +462,21 @@ def _plant_storylines(rosters: dict[int, list[Athlete]], rng: random.Random) -> 
     for athlete in rosters[7]:
         if athlete.is_starter:
             athlete.target *= 0.55
+
+    # Two starters get hurt, and one bench player does. The bench one is there to
+    # prove the detector's starter-only filter end to end: an injury to somebody
+    # nobody is starting is not news.
+    hurt_early = next(a for a in rosters[2] if a.slot == 2)          # Chidi's RB
+    hurt_early.injury_at = PREGAME + 70 * 60                          # early second quarter
+    hurt_early.target *= 0.3
+
+    hurt_late = next(a for a in rosters[9] if a.slot == 4)            # Theo's WR
+    hurt_late.injury_at = PREGAME + 150 * 60
+    hurt_late.injury_status = "DOUBTFUL"
+    hurt_late.target *= 0.6
+
+    bench_knock = next(a for a in rosters[3] if not a.is_starter)     # Noor's bench
+    bench_knock.injury_at = PREGAME + 100 * 60
 
     # Sam (team 8) plays the whole of the night game and wins it late, which is
     # the lead change the swing tab exists for. His opponent Wren finished hours

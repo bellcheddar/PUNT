@@ -279,9 +279,18 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
 
     swings = []
     if live is not None:
+        # A lead change and the touchdown that caused it carry the same delta,
+        # because they are the same event described twice. Keep the one that
+        # names a player: "Ander Wetherby, +33%" is a thing that happened,
+        # "Noor took the lead, +33%" is its consequence.
+        seen: set[tuple[int, float]] = set()
         for moment in live.recent(limit=60):
-            if abs(moment.win_prob_delta) < 0.05:
+            if abs(moment.win_prob_delta) < 0.05 or not moment.team_ids:
                 continue
+            key = (moment.team_ids[0], round(moment.win_prob_delta, 4))
+            if key in seen:
+                continue
+            seen.add(key)
             swings.append({
                 "kind": moment.kind,
                 "managers": moment.managers,
@@ -289,7 +298,8 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
                 "delta": moment.win_prob_delta,
                 "ts": moment.ts.isoformat(timespec="seconds"),
             })
-        swings.sort(key=lambda s: -abs(s["delta"]))
+        # Player moments first within an equal delta, then by size.
+        swings.sort(key=lambda s: (-abs(s["delta"]), s["player"] is None))
 
     return {"rows": rows, "biggest_swing": swings[0] if swings else None, "swings": swings[:8]}
 

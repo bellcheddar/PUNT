@@ -191,6 +191,14 @@ class EventEngine:
             moments.extend(self._bench_moments(snapshot))
             moments.extend(self._doom_moments(snapshot, probabilities))
 
+        # Every Moment that belongs to a team carries what it did to that team's
+        # chances. Set centrally rather than per detector, because it was set in
+        # three of the nine and the other six left it at zero -- which meant the
+        # Swing tab's "biggest swing of the day" could never be a touchdown, and
+        # the biggest swing of a Sunday is almost always a touchdown. Measured:
+        # 0 of 73 touchdowns carried one, and 7 of 236 Moments in total.
+        self._attach_win_prob_deltas(moments, probabilities)
+
         self._remember(snapshot, probabilities)
         self._started = True
 
@@ -198,6 +206,45 @@ class EventEngine:
         self.seen.update(m.id for m in fresh)
         fresh.sort(key=lambda m: -m.magnitude)
         return fresh
+
+    #: Kinds that represent something actually happening on a field. A bench
+    #: disaster and a goose egg are observations about a state, not causes of a
+    #: change in it, so attributing a poll's swing to them would credit the wrong
+    #: event -- the scoring that moved the number is a separate Moment in the
+    #: same poll.
+    CAUSAL = frozenset({TOUCHDOWN, BIG_PLAY})
+
+    def _attach_win_prob_deltas(self, moments: list[Moment], probabilities: dict[int, float]) -> None:
+        """Give each team's swing this poll to the one play that best explains it.
+
+        One poll produces one net change per team, and several Moments can land
+        inside it. Giving all of them the same number puts three entries reading
+        +33.4% at the top of the Swing tab and says nothing about which one did
+        it; giving it to the loudest causal play in that poll is both truthful
+        and the sentence a person would write.
+        """
+        by_team: dict[int, list[Moment]] = {}
+        for moment in moments:
+            if moment.win_prob_delta or moment.kind not in self.CAUSAL or not moment.team_ids:
+                continue
+            by_team.setdefault(moment.team_ids[0], []).append(moment)
+
+        for team_id, candidates in by_team.items():
+            now = probabilities.get(team_id)
+            before = self._win_prob.get(team_id)
+            if now is None or before is None:
+                continue
+            swing = round(now - before, 4)
+            # Only ever in the play's own favour. A touchdown that coincided with
+            # the opponent scoring more leaves the team's probability *down* for
+            # the poll, and crediting the touchdown with that produced a Swing
+            # tab reading "touchdown, -43%" -- arithmetically true and obvious
+            # nonsense. The cause of a fall is something on the other side, and
+            # that side's own play picks it up as a positive in the same poll.
+            if swing <= 0:
+                continue
+            loudest = max(candidates, key=lambda m: (m.magnitude, m.delta_points))
+            loudest.win_prob_delta = swing
 
     def persist(self) -> None:
         """Write the dedupe set so a restart does not replay the afternoon."""

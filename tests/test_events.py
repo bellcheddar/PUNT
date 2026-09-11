@@ -199,3 +199,71 @@ def test_a_moment_serialises_to_json_the_stream_can_send():
     import json
 
     json.dumps(payload)  # must not raise
+
+
+def test_every_kind_of_play_can_be_the_biggest_swing_of_the_day():
+    """`win_prob_delta` was set by three detectors out of nine and left at zero
+    by the other six.
+
+    Measured on the demo Sunday: 0 of 73 touchdowns carried one, so the Swing
+    tab's "biggest swing of the day" could only ever be a lead change, a doom or
+    a clinch -- 7 Moments out of 236. The biggest swing of a Sunday is almost
+    always a touchdown.
+    """
+    import json
+    from pathlib import Path
+
+    golden = Path(__file__).parent / "golden" / "moments_demo-2025-11-16.json"
+    timeline = json.loads(golden.read_text("utf-8"))
+
+    with_delta = {m["kind"] for m in timeline if abs(m["win_prob_delta"]) > 0.0001}
+    assert "TOUCHDOWN" in with_delta
+    assert "BIG_PLAY" in with_delta
+
+    swings = [m for m in timeline if abs(m["win_prob_delta"]) > 0.05]
+    assert len(swings) > 15, f"only {len(swings)} Moments could ever appear on the Swing tab"
+    biggest = max(timeline, key=lambda m: abs(m["win_prob_delta"]))
+    assert biggest["kind"] in ("TOUCHDOWN", "BIG_PLAY", "LEAD_CHANGE")
+
+
+def test_a_swing_is_credited_to_one_play_not_to_every_moment_in_the_poll():
+    """One poll produces one net change per team, and several Moments land inside
+    it. Giving all of them the same number puts three identical percentages at
+    the top of the Swing tab and says nothing about which one did it.
+
+    Observations are excluded entirely: a bench disaster and a goose egg describe
+    a state rather than cause a change in it, and the scoring that moved the
+    number is a separate Moment in the same poll.
+    """
+    import json
+    from pathlib import Path
+
+    golden = Path(__file__).parent / "golden" / "moments_demo-2025-11-16.json"
+    timeline = json.loads(golden.read_text("utf-8"))
+
+    for kind in ("BENCH_DISASTER", "GOOSE_EGG", "MILESTONE", "INJURY"):
+        credited = [m for m in timeline if m["kind"] == kind and abs(m["win_prob_delta"]) > 0.0001]
+        assert not credited, f"{kind} was credited with causing a swing"
+
+
+def test_a_touchdown_never_lowers_its_own_team_s_chances():
+    """It can, arithmetically: the opponent may have scored more in the same
+    poll, leaving the team's probability down for the window.
+
+    Crediting the touchdown with that produced a Swing tab reading "touchdown,
+    -43%", which is true and obvious nonsense. The cause of a fall is something
+    on the other side, and that side's own play picks it up as a positive in the
+    same poll, so nothing is lost by refusing to attribute it here.
+    """
+    import json
+    from pathlib import Path
+
+    golden = Path(__file__).parent / "golden" / "moments_demo-2025-11-16.json"
+    timeline = json.loads(golden.read_text("utf-8"))
+
+    backwards = [
+        f"{m['kind']} {m['player']} {m['win_prob_delta']:+.3f}"
+        for m in timeline
+        if m["kind"] in ("TOUCHDOWN", "BIG_PLAY") and m["win_prob_delta"] < 0
+    ]
+    assert not backwards, f"plays credited with hurting their own team: {backwards[:3]}"
