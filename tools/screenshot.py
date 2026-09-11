@@ -106,7 +106,40 @@ def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Pat
     low, high = grey.getextrema()
     if high == low:
         raise SystemExit(f"{out} is a uniform image: the capture failed, do not commit it")
+    # A uniform image is not the failure that actually happens. Chrome's
+    # "cannot load" page is a sad-file glyph on a flat ground, which has two
+    # extrema and sails past the check above: nine blank captures were written,
+    # reported as success at 6 kB each, and only looked wrong beside the 470 kB
+    # ones they replaced. Almost-uniform is the test.
+    histogram = grey.histogram()
+    if max(histogram) / max(1, sum(histogram)) > 0.98:
+        raise SystemExit(
+            f"{out} is 98% one colour: the page did not render. Is the app "
+            f"running at {BASE_FOR_HARNESS[0]}?"
+        )
     return out
+
+
+def demand_a_server(base: str) -> None:
+    """Refuse to capture against a dead server.
+
+    The harness loads the app in an iframe, so a connection refused renders as
+    Chrome's error page inside the frame and the screenshot succeeds. The tool
+    then overwrites nine committed images with pictures of a sad file icon and
+    prints its usual summary. Nothing else in the pipeline notices.
+    """
+    import urllib.error
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(base, timeout=5) as response:
+            if response.status != 200:
+                raise SystemExit(f"{base} answered {response.status}, not 200")
+    except (urllib.error.URLError, OSError) as exc:
+        raise SystemExit(
+            f"Nothing is serving {base}: {exc}\n"
+            f"  PORT=8019 python3 -m app"
+        ) from exc
 
 
 def check_overflow(base: str, width: int = 390) -> int:
@@ -196,12 +229,14 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.check_overflow:
+        demand_a_server(args.base)
         return check_overflow(args.base, args.width)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     BASE_FOR_HARNESS[0] = args.base
+    demand_a_server(args.base)
 
     if args.url:
         path = capture(args.url, args.width, args.height, out_dir / "capture.png")
