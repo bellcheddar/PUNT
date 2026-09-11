@@ -35,6 +35,11 @@ data/recordings/*/
 # specific to one deployment's league.
 data/state/
 
+# Downloaded CC0 source audio. Derived: data/audio_sources.json names every file
+# and its sha256, tools/fetch_audio.py re-fetches them, and the built sprite is
+# committed, so a fresh clone needs none of this.
+data/audio_cache/
+
 # Pre-synthesised TTS. Built at deploy time from data/phrases, never tracked:
 # it is several hundred megabytes of derived audio.
 static/audio/phrase/

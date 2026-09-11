@@ -76,8 +76,16 @@ long names are just what made anybody look.
 6. **Bus levels are arithmetic, not taste.** Web Audio hard-clips; all four buses ducked
    under a play call must sum to 1.0 or less, and commentary must stay above stings above
    music. Both are tests, because satisfying one while breaking the other is easy.
-7. **Every sound is synthesised** by `tools/make_audio.py`. Nothing is sampled or downloaded,
-   which is why `static/audio/LICENCES.md` cannot drift.
+7. **Every sound is CC0 or ours, and `static/audio/LICENCES.md` is generated.** The rule used
+   to be that everything was synthesised, which kept the credits from drifting because nothing
+   in them was somebody else's. It also cost the audio: the horns carried under 8% of their
+   energy above 2 kHz, which is what "dull, like a tone through a blanket" measures as, and a
+   convincing crowd roar cannot be made out of oscillators. Sampled sound is allowed now and
+   the safety is kept differently: `data/audio_sources.json` is what both the builder and the
+   credits read, so a sound cannot reach the sprite without a licence line, and
+   `tools/make_licences.py --check` fails the build if they disagree. CC0 only -- an
+   attribution clause would put an obligation on everyone who clones a public repo, and a
+   non-commercial one would make it undistributable.
 8. **The recap validator is not optional.** Every numeral and proper noun in generated prose
    must appear in the fact pack. A recap that invents a score is worse than none, because
    the league will believe it.

@@ -1,0 +1,42 @@
+{
+  "_comment": "Where every sampled sound in the sprite comes from, and the proof. tools/fetch_audio.py downloads each `url` once, checks it against `sha256`, and extracts `member` if it is an archive. static/audio/LICENCES.md is GENERATED from this file, so the credits cannot drift away from the audio the way a hand-written list does. A sound with no entry here is synthesised by tools/make_audio.py and is ours outright.",
+  "_licences": "CC0 only. Not a stylistic preference: this repository is public and MIT, so an asset carrying an attribution requirement puts an obligation on everyone who clones it, and one carrying a non-commercial clause makes the repository undistributable. CC0 is the only licence with neither. Every entry is checked by tests/test_audio_sources.py.",
+  "_gates": "Each sound must also survive tools/fetch_audio.py --check: no edge discontinuity, and high-frequency energy in the band its role needs. An archive is not automatically better than synthesis -- three of Kenney's own interface sounds have exactly 0.0% of their energy above 2 kHz, which is the same dullness this work set out to fix.",
+
+  "downloads": {
+    "kenney_interface": {
+      "url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+      "sha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232",
+      "bytes": 834536,
+      "source": "Kenney Interface Sounds 1.0",
+      "page": "https://kenney.nl/assets/interface-sounds",
+      "author": "Kenney (kenney.nl)",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    }
+  },
+
+  "sounds": {
+    "tap": {
+      "from": "kenney_interface", "member": "Audio/click_001.ogg",
+      "gain_db": -9.0,
+      "why": "The pack's shortest click. A 50 ms blip under a finger; nobody hears stereo width on one."
+    },
+    "flip": {
+      "from": "kenney_interface", "member": "Audio/switch_002.ogg",
+      "gain_db": -6.0,
+      "why": "A card turning over in the pack rip."
+    },
+    "scratch": {
+      "from": "kenney_interface", "member": "Audio/scratch_001.ogg",
+      "gain_db": -5.0,
+      "why": "94% of its energy above 2 kHz, which is what a record scratch is. The synthesised one was 9.9%."
+    },
+    "buzzer": {
+      "from": "kenney_interface", "member": "Audio/error_002.ogg",
+      "gain_db": -6.0,
+      "why": "68% above 2 kHz against the synthesised buzzer's 1.0%, and none of its 510 discontinuities."
+    }
+  }
+}

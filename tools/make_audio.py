@@ -25,6 +25,7 @@ import argparse
 import json
 import subprocess
 import sys
+import wave
 from pathlib import Path
 
 import numpy as np
@@ -37,6 +38,9 @@ RATE = 44_100
 #: stops at a duration, and a sound that runs into its neighbour on a slow seek
 #: is the classic sprite artefact. 300 ms is generous and costs 13 kB.
 GAP = 0.30
+#: Silence appended to every sound, longer than the 8 ms the sprite window trims
+#: off the end. See the assembly loop for what happens when it is not.
+TAIL = 0.014
 
 
 # --------------------------------------------------------------------------
@@ -340,6 +344,49 @@ def sound_bed() -> np.ndarray:
     return normalise(out, 0.5)
 
 
+#: Sounds that come from a CC0 archive rather than from an oscillator. See
+#: data/audio_sources.json for where each one is from and the sha256 that proves
+#: it, and tools/fetch_audio.py to fetch them. Anything not listed there is still
+#: synthesised below and is ours outright.
+SOURCES = ROOT / "data" / "audio_sources.json"
+CACHE = ROOT / "data" / "audio_cache"
+
+
+def sampled(name: str) -> np.ndarray | None:
+    """One sampled sting, trimmed, de-clicked and levelled, or None.
+
+    Mixed to mono deliberately. Every sting in this sprite is a short event fired
+    under a play call, and Howler plays the sprite as one buffer: a stereo sprite
+    doubles the download for width nobody perceives on a 200 ms blip through a
+    phone speaker or a bar ceiling. The bed is where width would be worth having.
+    """
+    if not SOURCES.is_file():
+        return None
+    spec = json.loads(SOURCES.read_text("utf-8")).get("sounds", {})
+    if name not in spec:
+        return None
+    wav = CACHE / f"{name}.wav"
+    if not wav.is_file():
+        print(f"  {name}: listed in audio_sources.json but not fetched; "
+              f"run tools/fetch_audio.py. Falling back to synthesis.", file=sys.stderr)
+        return None
+
+    with wave.open(str(wav)) as handle:
+        channels = handle.getnchannels()
+        raw = np.frombuffer(handle.readframes(handle.getnframes()), dtype=np.int16)
+    audio = raw.astype(float).reshape(-1, channels).mean(axis=1) / 32768
+
+    trim = spec[name].get("trim")
+    if trim:
+        audio = audio[int(trim[0] * RATE): int(trim[1] * RATE)]
+    audio = audio - audio.mean()            # DC offset is a click waiting to happen
+    audio = normalise(audio, 0.82) * 10 ** (spec[name].get("gain_db", 0.0) / 20)
+    # The fade is not cosmetic. `buzzer` ends at 0.64 of full scale, and a buffer
+    # that stops there is a step function into the speaker: the pop people hear
+    # is not in the recording, it is at its edge.
+    return fade(audio, ms=5.0)
+
+
 SOUNDS = {
     "horn_01": sound_horn_01, "horn_02": sound_horn_02, "horn_03": sound_horn_03,
     "trombone": sound_trombone, "whoosh": sound_whoosh, "riser": sound_riser,
@@ -396,7 +443,20 @@ def main() -> int:
     gap = np.zeros(int(GAP * RATE))
 
     for name in SOUNDS:
-        samples = SOUNDS[name]()
+        samples = sampled(name)
+        if samples is None:
+            samples = SOUNDS[name]()
+        # Digital silence after the fade, longer than the safety trim below.
+        #
+        # `fade()` ramps the last 6 ms to zero so the buffer ends quietly, and
+        # then the sprite window below ends 8 ms EARLY so a slow seek cannot run
+        # into the next sound. Eight is more than six: playback therefore stopped
+        # two milliseconds before the fade even began, cutting every sustained
+        # sting off at full amplitude. `riser` ended at 0.23 of full scale, which
+        # is a step function into the speaker -- the pop is not in the sound, it
+        # is at the edge of the window. The safety trim was defeating the fade it
+        # was supposed to be protecting.
+        samples = np.concatenate([samples, np.zeros(int(TAIL * RATE))])
         duration = len(samples) / RATE
         # Howler wants [offset_ms, duration_ms]; the duration is deliberately a
         # few milliseconds short of the real length so a slow seek cannot run

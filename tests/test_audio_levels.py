@@ -12,7 +12,8 @@ from pathlib import Path
 
 import pytest
 
-AUDIO_JS = Path(__file__).resolve().parent.parent / "static" / "js" / "audio.js"
+ROOT = Path(__file__).resolve().parent.parent
+AUDIO_JS = ROOT / "static" / "js" / "audio.js"
 
 
 def buses() -> dict[str, dict[str, float]]:
@@ -62,3 +63,70 @@ def test_the_ordering_the_spec_asks_for_is_preserved():
 def test_commentary_ducks_under_nothing():
     b = buses()
     assert b["commentary"]["ducked"] == b["commentary"]["volume"]
+
+
+# --------------------------------------------------------------------------
+# the sprite itself, not just the mixer
+# --------------------------------------------------------------------------
+
+def _decode_sprite():
+    """The shipped mp3 as mono samples, or a skip if ffmpeg is not here."""
+    import shutil
+    import subprocess
+    import tempfile
+    import wave
+
+    import numpy as np
+
+    ffmpeg = shutil.which("ffmpeg") or "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg"
+    if not Path(ffmpeg).exists():
+        pytest.skip("ffmpeg not installed; cannot decode the sprite")
+    mp3 = ROOT / "static" / "audio" / "sprite.mp3"
+    with tempfile.TemporaryDirectory() as work:
+        out = Path(work) / "sprite.wav"
+        subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", str(mp3),
+                        "-ac", "1", "-ar", "44100", str(out)], check=True)
+        with wave.open(str(out)) as handle:
+            raw = handle.readframes(handle.getnframes())
+    return np.frombuffer(raw, dtype=np.int16).astype(float) / 32768
+
+
+def test_no_sting_is_cut_off_mid_signal():
+    """The window a phone actually plays has to end on silence.
+
+    `fade()` ramps the last 6 ms to zero, and then sprite.json ends each window
+    8 ms EARLY so a slow seek cannot run into the next sound. Eight is more than
+    six, so playback stopped two milliseconds before the fade began and cut every
+    sustained sting off at full amplitude: `riser` ended at 0.23 of full scale,
+    which is a step function into the speaker. The pop was not in the sound, it
+    was at the edge of the window -- the safety trim was defeating the fade it
+    existed to protect.
+    """
+    import json
+
+    import numpy as np
+
+    audio = _decode_sprite()
+    sprite = json.loads((ROOT / "static" / "audio" / "sprite.json").read_text())["sprite"]
+    rate = 44_100
+    worst = {}
+    for name, (start_ms, length_ms) in sprite.items():
+        seg = audio[int(start_ms * rate / 1000): int((start_ms + length_ms) * rate / 1000)]
+        assert len(seg) > 64, f"{name} is empty in the sprite"
+        worst[name] = float(max(abs(seg[0]), abs(seg[-1])))
+    loudest = max(worst, key=worst.get)
+    assert worst[loudest] < 0.02, (
+        f"{loudest} starts or ends at {worst[loudest]:.3f} of full scale, which clicks. "
+        f"TAIL in tools/make_audio.py must stay longer than the 8 ms the window trims."
+    )
+
+
+def test_the_silence_appended_outlasts_the_window_trim():
+    """The invariant behind the test above, stated where it can be read."""
+    source = (ROOT / "tools" / "make_audio.py").read_text("utf-8")
+    tail_ms = float(re.search(r"^TAIL = ([\d.]+)", source, re.M).group(1)) * 1000
+    trim_ms = float(re.search(r"round\(duration \* 1000\) - (\d+)", source).group(1))
+    assert tail_ms > trim_ms, (
+        f"{tail_ms:.0f} ms of tail against a {trim_ms:.0f} ms window trim: "
+        f"the window ends before the fade does and every sustained sting clicks"
+    )
