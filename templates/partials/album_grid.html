@@ -9,7 +9,7 @@
            data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points, {{ c.tier }}">
     <div class="card-face card-face--front">
       <div>
-        <div class="card-tier">{{ c.tier }}{% if c.rank %} &middot; #{{ c.rank }}{% endif %}</div>
+        <div class="card-tier">{{ c.tier }}{% if c.rank %}<span class="card-rank">#{{ c.rank }}</span>{% endif %}</div>
         <div class="card-name">{{ c.name }}</div>
       </div>
       {# Always an image. A team with no ESPN logo used to fall back to a

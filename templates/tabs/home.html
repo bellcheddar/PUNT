@@ -91,7 +91,12 @@
 
   <section class="panel">
     <h2 class="panel-title">Cheer</h2>
-    <div hx-get="{{ url_for('api.partial_cheer') }}"
+    {# Capped and scrolled. It lists every game in the week now rather than only
+       the live ones, which is sixteen rows on a Sunday -- enough to push the
+       right-hand column past twice the height of the left and leave a void
+       beside it. #}
+    <div class="scroll-wrap"
+         hx-get="{{ url_for('api.partial_cheer') }}"
          hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
       {% include "partials/cheer.html" %}
     </div>

@@ -6,8 +6,13 @@
 {% if moments %}
 <ul class="feed">
   {% for m in moments %}
-  <li class="feed-item feed-item--{{ m.kind | lower }}" style="--mag: {{ m.magnitude }}">
+  <li class="feed-item feed-item--{{ m.kind | lower }}" style="--mag: {{ m.magnitude }}{% if m.hue is not none %}; --hue: {{ m.hue }}{% endif %}"
+      {% if m.team_id %}data-team="{{ m.team_id }}"{% endif %}>
     <span class="feed-kind">{{ m.kind.replace('_', ' ') }}</span>
+    {# Whose. A hundred and three of the four hundred and ten phrase lines name
+       no team, and fifty of those are filler that never should. Attributing the
+       ITEM means the next phrase written cannot reintroduce the problem. #}
+    {% if m.teams %}<span class="feed-team">{{ m.teams[0] }}</span>{% endif %}
     <span class="feed-text">
       {%- if m.text -%}
         {{ m.text }}

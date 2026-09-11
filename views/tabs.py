@@ -74,7 +74,7 @@ def today():
         "tabs/home.html",
         snap=snap,
         matchups=matchup_view(snap),
-        moments=moments_view(live),
+        moments=moments_view(live, snap=snap),
         swing=swing_view(snap, live),
         album=album_view(snap, live),
         cheer=cheer_view(snap, _team_param()),

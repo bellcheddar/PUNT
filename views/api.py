@@ -40,7 +40,7 @@ def api_state():
             "problems": snap.all_problems()[:20],
             "matchups": matchup_view(snap),
             "album": album_view(snap, state().live),
-            "moments": moments_view(state().live),
+            "moments": moments_view(state().live, snap=snap),
             "diagnostics": state().diagnostics(),
         }
     )
@@ -171,7 +171,8 @@ def partial_moments():
 
     A fallback for a phone whose SSE connection has dropped: the feed keeps
     filling on the 30 s poll rather than going silent until a reload."""
-    return render_template("partials/moments.html", moments=moments_view(state().live))
+    return render_template("partials/moments.html",
+                           moments=moments_view(state().live, snap=snapshot()))
 
 
 @bp.route("/api/diagnostics")

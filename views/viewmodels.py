@@ -222,9 +222,14 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
 
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
+    # Every game in the week, played, playing or still to come. It used to skip
+    # anything finished or not yet kicked off, which meant the whole tab read
+    # "No games in progress" on a Thursday evening and again on Monday morning,
+    # and showed nothing at all on the two days a week people most want to look
+    # at it. A game that has finished still answers the question -- it just
+    # answers it in the past tense -- and one that has not started answers it in
+    # the future. Ordered so the live ones come first.
     for pro_team_id, game in sorted(snap.games.items(), key=lambda kv: kv[1].abbrev):
-        if game.finished or game.state == "pre":
-            continue
         # One row per fixture, not per team: the same game appears twice in the
         # scoreboard, once from each side.
         fixture = "-".join(sorted([game.abbrev, game.opponent or ""]))
@@ -245,7 +250,7 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
         if team_id is None:
             verdict = "STAKE" if involved else ""
             reason = (f"{len(involved)} starter{'s' if len(involved) != 1 else ''} "
-                      f"across {len(set(tid for tid, _, _ in involved))} managers")
+                      f"across {len(set(tid for tid, _, _ in involved))} teams")
         elif mine and theirs:
             verdict = "CONFLICTED"
             reason = (f"You have {_names(mine)}. Your opponent has {_names(theirs)}.")
@@ -262,6 +267,12 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
 
         rows.append({
             "fixture": f"{game.opponent or '?'} at {game.abbrev}",
+            "state": game.state,
+            "finished": game.finished,
+            "live": game.live,
+            "when": ("final" if game.finished
+                     else f"Q{game.period} {game.clock}" if game.live
+                     else "not started"),
             "quarter": game.period,
             "clock": game.clock,
             "red_zone": game.red_zone,
@@ -272,8 +283,13 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
             "others": others,
         })
 
+    # Live first, then still to come, then done: the question "do I want this to
+    # happen" is only live for a game that has not finished, and a finished one
+    # is a result rather than a stake.
     order = {"CONFLICTED": 0, "CHEER": 1, "BOO": 2, "STAKE": 3, "NOTHING": 4}
-    rows.sort(key=lambda r: (order.get(r["verdict"], 9), r["fixture"]))
+    state_order = {True: 0, False: 1}
+    rows.sort(key=lambda r: (r["finished"], state_order[bool(r["live"])],
+                             order.get(r["verdict"], 9), r["fixture"]))
     return rows
 
 
@@ -336,7 +352,7 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
             seen.add(key)
             swings.append({
                 "kind": moment.kind,
-                "managers": moment.managers,
+                "teams": moment.teams,
                 "player": moment.player,
                 "delta": moment.win_prob_delta,
                 "ts": moment.ts.isoformat(timespec="seconds"),
@@ -520,18 +536,30 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
     return rows[:limit]
 
 
-def moments_view(live, limit: int = 25) -> list[dict[str, Any]]:
-    """The commentary feed. Phase 4 replaces the plain descriptions with the
-    phrase bank; the shape is the same either way."""
+def moments_view(live, limit: int = 25, snap: LeagueSnapshot | None = None) -> list[dict[str, Any]]:
+    """The commentary feed.
+
+    Every line carries the team it is about, whether or not the phrase happens
+    to name one. A hundred and three of the four hundred and ten lines name no
+    team -- fifty of those are filler and never should, and the rest are about a
+    specific team and simply do not say so: "Nothing at all from the WR, and
+    16.9 sitting on the bench" is a complete sentence about somebody, and
+    reading it in a feed you cannot tell whose bench. Attributing the item
+    rather than auditing the bank also means the next phrase written cannot
+    reintroduce the problem.
+    """
     if live is None:
         return []
+    hues = {t.id: t.hue for t in snap.teams} if snap is not None else {}
     out = []
     for moment in live.recent(limit=limit):
         line = live.line_for(moment)
         out.append({
             "kind": moment.kind,
             "magnitude": round(moment.magnitude, 2),
-            "managers": moment.managers,
+            "teams": moment.teams,
+            "team_id": moment.team_ids[0] if moment.team_ids else None,
+            "hue": hues.get(moment.team_ids[0]) if moment.team_ids else None,
             "player": moment.player,
             "delta": round(moment.delta_points, 2),
             "context": moment.context,
