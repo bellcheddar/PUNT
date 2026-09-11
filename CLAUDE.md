@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 199 tests, offline
+python3 -m pytest                              # 214 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -17,6 +17,7 @@ python3 tools/transcript.py --stats            # what the commentary would say, 
 python3 tools/recap.py                         # the weekly write-up
 python3 tools/phrase_lint.py                   # dead triggers, unfillable slots, thin categories
 python3 tools/a11y.py                          # contrast
+PORT=8019 python3 -m app &                     # screenshot.py needs a server
 python3 tools/screenshot.py                    # captures at a real phone width
 python3 tools/screenshot.py --check-overflow   # horizontal overflow at 390px
 python3 tools/deadcode.py                      # which lines never run during a whole Sunday
@@ -86,6 +87,13 @@ phone size, and every "IN" chip the wrong colour. The code read fine each time.
 - **Chrome's HTTP cache persists across headless launches**, so a regenerated harness at the
   same URL serves the previous run's contents.
 - **A fresh `--user-data-dir` hangs Chrome outright** on this machine.
+- **A capture against a dead server succeeds.** The harness loads the app in an iframe, so
+  with nothing serving the base URL the frame renders Chrome's "cannot load" page and the
+  screenshot is written. Nine committed images were overwritten with pictures of a sad file
+  icon and the tool printed its usual summary; the only tell was 6 kB where there had been
+  470 kB. `screenshot.py` now refuses to start without a 200 from the base URL, and the
+  blankness check is "98% one colour" rather than "exactly one colour", because a sad file
+  glyph on a flat ground has two extrema.
 - **Desktop Chrome ships `DeviceOrientationEvent.requestPermission`**, so the usual "that
   means iOS" recipe is wrong. Gate on `(hover: none) and (pointer: coarse)`.
 - **`str.replace` on a short CSS anchor matches twice.** `.verdict {` hit both the base rule
