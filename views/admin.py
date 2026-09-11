@@ -40,4 +40,8 @@ def refresh_cookies():
     st = state()
     st.client.cache.invalidate()
     st.client.auth.mark_ok()
+    # And the backoff. A commissioner who has just fixed the cookies should not
+    # then wait out a timer whose whole purpose was to stop the app hammering
+    # ESPN while nobody knew they were broken.
+    st.client.clear_backoff()
     return jsonify({"ok": True, "cleared": True, "mode": st.mode})

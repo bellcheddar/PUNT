@@ -115,11 +115,72 @@
       // Closing and recreating it here would defeat that and produce a
       // reconnect storm on a bar's wifi, which is the thing to avoid.
       document.documentElement.dataset.stream = 'reconnecting';
+      // Not announced immediately. A single dropped frame is normal on a shared
+      // connection and a banner that flickers on every blip trains people to
+      // ignore banners, which is worse than not having one.
+      scheduleConnectionNotice();
     };
     stream.addEventListener('hello', () => {
       document.documentElement.dataset.stream = 'live';
+      clearConnectionNotice();
     });
   }
+
+  // --- the connection banner ----------------------------------------------
+
+  /* What a phone shows when the venue's wifi goes. The server's own stale banner
+   * covers "ESPN is not answering"; this covers "this phone cannot reach
+   * anything", which is a different sentence and sends somebody to a different
+   * place to fix it.
+   */
+  const NOTICE_DELAY = 12_000;
+  let noticeTimer = null;
+  let notice = null;
+
+  function scheduleConnectionNotice() {
+    if (notice || noticeTimer) return;
+    noticeTimer = setTimeout(showConnectionNotice, NOTICE_DELAY);
+  }
+
+  function showConnectionNotice() {
+    noticeTimer = null;
+    if (notice) return;
+    notice = document.createElement('div');
+    notice.className = 'banner banner--error';
+    notice.setAttribute('role', 'status');
+    notice.innerHTML = navigator.onLine
+      ? '<strong>Lost the live feed.</strong> Scores are still refreshing every '
+        + 'thirty seconds and will catch up on their own. Nothing needs doing.'
+      : '<strong>This phone is offline.</strong> The scores on screen are the last '
+        + 'ones it saw. It will catch up by itself when the wifi comes back.';
+    document.querySelector('main')?.before(notice);
+  }
+
+  function clearConnectionNotice() {
+    clearTimeout(noticeTimer);
+    noticeTimer = null;
+    if (notice) { notice.remove(); notice = null; }
+  }
+
+  window.addEventListener('offline', showConnectionNotice);
+  window.addEventListener('online', () => {
+    clearConnectionNotice();
+    // Reconcile immediately rather than waiting for the next poll: somebody who
+    // just watched their wifi come back is looking at the screen right now.
+    if (window.htmx) {
+      document.querySelectorAll('[hx-trigger*="every"]').forEach((el) => {
+        window.htmx.trigger(el, 'punt:refresh');
+      });
+    }
+  });
+
+  // A successful htmx swap proves the network is working, whatever the stream
+  // thinks. The scores are the thing people actually care about.
+  document.body?.addEventListener('htmx:afterSwap', clearConnectionNotice);
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('htmx:afterSwap', clearConnectionNotice);
+    if (!navigator.onLine) showConnectionNotice();
+  });
 
   // Backgrounded tabs throttle timers, so reconcile on return rather than
   // trusting anything to have kept running.

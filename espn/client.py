@@ -42,10 +42,19 @@ log = logging.getLogger(__name__)
 
 USER_AGENT = "PUNT/1.0 (+https://punt.mdeller.com) ten-team bar league companion"
 
-#: Backoff ceiling. Five minutes of silence is a long time on a Sunday, but the
+#: Backoff ceiling for a failure that reached ESPN: a 500, a 429, a redirect to a
+#: login page. Five minutes of silence is a long time on a Sunday, but the
 #: alternative -- retrying a 429 every 30 s for four hours -- is how an
 #: undocumented endpoint stops being available to anybody.
 MAX_BACKOFF = 300.0
+
+#: Ceiling for a failure that never reached ESPN at all: the bar's wifi dropped,
+#: DNS failed, the socket timed out. Backing off for five minutes here protects
+#: nobody -- the requests are not arriving anywhere -- and it means that plugging
+#: the cable back in takes up to five minutes to notice, which is the thing the
+#: whole hardening phase exists to prevent.
+MAX_LOCAL_BACKOFF = 45.0
+
 BASE_BACKOFF = 5.0
 
 #: Where an unconfigured app joins the demo Sunday, and how fast it runs. 2.5 h in
@@ -57,11 +66,17 @@ DEMO_SPEED = 60.0
 
 
 class UpstreamError(RuntimeError):
-    """Any failure to get a usable payload from ESPN."""
+    """Any failure to get a usable payload from ESPN.
 
-    def __init__(self, message: str, status: int | None = None) -> None:
+    `local` distinguishes "we could not reach the network" from "ESPN answered
+    and the answer was bad", which is the difference between the bar's wifi and
+    somebody else's outage. They deserve very different backoff.
+    """
+
+    def __init__(self, message: str, status: int | None = None, local: bool = False) -> None:
         super().__init__(message)
         self.status = status
+        self.local = local
 
 
 class AuthExpired(UpstreamError):
@@ -118,6 +133,9 @@ class LiveTransport:
             response = self._get_session().get(
                 url, params=params, timeout=self.timeout, headers=dict(feed.headers)
             )
+        except (requests.ConnectionError, requests.Timeout) as exc:
+            # Never reached ESPN: the venue's wifi, DNS, or a timeout.
+            raise UpstreamError(f"{feed.name}: {exc}", local=True) from exc
         except requests.RequestException as exc:
             raise UpstreamError(f"{feed.name}: {exc}") from exc
 
@@ -198,13 +216,16 @@ class EspnClient:
     def backoff_remaining(self) -> float:
         return max(0.0, self._backoff_until - time.monotonic())
 
-    def _record_failure(self) -> None:
+    def _record_failure(self, local: bool = False) -> None:
         with self._lock:
             self._consecutive_failures += 1
-            delay = min(MAX_BACKOFF, BASE_BACKOFF * (2 ** (self._consecutive_failures - 1)))
+            ceiling = MAX_LOCAL_BACKOFF if local else MAX_BACKOFF
+            delay = min(ceiling, BASE_BACKOFF * (2 ** (self._consecutive_failures - 1)))
             # Jitter so that a restart of several workers does not resynchronise
-            # them into one thundering retry.
-            delay *= 0.75 + random.random() * 0.5
+            # them into one thundering retry. Clamped *after* the jitter, or the
+            # documented ceiling is not one: a 1.25x multiplier applied to a
+            # clamped 300 s gives 375 s.
+            delay = min(ceiling, delay * (0.75 + random.random() * 0.5))
             self._backoff_until = time.monotonic() + delay
             log.warning(
                 "upstream failure %d; backing off %.0fs", self._consecutive_failures, delay
@@ -235,6 +256,9 @@ class EspnClient:
                 self.auth.mark_expired(str(exc))
                 self._record_failure()
                 raise
+            except UpstreamError as exc:
+                self._record_failure(local=exc.local)
+                raise
             except Exception:
                 self._record_failure()
                 raise
@@ -246,6 +270,16 @@ class EspnClient:
             return self.cache.get_or_set(key, ttl, _fetch)
         except Exception as exc:  # noqa: BLE001 - cold cache; the caller decides
             return Result(value={}, age=0.0, stale=True, error=str(exc))
+
+    def clear_backoff(self) -> None:
+        """Forget the backoff and try again now.
+
+        Used by the commissioner refresh: somebody who has just fixed the cookies
+        should not then wait out a five minute timer that exists to protect an
+        endpoint from an app that did not know they were broken."""
+        with self._lock:
+            self._consecutive_failures = 0
+            self._backoff_until = 0.0
 
     def stats(self) -> dict[str, Any]:
         return {
