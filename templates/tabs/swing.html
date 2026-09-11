@@ -41,7 +41,7 @@
       <span class="feed-kind">{{ s.delta | pct }}</span>
       <span class="feed-text">
         {{ s.kind.replace('_', ' ') | lower }}{% if s.player %} &mdash; {{ s.player }}{% endif %}
-        for <b>{{ s.managers | join(', ') }}</b>
+        for <b>{{ s.teams | join(', ') }}</b>
       </span>
     </li>
     {% endfor %}

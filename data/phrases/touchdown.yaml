@@ -59,7 +59,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1200
-  text: "That is {player} in the end zone and {manager} out of his seat."
+  text: "That is {player} in the end zone and {manager} off the sofa."
   audio: horn_01
   voice: pbp
 
@@ -87,7 +87,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1200
-  text: "{player} punches it in. Somewhere, {manager} is telling everyone he called it."
+  text: "{player} punches it in. Somewhere, somebody is telling the room they called it."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -97,7 +97,7 @@
   tone: [dry]
   weight: 2
   cooldown: 720
-  text: "Touchdown. {player}. {manager} moves to {total}, which is a number he will now repeat all night."
+  text: "Touchdown. {player}. {manager} moves to {total}, a number that will be repeated all night."
   roast_level: 1
   audio: horn_02
   voice: colour
@@ -208,7 +208,7 @@
   tone: [hype]
   weight: 3
   cooldown: 1020
-  text: "{player} throws it in. {manager} gets {delta} from the one position he did think about."
+  text: "{player} throws it in. {manager} gets {delta} from the one position that did get thought about."
   roast_level: 1
   audio: horn_01
   voice: pbp
@@ -264,7 +264,7 @@
   tone: [corny]
   weight: 3
   cooldown: 1200
-  text: "The tight end scores. {player} for {delta}, and {manager} remembers he has one."
+  text: "The tight end scores. {player} for {delta}, and {manager} remembers it has one."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -274,7 +274,7 @@
   tone: [hype]
   weight: 4
   cooldown: 900
-  text: "The defence scores! {manager} gets {delta} from a unit he drafted last."
+  text: "The defence scores! {manager} gets {delta} from a unit drafted last."
   roast_level: 1
   audio: horn_03
   voice: pbp
@@ -297,7 +297,7 @@
   roast_level: 2
   weight: 5
   cooldown: 900
-  text: "{player} scores. On {manager}'s bench. Six points he can watch but not have."
+  text: "{player} scores. On {manager}'s bench. Six points to watch and not have."
   audio: trombone
   voice: colour
 
@@ -317,7 +317,7 @@
   roast_level: 2
   weight: 3
   cooldown: 1200
-  text: "Lovely run by {player}. {manager} has him on the bench, which he chose to do, on purpose."
+  text: "Lovely run by {player}. {manager} has him on the bench, which was a choice, on purpose."
   audio: trombone
   voice: colour
 
@@ -362,7 +362,7 @@
   tone: [hype]
   weight: 4
   cooldown: 900
-  text: "In! {player} scores and {manager} has {delta} more than he had a second ago."
+  text: "In! {player} scores and {manager} has {delta} more than it had a second ago."
   audio: horn_01
   voice: pbp
 - id: td_generic_12
@@ -378,7 +378,7 @@
   tone: [dry]
   weight: 3
   cooldown: 960
-  text: "Six for {player}. {manager} nods as though he expected it."
+  text: "Six for {player}. {manager} nods as though that was expected."
   roast_level: 1
   audio: horn_02
   voice: colour
@@ -395,7 +395,7 @@
   tone: [corny]
   weight: 3
   cooldown: 960
-  text: "Touchdown. {player}. {manager} would like to remind everyone he drafted him."
+  text: "Touchdown. {player}. {manager} would like to remind everyone who drafted him."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -430,7 +430,7 @@
   tone: [dry]
   weight: 2
   cooldown: 1080
-  text: "That is six and a bit for {player}. {manager} will round it up when he tells this story."
+  text: "That is six and a bit for {player}. {manager} will round it up when this story gets told."
   roast_level: 1
   audio: horn_02
   voice: colour
@@ -447,7 +447,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1080
-  text: "Another one for {player}. {manager}'s afternoon improves without his involvement."
+  text: "Another one for {player}. {manager}'s afternoon improves without any involvement."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -473,7 +473,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1140
-  text: "{player} scores. {manager} does the thing with his arms again."
+  text: "{player} scores. Somebody on {manager} does the thing with the arms again."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -508,7 +508,7 @@
   tone: [dry]
   weight: 2
   cooldown: 1200
-  text: "{player} finds the end zone. {manager} finds his voice."
+  text: "{player} finds the end zone. {manager} finds its voice."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -517,7 +517,7 @@
   tone: [hype]
   weight: 2
   cooldown: 1200
-  text: "Touchdown! {delta} for {manager}, who needed it more than he will admit."
+  text: "Touchdown! {delta} for {manager}, which needed it more than it will admit."
   roast_level: 1
   audio: horn_02
   voice: pbp
@@ -660,7 +660,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1080
-  text: "{player} scores from the tight end slot, which {manager} had forgotten he filled."
+  text: "{player} scores from the tight end slot, which {manager} had forgotten was filled."
   roast_level: 1
   audio: horn_01
   voice: colour
@@ -686,7 +686,7 @@
   tone: [hype]
   weight: 3
   cooldown: 1200
-  text: "The defence takes it back! {manager} gets {delta} from eleven people he cannot name."
+  text: "The defence takes it back! {manager} gets {delta} from eleven people nobody can name."
   roast_level: 1
   audio: horn_03
   voice: pbp
@@ -751,7 +751,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1080
-  text: "They got it in. {player} scores and {manager} stops holding his breath."
+  text: "They got it in. {player} scores and {manager} can breathe again."
   audio: horn_02
   voice: pbp
 - id: td_q4_03

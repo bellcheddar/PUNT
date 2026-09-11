@@ -22,7 +22,7 @@
   tone: [corny]
   weight: 4
   cooldown: 1200
-  text: "{manager} may now relax, which he will do loudly."
+  text: "{manager} may now relax, which will be done loudly."
   roast_level: 1
   audio: horn_03
   voice: colour
@@ -31,7 +31,7 @@
   tone: [dry]
   weight: 3
   cooldown: 1200
-  text: "{win_pct} percent for {manager}. The simulator has stopped finding ways for him to lose."
+  text: "{win_pct} percent for {manager}. The simulator has stopped finding ways for it to lose."
   audio: horn_03
   voice: colour
 - id: clinch_05
@@ -144,7 +144,7 @@
   roast_level: 2
   weight: 2
   cooldown: 1800
-  text: "{manager} has won a fantasy football match. Somebody tell him it is not an achievement."
+  text: "{manager} has won a fantasy football match. Somebody mention it is not an achievement."
   audio: horn_03
   voice: colour
 - id: clinch_17
@@ -160,7 +160,7 @@
   tone: [hype]
   weight: 4
   cooldown: 1500
-  text: "{manager} holds on by {lead}. That was closer than he is going to admit."
+  text: "{manager} holds on by {lead}. That was closer than it is going to admit."
   roast_level: 1
   audio: horn_03
   voice: pbp

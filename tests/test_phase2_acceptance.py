@@ -126,12 +126,14 @@ def test_the_timeline_is_plausible(no_network):
     # Nothing may fire before the first snapshot has a baseline to diff against.
     assert min(m["ts"] for m in timeline) > 0
 
-    # The planted storylines, by name.
-    bench = [m for m in timeline if m["kind"] == "BENCH_DISASTER" and m["managers"] == ["Priya"]]
-    assert bench, "Priya's planted bench disaster never fired"
+    # The planted storylines, by name. Moments carry TEAM names now, not the
+    # managers': the league calls itself by its team names and the commentary
+    # follows. Priya's team is Bench Mob Rule, which is the joke.
+    bench = [m for m in timeline if m["kind"] == "BENCH_DISASTER" and m["teams"] == ["Bench Mob Rule"]]
+    assert bench, "the planted bench disaster never fired"
     assert max(m["context"]["benched_points"] for m in bench) == 41.2
-    assert any(m["kind"] == "DOOM" and m["managers"] == ["Wren"] for m in timeline)
-    assert any(m["kind"] == "GOOSE_EGG" and m["managers"] == ["Gus"] for m in timeline)
+    assert any(m["kind"] == "DOOM" and m["teams"] == ["Certified Bottlers"] for m in timeline)
+    assert any(m["kind"] == "GOOSE_EGG" and m["teams"] == ["Sunday Roast"] for m in timeline)
 
 
 def test_the_timeline_is_byte_for_byte_what_it_was(no_network):

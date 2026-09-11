@@ -31,7 +31,7 @@
   tone: [corny]
   weight: 4
   cooldown: 900
-  text: "Big gain, {player}. {manager} is doing arithmetic in his head."
+  text: "Big gain, {player}. {manager} is doing arithmetic."
   roast_level: 1
   audio: whoosh
   voice: colour
@@ -56,7 +56,7 @@
   tone: [corny]
   weight: 3
   cooldown: 1020
-  text: "{player} again. {manager} is starting to look organised, which is unlike him."
+  text: "{player} again. {manager} is starting to look organised, which is new."
   roast_level: 1
   audio: whoosh
   voice: colour
@@ -150,7 +150,7 @@
   roast_level: 1
   weight: 3
   cooldown: 1080
-  text: "That is another one from the bench. {manager} is compiling quite a highlight reel he cannot use."
+  text: "That is another one from the bench. {manager} is compiling quite a highlight reel it cannot use."
   audio: trombone
   voice: colour
 - id: bp_qb_01
@@ -306,7 +306,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1020
-  text: "{player} picks up {delta}. {manager} updates his mental arithmetic."
+  text: "{player} picks up {delta}. {manager} updates the mental arithmetic."
   audio: whoosh
   voice: colour
 - id: bp_generic_22

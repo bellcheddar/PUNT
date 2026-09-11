@@ -3,8 +3,8 @@
   "id": "0efbb2a3acfe262171c8",
   "kind": "TOUCHDOWN",
   "magnitude": 1.0,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -31,8 +31,8 @@
   "id": "1a77ef0ff683ebb6d9f4",
   "kind": "BIG_PLAY",
   "magnitude": 0.411,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -59,8 +59,8 @@
   "id": "e7cbab7106938095290c",
   "kind": "TOUCHDOWN",
   "magnitude": 0.542,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -87,8 +87,8 @@
   "id": "8e5bbe08013e74479856",
   "kind": "BIG_PLAY",
   "magnitude": 0.517,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -115,8 +115,8 @@
   "id": "e55da2bd5ee21de4b963",
   "kind": "TOUCHDOWN",
   "magnitude": 0.783,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -143,8 +143,8 @@
   "id": "34d36cda42c460d5a1d1",
   "kind": "BIG_PLAY",
   "magnitude": 0.339,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -171,8 +171,8 @@
   "id": "5bbed512d392f350af7b",
   "kind": "TOUCHDOWN",
   "magnitude": 0.983,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -199,8 +199,8 @@
   "id": "7816b7f9038cb50e21bb",
   "kind": "BIG_PLAY",
   "magnitude": 0.478,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -227,8 +227,8 @@
   "id": "bb81ed8cd7676a6a7983",
   "kind": "TOUCHDOWN",
   "magnitude": 0.833,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -255,8 +255,8 @@
   "id": "1b85b0aed701dcb61cb8",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -283,8 +283,8 @@
   "id": "cd46643b1f7f5b2255e6",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -311,8 +311,8 @@
   "id": "1317a40420467b5147e9",
   "kind": "TOUCHDOWN",
   "magnitude": 0.617,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -339,8 +339,8 @@
   "id": "b1892d0c9ec39f47a2a6",
   "kind": "BIG_PLAY",
   "magnitude": 0.383,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -367,8 +367,8 @@
   "id": "c26829f021496acab480",
   "kind": "TOUCHDOWN",
   "magnitude": 0.542,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -395,8 +395,8 @@
   "id": "155698316e9a85118a95",
   "kind": "TOUCHDOWN",
   "magnitude": 1.0,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -423,8 +423,8 @@
   "id": "831cf8bf4ba17b9b8144",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -451,8 +451,8 @@
   "id": "6411bafee58c5dffb119",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -479,8 +479,8 @@
   "id": "a6f35c00c90350ba8185",
   "kind": "BIG_PLAY",
   "magnitude": 0.334,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -507,8 +507,8 @@
   "id": "91c06834df117ac1c2b4",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -535,8 +535,8 @@
   "id": "429fa0b1950bcc05c0c8",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -564,8 +564,8 @@
   "id": "ec39bac3053e1349793a",
   "kind": "BIG_PLAY",
   "magnitude": 0.444,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -592,8 +592,8 @@
   "id": "ef212077a19f04afa78f",
   "kind": "TOUCHDOWN",
   "magnitude": 0.942,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -620,8 +620,8 @@
   "id": "f03512d6aeed93a9c37c",
   "kind": "BIG_PLAY",
   "magnitude": 0.506,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -648,8 +648,8 @@
   "id": "86e601089f626e247843",
   "kind": "TOUCHDOWN",
   "magnitude": 0.617,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -676,8 +676,8 @@
   "id": "50cd3e9665d0c56669c2",
   "kind": "TOUCHDOWN",
   "magnitude": 0.795,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -704,9 +704,9 @@
   "id": "901be4613f18018c7856",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.531,
-  "managers": [
-   "Chidi",
-   "Bex"
+  "teams": [
+   "The Wounded Ferrets",
+   "Regret Merchants"
   ],
   "team_ids": [
    2,
@@ -728,8 +728,8 @@
   "id": "cd2fbe196879a74dc2d0",
   "kind": "BIG_PLAY",
   "magnitude": 0.361,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -756,9 +756,9 @@
   "id": "c542eb0f92ccfd52bb9f",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.588,
-  "managers": [
-   "Chidi",
-   "Bex"
+  "teams": [
+   "The Wounded Ferrets",
+   "Regret Merchants"
   ],
   "team_ids": [
    2,
@@ -780,8 +780,8 @@
   "id": "057894dfea973287fdcc",
   "kind": "BIG_PLAY",
   "magnitude": 0.428,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -808,8 +808,8 @@
   "id": "ceda105a1aeabbcae4e8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.642,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -836,8 +836,8 @@
   "id": "a0921891c88e7d067f8f",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -864,8 +864,8 @@
   "id": "8bc9c835e85b1d873096",
   "kind": "TOUCHDOWN",
   "magnitude": 0.65,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -892,8 +892,8 @@
   "id": "25e7de9b445b90f3e602",
   "kind": "INJURY",
   "magnitude": 0.6,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -921,8 +921,8 @@
   "id": "8c9297eca9d7dddf8365",
   "kind": "TOUCHDOWN",
   "magnitude": 0.55,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -949,8 +949,8 @@
   "id": "bc9a27ad7bcab6ba724b",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -977,8 +977,8 @@
   "id": "c5a8117cb3e666932f11",
   "kind": "BIG_PLAY",
   "magnitude": 0.334,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1005,8 +1005,8 @@
   "id": "40e1500ae7b4e9ecf72a",
   "kind": "TOUCHDOWN",
   "magnitude": 0.683,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -1033,8 +1033,8 @@
   "id": "d93aa148c1e9f3ee296d",
   "kind": "BIG_PLAY",
   "magnitude": 0.417,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -1061,8 +1061,8 @@
   "id": "362b584589ad278c3b61",
   "kind": "TOUCHDOWN",
   "magnitude": 1.0,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -1089,8 +1089,8 @@
   "id": "6cdde53df1a485b57aae",
   "kind": "TOUCHDOWN",
   "magnitude": 0.703,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -1117,8 +1117,8 @@
   "id": "f6844686dd3b8a9a70f5",
   "kind": "BIG_PLAY",
   "magnitude": 0.5,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -1145,8 +1145,8 @@
   "id": "7489f92181ad657b0de0",
   "kind": "BIG_PLAY",
   "magnitude": 0.433,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -1173,8 +1173,8 @@
   "id": "596ba3598c02a1f40546",
   "kind": "TOUCHDOWN",
   "magnitude": 0.663,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1201,8 +1201,8 @@
   "id": "7b0e43bbd576768270f5",
   "kind": "BIG_PLAY",
   "magnitude": 0.505,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -1229,8 +1229,8 @@
   "id": "efc770e0f4dfa51f6f07",
   "kind": "BIG_PLAY",
   "magnitude": 0.366,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -1257,8 +1257,8 @@
   "id": "ff6ee808a8dc1fe0f282",
   "kind": "BIG_PLAY",
   "magnitude": 0.517,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -1285,8 +1285,8 @@
   "id": "001383f242ce4dbec0db",
   "kind": "TOUCHDOWN",
   "magnitude": 0.858,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1313,8 +1313,8 @@
   "id": "efa2f2985cf02571045a",
   "kind": "BIG_PLAY",
   "magnitude": 0.494,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -1341,8 +1341,8 @@
   "id": "b944bc1100d2c01d15b1",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.7,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -1365,8 +1365,8 @@
   "id": "8d8d5621a820df803a4a",
   "kind": "TOUCHDOWN",
   "magnitude": 0.558,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -1393,8 +1393,8 @@
   "id": "8a1600744ca4c8ac6baa",
   "kind": "BIG_PLAY",
   "magnitude": 0.339,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1421,8 +1421,8 @@
   "id": "8ad3f6dd84282c70f338",
   "kind": "TOUCHDOWN",
   "magnitude": 0.817,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -1449,8 +1449,8 @@
   "id": "e0406f29434df4f563be",
   "kind": "BIG_PLAY",
   "magnitude": 0.417,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -1477,8 +1477,8 @@
   "id": "ba87b180240c9c1b0158",
   "kind": "TOUCHDOWN",
   "magnitude": 0.625,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1505,8 +1505,8 @@
   "id": "c3dd3d29c4e2f89b46f1",
   "kind": "TOUCHDOWN",
   "magnitude": 0.6,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -1533,8 +1533,8 @@
   "id": "852625201e32139589ac",
   "kind": "TOUCHDOWN",
   "magnitude": 0.658,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -1561,8 +1561,8 @@
   "id": "4365a16971df09deb1ec",
   "kind": "TOUCHDOWN",
   "magnitude": 0.65,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -1589,8 +1589,8 @@
   "id": "7b2c126e6ab9caf07a0c",
   "kind": "TOUCHDOWN",
   "magnitude": 0.883,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -1617,8 +1617,8 @@
   "id": "200e0adaf9e488c40ead",
   "kind": "TOUCHDOWN",
   "magnitude": 0.877,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -1645,8 +1645,8 @@
   "id": "4d33ba9c151ce9e7688d",
   "kind": "BIG_PLAY",
   "magnitude": 0.488,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -1673,8 +1673,8 @@
   "id": "48cea2726351b8554991",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.735,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -1697,8 +1697,8 @@
   "id": "76dfaf1677fbc3f560ed",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -1726,8 +1726,8 @@
   "id": "225cc855a652ef88b4ba",
   "kind": "BIG_PLAY",
   "magnitude": 0.356,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -1754,8 +1754,8 @@
   "id": "12a8c2bf215fc595e043",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -1782,8 +1782,8 @@
   "id": "e86432598eb0c4383285",
   "kind": "TOUCHDOWN",
   "magnitude": 0.583,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -1810,8 +1810,8 @@
   "id": "568e2881a6cf72942a20",
   "kind": "BIG_PLAY",
   "magnitude": 0.509,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1838,8 +1838,8 @@
   "id": "bd383d713bc3f85d5be4",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -1867,8 +1867,8 @@
   "id": "1d9add4b833a70841db5",
   "kind": "TOUCHDOWN",
   "magnitude": 0.658,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -1895,8 +1895,8 @@
   "id": "dfb1dad4d99b6469d1d8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.55,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -1923,8 +1923,8 @@
   "id": "2de664ba062a57ec0155",
   "kind": "BIG_PLAY",
   "magnitude": 0.406,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -1951,8 +1951,8 @@
   "id": "a4f4fec7f080687723a3",
   "kind": "BIG_PLAY",
   "magnitude": 0.446,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -1979,8 +1979,8 @@
   "id": "b1025f35782535f1fb82",
   "kind": "BIG_PLAY",
   "magnitude": 0.35,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -2007,8 +2007,8 @@
   "id": "3d2fdf871c9089dd855b",
   "kind": "BIG_PLAY",
   "magnitude": 0.341,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -2035,9 +2035,9 @@
   "id": "6b8392b08d9aec2b473d",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.529,
-  "managers": [
-   "Marguerite",
-   "Theo"
+  "teams": [
+   "Fourth and Forever",
+   "Panic at the Flex"
   ],
   "team_ids": [
    10,
@@ -2059,9 +2059,9 @@
   "id": "35844f6a8810a2009ad2",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.552,
-  "managers": [
-   "Theo",
-   "Marguerite"
+  "teams": [
+   "Panic at the Flex",
+   "Fourth and Forever"
   ],
   "team_ids": [
    9,
@@ -2083,8 +2083,8 @@
   "id": "76f7de418eabbf2c84cc",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -2112,8 +2112,8 @@
   "id": "9c735ba454a7723c305c",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -2140,8 +2140,8 @@
   "id": "45f2ef73dfc643fd709f",
   "kind": "TOUCHDOWN",
   "magnitude": 1.0,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -2168,9 +2168,9 @@
   "id": "652cea7f43aab982e00f",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.667,
-  "managers": [
-   "Priya",
-   "Gus"
+  "teams": [
+   "Bench Mob Rule",
+   "Sunday Roast"
   ],
   "team_ids": [
    5,
@@ -2192,8 +2192,8 @@
   "id": "427de658fd33fd87fc7f",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -2221,8 +2221,8 @@
   "id": "35b5c621f27ad1ec43a3",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -2249,8 +2249,8 @@
   "id": "11156ef910bc568f3101",
   "kind": "TOUCHDOWN",
   "magnitude": 0.608,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -2277,8 +2277,8 @@
   "id": "322cc65e87426d0ca227",
   "kind": "BIG_PLAY",
   "magnitude": 0.503,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -2305,8 +2305,8 @@
   "id": "d4e5a2443bfe4bd7509c",
   "kind": "BIG_PLAY",
   "magnitude": 0.389,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -2333,8 +2333,8 @@
   "id": "ac75de5ae8ec012d3e72",
   "kind": "MILESTONE",
   "magnitude": 0.55,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -2362,8 +2362,8 @@
   "id": "e8178b6758ca8ec629cd",
   "kind": "TOUCHDOWN",
   "magnitude": 0.544,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -2390,8 +2390,8 @@
   "id": "2af3e7591326857e64f8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.658,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -2418,8 +2418,8 @@
   "id": "a18ff8bd6ecbd44f6ccb",
   "kind": "TOUCHDOWN",
   "magnitude": 0.568,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -2446,9 +2446,9 @@
   "id": "e2291ec21f4c85611683",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.515,
-  "managers": [
-   "Marguerite",
-   "Theo"
+  "teams": [
+   "Fourth and Forever",
+   "Panic at the Flex"
   ],
   "team_ids": [
    10,
@@ -2470,8 +2470,8 @@
   "id": "a52c1db3cdfae3d882f9",
   "kind": "TOUCHDOWN",
   "magnitude": 0.746,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -2498,8 +2498,8 @@
   "id": "76b6cbd84160aed88fc2",
   "kind": "INJURY",
   "magnitude": 0.6,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -2527,8 +2527,8 @@
   "id": "23d082cd74a9e9c0536d",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -2555,8 +2555,8 @@
   "id": "69cb9f5e2280490a632a",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.655,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -2579,8 +2579,8 @@
   "id": "c7ad1fdad4217388acaf",
   "kind": "BIG_PLAY",
   "magnitude": 0.434,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -2607,8 +2607,8 @@
   "id": "6e599d9d074f190a6f5b",
   "kind": "TOUCHDOWN",
   "magnitude": 0.713,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -2635,8 +2635,8 @@
   "id": "c09b90c40b5430463d9d",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.669,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -2659,8 +2659,8 @@
   "id": "faabd5b796b82476cb90",
   "kind": "TOUCHDOWN",
   "magnitude": 0.619,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -2687,9 +2687,9 @@
   "id": "ff50318b882b612825e6",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.51,
-  "managers": [
-   "Bex",
-   "Chidi"
+  "teams": [
+   "Regret Merchants",
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    1,
@@ -2711,8 +2711,8 @@
   "id": "5e936fdd8a17c8fe2d36",
   "kind": "TOUCHDOWN",
   "magnitude": 0.798,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -2739,8 +2739,8 @@
   "id": "31ec50ced6f6b3aae77f",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.721,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -2763,8 +2763,8 @@
   "id": "9e1157d78ac402f617ae",
   "kind": "TOUCHDOWN",
   "magnitude": 0.709,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -2791,8 +2791,8 @@
   "id": "f7f37969b0cc6c3cbbc7",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -2819,8 +2819,8 @@
   "id": "683073045c0741f3856a",
   "kind": "TOUCHDOWN",
   "magnitude": 0.55,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -2847,8 +2847,8 @@
   "id": "44b6b765a0b4762f8a5e",
   "kind": "BIG_PLAY",
   "magnitude": 0.361,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -2875,8 +2875,8 @@
   "id": "6225beb4fdbe83923268",
   "kind": "TOUCHDOWN",
   "magnitude": 0.632,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -2903,8 +2903,8 @@
   "id": "e8c37a4ea7a3130df9c5",
   "kind": "TOUCHDOWN",
   "magnitude": 0.583,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -2931,8 +2931,8 @@
   "id": "a02ab809044ca583d7b0",
   "kind": "TOUCHDOWN",
   "magnitude": 0.765,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -2959,8 +2959,8 @@
   "id": "750a5b07a79db15dc33c",
   "kind": "BIG_PLAY",
   "magnitude": 0.469,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -2987,8 +2987,8 @@
   "id": "b10a54b1e8dbfb051fe0",
   "kind": "BIG_PLAY",
   "magnitude": 0.381,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -3015,8 +3015,8 @@
   "id": "dccdaf97b71218b6e639",
   "kind": "BIG_PLAY",
   "magnitude": 0.481,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -3043,8 +3043,8 @@
   "id": "634bea4cefcb47d60cfd",
   "kind": "BIG_PLAY",
   "magnitude": 0.363,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -3071,8 +3071,8 @@
   "id": "47330d69a84530e3cd83",
   "kind": "TOUCHDOWN",
   "magnitude": 0.725,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3099,8 +3099,8 @@
   "id": "f14b8d9f45d5fd24bef9",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.687,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3123,8 +3123,8 @@
   "id": "e7b06ceb77f788f71b8e",
   "kind": "BIG_PLAY",
   "magnitude": 0.462,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -3151,8 +3151,8 @@
   "id": "d0e50522cd375ff75b72",
   "kind": "TOUCHDOWN",
   "magnitude": 0.682,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -3179,8 +3179,8 @@
   "id": "b99a380bd4da8983ca27",
   "kind": "BIG_PLAY",
   "magnitude": 0.494,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -3207,8 +3207,8 @@
   "id": "efc0d22ee9d66649d5fa",
   "kind": "BIG_PLAY",
   "magnitude": 0.411,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -3235,8 +3235,8 @@
   "id": "f42e7706d780bf55249e",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.675,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -3259,8 +3259,8 @@
   "id": "9a0012894f9d08c75872",
   "kind": "BIG_PLAY",
   "magnitude": 0.429,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -3287,8 +3287,8 @@
   "id": "24c5b05ab6e3ff4c9751",
   "kind": "BIG_PLAY",
   "magnitude": 0.421,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -3315,8 +3315,8 @@
   "id": "d6bde23051574299d7b9",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.671,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -3339,8 +3339,8 @@
   "id": "fa9de042d7744972d2f4",
   "kind": "TOUCHDOWN",
   "magnitude": 0.658,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -3367,8 +3367,8 @@
   "id": "d609da6b337517e81667",
   "kind": "BIG_PLAY",
   "magnitude": 0.48,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -3395,8 +3395,8 @@
   "id": "683938d9b199566f623e",
   "kind": "BIG_PLAY",
   "magnitude": 0.398,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -3423,8 +3423,8 @@
   "id": "96520ad894aa78f2afe1",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -3451,8 +3451,8 @@
   "id": "9604f3914ce128f5681c",
   "kind": "BIG_PLAY",
   "magnitude": 0.45,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3479,8 +3479,8 @@
   "id": "f2fc4f2e5803b6210dc2",
   "kind": "BIG_PLAY",
   "magnitude": 0.368,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -3507,8 +3507,8 @@
   "id": "b49ec13ebc734b31e01a",
   "kind": "TOUCHDOWN",
   "magnitude": 0.808,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3535,8 +3535,8 @@
   "id": "9a8dbbb9b7dcc09c2a30",
   "kind": "TOUCHDOWN",
   "magnitude": 0.633,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -3563,8 +3563,8 @@
   "id": "b03914668a4db5b6c874",
   "kind": "DOOM",
   "magnitude": 0.85,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -3584,8 +3584,8 @@
   "id": "b8f3b537d078895b4c04",
   "kind": "CLINCH",
   "magnitude": 0.75,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -3605,8 +3605,8 @@
   "id": "33b748760bb637657aea",
   "kind": "GOOSE_EGG",
   "magnitude": 0.7,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3634,8 +3634,8 @@
   "id": "7a871c33c95223d7d76c",
   "kind": "BIG_PLAY",
   "magnitude": 0.511,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -3662,8 +3662,8 @@
   "id": "56d1b4dae729f16a7c0d",
   "kind": "BIG_PLAY",
   "magnitude": 0.444,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -3690,8 +3690,8 @@
   "id": "a61d02df22a407ad01a8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.967,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -3718,8 +3718,8 @@
   "id": "d378eba1d132c287feaf",
   "kind": "TOUCHDOWN",
   "magnitude": 0.8,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -3746,8 +3746,8 @@
   "id": "5ca71f43ce37bbab1b92",
   "kind": "BIG_PLAY",
   "magnitude": 0.428,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -3774,8 +3774,8 @@
   "id": "f8078e4d58c791075be9",
   "kind": "BIG_PLAY",
   "magnitude": 0.411,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3802,8 +3802,8 @@
   "id": "a17db12f6e026aa5380a",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -3830,8 +3830,8 @@
   "id": "2af8b1224774b74b7690",
   "kind": "BIG_PLAY",
   "magnitude": 0.5,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -3858,8 +3858,8 @@
   "id": "1cb5928d64bd0d65a5c5",
   "kind": "BIG_PLAY",
   "magnitude": 0.356,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -3886,8 +3886,8 @@
   "id": "f19a8ea1ed4416b5b7be",
   "kind": "BIG_PLAY",
   "magnitude": 0.428,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -3914,8 +3914,8 @@
   "id": "176123508d96ccd2b8f6",
   "kind": "BIG_PLAY",
   "magnitude": 0.372,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -3942,8 +3942,8 @@
   "id": "a6ae8e7eb777dbf48a2a",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -3970,8 +3970,8 @@
   "id": "56d54b2eec7ab150d2dd",
   "kind": "BIG_PLAY",
   "magnitude": 0.45,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -3998,8 +3998,8 @@
   "id": "e1c076bdcb8c93614ec0",
   "kind": "TOUCHDOWN",
   "magnitude": 0.958,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -4026,8 +4026,8 @@
   "id": "c20675c98cc43ead1f69",
   "kind": "TOUCHDOWN",
   "magnitude": 0.567,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -4054,8 +4054,8 @@
   "id": "b6145c2fe48d0c305802",
   "kind": "BIG_PLAY",
   "magnitude": 0.522,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -4082,8 +4082,8 @@
   "id": "d66409a30f2cb813a7d0",
   "kind": "TOUCHDOWN",
   "magnitude": 0.65,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -4110,8 +4110,8 @@
   "id": "35c20ec87109dace434d",
   "kind": "BIG_PLAY",
   "magnitude": 0.35,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -4138,8 +4138,8 @@
   "id": "11349e31134acbd85db1",
   "kind": "TOUCHDOWN",
   "magnitude": 0.592,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -4166,8 +4166,8 @@
   "id": "d15d1c4a6d6081aa154b",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.758,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4190,8 +4190,8 @@
   "id": "83c58cbc915907d334e9",
   "kind": "BIG_PLAY",
   "magnitude": 0.411,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4218,8 +4218,8 @@
   "id": "0f3d7b0a007c003a7eb1",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -4246,8 +4246,8 @@
   "id": "8276da0677e25a9e3437",
   "kind": "TOUCHDOWN",
   "magnitude": 0.567,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -4274,8 +4274,8 @@
   "id": "4c901bb1c15ceb2f31ea",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -4302,8 +4302,8 @@
   "id": "34ad161f20136db287f2",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -4330,8 +4330,8 @@
   "id": "ff7b91584caad115a8be",
   "kind": "BIG_PLAY",
   "magnitude": 0.389,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -4358,8 +4358,8 @@
   "id": "ec45513d7aa5823d7626",
   "kind": "BIG_PLAY",
   "magnitude": 0.467,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4386,8 +4386,8 @@
   "id": "22f7b26ee263c8027771",
   "kind": "TOUCHDOWN",
   "magnitude": 0.658,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -4414,8 +4414,8 @@
   "id": "5363fdd28c9d3e16cfb6",
   "kind": "BIG_PLAY",
   "magnitude": 0.472,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -4442,8 +4442,8 @@
   "id": "53e0c9d8e8b05b439c45",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -4471,8 +4471,8 @@
   "id": "40c11bdf74e8e4cf3b80",
   "kind": "BIG_PLAY",
   "magnitude": 0.439,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -4499,9 +4499,9 @@
   "id": "3f1963ef6658a010a3bf",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.501,
-  "managers": [
-   "Chidi",
-   "Bex"
+  "teams": [
+   "The Wounded Ferrets",
+   "Regret Merchants"
   ],
   "team_ids": [
    2,
@@ -4523,8 +4523,8 @@
   "id": "4adaa60aa09c62521a73",
   "kind": "BIG_PLAY",
   "magnitude": 0.411,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -4551,8 +4551,8 @@
   "id": "1c893de720c0da94f67d",
   "kind": "BIG_PLAY",
   "magnitude": 0.406,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -4579,8 +4579,8 @@
   "id": "75bee4fd869b9d23811d",
   "kind": "TOUCHDOWN",
   "magnitude": 0.683,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -4607,8 +4607,8 @@
   "id": "0ebc2d0335a4d6003416",
   "kind": "BIG_PLAY",
   "magnitude": 0.522,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -4635,8 +4635,8 @@
   "id": "4ed4875f0c0d699188d1",
   "kind": "TOUCHDOWN",
   "magnitude": 0.6,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4663,8 +4663,8 @@
   "id": "02aa2c2c81bba0e20b65",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4692,8 +4692,8 @@
   "id": "1f176e6f32e50ab1c418",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.813,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4716,8 +4716,8 @@
   "id": "9fb110c211129f157c6a",
   "kind": "BIG_PLAY",
   "magnitude": 0.517,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4744,8 +4744,8 @@
   "id": "62f0577bc3b26247fd20",
   "kind": "TOUCHDOWN",
   "magnitude": 0.633,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4772,8 +4772,8 @@
   "id": "ef3a18612e8221031031",
   "kind": "BIG_PLAY",
   "magnitude": 0.467,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -4800,8 +4800,8 @@
   "id": "d42f0cad028ba2c965d7",
   "kind": "TOUCHDOWN",
   "magnitude": 0.975,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -4828,8 +4828,8 @@
   "id": "31beea394643e3cf4965",
   "kind": "BIG_PLAY",
   "magnitude": 0.483,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -4856,9 +4856,9 @@
   "id": "a8b735122c9654f2251b",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.51,
-  "managers": [
-   "Bex",
-   "Chidi"
+  "teams": [
+   "Regret Merchants",
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    1,
@@ -4880,9 +4880,9 @@
   "id": "c23b79c7e36610d1248c",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.523,
-  "managers": [
-   "Chidi",
-   "Bex"
+  "teams": [
+   "The Wounded Ferrets",
+   "Regret Merchants"
   ],
   "team_ids": [
    2,
@@ -4904,8 +4904,8 @@
   "id": "5c564286bc759f4334d1",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -4932,8 +4932,8 @@
   "id": "3e1b20c68fe3dbcbe056",
   "kind": "BIG_PLAY",
   "magnitude": 0.339,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4960,8 +4960,8 @@
   "id": "da697507aa6990c86697",
   "kind": "MILESTONE",
   "magnitude": 0.6,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -4981,8 +4981,8 @@
   "id": "fe10a4c2cad51d88bf2e",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.797,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -5005,8 +5005,8 @@
   "id": "b936ef03ffd6143e1dca",
   "kind": "MILESTONE",
   "magnitude": 0.55,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -5034,8 +5034,8 @@
   "id": "ba95ffd905f9447be638",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -5062,8 +5062,8 @@
   "id": "ee3d091846137b793bd8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.608,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -5090,8 +5090,8 @@
   "id": "f1772bd7c31408a17544",
   "kind": "BIG_PLAY",
   "magnitude": 0.348,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -5118,8 +5118,8 @@
   "id": "0e33489016876c0b2aa3",
   "kind": "BIG_PLAY",
   "magnitude": 0.343,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -5146,8 +5146,8 @@
   "id": "f767f23fd0a611165dc1",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5175,8 +5175,8 @@
   "id": "5c59fc3f520450c0e97e",
   "kind": "BIG_PLAY",
   "magnitude": 0.333,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -5203,9 +5203,9 @@
   "id": "a36cf595a914e8a53f7d",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.834,
-  "managers": [
-   "Noor",
-   "Ollie"
+  "teams": [
+   "Vibes Only FC",
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    3,
@@ -5227,8 +5227,8 @@
   "id": "df2848d816990e217499",
   "kind": "TOUCHDOWN",
   "magnitude": 0.575,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -5255,8 +5255,8 @@
   "id": "ecb9965400639e5a2e13",
   "kind": "BIG_PLAY",
   "magnitude": 0.506,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -5283,8 +5283,8 @@
   "id": "0b46fe81db6409ed1f72",
   "kind": "BIG_PLAY",
   "magnitude": 0.364,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -5311,8 +5311,8 @@
   "id": "c7900127fb1f0fe5b560",
   "kind": "BIG_PLAY",
   "magnitude": 0.525,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -5339,8 +5339,8 @@
   "id": "3f24185e9f5641b4324a",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5368,8 +5368,8 @@
   "id": "0f05a76bb61e05d6f3f0",
   "kind": "BIG_PLAY",
   "magnitude": 0.418,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5396,8 +5396,8 @@
   "id": "25dd2c0a741bed799140",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -5425,8 +5425,8 @@
   "id": "8f015e862dfaf4c89e14",
   "kind": "DOOM",
   "magnitude": 0.85,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -5446,8 +5446,8 @@
   "id": "6b31dc1c8b0d085469f4",
   "kind": "TOUCHDOWN",
   "magnitude": 0.593,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -5474,8 +5474,8 @@
   "id": "5b2aab786e7ed998aeed",
   "kind": "MILESTONE",
   "magnitude": 0.55,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -5503,8 +5503,8 @@
   "id": "3e101dfa0e0963abff1e",
   "kind": "TOUCHDOWN",
   "magnitude": 0.547,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5531,8 +5531,8 @@
   "id": "6f6643e46eb7c5f770a0",
   "kind": "TOUCHDOWN",
   "magnitude": 1.0,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -5559,9 +5559,9 @@
   "id": "c15e62cebeba93828432",
   "kind": "LEAD_CHANGE",
   "magnitude": 0.546,
-  "managers": [
-   "Bex",
-   "Chidi"
+  "teams": [
+   "Regret Merchants",
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    1,
@@ -5583,8 +5583,8 @@
   "id": "0550360a515bd5bf1cab",
   "kind": "CLINCH",
   "magnitude": 0.75,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5604,8 +5604,8 @@
   "id": "eb6915f1d821995cb21b",
   "kind": "TOUCHDOWN",
   "magnitude": 0.689,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -5632,8 +5632,8 @@
   "id": "0ec8bf49fe61de1b33f8",
   "kind": "MILESTONE",
   "magnitude": 0.6,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5653,8 +5653,8 @@
   "id": "cafd4f9304f6794d62a6",
   "kind": "BIG_PLAY",
   "magnitude": 0.514,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -5681,8 +5681,8 @@
   "id": "2c0c47f0c122cb861b59",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.651,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -5705,8 +5705,8 @@
   "id": "3a4f96a2f2ebaafd6b37",
   "kind": "BENCH_DISASTER",
   "magnitude": 0.922,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -5729,8 +5729,8 @@
   "id": "96731ed3890a59b69a8a",
   "kind": "MILESTONE",
   "magnitude": 0.65,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -5758,8 +5758,8 @@
   "id": "08ae56d72eb172ec4d8b",
   "kind": "BIG_PLAY",
   "magnitude": 0.417,
-  "managers": [
-   "Priya"
+  "teams": [
+   "Bench Mob Rule"
   ],
   "team_ids": [
    5
@@ -5786,8 +5786,8 @@
   "id": "6a241ad4326bae5021e2",
   "kind": "BIG_PLAY",
   "magnitude": 0.483,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -5814,8 +5814,8 @@
   "id": "c37f06799c860793b5db",
   "kind": "BIG_PLAY",
   "magnitude": 0.364,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -5842,8 +5842,8 @@
   "id": "425b26c315c49c06516c",
   "kind": "DOOM",
   "magnitude": 0.85,
-  "managers": [
-   "Ollie"
+  "teams": [
+   "Statistically Irrelevant"
   ],
   "team_ids": [
    4
@@ -5863,8 +5863,8 @@
   "id": "e99117bb67bb269e8877",
   "kind": "GOOSE_EGG",
   "magnitude": 0.7,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -5892,8 +5892,8 @@
   "id": "dd56cb9b8912ee4b5b34",
   "kind": "GOOSE_EGG",
   "magnitude": 0.7,
-  "managers": [
-   "Theo"
+  "teams": [
+   "Panic at the Flex"
   ],
   "team_ids": [
    9
@@ -5921,8 +5921,8 @@
   "id": "6ef71bc7a4414a8ecd14",
   "kind": "DOOM",
   "magnitude": 0.85,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -5942,8 +5942,8 @@
   "id": "24a8a19d3442f109d416",
   "kind": "TOUCHDOWN",
   "magnitude": 0.617,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -5970,8 +5970,8 @@
   "id": "14bbd100f1c4ebe0c81c",
   "kind": "BIG_PLAY",
   "magnitude": 0.472,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -5998,8 +5998,8 @@
   "id": "b603501e2dad5551358c",
   "kind": "CLINCH",
   "magnitude": 0.75,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -6019,8 +6019,8 @@
   "id": "1a23408442561a478a9c",
   "kind": "MILESTONE",
   "magnitude": 0.6,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6040,8 +6040,8 @@
   "id": "422f306b0340d1989191",
   "kind": "BIG_PLAY",
   "magnitude": 0.472,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6068,8 +6068,8 @@
   "id": "817c0e8970f1a3792f74",
   "kind": "BIG_PLAY",
   "magnitude": 0.389,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -6096,8 +6096,8 @@
   "id": "aabe536f29cb00242e58",
   "kind": "BIG_PLAY",
   "magnitude": 0.361,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6124,8 +6124,8 @@
   "id": "c7d3220b7981df860ad8",
   "kind": "TOUCHDOWN",
   "magnitude": 0.625,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -6152,8 +6152,8 @@
   "id": "9f523990803b36f93e11",
   "kind": "BIG_PLAY",
   "magnitude": 0.506,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -6180,8 +6180,8 @@
   "id": "04f934b8c66c1ef5a3f1",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -6208,8 +6208,8 @@
   "id": "90d868de56ef3be17de1",
   "kind": "BIG_PLAY",
   "magnitude": 0.394,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6236,8 +6236,8 @@
   "id": "69a8ba551a8472fba1e0",
   "kind": "TOUCHDOWN",
   "magnitude": 0.783,
-  "managers": [
-   "Noor"
+  "teams": [
+   "Vibes Only FC"
   ],
   "team_ids": [
    3
@@ -6264,8 +6264,8 @@
   "id": "02b0f91281a60bb12402",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -6292,8 +6292,8 @@
   "id": "3f7d3c0279ae83d750a4",
   "kind": "TOUCHDOWN",
   "magnitude": 1.0,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6320,8 +6320,8 @@
   "id": "93f193f7dc6dc51173c4",
   "kind": "MILESTONE",
   "magnitude": 0.45,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6349,8 +6349,8 @@
   "id": "20515c89fd9ffa9a00e9",
   "kind": "BIG_PLAY",
   "magnitude": 0.472,
-  "managers": [
-   "Marguerite"
+  "teams": [
+   "Fourth and Forever"
   ],
   "team_ids": [
    10
@@ -6377,8 +6377,8 @@
   "id": "10138a628ab763bd2267",
   "kind": "BIG_PLAY",
   "magnitude": 0.391,
-  "managers": [
-   "Chidi"
+  "teams": [
+   "The Wounded Ferrets"
   ],
   "team_ids": [
    2
@@ -6405,8 +6405,8 @@
   "id": "ac0a0bb9f8d55c131b01",
   "kind": "TOUCHDOWN",
   "magnitude": 0.701,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -6433,8 +6433,8 @@
   "id": "d73835b0e71207590a59",
   "kind": "MILESTONE",
   "magnitude": 0.6,
-  "managers": [
-   "Bex"
+  "teams": [
+   "Regret Merchants"
   ],
   "team_ids": [
    1
@@ -6454,8 +6454,8 @@
   "id": "fe60dc88a05aac547328",
   "kind": "TOUCHDOWN",
   "magnitude": 0.653,
-  "managers": [
-   "Gus"
+  "teams": [
+   "Sunday Roast"
   ],
   "team_ids": [
    6
@@ -6482,8 +6482,8 @@
   "id": "8b57baf3793155174b43",
   "kind": "MILESTONE",
   "magnitude": 0.662,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6503,8 +6503,8 @@
   "id": "3a52b77f865d7284245c",
   "kind": "MILESTONE",
   "magnitude": 0.55,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6532,8 +6532,8 @@
   "id": "871adc1520e0978b2738",
   "kind": "BIG_PLAY",
   "magnitude": 0.378,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8
@@ -6560,8 +6560,8 @@
   "id": "cc8d1ec548b7bf3833b7",
   "kind": "BIG_PLAY",
   "magnitude": 0.334,
-  "managers": [
-   "Wren"
+  "teams": [
+   "Certified Bottlers"
   ],
   "team_ids": [
    7
@@ -6588,8 +6588,8 @@
   "id": "8f92a3494dd44fbdd9dd",
   "kind": "BIG_PLAY",
   "magnitude": 0.344,
-  "managers": [
-   "Sam"
+  "teams": [
+   "Late Swap Larry"
   ],
   "team_ids": [
    8

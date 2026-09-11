@@ -65,7 +65,7 @@ class FactPack:
         return found
 
     def names(self) -> set[str]:
-        """Every proper noun the recap may use: managers, team names, players."""
+        """Every proper noun the recap may use: teams, team names, players."""
         found: set[str] = set()
         _walk_names(self.to_json(), found)
         return found
@@ -96,7 +96,7 @@ def _walk_numbers(value: Any, into: set[str]) -> None:
 #: pack is a label, a slot or a kind, and is not a proper noun.
 NAME_KEYS = frozenset({
     "manager", "team", "league", "player", "benched", "started",
-    "opponent", "winner", "loser", "managers", "pro_team",
+    "opponent", "winner", "loser", "teams", "pro_team",
 })
 
 
@@ -227,7 +227,7 @@ def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
     geese = [m for m in moments if m.kind == "GOOSE_EGG"]
     if geese:
         out["goose_eggs"] = [
-            {"manager": m.managers[0] if m.managers else "", "player": m.player or "",
+            {"manager": m.teams[0] if m.teams else "", "player": m.player or "",
              "projected": m.context.get("projected", 0.0)}
             for m in geese
         ]
@@ -236,7 +236,7 @@ def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
     if swings:
         biggest = max(swings, key=lambda m: abs(m.win_prob_delta))
         out["biggest_swing"] = {
-            "manager": biggest.managers[0] if biggest.managers else "",
+            "manager": biggest.teams[0] if biggest.teams else "",
             "player": biggest.player or "",
             "kind": biggest.kind.lower().replace("_", " "),
             "swing": round(abs(biggest.win_prob_delta) * 100, 1),
@@ -244,5 +244,5 @@ def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
 
     doomed = [m for m in moments if m.kind == "DOOM"]
     if doomed:
-        out["doomed"] = sorted({m.managers[0] for m in doomed if m.managers})
+        out["doomed"] = sorted({m.teams[0] for m in doomed if m.teams})
     return out

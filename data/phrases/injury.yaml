@@ -92,7 +92,7 @@
   tone: [flat]
   weight: 2
   cooldown: 1140
-  text: "{manager} loses his {slot} to an injury."
+  text: "{manager} loses its {slot} to an injury."
   audio: ""
   voice: colour
 - id: inj_12

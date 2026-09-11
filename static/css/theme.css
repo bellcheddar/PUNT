@@ -161,8 +161,8 @@ b, strong { font-weight: 600; }
   display: flex;
   align-items: center;
   gap: 10px;
-  height: calc(var(--header-height) + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) 14px 0;
+  min-height: calc(var(--header-height) + env(safe-area-inset-top));
+  padding: calc(env(safe-area-inset-top) + 6px) 14px 6px;
   background: linear-gradient(180deg, #131826 0%, #0f131d 100%);
   border-bottom: 1px solid var(--border);
 }
@@ -170,6 +170,8 @@ b, strong { font-weight: 600; }
 .wordmark {
   /* 44px tall even though the glyphs are 26: it is a link in the top corner and
    * the minimum applies to it like everything else. */
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -178,17 +180,19 @@ b, strong { font-weight: 600; }
   font-size: 26px;
   letter-spacing: 0.06em;
   line-height: 1;
-  background: linear-gradient(92deg, var(--brand-bright), var(--violet) 45%, var(--magenta));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .header-meta {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.25;
   font-family: var(--font-mono);
-  font-size: 11px;
+  /* Was 11px, which is the size of a caption. It is the name of the league the
+     whole app is about. */
+  font-size: 14px;
   color: var(--ink-faint);
   white-space: nowrap;
   overflow: hidden;
@@ -337,16 +341,17 @@ main { padding: 12px 14px 24px; }
 /* Ten teams is 2x5 on a phone and 5x2 on the TV, and both fit without
  * scrolling. That is worth protecting: it means no pagination and no
  * virtualisation anywhere in the album. */
-/* Two per row, at every width. A trading card is 5:7, so two-up on a 1280 px
-   screen would be 620 px wide and 870 px tall -- a billboard, not a card. The
-   grid is therefore capped and centred: the cards get bigger on a desktop, as
-   asked, and stop before they become absurd. */
+/* Two per row on a phone, five on a desktop. Two-up on a wide screen made a
+   620 px card -- a billboard -- so the cap that held it back is gone with the
+   second column: at five across the cards are a sensible size and the panel
+   fills its width instead of leaving a gutter either side. */
 .album-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  max-width: 560px;
-  margin-inline: auto;
+}
+@media (min-width: 900px) {
+  .album-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
 /* While the pack is sealed the cards exist and are face-down, but ten invisible
@@ -381,7 +386,10 @@ main { padding: 12px 14px 24px; }
   justify-content: space-between;
   overflow: hidden;
   background: linear-gradient(160deg, hsl(var(--hue) 42% 24%), hsl(var(--hue) 46% 13%));
-  border: 1px solid var(--tier-colour);
+  /* No border. The tier used to draw one -- solid, dashed for cursed, plus an
+     inset ring for epic and legendary -- so ten cards were five different
+     shapes. Rarity is carried by the tier label, the colour and the foil. */
+  border: 0;
   /* A shared 3D context so the tilt reads as a tilt rather than a skew, and so
    * the two faces can sit back to back for the flip. `--flip` is 0 face-up and
    * 1 face-down; the pack rip animates it. */
@@ -462,9 +470,21 @@ main { padding: 12px 14px 24px; }
   opacity: 0;
 }
 
+/* The tier label sits on whatever colour that team happens to be, and the tier
+   colours were picked against the app's dark ground: "COMMON" on a pale green
+   card was invisible, and "CURSED" on the grey one nearly so. A dark plate
+   behind the text fixes every background at once, which tinting per tier does
+   not -- there are ten team hues and five tiers and no combination of them is
+   guaranteed to contrast. */
 .card-tier {
   font-family: var(--font-mono); font-size: 8px; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--tier-colour);
+  text-transform: uppercase;
+  color: var(--tier-colour);
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(8, 11, 18, .62);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .8);
 }
 .card-name { font-family: var(--font-display); font-size: 14px; line-height: 1.05;
              overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -496,13 +516,13 @@ main { padding: 12px 14px 24px; }
 
 /* Epic: the sweep animates on its own as well as tracking the tilt, and the
  * edge picks up the tier colour. */
-.card--epic { --tier-colour: var(--tier-epic); box-shadow: inset 0 0 0 1px rgba(155, 81, 224, .5); }
+.card--epic { --tier-colour: var(--tier-epic); }
 .card--epic .card-face--front::before { opacity: .85; animation: foil-sweep 4.5s ease-in-out infinite; }
 
 /* Legendary: full holographic. Two gradients at different angles, both moving,
  * which is what separates a hologram from a shine. */
 .card--legendary { --tier-colour: var(--tier-legendary);
-                   box-shadow: inset 0 0 0 1px rgba(252, 185, 0, .55), 0 0 18px rgba(252, 185, 0, .16); }
+                   box-shadow: 0 0 18px rgba(252, 185, 0, .16); }
 .card--legendary .card-face--front::before { opacity: 1; animation: foil-sweep 3.2s ease-in-out infinite; }
 .card--legendary .card-face--front::after {
   opacity: .38;
@@ -522,7 +542,7 @@ main { padding: 12px 14px 24px; }
  * A filter forces the whole subtree onto its own composited layer and re-rasters
  * it on every tilt frame, and with two or three cursed cards on screen that is
  * the frame budget gone. An overlay costs one extra paint of one rectangle. */
-.card--cursed { --tier-colour: var(--tier-cursed); border-style: dashed; }
+.card--cursed { --tier-colour: var(--tier-cursed); }
 .card--cursed .card-face--front::before {
   opacity: .22;
   background: linear-gradient(104deg, transparent 40%, rgba(255,255,255,.18) 50%, transparent 60%);
@@ -1242,18 +1262,23 @@ main { padding: 12px 14px 24px; }
    about 260 px on a desktop, and type sized for the phone looks timid at that
    width -- the crest in particular, which is the team's own badge and the
    fastest way to know whose card this is. */
-@media (min-width: 700px) {
+/* Between two-up and five-up the cards are at their widest, so the type goes up
+   with them and comes back down once there are five in a row. */
+@media (min-width: 620px) and (max-width: 899px) {
   .album-grid .card-name  { font-size: 18px; }
   .album-grid .card-tier  { font-size: 9.5px; }
   .album-grid .card-score { font-size: 38px; }
   .album-grid .card-stats { font-size: 11px; }
-  /* No width/height here: `.card-crest` is `flex: 1` and fixing its box
-     collapses the space the crest is supposed to fill. Scale the image. */
   .album-grid .card-crest img { width: 62%; }
 }
-/* The grid is capped and centred, so the heading above it should be too or the
-   panel reads as a mistake rather than a decision. */
-@media (min-width: 620px) { .panel--cards .panel-title { text-align: center; } }
+@media (min-width: 900px) {
+  .album-grid .card-name  { font-size: 15px; }
+  .album-grid .card-score { font-size: 30px; }
+  .album-grid .card-stats { font-size: 9.5px; }
+  /* No width/height: `.card-crest` is `flex: 1` and fixing its box collapses
+     the space the crest exists to fill. Scale the image instead. */
+  .album-grid .card-crest img { width: 58%; }
+}
 
 /* --- the live panel, full width, two matchups to a row -------------------
    Each matchup is already two stacked rows, so a pair of them side by side is
@@ -1287,4 +1312,92 @@ main { padding: 12px 14px 24px; }
 .columns > .panel > .rows { flex: 0 0 auto; }
 @media (max-width: 619px) {
   .columns { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --- the wordmark's foil ------------------------------------------------
+   The same trick as the cards: one rotated gradient swept across the letters.
+   The wordmark is already a gradient clipped to the text, so the sweep is a
+   second layer masked the same way rather than a filter over the top -- a
+   filter would blur the letterforms and cost a compositor layer in the sticky
+   header, which is the one element on screen during every scroll. */
+.wordmark-text {
+  background: linear-gradient(92deg, var(--brand-bright), var(--violet) 45%, var(--magenta));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.wordmark::after {
+  content: 'PUNT';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  font: inherit;
+  letter-spacing: inherit;
+  pointer-events: none;
+  background: linear-gradient(104deg,
+    transparent 38%, rgba(255,255,255,.85) 50%, transparent 62%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Tracks the tilt exactly as the cards do, and sweeps on its own besides. */
+  transform: translate3d(calc(var(--tx, 0) * 30%), 0, 0);
+  background-size: 220% 100%;
+  animation: wordmark-sweep 6s ease-in-out infinite;
+}
+@keyframes wordmark-sweep {
+  0%, 100% { background-position: -120% 0; }
+  50%      { background-position: 220% 0; }
+}
+
+/* --- the backronym ------------------------------------------------------- */
+.header-league { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.backronym {
+  font-size: 9.5px;
+  /* It has to fit whole or not at all: truncated to "Tras..." the T is gone,
+     and the T is a quarter of the reason the line is there. Forty-three
+     characters at 8px mono is about 210px, which is what the meta column gets
+     on a 390px phone once the wordmark and the mute button have taken theirs. */
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* The four letters that spell the name, lit and breathing in turn so the word
+   assembles itself rather than just being coloured in. */
+.backronym b {
+  font-weight: 700;
+  color: var(--brand-bright);
+  animation: backronym-pulse 4s ease-in-out infinite;
+}
+.backronym b:nth-of-type(2) { animation-delay: .25s; color: var(--violet); }
+.backronym b:nth-of-type(3) { animation-delay: .5s;  color: var(--magenta); }
+.backronym b:nth-of-type(4) { animation-delay: .75s; color: var(--brand-bright); }
+@keyframes backronym-pulse {
+  0%, 70%, 100% { opacity: .75; text-shadow: none; }
+  35%           { opacity: 1;   text-shadow: 0 0 10px currentColor; }
+}
+
+/* --- the elsewhere links ------------------------------------------------- */
+.header-links { display: flex; gap: 10px; flex: 0 0 auto; }
+.header-links a {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  text-decoration: none;
+  white-space: nowrap;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.header-links a:hover { color: var(--ink); text-decoration: underline; }
+/* On a phone the header has a wordmark, two lines of text and a mute button
+   already. The links are the thing that can wait for a wider screen. */
+@media (max-width: 599px) {
+  .header-links { display: none; }
+  .backronym { font-size: 8px; letter-spacing: 0; }
+  .header-league { font-size: 12.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark::after, .backronym b { animation: none; }
 }

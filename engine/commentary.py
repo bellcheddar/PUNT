@@ -9,7 +9,7 @@ free, and structurally incapable of hallucinating a number, because every number
 in a line is substituted from the Moment that triggered it.
 
 The interesting part is not retrieval, it is *restraint*: an afternoon is four
-hours and ten managers, and a line that lands twice in twenty minutes stops being
+hours and ten teams, and a line that lands twice in twenty minutes stops being
 funny the second time. Cooldowns, weights and roast levels are all in service of
 that.
 """
@@ -194,6 +194,17 @@ class PhraseBank:
             raise PhraseError(f"{source}: phrase is missing {exc}") from exc  # cold: a phrase missing a required field; tests/test_commentary.py
 
 
+def _possessive(text: str) -> str:
+    """`The Wounded Ferrets's` -> `The Wounded Ferrets'`.
+
+    Applied after interpolation, not written into the phrases: twenty-nine lines
+    take a possessive on the name, and which of them needs the apostrophe moved
+    depends entirely on the team names in somebody's league, which the bank
+    cannot know. A name ending in s takes a bare apostrophe.
+    """
+    return re.sub(r"(\w*s)'s\b", r"\1'", text)
+
+
 def moment_slots(moment) -> dict[str, Any]:
     """Everything a line is allowed to interpolate.
 
@@ -202,11 +213,19 @@ def moment_slots(moment) -> dict[str, Any]:
     invented one to come from.
     """
     context = dict(moment.context or {})
-    managers = list(moment.managers or [])
+    teams = list(moment.teams or [])
     slots: dict[str, Any] = {
         "player": moment.player or "somebody",
-        "manager": managers[0] if managers else "somebody",
-        "opponent": managers[1] if len(managers) > 1 else "the other one",
+        # `{team}` is the name to use in new lines. `{manager}` is the same
+        # value under its old name: four hundred and ten phrase lines were
+        # written against it, and the commentary now says team names rather
+        # than usernames -- "Bench Mob Rule takes it the distance", not "Priya
+        # takes it the distance" -- so the slot renders the right thing and
+        # only its name is out of date. Rewriting the bank to rename a slot
+        # would be four hundred and ten chances to introduce a typo.
+        "team": teams[0] if teams else "somebody",
+        "manager": teams[0] if teams else "somebody",
+        "opponent": teams[1] if len(teams) > 1 else "the other one",
         "delta": f"{abs(moment.delta_points):.1f}",
         "kind": moment.kind.lower().replace("_", " "),
     }
@@ -302,7 +321,7 @@ class Commentator:
         self.said += 1
         return Line(
             phrase_id=chosen.id,
-            text=chosen.text.format(**{k: v for k, v in moment_slots(moment).items()}),
+            text=_possessive(chosen.text.format(**moment_slots(moment))),
             audio=chosen.audio,
             voice=chosen.voice,
             tone=chosen.tone,

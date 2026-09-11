@@ -86,7 +86,7 @@
   tone: [corny]
   weight: 2
   cooldown: 900
-  text: "The bench is where {manager} keeps his points now."
+  text: "The bench is where {manager} keeps its points now."
   roast_level: 1
   audio: trombone
   voice: colour
@@ -170,7 +170,7 @@
   tone: [dry]
   weight: 4
   cooldown: 1020
-  text: "{regret} points on {manager}'s bench. He set that lineup with his own hands."
+  text: "{regret} points on {manager}'s bench. That lineup was set on purpose."
   roast_level: 1
   audio: trombone
   voice: colour
@@ -214,7 +214,7 @@
   tone: [dry]
   weight: 3
   cooldown: 1140
-  text: "{manager} is {regret} points worse off than he had to be."
+  text: "{manager} is {regret} points worse off than it had to be."
   roast_level: 1
   audio: trombone
   voice: colour
@@ -224,7 +224,7 @@
   roast_level: 2
   weight: 2
   cooldown: 1200
-  text: "There was a version of this afternoon where {manager} played {benched}. He did not pick it."
+  text: "There was a version of this afternoon where {manager} played {benched}. That version lost."
   audio: trombone
   voice: colour
 - id: bench_18
@@ -311,7 +311,7 @@
   roast_level: 2
   weight: 4
   cooldown: 1200
-  text: "{regret} points. {manager} could field a second team out of what he left behind."
+  text: "{regret} points. {manager} could field a second team out of what it left behind."
   audio: trombone
   voice: colour
 - id: bench_big_08

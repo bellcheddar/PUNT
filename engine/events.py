@@ -92,7 +92,11 @@ class Moment:
     id: str
     kind: str
     magnitude: float
-    managers: list[str] = field(default_factory=list)
+    #: The TEAM names this Moment is about, not the managers'. The league calls
+    #: itself by its team names and the commentary follows: "Bench Mob Rule
+    #: takes it the distance", not "Priya takes it the distance". The field was
+    #: called `managers` and held manager names, which is why this says so.
+    teams: list[str] = field(default_factory=list)
     team_ids: list[int] = field(default_factory=list)
     player: str | None = None
     delta_points: float = 0.0
@@ -105,7 +109,7 @@ class Moment:
             "id": self.id,
             "kind": self.kind,
             "magnitude": round(self.magnitude, 3),
-            "managers": self.managers,
+            "teams": self.teams,
             "team_ids": self.team_ids,
             "player": self.player,
             "delta_points": round(self.delta_points, 2),
@@ -271,7 +275,7 @@ class EventEngine:
         for matchup in snapshot.matchups:
             for side in (matchup.home, matchup.away):
                 team = snapshot.team(side.team_id)
-                manager = team.manager if team else f"team {side.team_id}"
+                name = team.name if team else f"team {side.team_id}"
 
                 for player in side.players:
                     previous = self._players.get(player.id)
@@ -307,7 +311,7 @@ class EventEngine:
                             id=moment_id(TOUCHDOWN, week, player.id, round(player.points, 2)),
                             kind=TOUCHDOWN,
                             magnitude=_clamp(0.55 + (delta - 6.0) / 12.0),
-                            managers=[manager], team_ids=[side.team_id],
+                            teams=[name], team_ids=[side.team_id],
                             player=player.name, delta_points=delta, context=context,
                         ))
                     elif delta >= BIG_PLAY_POINTS:
@@ -315,7 +319,7 @@ class EventEngine:
                             id=moment_id(BIG_PLAY, week, player.id, round(player.points, 2)),
                             kind=BIG_PLAY,
                             magnitude=_clamp(0.2 + delta / 18.0),
-                            managers=[manager], team_ids=[side.team_id],
+                            teams=[name], team_ids=[side.team_id],
                             player=player.name, delta_points=delta, context=context,
                         ))
 
@@ -325,7 +329,7 @@ class EventEngine:
                                 id=moment_id(MILESTONE, week, player.id, threshold),
                                 kind=MILESTONE,
                                 magnitude=_clamp(0.25 + threshold / 100.0),
-                                managers=[manager], team_ids=[side.team_id],
+                                teams=[name], team_ids=[side.team_id],
                                 player=player.name, delta_points=delta,
                                 context={**context, "threshold": threshold},
                             ))
@@ -338,7 +342,7 @@ class EventEngine:
                         out.append(Moment(
                             id=moment_id(INJURY, week, player.id, player.injury),
                             kind=INJURY, magnitude=0.6,
-                            managers=[manager], team_ids=[side.team_id],
+                            teams=[name], team_ids=[side.team_id],
                             player=player.name,
                             context={**context, "status": player.injury},
                         ))
@@ -355,7 +359,7 @@ class EventEngine:
                         out.append(Moment(
                             id=moment_id(GOOSE_EGG, week, player.id),
                             kind=GOOSE_EGG, magnitude=0.7,
-                            managers=[manager], team_ids=[side.team_id],
+                            teams=[name], team_ids=[side.team_id],
                             player=player.name, delta_points=0.0,
                             context={**context, "projected": round(player.projected, 2)},
                         ))
@@ -389,7 +393,7 @@ class EventEngine:
                     id=moment_id(LEAD_CHANGE, week, matchup.id, leader, round(matchup.margin, 2)),
                     kind=LEAD_CHANGE,
                     magnitude=_clamp(0.5 + swing),
-                    managers=[team.manager if team else "?", loser.manager if loser else "?"],
+                    teams=[team.name if team else "?", loser.name if loser else "?"],
                     team_ids=[leader, loser_id],
                     win_prob_delta=round(probabilities.get(leader, 0.5) - self._win_prob.get(leader, 0.5), 4),
                     context={
@@ -410,7 +414,7 @@ class EventEngine:
                             id=moment_id(MILESTONE, week, side.team_id, threshold),
                             kind=MILESTONE,
                             magnitude=_clamp(0.35 + threshold / 400.0),
-                            managers=[team.manager if team else "?"],
+                            teams=[team.name if team else "?"],
                             team_ids=[side.team_id],
                             context={"week": week, "threshold": threshold,
                                      "total": round(side.total, 2), "team": True},
@@ -447,7 +451,7 @@ class EventEngine:
                                  int(benched.points // BENCH_DISASTER_BAND)),
                     kind=BENCH_DISASTER,
                     magnitude=_clamp(0.4 + margin / 60.0),
-                    managers=[team.manager if team else "?"],
+                    teams=[team.name if team else "?"],
                     team_ids=[side.team_id],
                     player=benched.name,
                     delta_points=margin,
@@ -472,7 +476,7 @@ class EventEngine:
                 if probability is None:
                     continue  # cold: every side in the fixture has a win probability
                 team = snapshot.team(side.team_id)
-                manager = team.manager if team else f"team {side.team_id}"
+                name = team.name if team else f"team {side.team_id}"
 
                 # Only while the opponent can still add to their score. Below the
                 # threshold with everybody finished is not doom, it is the result.
@@ -480,7 +484,7 @@ class EventEngine:
                     out.append(Moment(
                         id=moment_id(DOOM, week, side.team_id),
                         kind=DOOM, magnitude=0.85,
-                        managers=[manager], team_ids=[side.team_id],
+                        teams=[name], team_ids=[side.team_id],
                         win_prob_delta=round(probability - self._win_prob.get(side.team_id, probability), 4),
                         context={
                             "week": week, "win_prob": probability,
@@ -497,7 +501,7 @@ class EventEngine:
                     out.append(Moment(
                         id=moment_id(CLINCH, week, side.team_id),
                         kind=CLINCH, magnitude=0.75,
-                        managers=[manager], team_ids=[side.team_id],
+                        teams=[name], team_ids=[side.team_id],
                         win_prob_delta=round(probability - self._win_prob.get(side.team_id, probability), 4),
                         context={"week": week, "win_prob": probability,
                                  "lead": round(side.total - opponent.total, 2),

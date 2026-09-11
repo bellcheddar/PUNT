@@ -190,7 +190,7 @@ def test_moments_arrive_loudest_first():
 
 
 def test_a_moment_serialises_to_json_the_stream_can_send():
-    moment = Moment(id="abc", kind=TOUCHDOWN, magnitude=0.8, managers=["Bex"],
+    moment = Moment(id="abc", kind=TOUCHDOWN, magnitude=0.8, teams=["Bex"],
                     team_ids=[1], player="Dax Ashgrove", delta_points=9.4,
                     ts=datetime(2025, 11, 16, 18, 30, tzinfo=timezone.utc))
     payload = moment.to_json()

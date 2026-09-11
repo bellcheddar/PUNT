@@ -70,14 +70,30 @@
 <body data-tab="{{ request.endpoint.split('.')[-1] if request.endpoint else '' }}">
 
 <header class="app-header chrome">
-  <a class="wordmark" href="{{ url_for('tabs.today') }}">PUNT</a>
+  {# The wordmark carries the same foil the cards do: one rotated gradient
+     swept across the letters. It is the app's own name, so if anything gets
+     the treatment it should. #}
+  <a class="wordmark" href="{{ url_for('tabs.today') }}" aria-label="PUNT, home">
+    <span class="wordmark-text">PUNT</span>
+  </a>
   <div class="header-meta">
-    {%- if snap and snap.settings.name -%}
-      {{ snap.settings.name }} &middot; week {{ snap.scoring_period }}
-    {%- else -%}
-      loading
-    {%- endif -%}
+    <span class="header-league">
+      {%- if snap and snap.settings.name -%}
+        {{ snap.settings.name }} &middot; week {{ snap.scoring_period }}
+      {%- else -%}
+        loading
+      {%- endif -%}
+    </span>
+    {# The backronym, with the four letters that spell the name lit. It is what
+       the app is called and nobody would guess it from the wordmark alone. #}
+    <span class="backronym" aria-label="Play-by-play, Uproar, Numbers and Trash-talk">
+      <b>P</b>lay-by-play &middot; <b>U</b>proar &middot; <b>N</b>umbers &middot; <b>T</b>rash-talk
+    </span>
   </div>
+  <nav class="header-links" aria-label="Elsewhere">
+    <a href="https://mdeller.com" target="_blank" rel="noopener noreferrer">mdeller.com</a>
+    <a href="https://github.com/bellcheddar/PUNT" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </nav>
   <button class="mute-toggle" type="button" data-mute aria-label="Mute audio" title="Mute">&#9834;</button>
 </header>
 

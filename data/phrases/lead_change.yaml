@@ -31,7 +31,7 @@
   tone: [corny]
   weight: 3
   cooldown: 1080
-  text: "It has changed hands. {manager} ahead, {opponent} rethinking his life."
+  text: "It has changed hands. {manager} ahead, {opponent} rethinking its life."
   roast_level: 1
   audio: horn_02
   voice: colour
@@ -98,7 +98,7 @@
   tone: [hype]
   weight: 4
   cooldown: 1200
-  text: "{manager} does not just take the lead, he takes it by {margin}."
+  text: "{manager} does not just take the lead, it takes it by {margin}."
   audio: horn_03
   voice: pbp
 - id: lead_wide_02

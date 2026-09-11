@@ -31,7 +31,7 @@ def bank() -> PhraseBank:
 def moment(kind="TOUCHDOWN", **kwargs) -> Moment:
     defaults = dict(
         id=f"m-{kind}-{kwargs.get('seq', 0)}", kind=kind, magnitude=0.7,
-        managers=["Priya", "Gus"], player="Dax Ashgrove", delta_points=8.4,
+        teams=["Priya", "Gus"], player="Dax Ashgrove", delta_points=8.4,
         context={"week": 11, "slot": "RB", "position": "RB", "pro_team": "KC",
                  "pro_opponent": "LV", "total": 34.2, "starter": True,
                  "quarter": 3, "clock": "7:12", "red_zone": False},
@@ -264,3 +264,32 @@ def test_magnitude_is_a_trigger_field_even_though_no_phrase_uses_it():
 
     assert speaker.eligible(moment(magnitude=0.9)) == [loud]
     assert speaker.eligible(moment(magnitude=0.5)) == []
+
+
+def test_a_team_name_ending_in_s_takes_a_bare_apostrophe():
+    """"The Wounded Ferrets's afternoon" is what you get when a phrase bank
+    written for people starts interpolating team names.
+
+    Fixed after interpolation rather than in the phrases: twenty-nine lines take
+    a possessive, and which of them needs the apostrophe moved depends on the
+    team names in somebody's league, which the bank cannot know.
+    """
+    from engine.commentary import _possessive
+
+    assert _possessive("The Wounded Ferrets's afternoon") == "The Wounded Ferrets' afternoon"
+    assert _possessive("Sunday Roast's pile") == "Sunday Roast's pile"
+    assert _possessive("Priya's bench") == "Priya's bench"
+
+
+def test_the_commentary_names_teams_not_usernames(bank):
+    """The league calls itself by its team names and the commentary follows."""
+    from engine.events import Moment
+
+    line = Commentator(bank, roast_level=2).say(
+        Moment(id="x", kind="TOUCHDOWN", magnitude=0.9, teams=["Bench Mob Rule"],
+               team_ids=[5], player="Somebody Quick", delta_points=12.0,
+               context={"total": 60.0}),
+        week=11,
+    )
+    assert line is not None
+    assert "Priya" not in line.text

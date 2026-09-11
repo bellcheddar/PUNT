@@ -175,7 +175,7 @@
   tone: [corny]
   weight: 2
   cooldown: 1800
-  text: "This is the stage where {manager} starts supporting whoever is playing his opponent's players."
+  text: "This is the stage where {manager} starts supporting whoever is playing its opponent's players."
   roast_level: 1
   audio: doom
   voice: colour
@@ -253,7 +253,7 @@
   roast_level: 2
   weight: 4
   cooldown: 1800
-  text: "{deficit}. {manager} could double his score and still lose."
+  text: "{deficit}. {manager} could double its score and still lose."
   audio: doom
   voice: colour
 - id: doom_close_03
