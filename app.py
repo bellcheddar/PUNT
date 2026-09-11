@@ -55,9 +55,36 @@ def create_app(cfg: Config | None = None, client=None, start_live: bool = True) 
     _register_asset_version(app)
     _register_filters(app)
     _register_error_handlers(app)
+    _register_cache_control(app)
 
     log.info("PUNT ready: %s", app.extensions["punt"].diagnostics()["mode"])
     return app
+
+
+def _register_cache_control(app: Flask) -> None:
+    """Stop a browser guessing how long to keep a page.
+
+    Flask sends no Cache-Control on a rendered template, so a browser applies
+    heuristic caching to the HTML, keeps serving the `?v=` stamp it already has,
+    and a CSS or JS deploy is simply invisible to anyone who has visited before.
+
+    Set here rather than in the nginx vhost, which is where it used to live. The
+    nginx form was `add_header` on `location /`, and add_header *appends*: the
+    team-logo routes set their own `public, max-age=86400`, both headers went out,
+    and a browser joins repeated Cache-Control field lines into one comma-joined
+    value where `no-cache` wins. Every team logo was therefore revalidated on
+    every page load -- ten of them per album, ten phones, one bar wifi -- while
+    each response looked correct on its own and the intended header was right
+    there in the response.
+
+    `setdefault`, so a route that has decided how long its own body lives keeps
+    the answer.
+    """
+
+    @app.after_request
+    def _cache_control(response):
+        response.headers.setdefault("Cache-Control", "no-cache, must-revalidate")
+        return response
 
 
 def _register_asset_version(app: Flask) -> None:

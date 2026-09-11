@@ -213,3 +213,26 @@ def test_the_low_water_mark_resets_between_weeks():
     feed.engine._win_prob = {1: 0.80}
     feed._accumulate(LeagueSnapshot(season=2025, scoring_period=12, settings=LeagueSettings()), [])
     assert feed.week_low[1] == 0.80, "last week's low survived into this week"
+
+
+def test_a_response_that_chose_its_own_cache_lifetime_keeps_it(client):
+    """One Cache-Control per response, and the route's own answer wins.
+
+    This used to be an `add_header` in the nginx vhost, and add_header appends.
+    The team-logo routes set `public, max-age=86400`, both headers went out, and
+    a browser joins repeated Cache-Control field lines into one comma-joined
+    value where `no-cache` wins -- so every logo was revalidated on every page
+    load, ten per album, while each response looked correct on its own and the
+    intended header was right there in it.
+    """
+    page = client.get("/")
+    assert page.headers.get_all("Cache-Control") == ["no-cache, must-revalidate"]
+
+    logo = client.get("/img/monogram/1")
+    assert logo.status_code == 200
+    values = logo.headers.get_all("Cache-Control")
+    assert len(values) == 1, f"two Cache-Control headers: {values}"
+    assert "max-age=" in values[0] and "no-cache" not in values[0]
+
+    worker = client.get("/sw.js")
+    assert worker.headers.get_all("Cache-Control") == ["no-cache, must-revalidate"]
