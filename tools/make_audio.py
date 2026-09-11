@@ -116,6 +116,8 @@ def fade(x: np.ndarray, ms: float = 6.0) -> np.ndarray:
     if len(x) < 2 * n:
         return x
     ramp = np.linspace(0, 1, n)
+    if x.ndim == 2:
+        ramp = ramp[:, None]
     x = x.copy()
     x[:n] *= ramp
     x[-n:] *= ramp[::-1]
@@ -355,10 +357,12 @@ CACHE = ROOT / "data" / "audio_cache"
 def sampled(name: str) -> np.ndarray | None:
     """One sampled sting, trimmed, de-clicked and levelled, or None.
 
-    Mixed to mono deliberately. Every sting in this sprite is a short event fired
-    under a play call, and Howler plays the sprite as one buffer: a stereo sprite
-    doubles the download for width nobody perceives on a 200 ms blip through a
-    phone speaker or a bar ceiling. The bed is where width would be worth having.
+    Stereo is kept. It used to be folded to mono here, on the reasoning that a
+    200 ms blip has no perceptible width through a phone speaker -- true of the
+    blips, and wrong about everything else. Eleven of the twelve replacements are
+    stereo recordings, and a crowd is the sound whose whole character is that it
+    is around you. "A mono tone" was half the original complaint and this is the
+    half of it that was literally true.
     """
     if not SOURCES.is_file():
         return None
@@ -374,12 +378,14 @@ def sampled(name: str) -> np.ndarray | None:
     with wave.open(str(wav)) as handle:
         channels = handle.getnchannels()
         raw = np.frombuffer(handle.readframes(handle.getnframes()), dtype=np.int16)
-    audio = raw.astype(float).reshape(-1, channels).mean(axis=1) / 32768
+    audio = raw.astype(float).reshape(-1, channels) / 32768
+    if channels == 1:
+        audio = np.repeat(audio, 2, axis=1)
 
     trim = spec[name].get("trim")
     if trim:
         audio = audio[int(trim[0] * RATE): int(trim[1] * RATE)]
-    audio = audio - audio.mean()            # DC offset is a click waiting to happen
+    audio = audio - audio.mean(axis=0)            # DC offset is a click waiting to happen
     audio = normalise(audio, 0.82) * 10 ** (spec[name].get("gain_db", 0.0) / 20)
     # The fade is not cosmetic. `buzzer` ends at 0.64 of full scale, and a buffer
     # that stops there is a step function into the speaker: the pop people hear
@@ -409,8 +415,9 @@ def write_wav(path: Path, samples: np.ndarray) -> None:
     import wave
 
     pcm = np.clip(samples, -1, 1)
+    channels = pcm.shape[1] if pcm.ndim == 2 else 1
     with wave.open(str(path), "wb") as handle:
-        handle.setnchannels(1)
+        handle.setnchannels(channels)
         handle.setsampwidth(2)
         handle.setframerate(RATE)
         handle.writeframes((pcm * 32767).astype("<i2").tobytes())
@@ -440,12 +447,14 @@ def main() -> int:
     pieces: list[np.ndarray] = []
     sprite: dict[str, list] = {}
     cursor = 0.0
-    gap = np.zeros(int(GAP * RATE))
+    gap = np.zeros((int(GAP * RATE), 2))
 
     for name in SOUNDS:
         samples = sampled(name)
         if samples is None:
-            samples = SOUNDS[name]()
+            # A synthesised fallback is mono; carry it into both channels so the
+            # sprite has one shape throughout.
+            samples = np.repeat(SOUNDS[name]()[:, None], 2, axis=1)
         # Digital silence after the fade, longer than the safety trim below.
         #
         # `fade()` ramps the last 6 ms to zero so the buffer ends quietly, and
@@ -456,7 +465,7 @@ def main() -> int:
         # is a step function into the speaker -- the pop is not in the sound, it
         # is at the edge of the window. The safety trim was defeating the fade it
         # was supposed to be protecting.
-        samples = np.concatenate([samples, np.zeros(int(TAIL * RATE))])
+        samples = np.concatenate([samples, np.zeros((int(TAIL * RATE), 2))])
         duration = len(samples) / RATE
         # Howler wants [offset_ms, duration_ms]; the duration is deliberately a
         # few milliseconds short of the real length so a slow seek cannot run

@@ -2,7 +2,6 @@
   "_comment": "Where every sampled sound in the sprite comes from, and the proof. tools/fetch_audio.py downloads each `url` once, checks it against `sha256`, and extracts `member` if it is an archive. static/audio/LICENCES.md is GENERATED from this file, so the credits cannot drift away from the audio the way a hand-written list does. A sound with no entry here is synthesised by tools/make_audio.py and is ours outright.",
   "_licences": "CC0 only. Not a stylistic preference: this repository is public and MIT, so an asset carrying an attribution requirement puts an obligation on everyone who clones it, and one carrying a non-commercial clause makes the repository undistributable. CC0 is the only licence with neither. Every entry is checked by tests/test_audio_sources.py.",
   "_gates": "Each sound must also survive tools/fetch_audio.py --check: no edge discontinuity, and high-frequency energy in the band its role needs. An archive is not automatically better than synthesis -- three of Kenney's own interface sounds have exactly 0.0% of their energy above 2 kHz, which is the same dullness this work set out to fix.",
-
   "downloads": {
     "kenney_interface": {
       "url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
@@ -14,29 +13,213 @@
       "licence": "CC0 1.0",
       "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "recorded": true
+    },
+    "freesound_528807": {
+      "url": "https://cdn.freesound.org/previews/528/528807_3482490-hq.mp3",
+      "sha256": "ca571547a96016ae32aa1b1f4fc44e477ced283452437a0288bd91489ce8cf04",
+      "bytes": 39521,
+      "source": "Freesound #528807 \u2014 DJ airhorn sound",
+      "page": "https://freesound.org/people/pfranzen/sounds/528807/",
+      "author": "pfranzen on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_456966": {
+      "url": "https://cdn.freesound.org/previews/456/456966_6456158-hq.mp3",
+      "sha256": "3b89ee0cd0d1fa31dba311958b7ed5ab42e93ecce691d134a1bb3a688db7136d",
+      "bytes": 102742,
+      "source": "Freesound #456966 \u2014 Success Fanfare Trumpets.mp3",
+      "page": "https://freesound.org/people/FunWithSound/sounds/456966/",
+      "author": "FunWithSound on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_415504": {
+      "url": "https://cdn.freesound.org/previews/415/415504_6894147-hq.mp3",
+      "sha256": "7e0e3c457a3e198ebe257326bba894f17feba677756c72dc31bce7be3959dc7c",
+      "bytes": 110194,
+      "source": "Freesound #415504 \u2014 Tadaa.wav",
+      "page": "https://freesound.org/people/Exchanger/sounds/415504/",
+      "author": "Exchanger on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_333405": {
+      "url": "https://cdn.freesound.org/previews/333/333405_5884138-hq.mp3",
+      "sha256": "862ee590e529eb7a2f30feb9265a16523aa6f41a0c477929040f412dfe16d7e8",
+      "bytes": 118800,
+      "source": "Freesound #333405 \u2014 Cheer 1 short.wav",
+      "page": "https://freesound.org/people/jayfrosting/sounds/333405/",
+      "author": "jayfrosting on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_175409": {
+      "url": "https://cdn.freesound.org/previews/175/175409_1326576-hq.mp3",
+      "sha256": "de4a029a0537dbecaf49b4936b0969919f5b7b54083d3859d584b5c4cc7dee3d",
+      "bytes": 120891,
+      "source": "Freesound #175409 \u2014 wah wah sad trombone.wav",
+      "page": "https://freesound.org/people/kirbydx/sounds/175409/",
+      "author": "kirbydx on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_683096": {
+      "url": "https://cdn.freesound.org/previews/683/683096_6253486-hq.mp3",
+      "sha256": "3c641d4d6ea0c6b65423d8fe1a7d72bf7bfb08a91c1640f9e9a0ab9d5d23b265",
+      "bytes": 40872,
+      "source": "Freesound #683096 \u2014 Woosh",
+      "page": "https://freesound.org/people/florianreichelt/sounds/683096/",
+      "author": "florianreichelt on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_649445": {
+      "url": "https://cdn.freesound.org/previews/649/649445_8698658-hq.mp3",
+      "sha256": "7948cf4670cf0bd25b5a163e2e09d674b157ac0967f23154a39a0294a157f286",
+      "bytes": 116784,
+      "source": "Freesound #649445 \u2014 Cinematic Woosh SFX-015.wav",
+      "page": "https://freesound.org/people/AudioPapkin/sounds/649445/",
+      "author": "AudioPapkin on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_541985": {
+      "url": "https://cdn.freesound.org/previews/541/541985_6856600-hq.mp3",
+      "sha256": "f9451f7fcf3a368e5c6838eb59b896d2520e88fae7a495747dea0b48afd9bb9d",
+      "bytes": 35712,
+      "source": "Freesound #541985 \u2014 GASP_Chimes_Success_4.wav",
+      "page": "https://freesound.org/people/Rob_Marion/sounds/541985/",
+      "author": "Rob_Marion on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_181773": {
+      "url": "https://cdn.freesound.org/previews/181/181773_3153523-hq.mp3",
+      "sha256": "75a666618b45e881ea0757145871b54008210d35a5aec573fb68a163ded3e9ae",
+      "bytes": 37257,
+      "source": "Freesound #181773 \u2014 tearing paper4.wav",
+      "page": "https://freesound.org/people/keweldog/sounds/181773/",
+      "author": "keweldog on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_199937": {
+      "url": "https://cdn.freesound.org/previews/199/199937_3692069-hq.mp3",
+      "sha256": "1523ad19b81a3141dc408818b176dec7a18f45ce33dea9263c7b5ec0a4bb586e",
+      "bytes": 132223,
+      "source": "Freesound #199937 \u2014 02-siren.wav",
+      "page": "https://freesound.org/people/drzhnn/sounds/199937/",
+      "author": "drzhnn on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_493163": {
+      "url": "https://cdn.freesound.org/previews/493/493163_9159316-hq.mp3",
+      "sha256": "e8562fbcfdaed8933ff100796c6e71201665cb507d0e6fe43b4e961a7c8c1115",
+      "bytes": 68784,
+      "source": "Freesound #493163 \u2014 Buzzer sounds (Wrong answer / Error)",
+      "page": "https://freesound.org/people/Breviceps/sounds/493163/",
+      "author": "Breviceps on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
+    },
+    "freesound_151822": {
+      "url": "https://cdn.freesound.org/previews/151/151822_1587289-hq.mp3",
+      "sha256": "69449152ad52ad373fe11e2aa5a00d0530a4848bbc0f19baebc5715c62bb8a18",
+      "bytes": 46130,
+      "source": "Freesound #151822 \u2014 Scratch Sample",
+      "page": "https://freesound.org/people/templeofhades/sounds/151822/",
+      "author": "templeofhades on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
     }
   },
-
   "sounds": {
     "tap": {
-      "from": "kenney_interface", "member": "Audio/click_001.ogg",
+      "from": "kenney_interface",
+      "member": "Audio/click_001.ogg",
       "gain_db": -9.0,
-      "why": "The pack's shortest click. A 50 ms blip under a finger; nobody hears stereo width on one."
+      "why": "The pack's shortest click. A 50 ms blip under a finger."
     },
     "flip": {
-      "from": "kenney_interface", "member": "Audio/switch_002.ogg",
+      "from": "kenney_interface",
+      "member": "Audio/switch_002.ogg",
       "gain_db": -6.0,
       "why": "A card turning over in the pack rip."
     },
-    "scratch": {
-      "from": "kenney_interface", "member": "Audio/scratch_001.ogg",
-      "gain_db": -5.0,
-      "why": "94% of its energy above 2 kHz, which is what a record scratch is. The synthesised one was 9.9%."
+    "horn_01": {
+      "from": "freesound_528807",
+      "gain_db": 0.0,
+      "why": "A DJ airhorn. The sound an ordinary touchdown makes in a bar, and nothing an oscillator produces comes close."
+    },
+    "horn_02": {
+      "from": "freesound_456966",
+      "gain_db": 0.0,
+      "why": "Trumpets. A real fanfare for a lead change, where the synthesised one was a lowpassed saw stack at 4.6% high-frequency energy."
+    },
+    "horn_03": {
+      "from": "freesound_415504",
+      "gain_db": 0.0,
+      "why": "The full tadaa, held back for long touchdowns, clinches and hundred-point milestones."
+    },
+    "crowd": {
+      "from": "freesound_333405",
+      "gain_db": 0.0,
+      "why": "An actual crowd. This is the one that could never have been synthesised: noise shaped like a cheer is not a cheer."
+    },
+    "trombone": {
+      "from": "freesound_175409",
+      "gain_db": 0.0,
+      "why": "The wah-wah. Twenty-two thousand people have used this exact sound for exactly this joke."
+    },
+    "whoosh": {
+      "from": "freesound_683096",
+      "gain_db": 0.0,
+      "why": "A real whoosh for a big play, with air in it rather than filtered white noise."
+    },
+    "riser": {
+      "from": "freesound_649445",
+      "gain_db": 0.0,
+      "why": "Cinematic rise under the red-zone countdown, replacing the one that ended at 0.23 of full scale and popped."
+    },
+    "chime": {
+      "from": "freesound_541985",
+      "gain_db": 0.0,
+      "why": "A success chime with actual partials. The synthesised one had three harmonics: a bare tone."
+    },
+    "rip": {
+      "from": "freesound_181773",
+      "gain_db": 0.0,
+      "why": "Paper tearing, for the pack opening. The one sound where the synthesised version was already bright enough."
+    },
+    "doom": {
+      "from": "freesound_199937",
+      "gain_db": 0.0,
+      "why": "A siren, for being mathematically finished. Dark by design, so this one stays under the 10% band on purpose."
     },
     "buzzer": {
-      "from": "kenney_interface", "member": "Audio/error_002.ogg",
-      "gain_db": -6.0,
-      "why": "68% above 2 kHz against the synthesised buzzer's 1.0%, and none of its 510 discontinuities."
+      "from": "freesound_493163",
+      "gain_db": 0.0,
+      "why": "A wrong-answer buzzer for a goose egg from a starter."
+    },
+    "scratch": {
+      "from": "freesound_151822",
+      "gain_db": 0.0,
+      "why": "A real vinyl scratch. Kenney's was brighter at 94% but synthetic; this is the record actually stopping."
     }
-  }
+  },
+  "_previews": "Freesound entries point at the HQ preview mp3, not the original wav. Only originals need OAuth2, and for stings that end up inside a 128 kbps sprite the preview is not the limiting factor -- the sprite's own encoding is."
 }

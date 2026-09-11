@@ -17,20 +17,20 @@ if they disagree.
 
 | Sound | Used for | Source | Licence |
 |---|---|---|---|
-| `buzzer` | A goose egg from a starter | [Kenney Interface Sounds 1.0](https://kenney.nl/assets/interface-sounds) by Kenney (kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| `chime` | Clinches and good news | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `crowd` | Under the big moments | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `doom` | Mathematically finished | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
+| `buzzer` | A goose egg from a starter | [Freesound #493163 — Buzzer sounds (Wrong answer / Error)](https://freesound.org/people/Breviceps/sounds/493163/) by Breviceps on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `chime` | Clinches and good news | [Freesound #541985 — GASP_Chimes_Success_4.wav](https://freesound.org/people/Rob_Marion/sounds/541985/) by Rob_Marion on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `crowd` | Under the big moments | [Freesound #333405 — Cheer 1 short.wav](https://freesound.org/people/jayfrosting/sounds/333405/) by jayfrosting on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `doom` | Mathematically finished | [Freesound #199937 — 02-siren.wav](https://freesound.org/people/drzhnn/sounds/199937/) by drzhnn on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `flip` | A card turning over | [Kenney Interface Sounds 1.0](https://kenney.nl/assets/interface-sounds) by Kenney (kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| `horn_01` | An ordinary touchdown | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `horn_02` | A better one, and lead changes | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `horn_03` | Long touchdowns, clinches, hundred-point milestones | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `rip` | The pack tearing open | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `riser` | The red-zone countdown | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `scratch` | A record stopping: the joke's rimshot | [Kenney Interface Sounds 1.0](https://kenney.nl/assets/interface-sounds) by Kenney (kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `horn_01` | An ordinary touchdown | [Freesound #528807 — DJ airhorn sound](https://freesound.org/people/pfranzen/sounds/528807/) by pfranzen on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `horn_02` | A better one, and lead changes | [Freesound #456966 — Success Fanfare Trumpets.mp3](https://freesound.org/people/FunWithSound/sounds/456966/) by FunWithSound on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `horn_03` | Long touchdowns, clinches, hundred-point milestones | [Freesound #415504 — Tadaa.wav](https://freesound.org/people/Exchanger/sounds/415504/) by Exchanger on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `rip` | The pack tearing open | [Freesound #181773 — tearing paper4.wav](https://freesound.org/people/keweldog/sounds/181773/) by keweldog on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `riser` | The red-zone countdown | [Freesound #649445 — Cinematic Woosh SFX-015.wav](https://freesound.org/people/AudioPapkin/sounds/649445/) by AudioPapkin on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `scratch` | A record stopping: the joke's rimshot | [Freesound #151822 — Scratch Sample](https://freesound.org/people/templeofhades/sounds/151822/) by templeofhades on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `tap` | A finger on a control | [Kenney Interface Sounds 1.0](https://kenney.nl/assets/interface-sounds) by Kenney (kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| `trombone` | Bench disasters and goose eggs. The sad one | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
-| `whoosh` | Big plays | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
+| `trombone` | Bench disasters and goose eggs. The sad one | [Freesound #175409 — wah wah sad trombone.wav](https://freesound.org/people/kirbydx/sounds/175409/) by kirbydx on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `whoosh` | Big plays | [Freesound #683096 — Woosh](https://freesound.org/people/florianreichelt/sounds/683096/) by florianreichelt on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 ## Why CC0 only
 
@@ -49,6 +49,18 @@ be ripped in.
 
 | Download | sha256 | Bytes |
 |---|---|---|
+| [Freesound #151822 — Scratch Sample](https://cdn.freesound.org/previews/151/151822_1587289-hq.mp3) | `69449152ad52ad37…` | 46,130 |
+| [Freesound #175409 — wah wah sad trombone.wav](https://cdn.freesound.org/previews/175/175409_1326576-hq.mp3) | `de4a029a0537dbec…` | 120,891 |
+| [Freesound #181773 — tearing paper4.wav](https://cdn.freesound.org/previews/181/181773_3153523-hq.mp3) | `75a666618b45e881…` | 37,257 |
+| [Freesound #199937 — 02-siren.wav](https://cdn.freesound.org/previews/199/199937_3692069-hq.mp3) | `1523ad19b81a3141…` | 132,223 |
+| [Freesound #333405 — Cheer 1 short.wav](https://cdn.freesound.org/previews/333/333405_5884138-hq.mp3) | `862ee590e529eb7a…` | 118,800 |
+| [Freesound #415504 — Tadaa.wav](https://cdn.freesound.org/previews/415/415504_6894147-hq.mp3) | `7e0e3c457a3e198e…` | 110,194 |
+| [Freesound #456966 — Success Fanfare Trumpets.mp3](https://cdn.freesound.org/previews/456/456966_6456158-hq.mp3) | `3b89ee0cd0d1fa31…` | 102,742 |
+| [Freesound #493163 — Buzzer sounds (Wrong answer / Error)](https://cdn.freesound.org/previews/493/493163_9159316-hq.mp3) | `e8562fbcfdaed893…` | 68,784 |
+| [Freesound #528807 — DJ airhorn sound](https://cdn.freesound.org/previews/528/528807_3482490-hq.mp3) | `ca571547a96016ae…` | 39,521 |
+| [Freesound #541985 — GASP_Chimes_Success_4.wav](https://cdn.freesound.org/previews/541/541985_6856600-hq.mp3) | `f9451f7fcf3a368e…` | 35,712 |
+| [Freesound #649445 — Cinematic Woosh SFX-015.wav](https://cdn.freesound.org/previews/649/649445_8698658-hq.mp3) | `7948cf4670cf0bd2…` | 116,784 |
+| [Freesound #683096 — Woosh](https://cdn.freesound.org/previews/683/683096_6253486-hq.mp3) | `3c641d4d6ea0c6b6…` | 40,872 |
 | [Kenney Interface Sounds 1.0](https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip) | `f2193d072726d675…` | 834,536 |
 
 The checksum is checked on every fetch, so a silently re-cut upstream file fails

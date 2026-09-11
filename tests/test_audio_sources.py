@@ -55,8 +55,17 @@ def test_every_source_is_pinned_to_exact_bytes(spec):
 def test_every_sampled_sound_names_a_source_that_exists(spec):
     for name, sound in spec["sounds"].items():
         assert sound["from"] in spec["downloads"], f"{name} points at a source that is not declared"
-        assert sound.get("member"), f"{name} does not say which file inside the archive"
         assert sound.get("why"), f"{name} does not say why this sound rather than another"
+
+        # Two shapes of source. A Kenney pack is a zip and the sound has to say
+        # which file inside it; a Freesound entry is one file per sound and has
+        # nothing to name. Requiring `member` of both was what made this test
+        # fail the moment the first Freesound sound arrived.
+        download = spec["downloads"][sound["from"]]
+        if download["url"].endswith(".zip"):
+            assert sound.get("member"), f"{name} comes from an archive but says which file"
+        else:
+            assert "member" not in sound, f"{name} names a member but its source is a single file"
 
 
 def test_the_credits_cannot_drift_from_the_manifest():

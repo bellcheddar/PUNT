@@ -46,11 +46,21 @@ RATE = 44_100
 #: that is bright is not ominous. The synthesised horns sat at 2.7-8%, which is
 #: what "dull, like a tone through a blanket" measures as.
 BANDS = {
-    "tap": (0.02, 1.0), "flip": (0.01, 1.0), "rip": (0.05, 1.0),
-    "scratch": (0.05, 1.0), "buzzer": (0.10, 1.0), "chime": (0.02, 1.0),
-    "horn_01": (0.10, 0.70), "horn_02": (0.10, 0.70), "horn_03": (0.10, 0.70),
-    "crowd": (0.15, 0.90), "trombone": (0.04, 0.60), "whoosh": (0.20, 0.95),
-    "riser": (0.05, 0.90), "doom": (0.0, 0.10),
+    # Measured from the real recordings, not from the oscillators they replaced.
+    # The first version of this table was calibrated on the synthesised sounds
+    # and therefore failed the genuine article every time: synthetic "crowd" was
+    # shaped white noise at 51% high-frequency energy, where a real crowd is 6%;
+    # synthetic "whoosh" was filtered noise at 52%, where the recording Marc
+    # picked is a bass swoosh with 97% of its energy under 300 Hz. A band set
+    # from a synthetic sample describes the synthesis, not the role.
+    #
+    # Kept deliberately wide. This is a net for "somebody pasted in the wrong
+    # file", not a judgement about whether a horn sounds like a touchdown.
+    "tap": (0.01, 1.0), "flip": (0.005, 1.0), "rip": (0.05, 1.0),
+    "scratch": (0.05, 1.0), "buzzer": (0.05, 1.0), "chime": (0.02, 1.0),
+    "horn_01": (0.10, 0.80), "horn_02": (0.10, 0.80), "horn_03": (0.10, 0.80),
+    "crowd": (0.02, 0.60), "trombone": (0.005, 0.40), "whoosh": (0.0, 0.95),
+    "riser": (0.0, 0.90), "doom": (0.0, 0.15),
 }
 
 FFMPEG = shutil.which("ffmpeg") or "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg"
@@ -90,7 +100,8 @@ def extract(archive: Path, member: str, out: Path) -> Path:
 
 def to_wav(source: Path, out: Path) -> Path:
     subprocess.run(
-        [FFMPEG, "-y", "-loglevel", "error", "-i", str(source), "-ar", str(RATE), str(out)],
+        [FFMPEG, "-y", "-loglevel", "error", "-i", str(source),
+         "-ar", str(RATE), "-ac", "2", str(out)],
         check=True,
     )
     return out
@@ -133,7 +144,11 @@ def main() -> int:
         wav = CACHE / f"{name}.wav"
         if not args.check:
             archive = archives[sound["from"]]
-            raw = extract(archive, sound["member"], CACHE / f"{name}{Path(sound['member']).suffix}")
+            member = sound.get("member")
+            # A Freesound entry is one file per sound, so there is nothing to
+            # extract; only the Kenney pack is an archive with members in it.
+            raw = (extract(archive, member, CACHE / f"{name}{Path(member).suffix}")
+                   if member else archive)
             to_wav(raw, wav)
         if not wav.is_file():
             print(f"{name:<11} not fetched yet")

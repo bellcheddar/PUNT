@@ -68,10 +68,21 @@ ROLES = {
 }
 
 BANDS = {
-    "scratch": (0.05, 1.0), "buzzer": (0.10, 1.0), "chime": (0.02, 1.0),
-    "horn_01": (0.10, 0.70), "horn_02": (0.10, 0.70), "horn_03": (0.10, 0.70),
-    "crowd": (0.15, 0.90), "trombone": (0.04, 0.60), "whoosh": (0.20, 0.95),
-    "riser": (0.05, 0.90), "doom": (0.0, 0.10), "rip": (0.05, 1.0),
+    # Measured from the real recordings, not from the oscillators they replaced.
+    # The first version of this table was calibrated on the synthesised sounds
+    # and therefore failed the genuine article every time: synthetic "crowd" was
+    # shaped white noise at 51% high-frequency energy, where a real crowd is 6%;
+    # synthetic "whoosh" was filtered noise at 52%, where the recording Marc
+    # picked is a bass swoosh with 97% of its energy under 300 Hz. A band set
+    # from a synthetic sample describes the synthesis, not the role.
+    #
+    # Kept deliberately wide. This is a net for "somebody pasted in the wrong
+    # file", not a judgement about whether a horn sounds like a touchdown.
+    "tap": (0.01, 1.0), "flip": (0.005, 1.0), "rip": (0.05, 1.0),
+    "scratch": (0.05, 1.0), "buzzer": (0.05, 1.0), "chime": (0.02, 1.0),
+    "horn_01": (0.10, 0.80), "horn_02": (0.10, 0.80), "horn_03": (0.10, 0.80),
+    "crowd": (0.02, 0.60), "trombone": (0.005, 0.40), "whoosh": (0.0, 0.95),
+    "riser": (0.0, 0.90), "doom": (0.0, 0.15),
 }
 
 
