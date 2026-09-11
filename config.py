@@ -11,6 +11,7 @@ is what any diagnostic surface prints.
 
 from __future__ import annotations
 
+import hashlib
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -137,10 +138,24 @@ class Config:
 
 
 def _fingerprint(secret: str) -> str:
-    """Enough to tell two cookies apart in a log, not enough to use one."""
+    """Enough to tell two cookies apart in a log, not enough to use one.
+
+    A hash, not the tail of the value. This used to end `…{secret[-4:]}`, which
+    published four literal characters of a live session cookie on
+    `/api/diagnostics` -- a route that is deliberately unauthenticated, because
+    the stale banner and the launcher's health check both read it. Four
+    characters of a 300-character `espn_s2` is not a break, but on a 38-character
+    SWID it is a tenth of the value, and it was being handed to anyone who asked.
+
+    A truncated digest does the whole job the tail was there for: it is stable
+    across restarts, it differs when the cookie is rotated, and it discloses
+    nothing. These are high-entropy values, so the digest is not a guessing game
+    the way a hash of a password would be.
+    """
     if not secret:
         return "(unset)"
-    return f"set:{len(secret)}ch:…{secret[-4:]}"
+    tag = hashlib.blake2b(secret.encode(), digest_size=3).hexdigest()
+    return f"set:{len(secret)}ch:#{tag}"
 
 
 class SecretLeak(RuntimeError):

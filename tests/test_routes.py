@@ -74,6 +74,26 @@ def test_diagnostics_never_leak_a_cookie(app, no_network):
     assert secret not in body
     assert f"set:{len(secret)}ch" in body, "the fingerprint should still say which cookie is loaded"
 
+    # Nor any *fragment* of one. The original test asserted only that the whole
+    # value was absent, and passed the entire time the fingerprint ended in
+    # `…{secret[-4:]}` -- four literal characters of a live session cookie, on a
+    # route that is unauthenticated on purpose. On a 38-character SWID that is a
+    # tenth of the value, published to anyone who asked.
+    swid = "{S-W-I-D}"
+    for value in (secret, swid):
+        for size in range(4, min(len(value), 12) + 1):
+            for start in range(len(value) - size + 1):
+                assert value[start:start + size] not in body, (
+                    f"{size} characters of a cookie reached /api/diagnostics: "
+                    f"{value[start:start + size]!r}"
+                )
+
+    # And it still distinguishes: rotate the cookie, get a different tag.
+    from config import _fingerprint
+
+    assert _fingerprint(secret) != _fingerprint(secret + "x")
+    assert _fingerprint(secret) == _fingerprint(secret), "the tag must be stable across restarts"
+
 
 def test_admin_refresh_denies_by_default(client, no_network):
     """An unset ADMIN_TOKEN must deny, not allow. A commissioner route that
