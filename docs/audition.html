@@ -1,0 +1,172 @@
+<!doctype html>
+<meta charset="utf-8"><title>PUNT &middot; audition the stings</title>
+<style>
+ body { background:#131826; color:#e8ecf5; font:15px/1.5 -apple-system,system-ui,sans-serif;
+        margin:0; padding:32px 20px; }
+ main { max-width:940px; margin:0 auto; }
+ h1 { font-size:22px; margin:0 0 4px; }
+ p.lede { color:#93a0b8; margin:0 0 24px; max-width:66ch; }
+ table { width:100%; border-collapse:collapse; font-size:14px; }
+ th { text-align:left; font:11px/1 ui-monospace,monospace; letter-spacing:.1em;
+       text-transform:uppercase; color:#7c8aa5; padding:0 10px 8px; }
+ td { padding:9px 10px; border-top:1px solid #222b40; vertical-align:middle; }
+ td.num { font-family:ui-monospace,monospace; text-align:right; color:#b9c4d8; }
+ td.dull { color:#ff8f6b; font-weight:600; }
+ td.role { color:#93a0b8; }
+ td.src { color:#7c8aa5; font-size:12.5px; }
+ a { color:#7aa2ff; }
+ button { font:600 14px ui-monospace,monospace; background:#1d2740; color:#e8ecf5;
+           border:1px solid #35446a; border-radius:7px; padding:7px 13px; cursor:pointer;
+           min-width:104px; text-align:left; }
+ button:hover { background:#27355a; }
+ button.on { background:#e0348b; border-color:#e0348b; color:#fff; }
+ .new { color:#4ad991; font:10px ui-monospace,monospace; }
+ .old { color:#7c8aa5; font:10px ui-monospace,monospace; }
+ .key { color:#7c8aa5; font-size:13px; margin-top:22px; }
+</style>
+<main>
+<h1>Audition the stings</h1>
+<p class="lede">Straight off the built sprite, so this is exactly what the bar hears,
+mp3 encoding and all. <strong>HF</strong> is the fraction of each sound's energy above
+2&nbsp;kHz: under 10% is what "dull, like a tone through a blanket" measures as, flagged
+in orange except where dark is the point. <strong>Edge</strong> is the amplitude at the
+end of the window; anything above about 0.02 clicks.</p>
+<table>
+<thead><tr><th>Sting</th><th>Used for</th><th>Length</th><th>HF&gt;2kHz</th><th>Edge</th><th>Source</th></tr></thead>
+<tbody>
+    <tr>
+      <td><button data-s="buzzer">buzzer</button> <span class="new">sampled</span></td>
+      <td class="role">A goose egg from a starter</td>
+      <td class="num">171 ms</td>
+      <td class="num">68.3%</td>
+      <td class="num">0.0024</td>
+      <td class="src"><a href="https://kenney.nl/assets/interface-sounds">Kenney Interface Sounds 1.0</a></td>
+    </tr>
+    <tr>
+      <td><button data-s="flip">flip</button> <span class="new">sampled</span></td>
+      <td class="role">A card turning over</td>
+      <td class="num">614 ms</td>
+      <td class="num">1.4%</td>
+      <td class="num">0.0042</td>
+      <td class="src"><a href="https://kenney.nl/assets/interface-sounds">Kenney Interface Sounds 1.0</a></td>
+    </tr>
+    <tr>
+      <td><button data-s="scratch">scratch</button> <span class="new">sampled</span></td>
+      <td class="role">A record stopping: the joke's rimshot</td>
+      <td class="num">145 ms</td>
+      <td class="num">93.5%</td>
+      <td class="num">0.0055</td>
+      <td class="src"><a href="https://kenney.nl/assets/interface-sounds">Kenney Interface Sounds 1.0</a></td>
+    </tr>
+    <tr>
+      <td><button data-s="tap">tap</button> <span class="new">sampled</span></td>
+      <td class="role">A finger on a control</td>
+      <td class="num">103 ms</td>
+      <td class="num">2.9%</td>
+      <td class="num">0.0008</td>
+      <td class="src"><a href="https://kenney.nl/assets/interface-sounds">Kenney Interface Sounds 1.0</a></td>
+    </tr>
+    <tr>
+      <td><button data-s="chime">chime</button> <span class="old">synth</span></td>
+      <td class="role">Clinches and good news</td>
+      <td class="num">1106 ms</td>
+      <td class="num" class="dull">2.6%</td>
+      <td class="num">0.0031</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="crowd">crowd</button> <span class="old">synth</span></td>
+      <td class="role">Under the big moments</td>
+      <td class="num">2206 ms</td>
+      <td class="num">51.0%</td>
+      <td class="num">0.0000</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="doom">doom</button> <span class="old">synth</span></td>
+      <td class="role">Mathematically finished</td>
+      <td class="num">2106 ms</td>
+      <td class="num">0.0%</td>
+      <td class="num">0.0000</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="horn_01">horn_01</button> <span class="old">synth</span></td>
+      <td class="role">An ordinary touchdown</td>
+      <td class="num">626 ms</td>
+      <td class="num" class="dull">2.7%</td>
+      <td class="num">0.0008</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="horn_02">horn_02</button> <span class="old">synth</span></td>
+      <td class="role">A better one, and lead changes</td>
+      <td class="num">926 ms</td>
+      <td class="num" class="dull">4.6%</td>
+      <td class="num">0.0001</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="horn_03">horn_03</button> <span class="old">synth</span></td>
+      <td class="role">Long touchdowns, clinches, hundred-point milestones</td>
+      <td class="num">1656 ms</td>
+      <td class="num" class="dull">8.0%</td>
+      <td class="num">0.0042</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="rip">rip</button> <span class="old">synth</span></td>
+      <td class="role">The pack tearing open</td>
+      <td class="num">726 ms</td>
+      <td class="num">97.3%</td>
+      <td class="num">0.0015</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="riser">riser</button> <span class="old">synth</span></td>
+      <td class="role">The red-zone countdown</td>
+      <td class="num">1906 ms</td>
+      <td class="num">18.1%</td>
+      <td class="num">0.0001</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="trombone">trombone</button> <span class="old">synth</span></td>
+      <td class="role">Bench disasters and goose eggs. The sad one</td>
+      <td class="num">1456 ms</td>
+      <td class="num">1.0%</td>
+      <td class="num">0.0000</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+    <tr>
+      <td><button data-s="whoosh">whoosh</button> <span class="old">synth</span></td>
+      <td class="role">Big plays</td>
+      <td class="num">506 ms</td>
+      <td class="num">52.7%</td>
+      <td class="num">0.0001</td>
+      <td class="src">synthesised in <code>tools/make_audio.py</code></td>
+    </tr>
+</tbody></table>
+<p class="key">Tell me which ones are wrong and what they should sound like instead.
+A spectrum cannot tell whether a horn sounds like a touchdown.</p>
+</main>
+<script>
+const SPRITE = {"horn_01": [0, 626], "horn_02": [934, 926], "horn_03": [2168, 1656], "trombone": [4132, 1456], "whoosh": [5896, 506], "riser": [6710, 1906], "chime": [8924, 1106], "doom": [10338, 2106], "scratch": [12752, 145], "buzzer": [13205, 171], "crowd": [13685, 2206], "tap": [16199, 103], "flip": [16610, 614], "rip": [17532, 726]};
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+let buffer = null;
+const load = fetch('../static/audio/sprite.mp3')
+  .then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)).then(d => buffer = d);
+document.querySelectorAll('button[data-s]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    await load;
+    await ctx.resume();
+    const [start, length] = SPRITE[btn.dataset.s];
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    src.connect(ctx.destination);
+    src.start(0, start / 1000, length / 1000);
+    btn.classList.add('on');
+    setTimeout(() => btn.classList.remove('on'), length);
+  });
+});
+</script>
