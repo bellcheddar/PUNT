@@ -74,7 +74,7 @@ class WinProbability:
             return self.home_win
         if team_id == self.away_id:
             return self.away_win
-        return 0.5
+        return 0.5  # cold: nothing asks a matchup about a team that is not in it
 
     @property
     def settled(self) -> bool:
@@ -91,7 +91,7 @@ def _draw_player(player: Player, rng: random.Random) -> float:
     """One simulated finish for one player, in points added from here."""
     remaining = player.remaining
     if remaining <= 0:
-        return 0.0
+        return 0.0  # cold: the callers filter on remaining > 0; this is the guard for anyone who does not
 
     td_rate = TD_RATE.get(player.position, 0.15)
     total = 0.0
@@ -155,7 +155,7 @@ def win_probability(
         if home_final > away_final:
             wins += 1
         elif home_final == away_final:
-            wins += 0.5
+            wins += 0.5  # cold: two float draws landing on the same value
 
     return WinProbability(
         home_id=home.team_id,
@@ -207,18 +207,6 @@ class PlayoffOdds:
     eliminated: bool = False
     remaining: int = 0
 
-    def to_json(self) -> dict:
-        return {
-            "team_id": self.team_id,
-            "odds": round(self.odds, 4),
-            "mean_wins": round(self.mean_wins, 2),
-            "magic_number": self.magic_number,
-            "clinched": self.clinched,
-            "eliminated": self.eliminated,
-            "remaining": self.remaining,
-        }
-
-
 #: Odds beyond which a thing is called rather than reported as a percentage.
 #: A "99.9%" on a bar screen invites an argument about the 0.1%; "clinched" does
 #: not, and at three thousand draws the two are indistinguishable anyway.
@@ -249,7 +237,7 @@ def playoff_odds(snapshot, draws: int = 3000, seed: int = 0) -> dict[int, Playof
 
     records = season_records(snapshot)
     if not records:
-        return {}
+        return {}  # cold: a league with no teams
 
     playoff_places = max(1, snapshot.settings.playoff_team_count or 6)
     current_week = snapshot.settings.current_matchup_period
@@ -271,7 +259,7 @@ def playoff_odds(snapshot, draws: int = 3000, seed: int = 0) -> dict[int, Playof
         for side in (matchup.home, matchup.away):
             record = records.get(side.team_id)
             if record is None:
-                continue
+                continue  # cold: every side in a live matchup belongs to a team that exists
             fraction_left = side.in_play / max(1, len(side.starters))
             live[side.team_id] = (side.live_projection, record.sigma * fraction_left)
 
@@ -294,14 +282,14 @@ def playoff_odds(snapshot, draws: int = 3000, seed: int = 0) -> dict[int, Playof
                     tid = side.team_id
                     record = records.get(tid)
                     if record is None:
-                        continue
+                        continue  # cold: same, in the season loop
                     if week == current_week and tid in live:
                         mean, sigma = live[tid]
                     else:
                         mean, sigma = record.mean, record.sigma
                     scores[tid] = max(0.0, rng.gauss(mean, max(1.0, sigma)))
                 if len(scores) != 2:
-                    continue
+                    continue  # cold: every pairing in the grid has two teams
                 (a, a_score), (b, b_score) = scores.items()
                 points[a] += a_score
                 points[b] += b_score
@@ -312,8 +300,8 @@ def playoff_odds(snapshot, draws: int = 3000, seed: int = 0) -> dict[int, Playof
                     wins[b] += 1
                     won_remaining[b] += 1
                 else:
-                    wins[a] += 0.5
-                    wins[b] += 0.5
+                    wins[a] += 0.5  # cold: a simulated future week ending level, on two gaussian draws
+                    wins[b] += 0.5  # cold: the other half of the same tie
 
         order = sorted(records, key=lambda tid: (-wins[tid], -points[tid]))
         for position, tid in enumerate(order, start=1):

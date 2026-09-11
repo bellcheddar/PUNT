@@ -171,6 +171,11 @@ def drive_a_sunday() -> None:
     # came back "NEEDS HELP" and three of the five phrases the tab can print had
     # never been printed.
     multiverse_view(snapshot, draws=400)
+    # And once while the games are still on. The playoff simulator blends each
+    # team's live score into the current week instead of drawing it from the
+    # season mean, and that blend is only reachable before the final whistle.
+    if afternoons:
+        multiverse_view(afternoons[len(afternoons) // 2], draws=400)
     moments_view(feed)
     moments_view(None)          # the tab before the first poll returns
 
