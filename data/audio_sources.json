@@ -145,6 +145,28 @@
       "licence": "CC0 1.0",
       "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "recorded": true
+    },
+    "freesound_250856": {
+      "url": "https://cdn.freesound.org/previews/250/250856_4146089-hq.mp3",
+      "sha256": "de121be823e23dcc2ed8a3dd8049465333f9e6956933d399a21b9e7977807fdf",
+      "bytes": 1088724,
+      "source": "Freesound #250856 \u2014 Epic Orchestra - LOOP.wav",
+      "page": "https://freesound.org/people/joshuaempyre/sounds/250856/",
+      "author": "joshuaempyre on Freesound",
+      "licence": "CC-BY 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "recorded": true
+    },
+    "freesound_415511": {
+      "url": "https://cdn.freesound.org/previews/415/415511_5232403-hq.mp3",
+      "sha256": "553e9f2a810f2c935f718316327620bba37f2fce9901dc9f14ec20d745b94d6e",
+      "bytes": 357075,
+      "source": "Freesound #415511 \u2014 Melody Loop Mix 128 bpm.mp3",
+      "page": "https://freesound.org/people/Vannipat/sounds/415511/",
+      "author": "Vannipat on Freesound",
+      "licence": "CC0 1.0",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "recorded": true
     }
   },
   "sounds": {
@@ -219,6 +241,16 @@
       "from": "freesound_151822",
       "gain_db": 0.0,
       "why": "A real vinyl scratch. Kenney's was brighter at 94% but synthetic; this is the record actually stopping."
+    },
+    "bed_epic": {
+      "from": "freesound_250856",
+      "gain_db": 0.0,
+      "why": "The Sunday-night theme, under the Big Board. A loop-capable orchestral segment: the brass-and-timpani idiom the spec asks for, which is a genre convention rather than a protected work. CC-BY, which is the whole reason music has its own rule -- no melodic theme of this kind exists under CC0."
+    },
+    "bed_party": {
+      "from": "freesound_415511",
+      "gain_db": 0.0,
+      "why": "The watch-party bed, under the afternoon on a phone. A 128 bpm dance loop, which is what a room sounds like between plays. Replaces a synthesised pad whose entire design brief was to be too dull to notice."
     }
   },
   "_previews": "Freesound entries point at the HQ preview mp3, not the original wav. Only originals need OAuth2, and for stings that end up inside a 128 kbps sprite the preview is not the limiting factor -- the sprite's own encoding is.",

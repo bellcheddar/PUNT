@@ -382,7 +382,9 @@ def test_no_audio_file_is_shipped_without_a_licence_line():
 
     shipped = {p.name for p in (root / "static" / "audio").glob("*")
                if p.is_file() and p.suffix in (".mp3", ".ogg")}
-    assert shipped <= {"sprite.mp3", "sprite.ogg", "bed.mp3", "bed.ogg"}, \
+    assert shipped <= {"sprite.mp3", "sprite.ogg", "bed.mp3", "bed.ogg",
+                       "bed-epic.mp3", "bed-epic.ogg",
+                       "bed-party.mp3", "bed-party.ogg"}, \
         f"an audio file nobody accounted for: {shipped}"
 
 

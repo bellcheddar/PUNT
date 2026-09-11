@@ -27,6 +27,8 @@ MANIFEST = ROOT / "data" / "audio_sources.json"
 OUT = ROOT / "static" / "audio" / "LICENCES.md"
 
 ROLES = {
+    "bed_epic": "The Sunday-night theme, under the Big Board",
+    "bed_party": "The watch-party loop, under a phone",
     "horn_01": "An ordinary touchdown", "horn_02": "A better one, and lead changes",
     "horn_03": "Long touchdowns, clinches, hundred-point milestones",
     "trombone": "Bench disasters and goose eggs. The sad one",
@@ -57,7 +59,9 @@ def render(spec: dict) -> str:
         "|---|---|---|",
         "| `sprite.mp3`, `sprite.ogg` | Built by `tools/make_audio.py` from the sounds below | Mixed; see the table |",
         "| `sprite.json` | Generated alongside them | Ours outright, MIT |",
-        "| `bed.mp3`, `bed.ogg` | Synthesised by `tools/make_audio.py` | Ours outright, MIT |",
+        "| `bed-epic.mp3`, `bed-epic.ogg` | The Big Board's theme; see the table below | See below |",
+        "| `bed-party.mp3`, `bed-party.ogg` | The phone's watch-party loop; see below | See below |",
+        "| `bed.mp3`, `bed.ogg` | The synthesised pad, kept as the fallback | Ours outright, MIT |",
         "",
         "## The sounds",
         "",

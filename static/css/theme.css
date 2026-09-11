@@ -1089,3 +1089,16 @@ main { padding: 12px 14px 24px; }
     transition-duration: .01ms !important;
   }
 }
+
+/* The music credit, above the tab bar. Deliberately quiet but not hidden: CC-BY
+   is discharged where the work is heard, and a credit nobody can read is not a
+   credit. Padded clear of the fixed tab bar so it is reachable by scrolling. */
+.credit {
+  margin: 18px 0 8px;
+  padding: 0 16px;
+  color: var(--ink-faint);
+  font-size: 11.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+.credit a { color: var(--ink-faint); text-decoration: underline; }

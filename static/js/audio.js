@@ -91,8 +91,16 @@
 
     // The bed is a separate file rather than a sprite region: Howler loops a
     // whole file cleanly and loops a region with an audible gap at the seek.
+    //
+    // Two of them, and which one you get depends on where you are. The Big
+    // Board is the television on the wall of a bar, so it gets the orchestral
+    // Sunday-night theme; a phone in somebody's hand gets the 128 bpm
+    // watch-party loop, because forty-five seconds of brass on repeat is
+    // splendid across a room and exhausting six inches from your ear.
+    const onTheWall = document.documentElement.dataset.tv === '1';
+    const stem = onTheWall ? 'bed-epic' : 'bed-party';
     bed = new window.Howl({
-      src: ['/static/audio/bed.mp3', '/static/audio/bed.ogg'],
+      src: [`/static/audio/${stem}.mp3`, `/static/audio/${stem}.ogg`],
       html5: false,
       loop: true,
       volume: 0,

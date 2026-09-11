@@ -61,6 +61,9 @@ BANDS = {
     "horn_01": (0.10, 0.80), "horn_02": (0.10, 0.80), "horn_03": (0.10, 0.80),
     "crowd": (0.02, 0.60), "trombone": (0.005, 0.40), "whoosh": (0.0, 0.95),
     "riser": (0.0, 0.90), "doom": (0.0, 0.15),
+    # The beds are music. A band would be meaningless: an orchestral loop and a
+    # 128 bpm dance loop have nothing in common spectrally and both are correct.
+    "bed_epic": (0.0, 1.0), "bed_party": (0.0, 1.0),
 }
 
 FFMPEG = shutil.which("ffmpeg") or "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg"

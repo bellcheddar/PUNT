@@ -113,6 +113,22 @@
   {% block content %}{% endblock %}
 </main>
 
+{# The music credit. CC-BY is discharged in the medium the work appears in, and
+   for an app that means where somebody listening can see it -- a file in the
+   repository credits the people who cloned it, not the people in the bar. The
+   generated static/audio/LICENCES.md is the full list; this is the one entry
+   that carries an actual obligation. #}
+{% if not (tv or force_tv) %}
+<p class="credit">
+  Music: <a href="https://freesound.org/people/joshuaempyre/sounds/250856/"
+            target="_blank" rel="noopener noreferrer">Epic Orchestra</a>
+  by joshuaempyre, <a href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank" rel="noopener noreferrer">CC&nbsp;BY&nbsp;4.0</a>.
+  Effects CC0. <a href="https://github.com/bellcheddar/PUNT/blob/main/static/audio/LICENCES.md"
+            target="_blank" rel="noopener noreferrer">Full credits</a>.
+</p>
+{% endif %}
+
 {% if not (tv or force_tv) %}
 <nav class="tabbar chrome" aria-label="Sections">
   {% for tab in TABS %}

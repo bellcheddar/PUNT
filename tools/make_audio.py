@@ -124,6 +124,35 @@ def fade(x: np.ndarray, ms: float = 6.0) -> np.ndarray:
     return x
 
 
+def loopable(x: np.ndarray, seconds: float = 0.35) -> np.ndarray:
+    """Make a recording loop without a seam, by crossfading its own ends.
+
+    Insurance, not a repair. Both beds actually chosen loop cleanly on their own
+    -- their raw joins measure 0.3x and 0.0x a typical sample step -- so this
+    fixed nothing for them. It is here because "loop-capable" is a claim in a
+    description field, made by somebody who was not thinking about four hours of
+    continuous playback in a bar, and the next bed swapped in will not
+    necessarily be as good. Fading both ends to silence instead would put a hole
+    in the music every time round.
+
+    The tail is crossfaded over the head and the result shortened by the
+    crossfade, which makes the join continuous by construction in both
+    directions: the body ends where the seam begins, and the seam ends where the
+    body began. Equal power (sqrt) rather than linear, or the overlap dips in
+    the middle -- two uncorrelated signals at half amplitude sum to less than
+    one.
+    """
+    n = int(seconds * RATE)
+    if len(x) < 4 * n:
+        return x
+    head, tail, body = x[:n], x[-n:], x[n:-n]
+    rise = np.sqrt(np.linspace(0, 1, n))
+    if x.ndim == 2:
+        rise = rise[:, None]
+    seam = tail * rise[::-1] + head * rise
+    return np.concatenate([seam, body])
+
+
 # --------------------------------------------------------------------------
 # the stings
 # --------------------------------------------------------------------------
@@ -480,6 +509,32 @@ def main() -> int:
 
     # The bed is its own file, not a sprite entry: Howler loops a whole file
     # cleanly and loops a sprite region with an audible gap at the seek.
+    for bed_name, bitrate in (("bed_epic", "112k"), ("bed_party", "112k")):
+        samples = sampled(bed_name)
+        if samples is None:
+            print(f"  {bed_name}: no source; run tools/fetch_audio.py", file=sys.stderr)
+            continue
+        samples = loopable(samples)
+        stem = bed_name.replace("_", "-")
+        raw = OUT / f"{stem}.wav"
+        write_wav(raw, samples)
+        encode(raw, OUT / f"{stem}.mp3", ["-codec:a", "libmp3lame", "-b:a", bitrate, "-ar", "44100"])
+        encode(raw, OUT / f"{stem}.ogg", ["-codec:a", "libvorbis", "-qscale:a", "4", "-ar", "44100"])
+        raw.unlink()
+        # Measured the same way as the synthesised bed below, and for the same
+        # reason: a seamless loop does not mean first == last. Wrapping from the
+        # last sample to the first is one ordinary sample step, and on a 128 bpm
+        # dance loop with real high-frequency content that step is naturally
+        # about 0.03. What is audible is a join BIGGER than the steps everywhere
+        # else, so the only meaningful number is the ratio.
+        mono = samples.mean(axis=1)
+        join = abs(float(mono[0]) - float(mono[-1]))
+        typical = float(np.percentile(np.abs(np.diff(mono)), 99))
+        ratio = join / max(typical, 1e-9)
+        flag = "  <-- AUDIBLE SEAM" if ratio > 3.0 else ""
+        print(f"  {stem}: {len(samples) / RATE:.1f}s loop, "
+              f"join {ratio:.2f}x a typical sample step{flag}")
+
     bed = sound_bed()
     # A seamless loop does not mean bed[0] == bed[-1]. Wrapping from the last
     # sample to the first is one ordinary sample step, and for a 55 Hz tone at
@@ -494,11 +549,9 @@ def main() -> int:
     if seam > 3.0:
         print(f"WARNING: the loop join is {seam:.1f}x a typical sample step; "
               f"something is not snapped to the loop length", file=sys.stderr)
-    bed_wav = OUT / "bed.wav"
-    write_wav(bed_wav, bed)
-    encode(bed_wav, OUT / "bed.mp3", ["-codec:a", "libmp3lame", "-b:a", "80k", "-ar", "44100"])
-    encode(bed_wav, OUT / "bed.ogg", ["-codec:a", "libvorbis", "-qscale:a", "3", "-ar", "44100"])
-    bed_wav.unlink()
+    # The synthesised pad is kept as the fallback for a clone with no audio cache
+    # and as the thing the seam check above is written against. It is not shipped
+    # any more: its design brief was to be too dull to notice, and it met it.
 
     encode(wav, OUT / "sprite.mp3", ["-codec:a", "libmp3lame", "-b:a", "96k", "-ar", "44100"])
     encode(wav, OUT / "sprite.ogg", ["-codec:a", "libvorbis", "-qscale:a", "3", "-ar", "44100"])

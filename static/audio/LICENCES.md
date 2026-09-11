@@ -11,12 +11,16 @@ if they disagree.
 |---|---|---|
 | `sprite.mp3`, `sprite.ogg` | Built by `tools/make_audio.py` from the sounds below | Mixed; see the table |
 | `sprite.json` | Generated alongside them | Ours outright, MIT |
-| `bed.mp3`, `bed.ogg` | Synthesised by `tools/make_audio.py` | Ours outright, MIT |
+| `bed-epic.mp3`, `bed-epic.ogg` | The Big Board's theme; see the table below | See below |
+| `bed-party.mp3`, `bed-party.ogg` | The phone's watch-party loop; see below | See below |
+| `bed.mp3`, `bed.ogg` | The synthesised pad, kept as the fallback | Ours outright, MIT |
 
 ## The sounds
 
 | Sound | Used for | Source | Licence |
 |---|---|---|---|
+| `bed_epic` | The Sunday-night theme, under the Big Board | [Freesound #250856 — Epic Orchestra - LOOP.wav](https://freesound.org/people/joshuaempyre/sounds/250856/) by joshuaempyre on Freesound | [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| `bed_party` | The watch-party loop, under a phone | [Freesound #415511 — Melody Loop Mix 128 bpm.mp3](https://freesound.org/people/Vannipat/sounds/415511/) by Vannipat on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `buzzer` | A goose egg from a starter | [Freesound #493163 — Buzzer sounds (Wrong answer / Error)](https://freesound.org/people/Breviceps/sounds/493163/) by Breviceps on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `chime` | Clinches and good news | [Freesound #541985 — GASP_Chimes_Success_4.wav](https://freesound.org/people/Rob_Marion/sounds/541985/) by Rob_Marion on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `crowd` | Under the big moments | [Freesound #333405 — Cheer 1 short.wav](https://freesound.org/people/jayfrosting/sounds/333405/) by jayfrosting on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
@@ -31,6 +35,15 @@ if they disagree.
 | `tap` | A finger on a control | [Kenney Interface Sounds 1.0](https://kenney.nl/assets/interface-sounds) by Kenney (kenney.nl) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `trombone` | Bench disasters and goose eggs. The sad one | [Freesound #175409 — wah wah sad trombone.wav](https://freesound.org/people/kirbydx/sounds/175409/) by kirbydx on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `whoosh` | Big plays | [Freesound #683096 — Woosh](https://freesound.org/people/florianreichelt/sounds/683096/) by florianreichelt on Freesound | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+
+## Attribution
+
+**These credits are required.** They are part of the licence on the music
+below, and this file is what discharges that obligation for anyone who
+clones the repository. It is generated, so it cannot fall out of step with
+what is actually in the sprite.
+
+- *[Freesound #250856 — Epic Orchestra - LOOP.wav](https://freesound.org/people/joshuaempyre/sounds/250856/)* by **joshuaempyre on Freesound**, licensed [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 ## Why CC0 for effects, and CC-BY only for music
 
@@ -65,8 +78,10 @@ them and none may be ripped in.
 | [Freesound #175409 — wah wah sad trombone.wav](https://cdn.freesound.org/previews/175/175409_1326576-hq.mp3) | `de4a029a0537dbec…` | 120,891 |
 | [Freesound #181773 — tearing paper4.wav](https://cdn.freesound.org/previews/181/181773_3153523-hq.mp3) | `75a666618b45e881…` | 37,257 |
 | [Freesound #199937 — 02-siren.wav](https://cdn.freesound.org/previews/199/199937_3692069-hq.mp3) | `1523ad19b81a3141…` | 132,223 |
+| [Freesound #250856 — Epic Orchestra - LOOP.wav](https://cdn.freesound.org/previews/250/250856_4146089-hq.mp3) | `de121be823e23dcc…` | 1,088,724 |
 | [Freesound #333405 — Cheer 1 short.wav](https://cdn.freesound.org/previews/333/333405_5884138-hq.mp3) | `862ee590e529eb7a…` | 118,800 |
 | [Freesound #415504 — Tadaa.wav](https://cdn.freesound.org/previews/415/415504_6894147-hq.mp3) | `7e0e3c457a3e198e…` | 110,194 |
+| [Freesound #415511 — Melody Loop Mix 128 bpm.mp3](https://cdn.freesound.org/previews/415/415511_5232403-hq.mp3) | `553e9f2a810f2c93…` | 357,075 |
 | [Freesound #456966 — Success Fanfare Trumpets.mp3](https://cdn.freesound.org/previews/456/456966_6456158-hq.mp3) | `3b89ee0cd0d1fa31…` | 102,742 |
 | [Freesound #493163 — Buzzer sounds (Wrong answer / Error)](https://cdn.freesound.org/previews/493/493163_9159316-hq.mp3) | `e8562fbcfdaed893…` | 68,784 |
 | [Freesound #528807 — DJ airhorn sound](https://cdn.freesound.org/previews/528/528807_3482490-hq.mp3) | `ca571547a96016ae…` | 39,521 |
