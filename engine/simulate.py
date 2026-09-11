@@ -185,3 +185,184 @@ def team_probabilities(snapshot, draws: int = DEFAULT_DRAWS) -> dict[int, float]
         out[matchup.home.team_id] = result.home_win
         out[matchup.away.team_id] = result.away_win
     return out
+
+
+# --------------------------------------------------------------------------
+# playoff odds
+# --------------------------------------------------------------------------
+
+@dataclass
+class PlayoffOdds:
+    """A team's chance of making the playoffs, and what it would take."""
+
+    team_id: int
+    odds: float
+    seed_odds: dict[int, float] = field(default_factory=dict)
+    mean_wins: float = 0.0
+    #: Remaining wins after which this team made the playoffs in almost every
+    #: simulated season. `None` when no number of wins is enough, or when it is
+    #: already through.
+    magic_number: int | None = None
+    clinched: bool = False
+    eliminated: bool = False
+    remaining: int = 0
+
+    def to_json(self) -> dict:
+        return {
+            "team_id": self.team_id,
+            "odds": round(self.odds, 4),
+            "mean_wins": round(self.mean_wins, 2),
+            "magic_number": self.magic_number,
+            "clinched": self.clinched,
+            "eliminated": self.eliminated,
+            "remaining": self.remaining,
+        }
+
+
+#: Odds beyond which a thing is called rather than reported as a percentage.
+#: A "99.9%" on a bar screen invites an argument about the 0.1%; "clinched" does
+#: not, and at three thousand draws the two are indistinguishable anyway.
+CLINCH_AT = 0.999
+ELIMINATED_AT = 0.001
+
+#: How confident a win total has to make a team before it counts as their magic
+#: number. Not 1.0: with a finite number of draws, nothing is ever 1.0, and a
+#: magic number that never resolves is worse than one that is nearly right.
+MAGIC_CONFIDENCE = 0.97
+
+
+def playoff_odds(snapshot, draws: int = 3000, seed: int = 0) -> dict[int, PlayoffOdds]:
+    """Monte Carlo the rest of the season.
+
+    Each simulated season plays out every remaining week from the real schedule
+    grid, drawing each team's score from its own distribution of settled weeks.
+    That matters more than it sounds: a team averaging 120 with a tight spread is
+    a very different playoff proposition from one averaging 120 by alternating
+    160 and 80, and a table of records cannot tell them apart.
+
+    The current week, if it is in progress, is seeded from the live projection
+    rather than the season mean, with its spread scaled by how much is actually
+    left to play. Ignoring that would have the simulator rate a manager's chances
+    while pretending the afternoon they are halfway through has not happened.
+    """
+    from engine.scoring import season_records  # noqa: PLC0415 - avoids a cycle
+
+    records = season_records(snapshot)
+    if not records:
+        return {}
+
+    playoff_places = max(1, snapshot.settings.playoff_team_count or 6)
+    current_week = snapshot.settings.current_matchup_period
+    weeks = snapshot.season_weeks()
+    settled = set(snapshot.settled_weeks)
+    future = {week: games for week, games in weeks.items()
+              if week not in settled and week >= current_week}
+    remaining_count = {tid: 0 for tid in records}
+    for games in future.values():
+        for matchup in games:
+            for side in (matchup.home, matchup.away):
+                if side.team_id in remaining_count:
+                    remaining_count[side.team_id] += 1
+
+    # Where the current week has already started, the live projection is a far
+    # better estimate than the season mean.
+    live: dict[int, tuple[float, float]] = {}
+    for matchup in snapshot.live_matchups:
+        for side in (matchup.home, matchup.away):
+            record = records.get(side.team_id)
+            if record is None:
+                continue
+            fraction_left = side.in_play / max(1, len(side.starters))
+            live[side.team_id] = (side.live_projection, record.sigma * fraction_left)
+
+    rng = random.Random(seed or hash_seed(snapshot))
+    made = {tid: 0 for tid in records}
+    seeds = {tid: {} for tid in records}
+    total_wins = {tid: 0.0 for tid in records}
+    #: wins_won -> (times seen, times made the playoffs), for the magic number.
+    by_wins: dict[int, dict[int, list[int]]] = {tid: {} for tid in records}
+
+    for _ in range(draws):
+        wins = {tid: records[tid].wins + 0.5 * records[tid].ties for tid in records}
+        points = {tid: records[tid].points_for for tid in records}
+        won_remaining = {tid: 0 for tid in records}
+
+        for week in sorted(future):
+            for matchup in future[week]:
+                scores = {}
+                for side in (matchup.home, matchup.away):
+                    tid = side.team_id
+                    record = records.get(tid)
+                    if record is None:
+                        continue
+                    if week == current_week and tid in live:
+                        mean, sigma = live[tid]
+                    else:
+                        mean, sigma = record.mean, record.sigma
+                    scores[tid] = max(0.0, rng.gauss(mean, max(1.0, sigma)))
+                if len(scores) != 2:
+                    continue
+                (a, a_score), (b, b_score) = scores.items()
+                points[a] += a_score
+                points[b] += b_score
+                if a_score > b_score:
+                    wins[a] += 1
+                    won_remaining[a] += 1
+                elif b_score > a_score:
+                    wins[b] += 1
+                    won_remaining[b] += 1
+                else:
+                    wins[a] += 0.5
+                    wins[b] += 0.5
+
+        order = sorted(records, key=lambda tid: (-wins[tid], -points[tid]))
+        for position, tid in enumerate(order, start=1):
+            total_wins[tid] += wins[tid]
+            if position <= playoff_places:
+                made[tid] += 1
+            seeds[tid][position] = seeds[tid].get(position, 0) + 1
+
+        for tid in records:
+            bucket = by_wins[tid].setdefault(won_remaining[tid], [0, 0])
+            bucket[0] += 1
+            bucket[1] += 1 if order.index(tid) < playoff_places else 0
+
+    out: dict[int, PlayoffOdds] = {}
+    for tid in records:
+        odds = made[tid] / draws
+        out[tid] = PlayoffOdds(
+            team_id=tid,
+            odds=round(odds, 4),
+            seed_odds={seed_no: round(count / draws, 4)
+                       for seed_no, count in sorted(seeds[tid].items())},
+            mean_wins=total_wins[tid] / draws,
+            magic_number=_magic_number(by_wins[tid], remaining_count[tid]),
+            clinched=odds >= CLINCH_AT,
+            eliminated=odds <= ELIMINATED_AT,
+            remaining=remaining_count[tid],
+        )
+    return out
+
+
+def _magic_number(by_wins: dict[int, list[int]], remaining: int) -> int | None:
+    """The fewest remaining wins that made the playoffs in almost every season.
+
+    Read out of the simulation rather than solved combinatorially. The exact
+    answer depends on every other team's results too, which is precisely what the
+    simulation already integrated over -- and a number derived from the same runs
+    as the odds cannot contradict them, which a separately computed one could.
+    """
+    for wins in range(remaining + 1):
+        seen, made = by_wins.get(wins, [0, 0])
+        if seen >= 30 and made / seen >= MAGIC_CONFIDENCE:
+            return wins
+    return None
+
+
+def hash_seed(snapshot) -> int:
+    """Stable across polls with the same standings, so the odds do not flicker."""
+    key = "|".join(
+        f"{m.matchup_period}:{m.home.team_id}:{m.home.total:.1f}:{m.away.total:.1f}"
+        for m in snapshot.season_schedule
+    )
+    return int.from_bytes(hashlib.blake2b(key.encode(), digest_size=8).digest(), "big")

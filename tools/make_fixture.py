@@ -113,6 +113,117 @@ TEAMS = [
 # Week 11 pairings. Five games, every team playing.
 PAIRINGS = [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
 
+#: A fourteen week regular season, six of ten teams making the playoffs.
+SEASON_WEEKS = 14
+PLAYOFF_TEAMS = 6
+
+
+def round_robin(team_ids: list[int], weeks: int) -> list[list[tuple[int, int]]]:
+    """A schedule where everybody plays everybody, then it cycles.
+
+    The circle method: fix one team and rotate the rest. Ten teams gives nine
+    distinct rounds, so a fourteen week season repeats the first five -- which is
+    exactly what a real ten-team league does, and it is why the Receipts tab's
+    luck index has anything to say.
+    """
+    fixed, rotating = team_ids[0], team_ids[1:]
+    schedule: list[list[tuple[int, int]]] = []
+    for week in range(weeks):
+        order = rotating[week % len(rotating):] + rotating[: week % len(rotating)]
+        pairs = [(fixed, order[0])] if week % 2 == 0 else [(order[0], fixed)]
+        for i in range(1, len(order) // 2 + 1):
+            a, b = order[i], order[len(order) - i]
+            pairs.append((a, b) if (week + i) % 2 == 0 else (b, a))
+        schedule.append(pairs)
+    return schedule
+
+
+def build_season(rng: random.Random) -> tuple[list[list[tuple[int, int]]], dict[int, list[float]], dict[int, dict]]:
+    """The whole season: the fixture list, the settled scores, and the standings.
+
+    Generated *before* the team payloads, because the standings have to be
+    derived from the results rather than invented alongside them. Random records
+    beside random scores contradict each other the moment anybody adds up a
+    column, and the all-play and luck figures are built on exactly that sum.
+    """
+    team_ids = [t[0] for t in TEAMS]
+    schedule = round_robin(team_ids, SEASON_WEEKS)
+
+    # Weeks 1 to 10 are settled. Week 11 is the one being replayed, so its scores
+    # come from the live simulation rather than from here.
+    settled: dict[int, list[float]] = {tid: [] for tid in team_ids}
+    for week in range(SCORING_PERIOD - 1):
+        for tid in team_ids:
+            settled[tid].append(round(max(38.0, rng.gauss(104, 21)), 2))
+
+    standings = {tid: {"wins": 0, "losses": 0, "ties": 0, "pf": 0.0, "pa": 0.0}
+                 for tid in team_ids}
+    for week in range(SCORING_PERIOD - 1):
+        for home, away in schedule[week]:
+            home_score, away_score = settled[home][week], settled[away][week]
+            standings[home]["pf"] += home_score
+            standings[home]["pa"] += away_score
+            standings[away]["pf"] += away_score
+            standings[away]["pa"] += home_score
+            if home_score > away_score:
+                standings[home]["wins"] += 1
+                standings[away]["losses"] += 1
+            elif away_score > home_score:
+                standings[away]["wins"] += 1
+                standings[home]["losses"] += 1
+            else:
+                standings[home]["ties"] += 1
+                standings[away]["ties"] += 1
+
+    for record in standings.values():
+        record["pf"] = round(record["pf"], 2)
+        record["pa"] = round(record["pa"], 2)
+    return schedule, settled, standings
+
+
+def schedule_payload(schedule, settled, rosters, week_done: bool = False) -> dict:
+    """An `mSchedule` response: every matchup period of the season.
+
+    Completed weeks carry scores and a winner; the current week carries the live
+    totals; future weeks carry the pairing and nothing else, which is what the
+    playoff simulator needs and all it needs.
+    """
+    games = []
+    match_id = 0
+    for week_index, pairs in enumerate(schedule, start=1):
+        for home, away in pairs:
+            match_id += 1
+            entry = {"id": match_id, "matchupPeriodId": week_index,
+                     "home": {"teamId": home}, "away": {"teamId": away}}
+            if week_index < SCORING_PERIOD:
+                home_score = settled[home][week_index - 1]
+                away_score = settled[away][week_index - 1]
+                entry["home"]["totalPoints"] = home_score
+                entry["away"]["totalPoints"] = away_score
+                entry["winner"] = ("HOME" if home_score > away_score
+                                   else "AWAY" if away_score > home_score else "TIE")
+            elif week_index == SCORING_PERIOD:
+                for key, tid in (("home", home), ("away", away)):
+                    squad = rosters[tid]
+                    entry[key]["totalPoints"] = round(
+                        sum(a.points for a in squad if a.is_starter), 2)
+                # Undecided while the games are on, settled once they are not.
+                # Without this the week stays "remaining" after the final whistle
+                # and the playoff simulator keeps re-rolling an afternoon that
+                # already happened.
+                if not week_done:
+                    entry["winner"] = "UNDECIDED"
+                else:
+                    home_total = entry["home"]["totalPoints"]
+                    away_total = entry["away"]["totalPoints"]
+                    entry["winner"] = ("HOME" if home_total > away_total
+                                       else "AWAY" if away_total > home_total else "TIE")
+            else:
+                entry["winner"] = "UNDECIDED"
+            games.append(entry)
+    return {"id": int(LEAGUE_ID), "seasonId": SEASON,
+            "scoringPeriodId": SCORING_PERIOD, "schedule": games}
+
 LINEUP_SLOT_COUNTS = {"0": 1, "2": 2, "4": 2, "6": 1, "23": 1, "16": 1, "17": 1, "20": 7}
 STARTER_SLOTS = [0, 2, 2, 4, 4, 6, 23, 16, 17]
 BENCH_SLOTS = [20] * 7
@@ -496,12 +607,17 @@ def settings_payload() -> dict:
     }
 
 
-def team_payload(rng: random.Random) -> dict:
-    """`mTeam` plus the members block, which is how owner names reach a card."""
+def team_payload(rng: random.Random, standings: dict[int, dict]) -> dict:
+    """`mTeam` plus the members block, which is how owner names reach a card.
+
+    Records come from `standings`, which was computed by playing the season out.
+    Inventing them here instead would contradict the schedule the moment anybody
+    added up a column -- and the luck index is exactly that sum.
+    """
     teams = []
     for i, (team_id, name, abbrev, _manager) in enumerate(TEAMS):
-        wins = rng.randint(2, 8)
-        losses = 10 - wins
+        record = standings[team_id]
+        wins, losses, ties = record["wins"], record["losses"], record["ties"]
         teams.append(
             {
                 "id": team_id,
@@ -517,9 +633,9 @@ def team_payload(rng: random.Random) -> dict:
                     "overall": {
                         "wins": wins,
                         "losses": losses,
-                        "ties": 0,
-                        "pointsFor": round(rng.uniform(880, 1180), 2),
-                        "pointsAgainst": round(rng.uniform(880, 1180), 2),
+                        "ties": ties,
+                        "pointsFor": record["pf"],
+                        "pointsAgainst": record["pa"],
                     }
                 },
             }
@@ -553,11 +669,15 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
         )
         seq += 1
 
+    schedule, settled, standings = build_season(rng)
+
     add("mSettings", settings_payload(), 0.0, per_week=False)
-    add("mTeam", team_payload(rng), 0.0, per_week=False)
+    add("mTeam", team_payload(rng, standings), 0.0, per_week=False)
+    add("mSchedule", schedule_payload(schedule, settled, rosters), 0.0, per_week=False)
 
     last_signature: str | None = None
     last_nfl_signature: str | None = None
+    schedule_settled = False
     for t in range(0, DAY_END + STEP, STEP):
         for squad in rosters.values():
             for athlete in squad:
@@ -576,6 +696,17 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
         if nfl_signature != last_nfl_signature:
             last_nfl_signature = nfl_signature
             add("nfl_scoreboard", nfl, float(t), per_week=False)
+
+        # The season grid is rewritten the moment the last game ends, not at the
+        # end of the capture. Otherwise the week stays "remaining" for the gap
+        # between the final whistle and the recording stopping, and the playoff
+        # simulator spends it re-rolling an afternoon that is over.
+        if not schedule_settled and all(
+            e["status"]["type"]["completed"] for e in nfl["events"]
+        ):
+            schedule_settled = True
+            add("mSchedule", schedule_payload(schedule, settled, rosters, week_done=True),
+                float(t), per_week=False)
 
         payload = boxscore_payload(rosters, t)
         # Nothing changed in this minute means no new payload: that is both what

@@ -2,7 +2,7 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-190%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![numpy](https://img.shields.io/badge/numpy-2.4.2-013243?logo=numpy&logoColor=white) ![requests](https://img.shields.io/badge/requests-2.32.5-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-194%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![phase](https://img.shields.io/badge/phase-6%20of%206%20built-fcb900) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -310,7 +310,7 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                       # 190 tests, no network, no cookies
+python3 -m pytest                       # 194 tests, no network, no cookies
 python3 tools/screenshot.py --check-overflow   # needs the app running
 ```
 
@@ -475,12 +475,15 @@ user, and `?tv=1` is readable from twelve feet.*
 - [ ] **Fact pack and grounded recap.** A small local instruct model over retrieved week facts, with a
       validator that rejects any numeral or proper noun absent from the fact pack. A recap that
       invents a score is worse than no recap, because the league will believe it
-- [ ] **Cheer, Swing and Multiverse.** Per-game verdicts, the win probability curve, playoff odds and
-      magic numbers
+- [x] **Cheer and Swing.** Per-game verdicts and the live win probability curve
+- [x] **Multiverse.** Playoff odds from 2,500 simulated seasons against the real fixture list, the
+      table with the playoff cut drawn on it, and a magic number per manager read out of the same
+      simulation as the odds, so the two cannot disagree
 - [ ] **The Big Board carousel.** Auto-rotating matchups, which is what makes the larger TV type scale
       workable: at 2.2x a 720p screen fits two and a half of five matchups, so it currently runs at 1.6
-- [ ] **Season all-play and luck.** Both are this week only until the `mSchedule` grid is wired in,
-      which is the same feed the playoff odds need
+- [x] **Season all-play and luck**, from the `mSchedule` grid. The demo recording now contains a
+      full fourteen week fixture list whose results the standings are *derived* from, so the two
+      cannot contradict each other
 
 ### Phase 6 — Bar hardening
 

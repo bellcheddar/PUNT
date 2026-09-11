@@ -148,3 +148,83 @@ def test_secrets_and_derived_files_are_never_shipped():
     for excluded in ("--exclude '.env'", "--exclude '.venv/'",
                      "--exclude 'static/audio/phrase/'", "--exclude '.git/'"):
         assert excluded in deploy, f"deploy.sh does not exclude {excluded}"
+
+
+# --------------------------------------------------------------------------
+# the stylesheet
+# --------------------------------------------------------------------------
+
+def _strip_at_rules(css: str) -> str:
+    """Remove every `@media`/`@keyframes` block, braces balanced."""
+    out, i = [], 0
+    while i < len(css):
+        at = css.find("@", i)
+        if at == -1:
+            out.append(css[i:])
+            break
+        out.append(css[i:at])
+        brace = css.find("{", at)
+        if brace == -1:
+            break
+        depth, j = 0, brace
+        while j < len(css):
+            if css[j] == "{":
+                depth += 1
+            elif css[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        i = j + 1
+    return "".join(out)
+
+
+def test_no_selector_is_defined_twice_in_the_stylesheet():
+    """Duplicated rules are how a careless edit changes a colour silently.
+
+    A `str.replace` on the anchor `.verdict {` once matched both the base rule
+    and `.cheer--conflicted .verdict`, which duplicated a whole block and left a
+    stray base rule carrying a background. At equal specificity the later rule
+    wins, so every "IN" chip on the Multiverse tab came out the amber of "WIN 2"
+    while the markup said `verdict--in` throughout. Nothing was broken enough to
+    fail; it was just wrong, and only visible in a screenshot.
+    """
+    import re
+    from collections import Counter
+
+    css = (ROOT / "static" / "css" / "theme.css").read_text("utf-8")
+    # Comments out first, or a selector quoted inside one counts as a definition.
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    # And at-rules out too. A selector redefined inside `@media (prefers-reduced-
+    # motion)` or a step repeated across two `@keyframes` is the point of those
+    # constructs, not a mistake; only top-level rules are checked.
+    css = _strip_at_rules(css)
+
+    selectors: list[str] = []
+    for block in re.finditer(r"(^|\})\s*([^{}@]+?)\s*\{", css, re.M):
+        selector = " ".join(block.group(2).split())
+        if selector:
+            selectors.append(selector)
+
+    repeated = {s: n for s, n in Counter(selectors).items() if n > 1}
+    assert not repeated, f"selectors defined more than once: {repeated}"
+
+
+def test_the_stylesheet_has_balanced_braces():
+    """One unbalanced brace silently drops every rule after it, and the page
+    still renders -- just wrongly, from there down."""
+    css = (ROOT / "static" / "css" / "theme.css").read_text("utf-8")
+    assert css.count("{") == css.count("}")
+
+
+def test_verdict_chips_carry_no_colour_on_the_base_rule():
+    """The base rule is shape only. A background on it sits after the modifiers
+    in source order and wins at equal specificity, which is the exact shape of
+    the bug above."""
+    import re
+
+    css = (ROOT / "static" / "css" / "theme.css").read_text("utf-8")
+    base = re.search(r"\n\.verdict\s*\{(.*?)\}", css, re.S)
+    assert base, "no base .verdict rule found"
+    assert "background" not in base.group(1)
+    assert "color" not in base.group(1)

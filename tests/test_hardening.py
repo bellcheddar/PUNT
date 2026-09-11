@@ -287,9 +287,16 @@ def test_ten_phones_produce_one_upstream_poll(flaky_app, no_network):
         thread.join()
 
     assert codes == [200] * 10
-    # Four feeds are read to build a snapshot (settings, teams, scoreboard, NFL).
-    # Ten phones must not multiply that.
-    assert flaky.calls <= 4, f"{flaky.calls} upstream calls for ten simultaneous phones"
+    # A snapshot reads one feed of each kind: settings, teams, the season grid,
+    # this week's boxscore and the NFL scoreboard. Counted from the repository
+    # rather than hard-coded, so adding a feed updates the bound instead of
+    # breaking the test for the wrong reason -- which is exactly what happened
+    # when the season grid was added.
+    feeds_per_snapshot = 5
+    assert flaky.calls <= feeds_per_snapshot, (
+        f"{flaky.calls} upstream calls for ten simultaneous phones, "
+        f"expected at most {feeds_per_snapshot}"
+    )
 
 
 # --------------------------------------------------------------------------

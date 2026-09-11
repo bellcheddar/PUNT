@@ -1,12 +1,63 @@
 {% extends "base.html" %}
 {% block title %}PUNT &middot; Multiverse{% endblock %}
 {% block content %}
+{% if multiverse.available %}
+<section class="panel">
+  <h2 class="panel-title">
+    Playoff odds
+    <span class="panel-note">{{ multiverse.weeks_left }} week{{ '' if multiverse.weeks_left == 1 else 's' }} left</span>
+  </h2>
+  <table class="rows">
+    <thead><tr><th>Manager</th><th class="num">W-L</th><th class="num">Odds</th><th class="num">Needs</th></tr></thead>
+    <tbody>
+      {% for row in multiverse.rows %}
+      <tr class="mv {% if row.in_places %}mv--in{% endif %}" data-team="{{ row.id }}">
+        <td>
+          <span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.position }}. {{ row.manager }}
+          <span class="sub">{{ row.points_for }} for &middot; all-play {{ row.all_play }} &middot; luck {{ row.luck | signed }}</span>
+        </td>
+        <td class="num">{{ row.record }}</td>
+        <td class="num">
+          <span class="prob" style="--p: {{ (row.odds or 0) * 100 }}%">{{ row.odds | pct }}</span>
+        </td>
+        <td class="num"><span class="verdict verdict--{{ row.verdict.split()[0] | lower }}">{{ row.verdict }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="album-note">
+    {{ multiverse.draws }} simulated seasons, replayed from the real fixture list. Each team's
+    weekly score is drawn from its own spread, not the league's: a manager averaging 110 every
+    week and one alternating 150 and 70 are very different playoff propositions, and a table of
+    records cannot tell them apart. Top {{ multiverse.playoff_places }} make it.
+  </p>
+</section>
+
+{% if multiverse.luckiest and multiverse.unluckiest %}
+<section class="panel">
+  <h2 class="panel-title">Who the schedule has been kind to</h2>
+  <p class="recap">
+    <b>{{ multiverse.luckiest.manager }}</b> is {{ multiverse.luckiest.luck | signed }} wins better off
+    than an all-play record says he deserves ({{ multiverse.luckiest.all_play }} against the whole
+    league, {{ multiverse.luckiest.record }} against the fixture list).
+    <b>{{ multiverse.unluckiest.manager }}</b> is {{ multiverse.unluckiest.luck | signed }}:
+    {{ multiverse.unluckiest.all_play }} all-play, {{ multiverse.unluckiest.record }} actual.
+  </p>
+  <p class="recap-source">
+    Luck is wins minus what beating everybody every week would have earned. It is the one number
+    in this app nobody can argue with and everybody tries to.
+  </p>
+</section>
+{% endif %}
+{% else %}
 <section class="panel">
   <h2 class="panel-title">Playoff odds</h2>
   <div class="empty">
-    <strong>Phase 5</strong>
-    Magic numbers and the scenario explorer need the season simulator and the
-    full schedule grid.
+    <strong>No season schedule</strong>
+    Every figure on this tab is simulated from the real fixture list, and the
+    schedule feed is not answering. Better to say so than to show a table of
+    zeros that looks like a league where nobody has played yet.
   </div>
 </section>
+{% endif %}
 {% endblock %}

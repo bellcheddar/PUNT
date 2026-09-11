@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.scoring import all_play, luck_index, optimal_lineup
-from engine.simulate import probabilities_for
+from engine.scoring import all_play, luck_index, optimal_lineup, standings
+from engine.simulate import playoff_odds, probabilities_for
 from espn.models import LeagueSnapshot, Matchup, Side, Team
 
 
@@ -301,6 +301,8 @@ def receipts_view(snap: LeagueSnapshot) -> dict[str, Any]:
         for side in (matchup.home, matchup.away):
             scores[side.team_id] = round(side.total, 2)
     records = all_play(scores)
+    # Season figures where the grid is available, this week's where it is not.
+    season = {r.team_id: r for r in standings(snap)} if snap.season_schedule else {}
 
     rows = []
     for team in snap.teams:
@@ -327,21 +329,80 @@ def receipts_view(snap: LeagueSnapshot) -> dict[str, Any]:
                 # feed, which lands with the Multiverse tab in Phase 5.
                 "all_play": record.record if record else "",
                 "all_play_pct": record.win_pct if record else None,
-                "luck": luck_index(team.wins, record.win_pct, weeks) if record else None,
+                "luck": (season[team.id].luck if team.id in season
+                         else (luck_index(team.wins, record.win_pct, weeks) if record else None)),
+                "season_all_play": season[team.id].all_play.record if team.id in season else "",
             }
         )
     rows.sort(key=lambda r: r["bench_regret"], reverse=True)
     return {"rows": rows, "fines": []}
 
 
-def multiverse_view(snap: LeagueSnapshot) -> dict[str, Any]:
-    """PHASE5: playoff odds and magic numbers, from the season simulator.
+def multiverse_view(snap: LeagueSnapshot, draws: int = 2500) -> dict[str, Any]:
+    """Playoff odds, the table, and what each manager still needs.
 
-    Genuinely blocked rather than merely unbuilt: every figure on this tab needs
-    the full season schedule grid from the `mSchedule` feed, and the demo
-    recording is one week.
+    Everything here needs the season grid from `mSchedule`. When that feed is
+    missing -- a recording of a single week, or an outage -- the tab says so
+    rather than showing a table of zeros that looks like a league where nobody
+    has played yet.
     """
-    return {"odds": [], "magic_numbers": [], "scenarios": []}
+    if not snap.season_schedule:
+        return {"available": False, "rows": [], "weeks_left": 0, "playoff_places": 0}
+
+    table = standings(snap)
+    odds = playoff_odds(snap, draws=draws)
+    teams = snap.teams_by_id
+    places = snap.settings.playoff_team_count or 6
+
+    rows: list[dict[str, Any]] = []
+    for position, record in enumerate(table, start=1):
+        team = teams.get(record.team_id)
+        chance = odds.get(record.team_id)
+        rows.append({
+            "position": position,
+            "id": record.team_id,
+            "manager": team.manager if team else "?",
+            "team": team.name if team else "",
+            "hue": team.hue if team else 0,
+            "record": record.record,
+            "points_for": round(record.points_for, 1),
+            "all_play": record.all_play.record,
+            "luck": record.luck,
+            "odds": chance.odds if chance else None,
+            "mean_wins": round(chance.mean_wins, 1) if chance else None,
+            "magic": chance.magic_number if chance else None,
+            "clinched": bool(chance and chance.clinched),
+            "eliminated": bool(chance and chance.eliminated),
+            "in_places": position <= places,
+            "verdict": _playoff_verdict(chance),
+        })
+
+    weeks_left = max((c.remaining for c in odds.values()), default=0)
+    return {
+        "available": True,
+        "rows": rows,
+        "weeks_left": weeks_left,
+        "playoff_places": places,
+        "draws": draws,
+        "luckiest": max(rows, key=lambda r: r["luck"]) if rows else None,
+        "unluckiest": min(rows, key=lambda r: r["luck"]) if rows else None,
+    }
+
+
+def _playoff_verdict(chance) -> str:
+    """One phrase, because a column of percentages is a spreadsheet and this app
+    exists because ESPN already is one."""
+    if chance is None:
+        return ""
+    if chance.clinched:
+        return "IN"
+    if chance.eliminated:
+        return "OUT"
+    if chance.magic_number == 0:
+        return "WIN NOTHING"
+    if chance.magic_number is not None:
+        return f"WIN {chance.magic_number}"
+    return "NEEDS HELP"
 
 
 def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:

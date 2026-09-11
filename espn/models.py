@@ -663,6 +663,15 @@ class LeagueSnapshot:
     settings: LeagueSettings
     teams: list[Team] = field(default_factory=list)
     matchups: list[Matchup] = field(default_factory=list)
+    #: Every matchup period of the season, settled and future. Separate from
+    #: `matchups`, which is this week's boxscore detail: the grid carries totals
+    #: and pairings only, which is all the standings and the playoff simulator
+    #: need and all `mSchedule` provides.
+    #:
+    #: Named `season_schedule` rather than `season`, which on this class already
+    #: means the year. The collision was a syntax error the first time and would
+    #: have been a silent shadowing in a less lucky arrangement.
+    season_schedule: list[Matchup] = field(default_factory=list)
     games: dict[int, GameState] = field(default_factory=dict)
     captured_at: str = ""
     stale: bool = False
@@ -701,6 +710,21 @@ class LeagueSnapshot:
                         continue
                     player.game_over = state.finished
                     player.opponent = state.opponent
+
+    def season_weeks(self) -> dict[int, list[Matchup]]:
+        """The season grid, by matchup period."""
+        weeks: dict[int, list[Matchup]] = {}
+        for matchup in self.season_schedule:
+            weeks.setdefault(matchup.matchup_period, []).append(matchup)
+        return weeks
+
+    @property
+    def settled_weeks(self) -> dict[int, list[Matchup]]:
+        """Only the weeks that are finished. A week in progress has real scores
+        and no result, and counting it as one would make every standing wrong
+        for four hours every Sunday."""
+        return {week: games for week, games in self.season_weeks().items()
+                if games and all(m.winner not in ("UNDECIDED", "") for m in games)}
 
     @property
     def red_zone_games(self) -> list[GameState]:

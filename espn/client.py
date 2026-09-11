@@ -321,6 +321,14 @@ class LeagueRepository:
         if not teams:
             problems.append("no teams in payload")
 
+        # The season grid. Allowed to be missing: a recording of one week has no
+        # schedule in it, and everything that reads this degrades to "this week
+        # only" rather than to an error.
+        schedule_result = self.client.get(feeds.SCHEDULE)
+        season_schedule = parse_matchups(schedule_result.value, period) if not schedule_result.error else []
+        if schedule_result.error:
+            problems.append(f"schedule: {schedule_result.error}")
+
         score_result = self.client.get(feeds.SCOREBOARD, scoring_period=period, live=live)
         stale |= score_result.stale
         if score_result.error:
@@ -349,6 +357,7 @@ class LeagueRepository:
             settings=settings,
             teams=teams,
             matchups=matchups,
+            season_schedule=season_schedule,
             captured_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
             stale=stale,
             problems=problems,

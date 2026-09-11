@@ -258,6 +258,109 @@ def luck_index(actual_wins: float, all_play_pct: float, weeks: int) -> float:
     return round(actual_wins - all_play_pct * weeks, 2)
 
 
+@dataclass
+class SeasonRecord:
+    """A team's season so far, by both the real standings and the all-play one."""
+
+    team_id: int
+    wins: int = 0
+    losses: int = 0
+    ties: int = 0
+    points_for: float = 0.0
+    all_play: AllPlayRecord = field(default_factory=lambda: AllPlayRecord(team_id=0))
+    weekly: list[float] = field(default_factory=list)
+
+    @property
+    def record(self) -> str:
+        return f"{self.wins}-{self.losses}" + (f"-{self.ties}" if self.ties else "")
+
+    @property
+    def weeks(self) -> int:
+        return self.wins + self.losses + self.ties
+
+    @property
+    def luck(self) -> float:
+        """Actual wins minus what an all-play record deserved, in wins.
+
+        The single most reliable source of grievance in a fantasy season, and it
+        cannot be computed from one week: it needs the whole grid."""
+        return luck_index(self.wins, self.all_play.win_pct, self.weeks)
+
+    @property
+    def mean(self) -> float:
+        return sum(self.weekly) / len(self.weekly) if self.weekly else 0.0
+
+    @property
+    def sigma(self) -> float:
+        """Spread of this team's weekly scores. Feeds the playoff simulator.
+
+        Floored, because a team with two settled weeks has a meaningless sample
+        and a near-zero sigma would make the simulator absurdly confident about
+        the rest of the season."""
+        if len(self.weekly) < 2:
+            return 22.0
+        mean = self.mean
+        variance = sum((score - mean) ** 2 for score in self.weekly) / (len(self.weekly) - 1)
+        return max(12.0, variance ** 0.5)
+
+
+def season_records(snapshot: LeagueSnapshot) -> dict[int, SeasonRecord]:
+    """Standings and all-play across every *settled* week of the season.
+
+    A week in progress has real scores and no result. Counting it would make
+    every standing in the league wrong for four hours every Sunday, so
+    `settled_weeks` excludes it and this reads only from there.
+    """
+    records: dict[int, SeasonRecord] = {
+        team.id: SeasonRecord(team_id=team.id, all_play=AllPlayRecord(team_id=team.id))
+        for team in snapshot.teams
+    }
+    if not records:
+        return records
+
+    for week, games in sorted(snapshot.settled_weeks.items()):
+        scores: dict[int, float] = {}
+        for matchup in games:
+            for side in (matchup.home, matchup.away):
+                scores[side.team_id] = round(side.total, 2)
+
+        for matchup in games:
+            home, away = matchup.home, matchup.away
+            for side, other in ((home, away), (away, home)):
+                record = records.get(side.team_id)
+                if record is None:
+                    continue
+                record.points_for = round(record.points_for + side.total, 2)
+                record.weekly.append(round(side.total, 2))
+                if side.total > other.total:
+                    record.wins += 1
+                elif side.total < other.total:
+                    record.losses += 1
+                else:
+                    record.ties += 1
+
+        for team_id, weekly in all_play(scores).items():
+            record = records.get(team_id)
+            if record is None:
+                continue
+            record.all_play.wins += weekly.wins
+            record.all_play.losses += weekly.losses
+            record.all_play.ties += weekly.ties
+
+    return records
+
+
+def standings(snapshot: LeagueSnapshot) -> list[SeasonRecord]:
+    """Ordered the way a league table is: wins, then points for as the tiebreak.
+
+    Which is the tiebreak ESPN uses by default and the one every argument in the
+    bar assumes."""
+    return sorted(
+        season_records(snapshot).values(),
+        key=lambda r: (-(r.wins + 0.5 * r.ties), -r.points_for),
+    )
+
+
 def week_scores(snapshot: LeagueSnapshot) -> dict[int, float]:
     """`{team_id: this week's score}` for every team with a matchup."""
     scores: dict[int, float] = {}

@@ -31,6 +31,10 @@ TABS = [
     {"endpoint": "tabs.receipts", "label": "Receipts", "icon": "receipts", "path": "/receipts"},
 ]
 
+#: Multiverse folds under Receipts rather than becoming a sixth tab: the spec
+#: caps the bar at five, and five is already the point at which a thumb has to
+#: aim.
+
 
 @bp.app_context_processor
 def inject_chrome():

@@ -47,6 +47,7 @@ SHOTS = [
     ("pack", "/album", 390, 844, "The weekly pack, sealed: a foil packet with the wordmark, the week and the card count, waiting to be ripped", False),
     ("chooser", "/", 390, 1000, "First run: pick which of the ten managers is holding this phone. Kept locally, with no account to make", False),
     ("cheer", "/cheer", 390, 844, "The Cheer tab: for every live NFL game, whether you should be cheering, booing or conflicted, and exactly why", True),
+    ("multiverse", "/multiverse", 390, 1100, "The Multiverse tab: playoff odds from simulating the rest of the season against the real fixture list, with the playoff cut drawn across the table", True),
     ("swing", "/swing", 390, 844, "The Swing tab: live Monte Carlo win probability and the day's biggest swings", True),
     ("receipts", "/receipts", 390, 844, "The Receipts tab: every manager ranked by points left on the bench, with the exact swap that cost them", True),
     ("big-board", "/big-board?tv=1", 1280, 720, "The Big Board in TV mode: the whole slate on the bar screen", True),

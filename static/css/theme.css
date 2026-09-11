@@ -848,6 +848,22 @@ main { padding: 12px 14px 24px; }
 .pack--ripped .pack-foil { transform: scaleY(1.16) translateY(-8%); opacity: 0; }
 .pack--ripped .pack-button { opacity: 0; transition: opacity 200ms ease; }
 
+.panel-note {
+  float: right;
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em;
+  color: var(--ink-faint); text-transform: none;
+}
+
+/* The playoff line. A single rule, so the table shows the cut rather than
+ * making somebody count down it. */
+.mv--in + tr:not(.mv--in) td { border-top: 2px solid var(--border-bright); }
+.mv--in td:first-child { font-weight: 600; }
+.rows tr.mv td .sub { white-space: normal; line-height: 1.45; }
+
+/* Verdict chips. The base rule carries shape only and no colour: a background
+ * on it would sit after the modifiers in source order and win at equal
+ * specificity, which is exactly what happened when a careless edit left a stray
+ * one here and every "IN" came out the amber of "WIN 2". */
 .verdict {
   font-family: var(--font-display);
   font-size: 12px;
@@ -856,6 +872,14 @@ main { padding: 12px 14px 24px; }
   border-radius: 999px;
   white-space: nowrap;
 }
+
+/* Multiverse */
+.verdict--in    { background: rgba(0,208,132,.18); color: var(--green); }
+.verdict--out   { background: rgba(255,255,255,.05); color: var(--ink-faint); }
+.verdict--win   { background: rgba(252,185,0,.16); color: var(--amber); }
+.verdict--needs { background: rgba(255,77,94,.14); color: var(--red); }
+
+/* Cheer */
 .cheer--cheer .verdict      { background: rgba(0,208,132,.18); color: var(--green); }
 .cheer--boo .verdict        { background: rgba(255,77,94,.16); color: var(--red); }
 .cheer--conflicted .verdict { background: rgba(252,185,0,.16); color: var(--amber); }
@@ -866,7 +890,6 @@ main { padding: 12px 14px 24px; }
   font-family: var(--font-mono); font-size: 8px; letter-spacing: .14em;
   color: var(--magenta); vertical-align: 1px;
 }
-.rows th.num, .rows td.num { width: 66px; }
 .cheer td.num { width: 108px; }
 
 /* The reason is the content of this tab, not a caption for it, so it wraps to
