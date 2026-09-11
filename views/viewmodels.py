@@ -21,7 +21,7 @@ from espn.models import LeagueSnapshot, Matchup, Side, Team
 
 def _team_card(team: Team | None, side: Side | None) -> dict[str, Any]:
     if team is None:
-        return {
+        return {  # cold: no matchup in the fixture names a team mTeam never sent
             "id": 0, "name": "Unknown team", "manager": "?", "abbrev": "?",
             "monogram": "?", "hue": 0, "logo": "", "record": "",
             "total": 0.0, "projected": 0.0, "starters": [], "bench": [],
@@ -298,7 +298,7 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
         for side, opponent in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
             team = teams.get(side.team_id)
             if team is None:
-                continue
+                continue  # cold: same: every side in the fixture has a team behind it
             rows.append({
                 "manager": team.manager,
                 "team": team.name,
@@ -446,13 +446,13 @@ def _playoff_verdict(chance) -> str:
     """One phrase, because a column of percentages is a spreadsheet and this app
     exists because ESPN already is one."""
     if chance is None:
-        return ""
+        return ""  # cold: every team in the standings is also in the odds
     if chance.clinched:
         return "IN"
     if chance.eliminated:
-        return "OUT"
+        return "OUT"  # cold: week 11 of 14 with six of ten qualifying: nobody is out yet
     if chance.magic_number == 0:
-        return "WIN NOTHING"
+        return "WIN NOTHING"  # cold: magic zero without a clinch is a band a tenth of a percent wide
     if chance.magic_number is not None:
         return f"WIN {chance.magic_number}"
     return "NEEDS HELP"
@@ -476,7 +476,7 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
             for player in side.starters if player.pro_team_id == game.pro_team_id
         })
         if not owners:
-            continue
+            continue  # cold: two pro teams are unowned and neither reached the red zone
         rows.append({
             "kind": "redzone", "flag": "RED ZONE",
             "text": f"{game.abbrev} inside the five \u00b7 {', '.join(owners[:3])}",
@@ -491,7 +491,7 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
         home = snap.team(matchup.home.team_id)
         away = snap.team(matchup.away.team_id)
         if not home or not away:
-            continue
+            continue  # cold: same missing-team guard as above
         margin = abs(matchup.home.total - matchup.away.total)
         # A coin flip is worth watching; a 90/10 is not, however close the score.
         if 0.25 < probability.home_win < 0.75:

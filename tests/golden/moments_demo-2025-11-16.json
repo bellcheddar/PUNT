@@ -123,7 +123,7 @@
   ],
   "player": "Vance Oakhurst",
   "delta_points": 8.8,
-  "win_prob_delta": 0.0287,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -151,7 +151,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 2.5,
-  "win_prob_delta": 0.0137,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -334,6 +334,34 @@
    "down_distance": "1rd & 6"
   },
   "ts": 2340
+ },
+ {
+  "id": "b1892d0c9ec39f47a2a6",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.383,
+  "managers": [
+   "Bex"
+  ],
+  "team_ids": [
+   1
+  ],
+  "player": "Brix Eversley",
+  "delta_points": 3.3,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "MIN",
+   "pro_opponent": "MIA",
+   "total": 3.3,
+   "starter": true,
+   "quarter": 1,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "2rd & 3"
+  },
+  "ts": 2460
  },
  {
   "id": "c26829f021496acab480",
@@ -544,7 +572,7 @@
   ],
   "player": "Gray Kettleby",
   "delta_points": 4.4,
-  "win_prob_delta": 0.0112,
+  "win_prob_delta": 0.025,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -628,7 +656,7 @@
   ],
   "player": "Gray Kettleby",
   "delta_points": 6.8,
-  "win_prob_delta": 0.0375,
+  "win_prob_delta": 0.0888,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -673,6 +701,30 @@
   "ts": 3840
  },
  {
+  "id": "901be4613f18018c7856",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.531,
+  "managers": [
+   "Chidi",
+   "Bex"
+  ],
+  "team_ids": [
+   2,
+   1
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.0313,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 1.3,
+   "home": 23.8,
+   "away": 25.1
+  },
+  "ts": 3840
+ },
+ {
   "id": "cd2fbe196879a74dc2d0",
   "kind": "BIG_PLAY",
   "magnitude": 0.361,
@@ -701,6 +753,30 @@
   "ts": 4260
  },
  {
+  "id": "c542eb0f92ccfd52bb9f",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.588,
+  "managers": [
+   "Chidi",
+   "Bex"
+  ],
+  "team_ids": [
+   2,
+   1
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0875,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 3.7,
+   "home": 23.8,
+   "away": 27.5
+  },
+  "ts": 4380
+ },
+ {
   "id": "057894dfea973287fdcc",
   "kind": "BIG_PLAY",
   "magnitude": 0.428,
@@ -712,7 +788,7 @@
   ],
   "player": "Gray Kettleby",
   "delta_points": 4.1,
-  "win_prob_delta": 0.0412,
+  "win_prob_delta": 0.0875,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -1521,7 +1597,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 10.0,
-  "win_prob_delta": 0.0312,
+  "win_prob_delta": 0.0287,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -1658,7 +1734,7 @@
   ],
   "player": "Vance Oakhurst",
   "delta_points": 2.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0213,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1827,7 +1903,7 @@
   ],
   "player": "Bo Jessop",
   "delta_points": 6.0,
-  "win_prob_delta": 0.0401,
+  "win_prob_delta": 0.1038,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -1870,6 +1946,34 @@
    "down_distance": "4rd & 12"
   },
   "ts": 8640
+ },
+ {
+  "id": "a4f4fec7f080687723a3",
+  "kind": "BIG_PLAY",
+  "magnitude": 0.446,
+  "managers": [
+   "Bex"
+  ],
+  "team_ids": [
+   1
+  ],
+  "player": "Brix Eversley",
+  "delta_points": 4.43,
+  "win_prob_delta": 0.0,
+  "context": {
+   "week": 11,
+   "slot": "WR",
+   "position": "WR",
+   "pro_team": "MIN",
+   "pro_opponent": "MIA",
+   "total": 9.93,
+   "starter": true,
+   "quarter": 3,
+   "clock": "15:00",
+   "red_zone": false,
+   "down_distance": "4rd & 14"
+  },
+  "ts": 8820
  },
  {
   "id": "b1025f35782535f1fb82",
@@ -2209,7 +2313,7 @@
   ],
   "player": "Marlo Ravensworth",
   "delta_points": 3.4,
-  "win_prob_delta": 0.0812,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2580,6 +2684,30 @@
   "ts": 10200
  },
  {
+  "id": "ff50318b882b612825e6",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.51,
+  "managers": [
+   "Bex",
+   "Chidi"
+  ],
+  "team_ids": [
+   1,
+   2
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.01,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 1.73,
+   "home": 58.72,
+   "away": 56.99
+  },
+  "ts": 10200
+ },
+ {
   "id": "5e936fdd8a17c8fe2d36",
   "kind": "TOUCHDOWN",
   "magnitude": 0.798,
@@ -2811,7 +2939,7 @@
   ],
   "player": "Xander Pemberton",
   "delta_points": 8.58,
-  "win_prob_delta": 0.0251,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2923,7 +3051,7 @@
   ],
   "player": "Rennie Bellweather",
   "delta_points": 2.93,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0413,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -3003,7 +3131,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 4.72,
-  "win_prob_delta": 0.065,
+  "win_prob_delta": 0.0875,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3119,11 +3247,11 @@
   "context": {
    "week": 11,
    "slot": "WR",
-   "started": "Brix Eversley",
+   "started": "Quinn Crowfoot",
    "started_points": 0.0,
    "benched": "Rico Inglewood",
    "benched_points": 16.52,
-   "regret": 35.04
+   "regret": 28.15
   },
   "ts": 11880
  },
@@ -3699,34 +3827,6 @@
   "ts": 13500
  },
  {
-  "id": "b1892d0c9ec39f47a2a6",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.383,
-  "managers": [
-   "Bex"
-  ],
-  "team_ids": [
-   1
-  ],
-  "player": "Brix Eversley",
-  "delta_points": 3.3,
-  "win_prob_delta": 0.0013,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "LAC",
-   "pro_opponent": "ARI",
-   "total": 3.3,
-   "starter": true,
-   "quarter": 1,
-   "clock": "13:19",
-   "red_zone": false,
-   "down_distance": "4rd & 8"
-  },
-  "ts": 13560
- },
- {
   "id": "2af8b1224774b74b7690",
   "kind": "BIG_PLAY",
   "magnitude": 0.5,
@@ -4210,7 +4310,7 @@
   ],
   "player": "Rennie Vaughan-Rees",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0088,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "K",
@@ -4394,6 +4494,30 @@
    "down_distance": "4rd & 15"
   },
   "ts": 17760
+ },
+ {
+  "id": "3f1963ef6658a010a3bf",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.501,
+  "managers": [
+   "Chidi",
+   "Bex"
+  ],
+  "team_ids": [
+   2,
+   1
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.0012,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 0.36,
+   "home": 70.74,
+   "away": 71.1
+  },
+  "ts": 18120
  },
  {
   "id": "4adaa60aa09c62521a73",
@@ -4729,6 +4853,54 @@
   "ts": 19680
  },
  {
+  "id": "a8b735122c9654f2251b",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.51,
+  "managers": [
+   "Bex",
+   "Chidi"
+  ],
+  "team_ids": [
+   1,
+   2
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.01,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 1.14,
+   "home": 72.24,
+   "away": 71.1
+  },
+  "ts": 19740
+ },
+ {
+  "id": "c23b79c7e36610d1248c",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.523,
+  "managers": [
+   "Chidi",
+   "Bex"
+  ],
+  "team_ids": [
+   2,
+   1
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.0226,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 1.86,
+   "home": 72.24,
+   "away": 74.1
+  },
+  "ts": 19800
+ },
+ {
   "id": "5c564286bc759f4334d1",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -4804,34 +4976,6 @@
    "team": true
   },
   "ts": 19860
- },
- {
-  "id": "a4f4fec7f080687723a3",
-  "kind": "BIG_PLAY",
-  "magnitude": 0.446,
-  "managers": [
-   "Bex"
-  ],
-  "team_ids": [
-   1
-  ],
-  "player": "Brix Eversley",
-  "delta_points": 4.43,
-  "win_prob_delta": 0.0025,
-  "context": {
-   "week": 11,
-   "slot": "WR",
-   "position": "WR",
-   "pro_team": "LAC",
-   "pro_opponent": "ARI",
-   "total": 9.93,
-   "starter": true,
-   "quarter": 3,
-   "clock": "15:00",
-   "red_zone": false,
-   "down_distance": "4rd & 15"
-  },
-  "ts": 19920
  },
  {
   "id": "fe10a4c2cad51d88bf2e",
@@ -5395,7 +5539,7 @@
   ],
   "player": "Quinn Crowfoot",
   "delta_points": 11.45,
-  "win_prob_delta": 0.055,
+  "win_prob_delta": 0.0463,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5414,7 +5558,7 @@
  {
   "id": "c15e62cebeba93828432",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.555,
+  "magnitude": 0.546,
   "managers": [
    "Bex",
    "Chidi"
@@ -5425,7 +5569,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.055,
+  "win_prob_delta": 0.0463,
   "context": {
    "week": 11,
    "matchup": 1,

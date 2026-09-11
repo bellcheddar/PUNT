@@ -47,6 +47,13 @@ EXPECTED_COLD = {
     "engine/recap.py": "the model backends; neither ollama nor mlx is installed",
 }
 
+#: A line carrying this marker is cold on purpose, and the rest of the comment
+#: says why. Written in the source rather than in a list of line numbers here,
+#: because line numbers rot on the first edit and because the reason belongs
+#: where the reader of that branch is standing. Excused lines are counted and
+#: reported separately: the point is an honest inventory, not a smaller number.
+COLD_MARKER = "# cold:"
+
 
 def executable_lines(path: Path) -> set[int]:
     """Statement lines, from the AST.
@@ -107,21 +114,26 @@ def drive_a_sunday() -> None:
     feed._broadcast = lambda payload: None
 
     # The view models are rendered all afternoon, not only at the end of it, so
-    # this keeps a mid-afternoon snapshot as well as the settled one. Rendering
-    # only at settle reported fifty-three lines of `cheer_view` and `watch_now`
-    # as dead when in fact every game had simply finished: no game is in the red
-    # zone at midnight, and nothing is "worth looking up for" once it is over.
-    # The same trap caught the entity-escaping guard test, which passed because
-    # its snapshot was at kickoff and the view returned nothing at all.
+    # this keeps eight snapshots spread across the day as well as the settled
+    # one. Rendering only at settle reported fifty-three lines of `cheer_view`
+    # and `watch_now` as dead when in fact every game had simply finished: no
+    # game is in the red zone at midnight, and nothing is "worth looking up for"
+    # once it is over. Two points were not enough either -- "LAST MAN", the
+    # tensest state in fantasy football, exists for about two hours of a Sunday
+    # and neither sample landed in them. The same trap caught the
+    # entity-escaping guard test, which passed because its snapshot was at
+    # kickoff and the view returned nothing at all.
     snapshot = None
-    afternoon = None
     duration = int(transport.recording.duration)
+    marks = [duration * n // 9 for n in range(1, 9)]
+    afternoons = []
     for position in range(0, duration + 120, 120):
         transport.clock.seek(position)
         feed.poll_once()
         snapshot = feed.snapshot
-        if afternoon is None and position >= duration // 2:
-            afternoon = snapshot
+        if marks and position >= marks[0]:
+            marks.pop(0)
+            afternoons.append(snapshot)
 
     # The surfaces a replay does not reach on its own.
     probabilities_for(snapshot, draws=40)
@@ -139,7 +151,7 @@ def drive_a_sunday() -> None:
         receipts_view, swing_view, watch_now,
     )
 
-    for view_of in (snapshot, afternoon):
+    for view_of in [snapshot] + afternoons:
         if view_of is None:
             continue
         album_view(view_of, feed)
@@ -152,8 +164,13 @@ def drive_a_sunday() -> None:
         for team in view_of.teams:
             cheer_view(view_of, team_id=team.id)
         cheer_view(view_of, team_id=None)
-        multiverse_view(view_of, draws=40)
         watch_now(view_of)
+    # Once, and at a realistic draw count. Forty draws is enough to prove the
+    # plumbing and not enough to produce a magic number: `_magic_number` wants
+    # thirty seasons in a bucket before it will commit, so every playoff verdict
+    # came back "NEEDS HELP" and three of the five phrases the tab can print had
+    # never been printed.
+    multiverse_view(snapshot, draws=400)
     moments_view(feed)
     moments_view(None)          # the tab before the first poll returns
 
@@ -235,23 +252,33 @@ def main() -> int:
         files = [ROOT / args.module]
 
     total_cold = 0
-    print(f"{'file':<26}{'lines':>7}{'run':>7}{'cold':>7}   note")
+    total_excused = 0
+    print(f"{'file':<26}{'lines':>7}{'run':>7}{'cold':>7}{'why':>6}   note")
     for path in files:
         relative = str(path.relative_to(ROOT))
+        source = path.read_text("utf-8").splitlines()
         lines = executable_lines(path)
         ran = executed.get(str(path), set()) | executed.get(str(path.resolve()), set())
-        cold = sorted(lines - ran)
+        excused = {n for n in lines - ran
+                   if n <= len(source) and COLD_MARKER in source[n - 1]}
+        cold = sorted(lines - ran - excused)
         total_cold += len(cold)
+        total_excused += len(excused)
         note = EXPECTED_COLD.get(relative, "")
-        print(f"{relative:<26}{len(lines):>7}{len(ran & lines):>7}{len(cold):>7}   {note}")
+        print(f"{relative:<26}{len(lines):>7}{len(ran & lines):>7}"
+              f"{len(cold):>7}{len(excused) or '':>6}   {note}")
         if cold and not note:
-            source = path.read_text("utf-8").splitlines()
             for lineno in cold[: args.show if not args.module else len(cold)]:
                 text = source[lineno - 1].strip()[:76] if lineno <= len(source) else ""
                 print(f"      {lineno:>5}  {text}")
             if not args.module and len(cold) > args.show:
                 print(f"      ... and {len(cold) - args.show} more")
-    print(f"\n{total_cold} lines never executed during a full replay.")
+        if args.module and excused:
+            for lineno in sorted(excused):
+                reason = source[lineno - 1].split(COLD_MARKER, 1)[1].strip()
+                print(f"    ok{lineno:>5}  {reason[:70]}")
+    print(f"\n{total_cold} lines never executed during a full replay"
+          f"{f', plus {total_excused} documented as unreachable' if total_excused else ''}.")
     return 0
 
 

@@ -57,6 +57,29 @@ def sweep_conflict_copies(directory: Path, keep: set[str]) -> list[str]:
             removed.append(path.name)
     return sorted(removed)
 
+
+#: What this generator writes: a four-digit sequence number, the feed name, and
+#: gzipped JSON. Deliberately narrow, because the sweep below deletes files.
+PAYLOAD_FILE = re.compile(r"^\d{4}_[A-Za-z_]+\.json\.gz$")
+
+
+def sweep_orphans(directory: Path, keep: set[str]) -> list[str]:
+    """Delete payloads left behind by a previous generation.
+
+    The generator dedupes: a minute in which nothing changed writes no payload.
+    So a change to the fixture can *reduce* the payload count, and writing in
+    place then leaves the tail of the old run on disk under names the new
+    manifest does not use. Nothing reads them, `--check` calls them strays, and
+    the repository quietly carries a second fixture forever. Planting one stack
+    of three receivers dropped the count by one and orphaned twenty-nine files.
+    """
+    removed = []
+    for path in sorted(directory.iterdir()):
+        if path.is_file() and path.name not in keep and PAYLOAD_FILE.match(path.name):
+            path.unlink(missing_ok=True)
+            removed.append(path.name)
+    return removed
+
 SEED = 20251116
 SEASON = 2025
 SCORING_PERIOD = 11
@@ -519,6 +542,17 @@ def _plant_storylines(rosters: dict[int, list[Athlete]], rng: random.Random) -> 
     bench_knock = next(a for a in rosters[3] if not a.is_starter)     # Noor's bench
     bench_knock.injury_at = PREGAME + 100 * 60
 
+    # Bex (team 1) stacks his quarterback, receiver and tight end on one pro
+    # team. Left to a uniform draw over thirty-two franchises nobody ever had
+    # three starters in the same NFL game, so the Cheer tab could never say
+    # "you have A, B and one more" -- the truncation that stops a verdict
+    # becoming a paragraph had no data to truncate.
+    stack_qb = next(a for a in rosters[1] if a.slot == 0)
+    for slot in (4, 6):
+        teammate = next(a for a in rosters[1] if a.slot == slot)
+        teammate.pro_team_id = stack_qb.pro_team_id
+        teammate.window = stack_qb.window
+
     # Sam (team 8) plays the whole of the night game and wins it late, which is
     # the lead change the swing tab exists for. His opponent Wren finished hours
     # ago, so the win probability curve does something worth drawing.
@@ -890,9 +924,13 @@ def main() -> int:
         return 0
 
     write_recording(recording, payloads)
-    swept = sweep_conflict_copies(directory, {e.file for e in recording.entries} | {"manifest.json"})
+    keep = {e.file for e in recording.entries} | {"manifest.json"}
+    swept = sweep_conflict_copies(directory, keep)
     if swept:
         print(f"  swept {len(swept)} iCloud conflict copies, e.g. {swept[:2]}")
+    orphans = sweep_orphans(directory, keep)
+    if orphans:
+        print(f"  swept {len(orphans)} payload(s) from a previous generation, e.g. {orphans[:2]}")
     size = sum(p.stat().st_size for p in directory.iterdir()) / 1e6
     print(summarise(recording, payloads))
     print(f"  written to {directory} ({size:.1f} MB on disk)")
