@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 372 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 396 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 372 tests, no network, no cookies
+python3 -m pytest                             # 396 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -28,6 +28,22 @@ python3 tools/perf.py                         # the blocking path
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## The freshness audit
+
+`tests/test_freshness.py` proves the thing a 200 cannot: that a change upstream
+reaches the page. Every memo is asked to MISS on each thing it should notice
+(a score, a lineup change with no score change, a game finishing, a corrected
+settled week) and to hit when nothing moved; every fragment is rendered at two
+points in a replayed afternoon and diffed, with the five panels that read only
+settled weeks asserted NOT to move.
+
+It found a real bug on the first run. The season-records memo was keyed on the
+number of games in each settled week rather than on their scores, so an ESPN stat
+correction changed the mean, the spread, the all-play record and the luck figure
+while leaving the key identical: six panels would have served the pre-correction
+season for the life of the process. Fixed, and negative-tested by putting the bug
+back.
 
 ## Eight season panels, and what they open
 
@@ -189,7 +205,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 372 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 396 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

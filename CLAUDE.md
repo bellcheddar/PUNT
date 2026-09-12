@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 372 tests, offline
+python3 -m pytest                              # 396 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -42,6 +42,16 @@ its own line never gets a trace event, because the interpreter reports the line 
 condition's first operand; and rendering the view models only at the final whistle marks
 every mid-afternoon branch cold. The driver samples eight points across the day for that
 last reason.
+
+**Ask a cache to MISS, never only to hit.** A cache tested for hits is a cache
+whose correctness has never been examined. The season-records memo shipped keyed on
+the NUMBER of games in each settled week rather than on their scores, so an ESPN stat
+correction -- routine, and it lands on a Tuesday -- left six panels showing the
+pre-correction season for as long as the process lived: fast, silent, plausible and
+wrong. `tests/test_freshness.py` is the whole audit: every memo is asked to miss on
+each thing it should notice, and every fragment is rendered at two points in an
+afternoon and diffed. A fragment that reads identically hours apart is not wired to
+the poll, and a 200 proves nothing.
 
 **Look at the screenshots.** Eight separate defects in this repository were invisible in
 the code and obvious in a capture: truncated team names, a demo opening on ten zeros, an

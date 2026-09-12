@@ -1239,11 +1239,23 @@ def _records(snap: LeagueSnapshot) -> dict:
     every time while looking like it worked, which is the trap the simulation
     memo documents at length.
     """
+    # Every settled SCORE, not the count of games per week. Counting them was
+    # wrong in a way that hides: ESPN corrects stats retrospectively, which is
+    # routine in fantasy and lands on a Tuesday, and a correction changes the
+    # mean, the spread, the all-play record and the luck figure while leaving
+    # the number of games in the week exactly as it was. Six panels read this,
+    # and every one of them would have gone on showing the pre-correction
+    # season for as long as the process lived -- quickly, silently, and with no
+    # error anywhere. Caught by asking the memo to miss rather than by asking it
+    # to hit.
     key = (snap.season, snap.scoring_period,
-           tuple(sorted((w, len(g)) for w, g in snap.settled_weeks.items())),
-           tuple(sorted((s.team_id, round(s.total, 1))
+           tuple(sorted((week, side.team_id, round(side.total, 2))
+                        for week, games in snap.settled_weeks.items()
+                        for game in games
+                        for side in (game.home, game.away))),
+           tuple(sorted((side.team_id, round(side.total, 1))
                         for m in (snap.live_matchups or snap.matchups)
-                        for s in (m.home, m.away))))
+                        for side in (m.home, m.away))))
     if key in _RECORDS:
         _RECORDS.move_to_end(key)
         return _RECORDS[key]
