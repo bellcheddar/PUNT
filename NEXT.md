@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 332 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 344 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 332 tests, no network, no cookies
+python3 -m pytest                             # 344 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -43,6 +43,14 @@ one line and they overlapped into a rainbow smear (a lane each now); the sparkli
 because one shared scale spanned a hundred points only one team ever used (5th to 95th
 percentile, clamped); and the season-shape rows truncated team names to "Statisticall...",
 which CLAUDE.md already lists as a defect found this way once before.
+
+And one found only on the live site, which neither the demo nor a test would
+have shown: the gauntlet reported itself available because there were fourteen
+fixtures still to come, then drew nothing, because with no settled weeks there
+was no record to measure any of those opponents by. An empty box with a caption
+under it. `available` now means "there is something to draw" on every one of
+these, never "the feed answered", and `tests/test_liveness.py` checks that no
+panel renders an empty container.
 
 One class of bug the tests caught rather than a screenshot: four of these divide by a range
 computed from the data, and `default=` only fires on an EMPTY sequence. A full one of zeroes
@@ -160,7 +168,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 332 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 344 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

@@ -89,3 +89,39 @@ def test_the_polled_fragment_matches_what_the_page_rendered(client, no_network):
         assert f"detail/regret/{team_id}" in page, (
             "the page and the fragment disagree about which teams are listed"
         )
+
+
+#: Panel fragments that draw rows, and the container they draw them into. A
+#: panel with an empty container and a caption under it is a blank panel, which
+#: is the one thing this app is not allowed to render: the rule is that every
+#: panel shows either real content or a styled empty state that says why.
+ROW_CONTAINERS = {
+    "shape": "shape-rows", "grid": "matrix", "seeds": "seed-rows",
+    "gauntlet": "gaunt-rows", "clock": "clock-rows", "ledger": "ledger",
+    "swap": "matrix", "volatility": "scatter", "regret": "rows",
+    "trouble": "rows", "odds": "rows", "allplay": "rows",
+}
+
+
+@pytest.mark.parametrize("name,container", sorted(ROW_CONTAINERS.items()))
+def test_a_panel_is_never_an_empty_container(client, app, name, container, no_network):
+    """Found on the live league, not in the demo.
+
+    The gauntlet reported itself available because there were fourteen fixtures
+    still to come, and drew nothing, because with no settled weeks there was no
+    record to measure any of those opponents by. The result was an empty box
+    with an explanatory caption under it, which reads as a bug and is one. So
+    `available` has to mean "there is something to draw", never "the feed
+    answered".
+    """
+    body = client.get(f"/partials/panel/{name}").get_data(as_text=True)
+    if "empty" in body and "<strong>" in body:
+        return                      # a proper empty state, which is the point
+    assert container in body, f"{name} drew neither rows nor an empty state"
+    after = body.split(container, 1)[1]
+    # Something has to follow the container's opening tag before it closes.
+    inner = after.split(">", 1)[1].split("</div>")[0].split("</table>")[0]
+    assert inner.strip(), (
+        f"the {name} panel rendered an empty {container} container: it is "
+        f"reporting itself available with nothing to draw"
+    )

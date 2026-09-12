@@ -1107,6 +1107,9 @@ def drive_a_sunday() -> None:
 
         feed.after_poll = _refuse
         feed.on_week_change = _refuse
+        # And the ticker blowing up mid-poll. Same rule as the other two: the
+        # strip along the top is not allowed to take the scores down with it.
+        feed.ticker.observe = _refuse
         week_after = copy.copy(next_week)
         week_after.scoring_period = next_week.scoring_period + 1
         feed.fetch = lambda: week_after

@@ -1410,7 +1410,7 @@ def seeds_view(snap: LeagueSnapshot, draws: int = 2500) -> dict[str, Any]:
         })
         rows.append(row)
     rows.sort(key=lambda r: (-r["odds"], r["likeliest"]))
-    return {"available": True, "rows": rows, "places": places, "draws": draws}
+    return {"available": bool(rows), "rows": rows, "places": places, "draws": draws}
 
 
 def gauntlet_view(snap: LeagueSnapshot) -> dict[str, Any]:
@@ -1474,7 +1474,7 @@ def gauntlet_view(snap: LeagueSnapshot) -> dict[str, Any]:
     rows.sort(key=lambda r: -r["average"])
     floor = min([f["mean"] - f["sigma"] for r in rows for f in r["fixtures"]] + [140.0])
     ceiling = max([f["mean"] + f["sigma"] for r in rows for f in r["fixtures"]] + [floor + 1.0])
-    return {"available": True, "rows": rows, "league": league,
+    return {"available": bool(rows), "rows": rows, "league": league,
             "floor": round(floor, 1), "ceiling": round(ceiling, 1),
             "weeks_left": len(future)}
 
@@ -1529,7 +1529,7 @@ def clock_view(snap: LeagueSnapshot) -> dict[str, Any]:
             rows.append(row)
     rows.sort(key=lambda r: -r["settled"])
     ceiling = max([p["points"] + p["to_come"] for r in rows for p in r["parts"]] + [1.0])
-    return {"available": True, "rows": rows,
+    return {"available": bool(rows), "rows": rows,
             "windows": [{"window": w, "label": WINDOW_LABELS[w]} for w in used],
             "ceiling": round(ceiling, 1)}
 
@@ -1580,7 +1580,7 @@ def ledger_view(snap: LeagueSnapshot) -> dict[str, Any]:
         rows.append(row)
     rows.sort(key=lambda r: -r["total"])
     spread = max([abs(c["diff"]) for r in rows for c in r["cells"]] + [1.0])
-    return {"available": True, "rows": rows, "slots": order,
+    return {"available": bool(rows), "rows": rows, "slots": order,
             "median": median, "spread": round(spread, 1)}
 
 
@@ -1704,5 +1704,5 @@ def swap_view(snap: LeagueSnapshot) -> dict[str, Any]:
         })
         rows.append(row)
     rows.sort(key=lambda r: -r["swing"])
-    return {"available": True, "rows": rows, "weeks": len(grid),
+    return {"available": bool(rows), "rows": rows, "weeks": len(grid),
             "order": [_team_row(t) for t in order]}
