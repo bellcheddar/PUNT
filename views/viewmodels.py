@@ -1549,7 +1549,17 @@ def ledger_view(snap: LeagueSnapshot) -> dict[str, Any]:
                 slots[player.slot] = round(slots.get(player.slot, 0.0) + player.points, 2)
             per_team[side.team_id] = slots
     if not per_team:
-        return {"available": False, "rows": [], "slots": []}
+        return {"available": False, "rows": [], "slots": [], "started": 0}
+
+    # How much of the league has actually played. Before the early games kick
+    # off this panel compares zero against zero: every median is 0.0, every
+    # difference is 0.0, and ten rows of "+0.0" is a wall that reads as a broken
+    # panel rather than as an early one. It said nothing useful and it said it
+    # at great length.
+    started = sum(1 for slots in per_team.values() if sum(slots.values()) > 0)
+    if started * 2 < len(per_team):
+        return {"available": False, "rows": [], "slots": [], "started": started,
+                "teams": len(per_team)}
 
     order = [s for s in ("QB", "RB", "WR", "TE", "FLEX", "D/ST", "K")
              if any(s in slots for slots in per_team.values())]
@@ -1568,7 +1578,8 @@ def ledger_view(snap: LeagueSnapshot) -> dict[str, Any]:
         if slots is None:
             continue  # cold: a team with no fixture this week
         cells = [{"slot": slot, "points": round(slots.get(slot, 0.0), 1),
-                  "diff": round(slots.get(slot, 0.0) - median[slot], 1)}
+                  "diff": round(slots.get(slot, 0.0) - median[slot], 1),
+                  "median": median[slot]}
                  for slot in order]
         row = _team_row(team)
         row.update({

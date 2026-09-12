@@ -16,9 +16,13 @@
       <td class="ledger-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
       {% for cell in row.cells %}
       <td class="ledger-cell">
-        <span class="heat {% if cell.diff >= 0 %}heat--up{% else %}heat--down{% endif %}"
+        {# The points, coloured by how they compare with the league. The cell
+           used to carry only the difference, which threw away the figure the
+           panel is named after and, against a median of zero, was the same
+           number anyway. #}
+        <span class="heat {% if cell.diff > 0 %}heat--up{% elif cell.diff < 0 %}heat--down{% endif %}"
               style="--weight: {{ ([1, (cell.diff | abs) / ledger.spread] | min * 100) | round }}"
-              title="{{ row.team }} {{ cell.slot }}: {{ cell.points }} against a league median of {{ ledger.median[cell.slot] }}">{{ cell.diff | signed }}</span>
+              title="{{ row.team }} {{ cell.slot }}: {{ cell.points }} against a league median of {{ cell.median }} ({{ cell.diff | signed }})">{{ cell.points }}</span>
       </td>
       {% endfor %}
       <td class="num">{{ row.total }}</td>
@@ -38,5 +42,10 @@
   the thing to trade for.
 </p>
 {% else %}
-<div class="empty"><strong>No lineups yet</strong>The ledger needs a week with rosters in it.</div>
+<div class="empty">
+  <strong>Not enough has been played</strong>
+  The ledger sets each slot against the league's median for the same slot, and
+  before the early games kick off that is zero against zero for everybody. It
+  fills in on Sunday afternoon.
+</div>
 {% endif %}

@@ -33,12 +33,34 @@ PANELS = ["shape", "grid", "seeds", "gauntlet", "clock", "ledger", "volatility",
 
 @pytest.fixture
 def snap(repo, no_network):
+    """Kickoff, which is where `repo` is paused: every score zero."""
     return repo.snapshot()
+
+
+@pytest.fixture
+def afternoon(no_network):
+    """Mid-Sunday, which is the state most of these are read in.
+
+    `repo` is paused at zero, and several of these panels correctly have nothing
+    to say there -- the ledger compares each slot against the league's median
+    for the same slot, and before kickoff that is zero against zero for
+    everybody.
+    """
+    from config import DEMO_RECORDING
+    from espn.cache import TTLCache
+    from espn.client import EspnClient, LeagueRepository
+    from espn.replay import ReplayTransport
+
+    transport = ReplayTransport.load(DEMO_RECORDING, speed=0.0)
+    transport.clock.seek(int(transport.recording.duration * 0.55))
+    client = EspnClient(transport=transport, season=2025, league_id="demo", cache=TTLCache())
+    return LeagueRepository(client).snapshot()
 
 
 # -- the state everything is built in --------------------------------------
 
-def test_every_panel_has_something_to_say(snap):
+def test_every_panel_has_something_to_say(afternoon):
+    snap = afternoon
     views = {
         "shape": shape_view(snap), "grid": allplay_view(snap),
         "seeds": seeds_view(snap, draws=200), "gauntlet": gauntlet_view(snap),
@@ -166,9 +188,28 @@ def test_the_clock_accounts_for_every_starter(snap):
         assert counted > 0, f"{row['team']} has no starters in any window"
 
 
-def test_the_ledger_compares_like_with_like(snap):
-    """A quarterback is only ever measured against quarterbacks."""
+def test_the_ledger_says_nothing_before_anybody_has_played(snap):
+    """Ten rows of "+0.0" is a wall that reads as a broken panel rather than as
+    an early one: every median is zero, so every difference is zero. It said
+    nothing useful and it said it at great length."""
     view = ledger_view(snap)
+    assert not view["available"], "the ledger is comparing zero against zero"
+    assert not view["rows"]
+
+
+def test_the_ledger_shows_the_points_not_only_the_difference(afternoon):
+    """The cell used to carry only the difference, which threw away the figure
+    the panel is named after and, against a median of zero, was the same number
+    anyway."""
+    view = ledger_view(afternoon)
+    assert view["available"]
+    assert any(c["points"] for r in view["rows"] for c in r["cells"])
+    assert all("median" in c for r in view["rows"] for c in r["cells"])
+
+
+def test_the_ledger_compares_like_with_like(afternoon):
+    """A quarterback is only ever measured against quarterbacks."""
+    view = ledger_view(afternoon)
     for row in view["rows"]:
         for cell in row["cells"]:
             assert cell["diff"] == pytest.approx(
