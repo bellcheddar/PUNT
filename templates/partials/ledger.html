@@ -1,0 +1,42 @@
+{# Every starting slot against the league median for that slot. Two teams on the
+   same total can be built completely differently and the total cannot say which. #}
+{% if ledger.available %}
+<div class="scroll-x">
+<table class="rows ledger">
+  <thead>
+    <tr>
+      <th>Team</th>
+      {% for slot in ledger.slots %}<th class="ledger-head">{{ slot }}</th>{% endfor %}
+      <th class="num">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in ledger.rows %}
+    <tr class="tappable" data-team="{{ row.id }}">
+      <td class="ledger-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+      {% for cell in row.cells %}
+      <td class="ledger-cell">
+        <span class="heat {% if cell.diff >= 0 %}heat--up{% else %}heat--down{% endif %}"
+              style="--weight: {{ ([1, (cell.diff | abs) / ledger.spread] | min * 100) | round }}"
+              title="{{ row.team }} {{ cell.slot }}: {{ cell.points }} against a league median of {{ ledger.median[cell.slot] }}">{{ cell.diff | signed }}</span>
+      </td>
+      {% endfor %}
+      <td class="num">{{ row.total }}</td>
+    </tr>
+  {% endfor %}
+    <tr class="ledger-median">
+      <td class="ledger-name">median</td>
+      {% for slot in ledger.slots %}<td class="ledger-cell num">{{ ledger.median[slot] }}</td>{% endfor %}
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p class="panel-note">
+  Each figure is that slot against the league's median for the same slot this week, so a
+  quarterback is only ever compared with quarterbacks. Green is carrying the team, red is
+  the thing to trade for.
+</p>
+{% else %}
+<div class="empty"><strong>No lineups yet</strong>The ledger needs a week with rosters in it.</div>
+{% endif %}

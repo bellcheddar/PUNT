@@ -1,0 +1,38 @@
+{# What everybody has left. Not NFL defences: the actual managers still to be
+   outscored, plotted by how much they score and how reliably. #}
+{% if gauntlet.available %}
+<div class="gaunt-rows">
+  {% for row in gauntlet.rows %}
+  <div class="gaunt-row tappable" data-team="{{ row.id }}">
+    <div class="gaunt-head">
+      <span><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</span>
+      <span class="num {% if row.harder %}neg{% else %}pos{% endif %}">{{ row.average }} avg</span>
+    </div>
+    <div class="gaunt-track">
+      {% for fixture in row.fixtures %}
+      {% set lo = ((fixture.mean - fixture.sigma - gauntlet.floor) / (gauntlet.ceiling - gauntlet.floor) * 100) %}
+      {% set hi = ((fixture.mean + fixture.sigma - gauntlet.floor) / (gauntlet.ceiling - gauntlet.floor) * 100) %}
+      {% set mid = ((fixture.mean - gauntlet.floor) / (gauntlet.ceiling - gauntlet.floor) * 100) %}
+      {# A lane each, in week order down the track. #}
+      <span class="gaunt-lane" style="--lane: {{ fixture.lane }}; --lanes: {{ fixture.lanes }}"
+            title="week {{ fixture.week }}: {{ fixture.team }}, {{ fixture.mean }} average, plus or minus {{ fixture.sigma }}">
+        <span class="gaunt-span" style="left: {{ [0, lo] | max | round(2) }}%; width: {{ [[100, hi] | min - [0, lo] | max, 1.5] | max | round(2) }}%; --hue: {{ fixture.hue }}"></span>
+        <span class="gaunt-mark" style="left: {{ [[100, mid] | min, 0] | max | round(2) }}%; --hue: {{ fixture.hue }}"></span>
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<p class="panel-note">
+  {{ gauntlet.weeks_left }} week{{ '' if gauntlet.weeks_left == 1 else 's' }} left. Each mark is
+  an opponent's average, each bar one standard deviation either side, on a scale from
+  {{ gauntlet.floor }} to {{ gauntlet.ceiling }}. The league averages {{ gauntlet.league }}:
+  red means a harder run-in than that. A wide bar is somebody you might catch on a bad week.
+</p>
+{% else %}
+<div class="empty">
+  <strong>Nothing left to play</strong>
+  The gauntlet needs fixtures still to come, and this season's are done.
+</div>
+{% endif %}

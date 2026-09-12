@@ -1,0 +1,45 @@
+{# Every team's own scores, replayed against everybody else's fixture list. The
+   scores are untouched: only the opponents change. This is the end of the
+   argument, because it settles it with a number. #}
+{% if swap.available %}
+<div class="scroll-x">
+<table class="rows matrix">
+  <thead>
+    <tr>
+      <th class="matrix-corner">with their fixtures</th>
+      {% for team in swap.order %}
+      <th class="matrix-head" title="{{ team.team }}'s schedule">
+        <span class="dot" style="--hue: {{ team.hue }}"></span>
+      </th>
+      {% endfor %}
+      <th class="num">Real</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in swap.rows %}
+    <tr class="tappable" data-team="{{ row.id }}">
+      <td class="matrix-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+      {% for cell in row.cells %}
+      <td class="matrix-cell">
+        <span class="swap-cell {% if cell.own %}swap-cell--own{% elif cell.diff > 0 %}swap-cell--up{% elif cell.diff < 0 %}swap-cell--down{% endif %}"
+              style="--weight: {{ ([1, (cell.diff | abs) / 4] | min * 100) | round }}"
+              title="{{ row.team }} with {{ cell.team }}'s fixtures: {{ cell.record }}">{% if cell.own %}&middot;{% else %}{{ cell.diff | signed }}{% endif %}</span>
+      </td>
+      {% endfor %}
+      <td class="num">{{ row.own }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="panel-note">
+  Rows are whose scores, columns are whose schedule, over {{ swap.weeks }} settled
+  week{{ '' if swap.weeks == 1 else 's' }}. The number is wins gained or lost against that
+  team's real record. Green means somebody else's fixtures would have been kinder.
+</p>
+{% else %}
+<div class="empty">
+  <strong>Not enough season yet</strong>
+  Swapping schedules needs at least two settled weeks to swap.
+</div>
+{% endif %}

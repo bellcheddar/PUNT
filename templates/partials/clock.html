@@ -1,0 +1,40 @@
+{# Where each team's points land across the day. Two managers on the same score
+   are in completely different moods if one has banked it and the other has a
+   running back left, and that is the only thing this panel says. #}
+{% if clock.available %}
+<div class="clock-rows">
+  {% for row in clock.rows %}
+  <div class="clock-row tappable" data-team="{{ row.id }}">
+    <span class="clock-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</span>
+    <span class="clock-track">
+      {% for part in row.parts %}
+      <span class="clock-slot" title="{{ part.label }}: {{ part.points }} banked{% if part.to_come %}, {{ part.to_come }} still to come{% endif %} from {{ part.players }} starter{{ '' if part.players == 1 else 's' }}">
+        {# Two stacked bars per window: what is in the bank and what is still on
+           the field. Height rather than colour carries the size, because four
+           windows side by side at one height is a legend, not a chart. #}
+        <span class="clock-todo" style="height: {{ (part.to_come / clock.ceiling * 100) | round(1) }}%; --hue: {{ row.hue }}"></span>
+        <span class="clock-done" style="height: {{ (part.points / clock.ceiling * 100) | round(1) }}%; --hue: {{ row.hue }}"></span>
+      </span>
+      {% endfor %}
+    </span>
+    <span class="clock-settled num {% if row.settled == 100 %}done{% endif %}">{{ row.settled }}%</span>
+  </div>
+  {% endfor %}
+  <div class="clock-axis">
+    <span class="clock-name"></span>
+    <span class="clock-track">
+      {% for window in clock.windows %}<span class="clock-tick">{{ window.label }}</span>{% endfor %}
+    </span>
+    <span class="clock-settled"></span>
+  </div>
+</div>
+<p class="panel-note">
+  Solid is banked, faded is still on the field. The figure on the right is how much of
+  that team's week is already decided: 100% means they can only watch.
+</p>
+{% else %}
+<div class="empty">
+  <strong>No kickoff times yet</strong>
+  The windows come from the NFL scoreboard, which has not answered for this week.
+</div>
+{% endif %}

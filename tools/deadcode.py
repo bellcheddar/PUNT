@@ -780,6 +780,31 @@ def drive_a_sunday() -> None:
     moment_detail(feed, "no-such-moment", snapshot)
     moment_detail(None, "anything")
 
+    # ESPN puts the kickoff on the event; some payloads carry it only on the
+    # competition, and the fallback is a branch the recording never takes.
+    from espn.models import parse_game_states  # noqa: PLC0415
+
+    # And a scoreboard with no kickoff on it at all, which is what a feed in the
+    # middle of changing its shape looks like: the bucket is lost, the game is
+    # not.
+    for payload_date in ("2025-11-16T18:00Z", None):
+        states = parse_game_states({"events": [{
+            "id": "1", "status": {"type": {"state": "pre"}, "period": 0, "displayClock": ""},
+            "competitions": [{**({"date": payload_date} if payload_date else {}),
+                              "competitors": [
+                {"team": {"id": "1", "abbreviation": "ATL"}, "score": "0"},
+                {"team": {"id": "2", "abbreviation": "BUF"}, "score": "0"}]}],
+        }]})
+        for state in states.values():
+            state.window
+
+    parse_game_states({"events": [{
+        "id": "1", "status": {"type": {"state": "pre"}, "period": 0, "displayClock": ""},
+        "competitions": [{"date": "2025-11-16T18:00Z", "competitors": [
+            {"team": {"id": "1", "abbreviation": "ATL"}, "score": "0"},
+            {"team": {"id": "2", "abbreviation": "BUF"}, "score": "0"}]}],
+    }]})
+
     # A league with no `mSchedule` -- a single-week recording, or an ESPN outage
     # mid-season. The multiverse tab has to say so rather than render zeros.
     # The URL builders. A replay answers by feed name and never constructs a URL,
@@ -975,9 +1000,55 @@ def drive_a_sunday() -> None:
     # reported four lines of `factpack` and four of `recap` as dead, which they
     # were, because the driver had thrown away the week they describe.
     from views.viewmodels import (  # noqa: PLC0415
-        _elapsed, _pace, _stake_phrase, game_detail, odds_detail, regret_detail,
-        stored_moments, trouble_detail,
+        _elapsed, _pace, _stake_phrase, allplay_view, clock_view, game_detail,
+        gauntlet_view, ledger_view, odds_detail, regret_detail, seeds_view,
+        shape_view, stored_moments, swap_view, trouble_detail, volatility_view,
     )
+
+    # A store that cannot be opened at all, used by the shape overlay below and
+    # exercised in its own right further down.
+    with quiet("engine.history"):
+        broken = History(state_dir / "seen-moments.json" / "nested" / "history.sqlite3")
+
+    # The eight season panels, at every point of the day the view models above
+    # are driven at, because half of them read the live week and half read the
+    # settled ones.
+    for view_of in [snapshot] + afternoons:
+        if view_of is None:
+            continue
+        shape_view(view_of, history)
+        allplay_view(view_of)
+        gauntlet_view(view_of)
+        clock_view(view_of)
+        ledger_view(view_of)
+        volatility_view(view_of)
+        swap_view(view_of)
+    if snapshot is not None:
+        seeds_view(snapshot, draws=40)
+        # A league with no season grid: five of the eight read it and have to
+        # say so rather than draw an empty chart.
+        bare = copy.copy(snapshot)
+        bare.season_schedule = []
+        seeds_view(bare, draws=40)
+        gauntlet_view(bare)
+        swap_view(bare)
+        shape_view(bare, None)
+        volatility_view(bare)
+        # And a snapshot with no teams at all.
+        empty = copy.copy(snapshot)
+        empty.teams = []
+        empty.matchups = []
+        for view in (shape_view, allplay_view, gauntlet_view, clock_view,
+                     ledger_view, volatility_view, swap_view):
+            view(empty)
+        seeds_view(empty, draws=40)
+        # A week with no kickoff times, which is what an NFL scoreboard outage
+        # looks like from in here, and the history path for the shape overlay.
+        blind = copy.copy(snapshot)
+        blind.games = {}
+        clock_view(blind)
+        shape_view(snapshot, history)
+        shape_view(snapshot, broken)
 
     if snapshot is not None:
         stored_moments(history, snapshot)
@@ -1045,8 +1116,7 @@ def drive_a_sunday() -> None:
     # A store that cannot be opened at all, and one that breaks after it has
     # been. The first is a read-only volume; the second is what a disk filling
     # up mid-Sunday looks like from in here.
-    with quiet("engine.history"):
-        broken = History(state_dir / "seen-moments.json" / "nested" / "history.sqlite3")
+
     if snapshot is not None:
         broken.record(snapshot)
         broken.remember(snapshot.season, 1, [], {})

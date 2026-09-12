@@ -1,0 +1,42 @@
+{# Ten by ten: every manager's score against every other manager's, this week.
+   The number PUNT already shows is the honest summary; this is the argument,
+   because it names the one fixture that went wrong instead of averaging it. #}
+{% if grid.rows %}
+<div class="scroll-x">
+<table class="rows matrix">
+  <thead>
+    <tr>
+      <th class="matrix-corner">Week {{ grid.week }}</th>
+      {% for team in grid.teams %}
+      <th class="matrix-head" title="{{ team.team }}">
+        <span class="dot" style="--hue: {{ team.hue }}"></span>
+      </th>
+      {% endfor %}
+      <th class="num">All-play</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in grid.rows %}
+    <tr class="tappable" data-team="{{ row.id }}">
+      <td class="matrix-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+      {% for cell in row.cells %}
+      <td class="matrix-cell">
+        <span class="pip {% if cell.beaten is none %}pip--self{% elif cell.beaten %}pip--won{% else %}pip--lost{% endif %}{% if cell.real %} pip--real{% endif %}"
+              title="{{ row.team }} {{ row.score }} v {{ cell.abbrev }}{% if cell.real %}, the fixture that counted{% endif %}"></span>
+      </td>
+      {% endfor %}
+      <td class="num">{{ row.wins }}&ndash;{{ row.losses }}
+        <span class="sub">{{ 'won' if row.won else 'lost' }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="panel-note">
+  Green means that row's team outscored that column's this week. The ringed cell is
+  the fixture they actually drew: a row of green next to a loss is the unluckiest
+  week in the league.
+</p>
+{% else %}
+<div class="empty"><strong>No scores yet</strong>The grid fills in once the week has started.</div>
+{% endif %}

@@ -292,6 +292,10 @@ class GameState:
     possession: bool = False
     red_zone: bool = False
     down_distance: str = ""
+    #: Kickoff, as ESPN sends it: an ISO 8601 instant in UTC. Kept as the raw
+    #: string rather than a datetime because every other field on this class is
+    #: what the feed said, and the only thing that reads it wants a bucket.
+    kickoff: str = ""
 
     @property
     def finished(self) -> bool:
@@ -300,6 +304,47 @@ class GameState:
     @property
     def live(self) -> bool:
         return self.state == "in"
+
+    @property
+    def window(self) -> str:
+        """Which slot of the NFL week this game kicks off in.
+
+        The buckets are the ones people actually say out loud -- the early
+        games, the late games, Sunday night -- rather than clock times, because
+        "my week is decided by six" is the thought this exists to answer.
+
+        Converted to US Eastern before bucketing. The alternative, bucketing the
+        UTC hour directly, is right for about four months of the year: the same
+        one o'clock kickoff is 18:00 UTC in November and 17:00 in September, and
+        a fixed offset silently files half the season in the wrong slot.
+        """
+        if not self.kickoff:
+            return ""
+        try:
+            from datetime import datetime  # noqa: PLC0415
+            from zoneinfo import ZoneInfo  # noqa: PLC0415
+
+            at = datetime.fromisoformat(self.kickoff.replace("Z", "+00:00"))
+            at = at.astimezone(ZoneInfo("America/New_York"))
+        except Exception:  # noqa: BLE001
+            return ""  # cold: a missing tzdata or a malformed date costs the bucket, not the game
+        day, hour = at.weekday(), at.hour
+        # The committed fixture is one Sunday, so the three weekday buckets are
+        # unreachable from it by construction: a recording of a Sunday has no
+        # Thursday game in it. They are reached every single week in production,
+        # which is why they are here, and `tests/test_season_panels.py` checks
+        # each one against a known instant rather than against the recording.
+        if day == 3:
+            return "THU"  # cold: the fixture is a Sunday
+        if day == 0:
+            return "MNF"  # cold: the fixture is a Sunday
+        if day == 5:
+            return "SAT"  # cold: the fixture is a Sunday, and Saturday games are December only
+        if hour >= 19:
+            return "SNF"
+        if hour >= 15:
+            return "LATE"
+        return "EARLY"
 
     @property
     def elapsed(self) -> float:
@@ -359,8 +404,15 @@ def parse_game_states(raw: Any) -> dict[int, GameState]:
         display_clock = status.get("displayClock")
         display_clock = display_clock if isinstance(display_clock, str) else ""
 
+        # ESPN puts the kickoff on the event and repeats it on the competition.
+        # Either will do; taking both means a feed that drops one still buckets.
+        kickoff = event.get("date")
+        kickoff = kickoff if isinstance(kickoff, str) else ""
+
         for competition in _list(event.get("competitions")):
             competition = _dict(competition)
+            if not kickoff and isinstance(competition.get("date"), str):
+                kickoff = competition["date"]
             situation = _dict(competition.get("situation"))
             possession_id = str(situation.get("possession") or "")
             competitors = [_dict(c) for c in _list(competition.get("competitors"))]
@@ -395,6 +447,7 @@ def parse_game_states(raw: Any) -> dict[int, GameState]:
                     possession=bool(possession_id) and possession_id == str(team.get("id")),
                     red_zone=bool(situation.get("isRedZone")),
                     down_distance=str(situation.get("shortDownDistanceText") or ""),
+                    kickoff=kickoff,
                 )
     return states
 

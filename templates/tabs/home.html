@@ -105,4 +105,84 @@
 
   </div>
 </div>
+
+{# --- the season, below the afternoon -----------------------------------
+   Everything above answers "what is happening". Everything below answers "what
+   kind of season is this", which is a different question and a slower one, so
+   it sits under the fold rather than competing with the scores for the top of
+   the page. Paired two to a row like the rest. #}
+<h2 class="section-rule"><span>The season so far</span></h2>
+
+<div class="columns">
+  <div class="column-stack">
+
+    <section class="panel">
+      <h2 class="panel-title">Season shape</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='shape', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/shape.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Seed roulette</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='seeds', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/seeds.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Scoring clock</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='clock', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/clock.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Boom or metronome</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='volatility', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/volatility.html" %}
+      </div>
+    </section>
+
+  </div>
+  <div class="column-stack">
+
+    <section class="panel">
+      <h2 class="panel-title">The all-play grid</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='grid', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/grid.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">The gauntlet</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='gauntlet', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/gauntlet.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Position ledger</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='ledger', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/ledger.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Schedule swap</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='swap', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/swap.html" %}
+      </div>
+    </section>
+
+  </div>
+</div>
 {% endblock %}

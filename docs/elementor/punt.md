@@ -2,7 +2,7 @@
 
 > **Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.**
 
-[![live](https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&logoColor=white)](https://punt.mdeller.com) ![python](https://img.shields.io/badge/python-3.12.3-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![gunicorn](https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white) ![nginx](https://img.shields.io/badge/nginx-1.24.0-009639?logo=nginx&logoColor=white) ![sqlite](https://img.shields.io/badge/sqlite-3.45.1-003B57?logo=sqlite&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![requests](https://img.shields.io/badge/requests-2.34.2-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-297%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![audio](https://img.shields.io/badge/audio-CC0%20%C2%B7%20CC--BY%204.0-00897B) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+[![live](https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&logoColor=white)](https://punt.mdeller.com) ![python](https://img.shields.io/badge/python-3.12.3-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![gunicorn](https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white) ![nginx](https://img.shields.io/badge/nginx-1.24.0-009639?logo=nginx&logoColor=white) ![sqlite](https://img.shields.io/badge/sqlite-3.45.1-003B57?logo=sqlite&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![requests](https://img.shields.io/badge/requests-2.34.2-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-332%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![audio](https://img.shields.io/badge/audio-CC0%20%C2%B7%20CC--BY%204.0-00897B) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -39,6 +39,8 @@ was also the tap that unlocked the sound, and the browser tore the document down
 document fixes that by construction, and the panels turn out to fit beside each other anyway.
 
 ![The same page on a desktop: five cards to a row, the week's matchups two to a row, and the panels paired left and right](docs/screenshots/desktop.png)
+
+![The season panels: a sparkline of every team's weekly scores, the ten-by-ten all-play grid, the finishing-seed distribution, and what everybody has left to play](docs/screenshots/season.png)
 
 | The album | The receipts | The bar screen |
 |---|---|---|
@@ -407,7 +409,7 @@ refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                              # 297 tests, no network, no cookies
+python3 -m pytest                              # 332 tests, no network, no cookies
 python3 tools/deadcode.py                      # which lines never run during a whole Sunday
 python3 tools/screenshot.py                    # captures at a real phone width
 python3 tools/screenshot.py --check-overflow   # no horizontal overflow at 390px
@@ -594,8 +596,9 @@ project record, and the reasoning behind a finished decision is usually the most
 
 ### Outstanding
 
-- [ ] **A season view.** Ten weeks of stored form, regret and luck is a table nobody has drawn yet.
-      The data is there from the first Sunday this runs for real
+- [ ] **A season that has happened.** The eight panels above are built and live, but five of them
+      read the settled weeks and the real league has one. They will say something by about
+      November and very little before then. That is the data's fault, not the panels'
 - [ ] **Reconcile bench regret against two real ESPN box scores.** By hand, against a week whose
       numbers are known. The test exists and is skipped, naming why
 - [ ] **The recap's model path.** The fact pack, the validator and the retry loop are driven against

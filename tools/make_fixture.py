@@ -106,6 +106,17 @@ WINDOWS = {
     "night": (PREGAME + 7 * 3600 + 1200, PREGAME + 10 * 3600 + 1800),  # 20:20 - 23:30
 }
 
+#: The real kickoff instant for each window, in UTC, on the Sunday this
+#: recording pretends to be. ESPN sends `date` on every scoreboard event and
+#: PUNT buckets games by it, so a fixture without one leaves the Scoring Clock
+#: panel with nothing to draw and `deadcode.py` reporting it as never reached.
+#: 2025-11-16 was a Sunday, and US Eastern was UTC-5 that week.
+KICKOFFS = {
+    "early": "2025-11-16T18:00Z",
+    "late": "2025-11-16T21:05Z",
+    "night": "2025-11-17T01:20Z",
+}
+
 PRO_TEAMS = {
     # id: (abbrev, window). Ids match ESPN's real enumeration so the parser is
     # genuinely exercised; the games themselves are invented.
@@ -703,6 +714,7 @@ def nfl_payload(t: int, rng: random.Random) -> dict:
                 {
                     "id": f"{home_id}{away_id}",
                     "name": f"{PRO_TEAMS[away_id][0]} at {PRO_TEAMS[home_id][0]}",
+                    "date": KICKOFFS[window],
                     "status": {
                         "period": period,
                         "displayClock": clock,

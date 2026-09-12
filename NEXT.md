@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 297 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 332 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 297 tests, no network, no cookies
+python3 -m pytest                             # 332 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -28,6 +28,26 @@ python3 tools/perf.py                         # the blocking path
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## Eight season panels
+
+Under their own rule below the scores, because they answer a slower question than the rest of
+the page. Season shape, the all-play grid, seed roulette, the gauntlet, the scoring clock, the
+position ledger, boom or metronome and schedule swap. Seven needed no new data at all; the
+scoring clock needed one field, `date` on each NFL scoreboard event, now parsed into
+`GameState.kickoff` and bucketed by `GameState.window` -- and emitted by the fixture generator
+too, or the panel would have been dead in the demo and `deadcode.py` would have said so.
+
+Three things that were wrong and only visible in a capture: the gauntlet drew four opponents on
+one line and they overlapped into a rainbow smear (a lane each now); the sparklines were flat
+because one shared scale spanned a hundred points only one team ever used (5th to 95th
+percentile, clamped); and the season-shape rows truncated team names to "Statisticall...",
+which CLAUDE.md already lists as a defect found this way once before.
+
+One class of bug the tests caught rather than a screenshot: four of these divide by a range
+computed from the data, and `default=` only fires on an EMPTY sequence. A full one of zeroes
+returns zero, which is every panel before kickoff, so the live league's week one would have
+been a 500 on the whole page -- on panels that had been looked at all afternoon at mid-Sunday.
 
 ## The LATEST strip
 
@@ -140,7 +160,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 297 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 332 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

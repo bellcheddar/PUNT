@@ -1,0 +1,35 @@
+{# Average against volatility. Four quadrants, and each is a different season:
+   high and steady is the team nobody wants to draw, low and wild is the worst
+   place to be, because the good weeks are wasted and the bad ones unsurvivable. #}
+{% if volatility.available %}
+<div class="scatter" role="img"
+     aria-label="Every team plotted by average score against how much it varies">
+  <span class="scatter-axis scatter-axis--v" style="left: {{ volatility.mid_x }}%"></span>
+  <span class="scatter-axis scatter-axis--h" style="top: {{ volatility.mid_y }}%"></span>
+  <span class="scatter-quad scatter-quad--tl">nobody wants to draw them</span>
+  <span class="scatter-quad scatter-quad--tr">boom or bust</span>
+  <span class="scatter-quad scatter-quad--bl">honest</span>
+  <span class="scatter-quad scatter-quad--br">the worst place to be</span>
+  {% for row in volatility.rows %}
+  <span class="scatter-dot tappable" data-team="{{ row.id }}"
+        style="left: {{ row.x }}%; top: {{ row.y }}%; --hue: {{ row.hue }}"
+        title="{{ row.team }}: {{ row.mean }} average, plus or minus {{ row.sigma }}, from {{ row.low }} to {{ row.high }}">
+    <span class="scatter-label">{{ row.abbrev }}</span>
+  </span>
+  {% endfor %}
+</div>
+<div class="scatter-scale">
+  <span>{{ volatility.sigma_floor }} steady</span>
+  <span>wild {{ volatility.sigma_ceiling }}</span>
+</div>
+<p class="panel-note">
+  Up the page is a higher average ({{ volatility.mean_floor }} to {{ volatility.mean_ceiling }}),
+  right is a wilder one. The crosshair is the league's own average and spread, so every team
+  is placed against the room rather than against a round number.
+</p>
+{% else %}
+<div class="empty">
+  <strong>Not enough season yet</strong>
+  Volatility needs at least two settled weeks before it means anything.
+</div>
+{% endif %}

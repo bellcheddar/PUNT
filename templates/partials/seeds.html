@@ -1,0 +1,30 @@
+{# The distribution the simulator has always computed and nothing has ever
+   shown. One bar per team, split by finishing seed across the same simulated
+   seasons the headline percentage comes from. #}
+{% if seeds.available %}
+<div class="seed-rows">
+  {% for row in seeds.rows %}
+  <div class="seed-row tappable" data-sheet="{{ url_for('api.detail_odds', team_id=row.id) }}">
+    <span class="seed-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</span>
+    <span class="seed-track">
+      {% for seed in row.seeds if seed.share > 0 %}
+      <span class="seed-seg {% if seed.made_it %}seed-seg--in{% else %}seed-seg--out{% endif %}"
+            style="width: {{ (seed.share * 100) | round(2) }}%; --seed: {{ seed.seed }}"
+            title="{{ row.team }} finish {{ seed.seed }}{{ 'st' if seed.seed == 1 else 'nd' if seed.seed == 2 else 'rd' if seed.seed == 3 else 'th' }} in {{ (seed.share * 100) | round | int }}% of seasons"></span>
+      {% endfor %}
+    </span>
+    <span class="seed-odds num {% if row.odds > 0.5 %}pos{% endif %}">{{ (row.odds * 100) | round | int }}%</span>
+  </div>
+  {% endfor %}
+</div>
+<p class="panel-note">
+  {{ seeds.draws }} simulated seasons, split by where each team finishes. Brighter is a
+  better seed; grey is missing out. Top {{ seeds.places }} make it. A narrow bar is a
+  settled season, a wide one is a team whose whole year is still open.
+</p>
+{% else %}
+<div class="empty">
+  <strong>No season grid</strong>
+  Seeds are simulated from the real fixture list, and the schedule feed is not answering.
+</div>
+{% endif %}

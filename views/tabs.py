@@ -11,7 +11,15 @@ from flask import Blueprint, render_template, request
 from views.state import snapshot, state
 from views.viewmodels import (
     album_view,
+    allplay_view,
+    clock_view,
+    gauntlet_view,
+    ledger_view,
+    seeds_view,
+    shape_view,
+    swap_view,
     ticker_view,
+    volatility_view,
     watch_now,
     cheer_view,
     matchup_view,
@@ -80,7 +88,8 @@ def today():
     beside each other anyway.
     """
     snap = snapshot(_week_param())
-    live = state().live
+    st = state()
+    live = st.live
     return render_template(
         "tabs/home.html",
         snap=snap,
@@ -92,6 +101,16 @@ def today():
         cheer=cheer_view(snap, _team_param()),
         receipts=receipts_view(snap),
         multiverse=multiverse_view(snap),
+        # The season panels. Server-rendered on first paint like everything
+        # else, then each polls its own fragment.
+        shape=shape_view(snap, st.store()),
+        grid=allplay_view(snap),
+        seeds=seeds_view(snap),
+        gauntlet=gauntlet_view(snap),
+        clock=clock_view(snap),
+        ledger=ledger_view(snap),
+        volatility=volatility_view(snap),
+        swap=swap_view(snap),
     )
 
 

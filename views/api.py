@@ -18,6 +18,7 @@ from views.tabs import _team_param, _week_param
 from views.viewmodels import (
     FORM_WEIGHTS,
     album_view,
+    allplay_view,
     cheer_view,
     game_detail,
     matchup_view,
@@ -27,6 +28,13 @@ from views.viewmodels import (
     odds_detail,
     receipts_view,
     regret_detail,
+    clock_view,
+    gauntlet_view,
+    ledger_view,
+    seeds_view,
+    shape_view,
+    swap_view,
+    volatility_view,
     stored_moments,
     ticker_view,
     swing_view,
@@ -148,6 +156,17 @@ PANELS = {
     "swings": lambda snap, live: {"swing": swing_view(snap, live)},
     "allplay": lambda snap, live: {"receipts": receipts_view(snap)},
     "luck": lambda snap, live: {"multiverse": multiverse_view(snap)},
+    # The season panels. Each answers something the week's own numbers cannot,
+    # and each is one view model, so adding a ninth is one line here and one
+    # template rather than a route.
+    "shape": lambda snap, live: {"shape": shape_view(snap, state().store())},
+    "grid": lambda snap, live: {"grid": allplay_view(snap)},
+    "seeds": lambda snap, live: {"seeds": seeds_view(snap)},
+    "gauntlet": lambda snap, live: {"gauntlet": gauntlet_view(snap)},
+    "clock": lambda snap, live: {"clock": clock_view(snap)},
+    "ledger": lambda snap, live: {"ledger": ledger_view(snap)},
+    "volatility": lambda snap, live: {"volatility": volatility_view(snap)},
+    "swap": lambda snap, live: {"swap": swap_view(snap)},
 }
 
 

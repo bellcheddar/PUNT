@@ -13,9 +13,10 @@ blank panel waiting for a module that does not exist yet.
 from __future__ import annotations
 
 import json
+from collections import OrderedDict
 from typing import Any
 
-from engine.scoring import all_play, luck_index, optimal_lineup, standings
+from engine.scoring import all_play, luck_index, optimal_lineup, season_records, standings
 from engine.simulate import playoff_odds, probabilities_for
 from espn.models import LeagueSnapshot, Matchup, Side, Team
 
@@ -1177,3 +1178,531 @@ def odds_detail(snap: LeagueSnapshot, team_id: int, draws: int = 2500) -> dict[s
         "fixtures": fixtures,
         "draws": draws,
     }
+
+
+# --------------------------------------------------------------------------
+# the season panels
+#
+# Eight views that all answer a question the week's own numbers cannot. They
+# share a shape: a list of rows, one per team, already sorted and already
+# carrying the colour, because the templates that draw them are grids and
+# charts rather than tables and a template is the wrong place to decide an
+# ordering.
+#
+# All of them read `season_records`, which walks the whole fixture grid. That is
+# arithmetic rather than simulation, so it is cheap, but it is not free and six
+# panels asking for it on every poll is six walks: `_records` memoises it for
+# the snapshot, the same way `engine/simulate` memoises the expensive ones.
+# --------------------------------------------------------------------------
+
+#: The drawing box for a sparkline, in user units. The SVG is scaled by CSS, so
+#: these are a coordinate system rather than pixels.
+SPARK = (100.0, 34.0)
+
+
+def _plot(values, floor: float, ceiling: float, width: float, height: float,
+          pad: float = 1.5) -> str:
+    """`values` as an SVG points list, to one shared scale.
+
+    The geometry is computed here and not in the template, for the reason the
+    module docstring gives: a template that does arithmetic cannot be tested
+    without a request context, and a sparkline is nothing but arithmetic. The
+    scale is passed in rather than taken per row, so ten sparklines are actually
+    comparable -- per-row scaling makes a team that never leaves 100 to 110 look
+    exactly as dramatic as one swinging between 60 and 150.
+    """
+    if not values:
+        return ""  # cold: every caller checks for scores before asking for a path
+    span = max(1e-6, ceiling - floor)
+    step = (width - pad * 2) / max(1, len(values) - 1)
+    return " ".join(
+        f"{pad + i * step:.2f},"
+        f"{height - pad - min(1.0, max(0.0, (v - floor) / span)) * (height - pad * 2):.2f}"
+        for i, v in enumerate(values)
+    )
+
+
+def _team_row(team) -> dict[str, Any]:
+    """The identity every one of these rows starts with."""
+    return {"id": team.id, "team": team.name, "abbrev": team.abbrev,
+            "manager": team.manager, "hue": team.hue}
+
+
+_RECORDS: "OrderedDict[tuple, dict]" = OrderedDict()
+
+
+def _records(snap: LeagueSnapshot) -> dict:
+    """Season records, computed once per snapshot state.
+
+    Keyed on the settled weeks and their scores rather than on the snapshot
+    object, which is rebuilt on every request: keying on identity would miss
+    every time while looking like it worked, which is the trap the simulation
+    memo documents at length.
+    """
+    key = (snap.season, snap.scoring_period,
+           tuple(sorted((w, len(g)) for w, g in snap.settled_weeks.items())),
+           tuple(sorted((s.team_id, round(s.total, 1))
+                        for m in (snap.live_matchups or snap.matchups)
+                        for s in (m.home, m.away))))
+    if key in _RECORDS:
+        _RECORDS.move_to_end(key)
+        return _RECORDS[key]
+    value = season_records(snap)
+    _RECORDS[key] = value
+    _RECORDS.move_to_end(key)
+    while len(_RECORDS) > 4:
+        _RECORDS.popitem(last=False)
+    return value
+
+
+def shape_view(snap: LeagueSnapshot, store=None) -> dict[str, Any]:
+    """Every team's season as a line, with what they could have scored behind it.
+
+    A table of results says who won. It cannot say that a team averaging 110 got
+    there with a 53 and a 142 in it, which is the difference between a good team
+    and a lucky one, and it is the first thing anybody wants to argue about.
+    """
+    records = _records(snap)
+    optimal = _optimal_by_week(store, snap) if store is not None else {}
+    rows = []
+    for team in snap.teams:
+        record = records.get(team.id)
+        scores = [round(v, 1) for v in (record.weekly if record else [])]
+        if not scores:
+            continue
+        row = _team_row(team)
+        row.update({
+            "scores": scores,
+            "best": [optimal.get((week, team.id)) for week in
+                     sorted(snap.settled_weeks)[:len(scores)]],
+            "mean": round(record.mean, 1),
+            "high": max(scores), "low": min(scores),
+            # The last three against the three before them: a direction, not a
+            # slope through ten weeks, because nobody cares how a team was
+            # trending in September.
+            "trend": round(sum(scores[-3:]) / min(3, len(scores))
+                           - sum(scores[-6:-3]) / max(1, len(scores[-6:-3])), 1)
+            if len(scores) >= 4 else 0.0,
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: -r["mean"])
+    everything = sorted(v for row in rows for v in row["scores"])
+    # The scale is the 5th to 95th percentile, not the extremes, and the plotted
+    # values are clamped into it. One team's 53.5 in a field that otherwise
+    # lives between 90 and 130 stretches the axis over a hundred points, and
+    # every line in the panel comes out flat: the outlier is drawn perfectly and
+    # the other ninety-nine readings say nothing. Clamping loses the depth of
+    # one trough and gives back the shape of everything else, which is the
+    # trade this panel exists to make.
+    if everything:
+        lo = everything[int(len(everything) * 0.05)]
+        hi = everything[min(len(everything) - 1, int(len(everything) * 0.95))]
+        floor, ceiling = (lo, hi) if hi - lo > 5 else (min(everything), max(everything))
+    else:
+        floor, ceiling = 0.0, 1.0
+    width, height = SPARK
+    for row in rows:
+        row["path"] = _plot(row["scores"], floor, ceiling, width, height)
+        # The area under the line, closed along the bottom edge.
+        row["area"] = f"{row['path']} {width - 1.5:.2f},{height} 1.5,{height}" if row["path"] else ""
+        row["mean_y"] = round(height - 1.5 - (row["mean"] - floor)
+                              / max(1e-6, ceiling - floor) * (height - 3), 2)
+        best = [v for v in row["best"] if v is not None]
+        row["best_path"] = (_plot(row["best"], floor, ceiling, width, height)
+                            if len(best) == len(row["best"]) and best else "")
+    return {
+        "rows": rows,
+        "weeks": sorted(snap.settled_weeks)[:max((len(r["scores"]) for r in rows), default=0)],
+        "width": width, "height": height,
+        "floor": round(floor, 1), "ceiling": round(ceiling, 1),
+        "has_optimal": any(any(v is not None for v in r["best"]) for r in rows),
+    }
+
+
+def _optimal_by_week(store, snap: LeagueSnapshot) -> dict[tuple[int, int], float]:
+    """`(week, team_id) -> the best they could have scored`, from the history."""
+    out: dict[tuple[int, int], float] = {}
+    if store is None or not getattr(store, "available", False):
+        return out
+    for entry in store.weeks(snap.season):
+        for team in store.week(snap.season, entry["week"]).get("teams", []):
+            if team.get("optimal"):
+                out[(entry["week"], team["team_id"])] = round(team["optimal"], 1)
+    return out
+
+
+def allplay_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Who would have beaten whom this week, as a grid.
+
+    PUNT already reduces this to one number per team. The number is the honest
+    summary and the grid is the argument: it names the single fixture that went
+    wrong instead of averaging it into a record.
+    """
+    scores: dict[int, float] = {}
+    opponents: dict[int, int] = {}
+    for matchup in snap.live_matchups or snap.matchups:
+        scores[matchup.home.team_id] = round(matchup.home.total, 1)
+        scores[matchup.away.team_id] = round(matchup.away.total, 1)
+        opponents[matchup.home.team_id] = matchup.away.team_id
+        opponents[matchup.away.team_id] = matchup.home.team_id
+
+    teams = [t for t in snap.teams if t.id in scores]
+    teams.sort(key=lambda t: -scores[t.id])
+    rows = []
+    for me in teams:
+        cells = []
+        for them in teams:
+            beaten = None if me.id == them.id else scores[me.id] > scores[them.id]
+            cells.append({
+                "id": them.id, "abbrev": them.abbrev, "beaten": beaten,
+                "margin": round(scores[me.id] - scores[them.id], 1),
+                # The one cell in the row that actually counted.
+                "real": opponents.get(me.id) == them.id,
+            })
+        row = _team_row(me)
+        wins = sum(1 for c in cells if c["beaten"] is True)
+        row.update({
+            "score": scores[me.id], "cells": cells, "wins": wins,
+            "losses": len(teams) - 1 - wins,
+            # Whether the one fixture that counted went their way. The point of
+            # the grid is the gap between this and `wins`.
+            "won": (opponents.get(me.id) is not None
+                    and scores[me.id] > scores.get(opponents[me.id], 0.0)),
+        })
+        rows.append(row)
+    return {"rows": rows, "teams": [_team_row(t) for t in teams],
+            "week": snap.scoring_period}
+
+
+def seeds_view(snap: LeagueSnapshot, draws: int = 2500) -> dict[str, Any]:
+    """Not whether they make the playoffs, but where they finish.
+
+    The simulator has computed this since the first commit and nothing has ever
+    displayed it: `PlayoffOdds.seed_odds` is a full distribution over finishing
+    positions from the same seasons the headline percentage comes from. A single
+    number cannot tell a team that is certainly third from one that is either
+    first or fifth, and those are very different Sundays.
+    """
+    if not snap.season_schedule:
+        return {"available": False, "rows": []}
+    odds = playoff_odds(snap, draws=draws)
+    if not odds:
+        return {"available": False, "rows": []}  # cold: a league with no teams
+    places = max(1, snap.settings.playoff_team_count or 6)
+    size = len(snap.teams) or 10
+    rows = []
+    for team in snap.teams:
+        chance = odds.get(team.id)
+        if chance is None:
+            continue  # cold: every team in mTeam is in the odds
+        seeds = [{"seed": seed, "share": round(chance.seed_odds.get(seed, 0.0), 4),
+                  "made_it": seed <= places}
+                 for seed in range(1, size + 1)]
+        row = _team_row(team)
+        row.update({
+            "odds": round(chance.odds, 3), "seeds": seeds,
+            "likeliest": max(seeds, key=lambda s: s["share"])["seed"],
+            # How settled the answer is. A team that lands on one seed in most
+            # seasons is a different story from one spread across five, and the
+            # spread is the part the headline percentage throws away.
+            "spread": sum(1 for s in seeds if s["share"] >= 0.10),
+            "clinched": chance.clinched, "eliminated": chance.eliminated,
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: (-r["odds"], r["likeliest"]))
+    return {"available": True, "rows": rows, "places": places, "draws": draws}
+
+
+def gauntlet_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """What everybody has left to play, and how frightening it is.
+
+    Strength of schedule, but the version that means something in fantasy. The
+    published figures are about NFL defences; the thing that decides your season
+    is which of these ten people you still have to outscore, and how reliably
+    they score. A wide opponent is one you might catch on a bad week. A narrow
+    one, high up, is not.
+    """
+    records = _records(snap)
+    weeks = snap.season_weeks()
+    settled = set(snap.settled_weeks)
+    current = snap.settings.current_matchup_period
+    future = {week: games for week, games in weeks.items()
+              if week not in settled and week >= current}
+    if not future:
+        return {"available": False, "rows": []}
+
+    means = [records[tid].mean for tid in records if records[tid].weeks]
+    league = round(sum(means) / len(means), 1) if means else 0.0
+
+    rows = []
+    for team in snap.teams:
+        fixtures = []
+        for week in sorted(future):
+            for matchup in future[week]:
+                sides = (matchup.home, matchup.away)
+                if team.id not in (s.team_id for s in sides):
+                    continue
+                other = next(s for s in sides if s.team_id != team.id)
+                opponent = snap.team(other.team_id)
+                record = records.get(other.team_id)
+                if opponent is None or record is None or not record.weeks:
+                    continue  # cold: the grid never names a team mTeam did not send
+                fixtures.append({
+                    "week": week, "id": opponent.id, "abbrev": opponent.abbrev,
+                    "team": opponent.name, "hue": opponent.hue,
+                    "mean": round(record.mean, 1), "sigma": round(record.sigma, 1),
+                    # Its own lane down the track. Four opponents drawn on one
+                    # line overlap into a single rainbow smear where nothing can
+                    # be told from anything, which is exactly how it first came
+                    # out: a lane each keeps them legible and puts them in week
+                    # order down the row, which is the order they arrive in.
+                    "lane": len(fixtures),
+                })
+        if not fixtures:
+            continue  # cold: a team on a bye in every remaining week
+        average = round(sum(f["mean"] for f in fixtures) / len(fixtures), 1)
+        for fixture in fixtures:
+            fixture["lanes"] = len(fixtures)
+        row = _team_row(team)
+        row.update({
+            "fixtures": fixtures, "average": average,
+            "harder": average > league,
+            "gap": round(average - league, 1),
+            "toughest": max(fixtures, key=lambda f: f["mean"]),
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: -r["average"])
+    floor = min([f["mean"] - f["sigma"] for r in rows for f in r["fixtures"]] + [140.0])
+    ceiling = max([f["mean"] + f["sigma"] for r in rows for f in r["fixtures"]] + [floor + 1.0])
+    return {"available": True, "rows": rows, "league": league,
+            "floor": round(floor, 1), "ceiling": round(ceiling, 1),
+            "weeks_left": len(future)}
+
+
+#: The slots of an NFL week, in the order anybody would say them.
+WINDOW_ORDER = ["THU", "EARLY", "LATE", "SNF", "MNF", "SAT"]
+WINDOW_LABELS = {"THU": "Thu", "EARLY": "1pm", "LATE": "4pm",
+                 "SNF": "Sun night", "MNF": "Mon night", "SAT": "Sat"}
+
+
+def clock_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """When each team's points arrive, and how much is still to come.
+
+    Two managers on the same score are in completely different moods if one has
+    banked it and the other has a running back left, and nothing anywhere shows
+    that. It is the most useful thing on the page at six o'clock on a Sunday.
+    """
+    used = [w for w in WINDOW_ORDER
+            if any(game.window == w for game in snap.games.values())]
+    if not used:
+        return {"available": False, "rows": [], "windows": []}
+
+    rows = []
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            team = snap.team(side.team_id)
+            if team is None:
+                continue  # cold: a fixture naming a team mTeam never sent
+            parts = {w: {"window": w, "label": WINDOW_LABELS[w], "points": 0.0,
+                         "to_come": 0.0, "players": 0} for w in used}
+            for player in side.starters:
+                game = snap.games.get(player.pro_team_id)
+                if game is None or game.window not in parts:
+                    continue  # cold: a starter on a bye, which the fixture has none of
+                part = parts[game.window]
+                part["points"] += player.points
+                part["to_come"] += player.remaining
+                part["players"] += 1
+            ordered = [parts[w] for w in used]
+            for part in ordered:
+                part["points"] = round(part["points"], 1)
+                part["to_come"] = round(part["to_come"], 1)
+            row = _team_row(team)
+            banked = sum(p["points"] for p in ordered)
+            left = sum(p["to_come"] for p in ordered)
+            row.update({
+                "parts": ordered, "banked": round(banked, 1), "to_come": round(left, 1),
+                # The number the panel exists for: how much of this team's day is
+                # already decided.
+                "settled": round(banked / (banked + left) * 100) if banked + left else 100,
+            })
+            rows.append(row)
+    rows.sort(key=lambda r: -r["settled"])
+    ceiling = max([p["points"] + p["to_come"] for r in rows for p in r["parts"]] + [1.0])
+    return {"available": True, "rows": rows,
+            "windows": [{"window": w, "label": WINDOW_LABELS[w]} for w in used],
+            "ceiling": round(ceiling, 1)}
+
+
+def ledger_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Points by starting slot, against the league median for that slot.
+
+    Two teams on the same total can be built completely differently, and the
+    total cannot say which. This can, and it is the one view here that suggests
+    what to do about it rather than just describing the damage.
+    """
+    per_team: dict[int, dict[str, float]] = {}
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            slots: dict[str, float] = {}
+            for player in side.starters:
+                slots[player.slot] = round(slots.get(player.slot, 0.0) + player.points, 2)
+            per_team[side.team_id] = slots
+    if not per_team:
+        return {"available": False, "rows": [], "slots": []}
+
+    order = [s for s in ("QB", "RB", "WR", "TE", "FLEX", "D/ST", "K")
+             if any(s in slots for slots in per_team.values())]
+    order += sorted({s for slots in per_team.values() for s in slots} - set(order))
+
+    median: dict[str, float] = {}
+    for slot in order:
+        values = sorted(slots.get(slot, 0.0) for slots in per_team.values())
+        middle = len(values) // 2
+        median[slot] = round(
+            values[middle] if len(values) % 2 else (values[middle - 1] + values[middle]) / 2, 1)
+
+    rows = []
+    for team in snap.teams:
+        slots = per_team.get(team.id)
+        if slots is None:
+            continue  # cold: a team with no fixture this week
+        cells = [{"slot": slot, "points": round(slots.get(slot, 0.0), 1),
+                  "diff": round(slots.get(slot, 0.0) - median[slot], 1)}
+                 for slot in order]
+        row = _team_row(team)
+        row.update({
+            "cells": cells,
+            "total": round(sum(c["points"] for c in cells), 1),
+            "best": max(cells, key=lambda c: c["diff"]),
+            "worst": min(cells, key=lambda c: c["diff"]),
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: -r["total"])
+    spread = max([abs(c["diff"]) for r in rows for c in r["cells"]] + [1.0])
+    return {"available": True, "rows": rows, "slots": order,
+            "median": median, "spread": round(spread, 1)}
+
+
+def volatility_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Average score against how wildly it swings.
+
+    Four quadrants and each is a different kind of season. High and steady is
+    the team nobody wants to draw; high and wild is the one that beats you by
+    forty once and loses to everybody else; low and steady is honest; low and
+    wild is the worst place to be, because the good weeks are wasted and the bad
+    ones are unsurvivable.
+    """
+    records = _records(snap)
+    rows = []
+    for team in snap.teams:
+        record = records.get(team.id)
+        if record is None or record.weeks < 2:
+            continue
+        row = _team_row(team)
+        row.update({"mean": round(record.mean, 1), "sigma": round(record.sigma, 1),
+                    "weeks": record.weeks,
+                    "high": round(max(record.weekly), 1),
+                    "low": round(min(record.weekly), 1)})
+        rows.append(row)
+    if not rows:
+        return {"available": False, "rows": []}
+    means = [r["mean"] for r in rows]
+    sigmas = [r["sigma"] for r in rows]
+    mid_mean = round(sum(means) / len(means), 1)
+    mid_sigma = round(sum(sigmas) / len(sigmas), 1)
+    pad = 4
+    mean_floor, mean_ceiling = min(means) - pad, max(means) + pad
+    sigma_floor, sigma_ceiling = max(0.0, min(sigmas) - 2), max(sigmas) + 2
+    for row in rows:
+        # Percentages of the plot box, so the template places a dot with `left`
+        # and `top` and never does arithmetic.
+        row["x"] = round((row["sigma"] - sigma_floor)
+                         / max(1e-6, sigma_ceiling - sigma_floor) * 100, 2)
+        row["y"] = round(100 - (row["mean"] - mean_floor)
+                         / max(1e-6, mean_ceiling - mean_floor) * 100, 2)
+        high, wild = row["mean"] >= mid_mean, row["sigma"] >= mid_sigma
+        row["quadrant"] = ("the one nobody wants to draw" if high and not wild
+                           else "boom or bust" if high and wild
+                           else "honest" if not wild
+                           else "the worst place to be")
+        row["good"] = high
+    rows.sort(key=lambda r: -r["mean"])
+    return {
+        "available": True, "rows": rows,
+        "mid_mean": mid_mean, "mid_sigma": mid_sigma,
+        "mid_x": round((mid_sigma - sigma_floor)
+                       / max(1e-6, sigma_ceiling - sigma_floor) * 100, 2),
+        "mid_y": round(100 - (mid_mean - mean_floor)
+                       / max(1e-6, mean_ceiling - mean_floor) * 100, 2),
+        "mean_floor": round(mean_floor, 1), "mean_ceiling": round(mean_ceiling, 1),
+        "sigma_floor": round(sigma_floor, 1), "sigma_ceiling": round(sigma_ceiling, 1),
+    }
+
+
+def swap_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Every team's own scores, replayed against everybody else's fixture list.
+
+    This is the end of the argument. "I have had no luck" is either true or it
+    is not, and the honest test is to leave a manager's scores exactly as they
+    were and give them somebody else's opponents week by week. PUNT already
+    reports luck as a single number; this says who, specifically, has had the
+    schedule everyone else wanted.
+    """
+    records = _records(snap)
+    weeks = sorted(snap.settled_weeks)
+    if len(weeks) < 2:
+        return {"available": False, "rows": [], "weeks": len(weeks)}
+
+    # week -> {team_id: opponent_id}
+    grid: dict[int, dict[int, int]] = {}
+    for week in weeks:
+        pairs: dict[int, int] = {}
+        for matchup in snap.settled_weeks.get(week, []):
+            pairs[matchup.home.team_id] = matchup.away.team_id
+            pairs[matchup.away.team_id] = matchup.home.team_id
+        if pairs:
+            grid[week] = pairs
+    scores = {tid: record.weekly for tid, record in records.items()}
+    order = [t for t in snap.teams if scores.get(t.id)]
+    if not grid or len(order) < 2:
+        return {"available": False, "rows": [], "weeks": len(weeks)}
+
+    def record_under(me: int, schedule_of: int) -> tuple[int, int]:
+        """My weekly scores, against whoever `schedule_of` actually faced."""
+        wins = losses = 0
+        for index, week in enumerate(sorted(grid)):
+            opponent = grid[week].get(schedule_of)
+            if opponent is None or opponent == me:
+                continue
+            if index >= len(scores[me]) or index >= len(scores.get(opponent, [])):
+                continue  # cold: a team that joined the league mid-season
+            if scores[me][index] > scores[opponent][index]:
+                wins += 1
+            elif scores[me][index] < scores[opponent][index]:
+                losses += 1
+        return wins, losses
+
+    rows = []
+    for me in order:
+        own = record_under(me.id, me.id)
+        cells = []
+        for them in order:
+            wins, losses = record_under(me.id, them.id)
+            cells.append({"id": them.id, "abbrev": them.abbrev, "team": them.name,
+                          "record": f"{wins}-{losses}", "wins": wins,
+                          "diff": wins - own[0], "own": them.id == me.id})
+        row = _team_row(me)
+        kindest = max(cells, key=lambda c: c["diff"])
+        cruellest = min(cells, key=lambda c: c["diff"])
+        row.update({
+            "own": f"{own[0]}-{own[1]}", "cells": cells,
+            "kindest": kindest, "cruellest": cruellest,
+            # How much the fixture list, rather than the scoring, has decided
+            # this team's season.
+            "swing": kindest["diff"] - cruellest["diff"],
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: -r["swing"])
+    return {"available": True, "rows": rows, "weeks": len(grid),
+            "order": [_team_row(t) for t in order]}

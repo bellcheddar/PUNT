@@ -1809,3 +1809,223 @@ main { padding: 12px 14px 24px; }
                    align-items: center; }
   .panel--ticker .panel-title { margin: 0; white-space: nowrap; }
 }
+
+/* --- the season panels ---------------------------------------------------
+ * Eight views that are charts rather than tables, so they are styled as
+ * drawings: a scale, marks, and as little chrome as each one can survive on.
+ * Every colour here comes from the tokens above, and every team colour from
+ * that team's own hue, so nothing needs a palette of its own. */
+
+/* A rule across the page that names what follows, rather than another panel
+ * header. The season section is a change of subject, not another panel. */
+.section-rule {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--font-display); font-size: 15px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-faint);
+  margin: 26px 0 12px;
+}
+.section-rule::after {
+  content: ""; flex: 1; height: 1px; background: var(--border);
+}
+
+/* Tables wider than a phone get their own scroller. The page body must never
+ * scroll sideways; a ten-column matrix at 390px has no other option. */
+.scroll-x { overflow-x: auto; scrollbar-gutter: stable; }
+
+/* --- season shape ----------------------------------------------------- */
+/* Explicit columns, because `.rows` is `table-layout: fixed` and a cell asking
+ * for 100% next to two 66px numeric columns adds up to more than a phone. The
+ * name is the column that gives: it truncates, and the sparkline is the point
+ * of the row. */
+.shape-rows { table-layout: fixed; }
+.shape-rows td { padding: 4px 6px; vertical-align: middle; }
+.shape-rows th:first-child, .shape-rows td:first-child {
+  width: 62px; max-width: 62px; white-space: nowrap;
+  font-family: var(--font-mono); font-size: 10.5px;
+}
+.shape-rows th.num, .shape-rows td.num { width: 46px; }
+.spark-cell { padding-inline: 8px !important; }
+.spark {
+  display: block; width: 100%; height: 34px;
+  /* The viewBox is 100 wide and stretched, so a stroke scaled with it would be
+   * a different weight on a phone and on a television. `vector-effect` on the
+   * strokes keeps them 1px everywhere; `preserveAspectRatio: none` is what
+   * makes the stretch possible in the first place. */
+  overflow: visible;
+}
+
+/* --- the two matrices ------------------------------------------------- */
+.matrix { table-layout: auto; }
+.matrix th, .matrix td { padding: 2px; }
+.matrix-corner {
+  text-align: left !important; white-space: nowrap;
+  font-size: 8.5px !important; padding-right: 8px !important;
+}
+/* Auto layout inside a scroller, so the matrix takes the width its cells need
+ * and the scroller handles the rest. Without this it inherits `.rows`'
+ * `table-layout: fixed` and squashes ten columns into the phone. */
+.matrix, .ledger { width: auto; min-width: 100%; }
+.matrix-head { width: 20px; text-align: center !important; padding: 2px 0 !important; }
+.matrix-head .dot { margin: 0; }
+.matrix-name {
+  font-family: var(--font-mono); font-size: 10px; white-space: nowrap;
+  padding-right: 6px !important;
+}
+.matrix-cell { padding: 1px !important; }
+.pip {
+  display: block; width: 100%; min-width: 15px; height: 16px; border-radius: 3px;
+  background: rgba(255,255,255,.05);
+}
+.pip--won  { background: rgba(0,208,132,.42); }
+.pip--lost { background: rgba(255,77,94,.28); }
+.pip--self { background: rgba(255,255,255,.03); }
+/* The one fixture that actually counted. A ring rather than a different colour:
+ * the colour is already saying whether it was won, and a cell cannot say two
+ * things with one channel. */
+.pip--real { box-shadow: inset 0 0 0 1.5px var(--ink); }
+
+/* --- seed roulette ---------------------------------------------------- */
+.seed-rows { display: grid; gap: 5px; }
+.seed-row {
+  display: grid; grid-template-columns: 62px minmax(0, 1fr) 40px;
+  gap: 8px; align-items: center;
+}
+.seed-name {
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.seed-track {
+  display: flex; height: 11px; border-radius: 3px; overflow: hidden;
+  background: rgba(255,255,255,.05);
+}
+.seed-seg { height: 100%; }
+/* Seed 1 is the brightest and they cool as they go down the table, so the bar
+ * reads left to right as "how good is this likely to be" without a key. */
+.seed-seg--in {
+  background: hsl(calc(160 - (var(--seed) - 1) * 26) 70% calc(56% - (var(--seed) - 1) * 2%));
+}
+.seed-seg--out { background: rgba(255,255,255,.07); }
+.seed-odds { font-size: 11.5px; color: var(--ink-dim); }
+
+/* --- the gauntlet ----------------------------------------------------- */
+.gaunt-rows { display: grid; gap: 10px; }
+.gaunt-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 8px; font-size: 12.5px; margin-bottom: 3px;
+}
+.gaunt-track {
+  position: relative; height: 26px; border-radius: 5px;
+  background: rgba(255,255,255,.04);
+}
+/* One lane per remaining fixture, in week order. The lanes divide whatever
+ * height the track has, so a run-in of two and a run-in of six both fill it. */
+.gaunt-lane {
+  position: absolute; left: 0; right: 0;
+  top: calc(var(--lane) * (100% / var(--lanes)));
+  height: calc(100% / var(--lanes));
+}
+.gaunt-span {
+  position: absolute; top: 50%; height: 4px; margin-top: -2px; border-radius: 2px;
+  background: hsl(var(--hue) 55% 42%);
+}
+.gaunt-mark {
+  position: absolute; top: 50%; width: 5px; height: 8px; margin: -4px 0 0 -2.5px;
+  border-radius: 1.5px; background: hsl(var(--hue) 62% 64%);
+}
+
+/* --- the scoring clock ------------------------------------------------ */
+.clock-rows { display: grid; gap: 4px; }
+.clock-row, .clock-axis {
+  display: grid; grid-template-columns: 58px minmax(0, 1fr) 40px;
+  gap: 8px; align-items: end;
+}
+.clock-name {
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-dim);
+  white-space: nowrap; align-self: center;
+}
+.clock-track { display: flex; gap: 3px; height: 34px; align-items: flex-end; }
+.clock-slot {
+  flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
+  height: 100%; min-width: 0;
+}
+/* Banked below, still to come above: the bar grows upward as the day does, and
+ * the faded part is what the manager is still waiting on. */
+.clock-done { background: hsl(var(--hue) 62% 55%); border-radius: 2px 2px 0 0; min-height: 2px; }
+.clock-todo { background: hsl(var(--hue) 45% 30%); border-radius: 2px 2px 0 0; }
+.clock-tick {
+  flex: 1; text-align: center; font-family: var(--font-mono); font-size: 8px;
+  color: var(--ink-faint); letter-spacing: .04em;
+}
+.clock-settled { font-size: 11px; color: var(--ink-dim); text-align: right; align-self: center; }
+.clock-settled.done { color: var(--ink-faint); }
+
+/* --- the position ledger ---------------------------------------------- */
+.ledger th, .ledger td { padding: 2px 3px; }
+.ledger-head { text-align: center !important; font-size: 8.5px !important; }
+.ledger-name {
+  font-family: var(--font-mono); font-size: 10px; white-space: nowrap;
+  padding-right: 6px !important;
+}
+.ledger-cell { padding: 1px !important; }
+.heat {
+  display: block; min-width: 34px; padding: 3px 2px; border-radius: 3px;
+  font-family: var(--font-mono); font-size: 10px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+/* `--weight` is 0 to 100, so the alpha runs from a hint to the full colour and
+ * the grid reads as a heat map rather than as two flat colours. */
+.heat--up   { background: rgba(0,208,132, calc(.10 + var(--weight) * .005)); color: var(--ink); }
+.heat--down { background: rgba(255,77,94, calc(.08 + var(--weight) * .005)); color: var(--ink); }
+.ledger-median td { color: var(--ink-faint); font-size: 9.5px; border-top: 1px solid var(--border); }
+.ledger-median .ledger-name { font-family: var(--font-mono); letter-spacing: .08em; }
+
+/* --- boom or metronome ------------------------------------------------ */
+.scatter {
+  position: relative; height: 210px; margin-bottom: 4px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: rgba(255,255,255,.015);
+}
+.scatter-axis { position: absolute; background: var(--border); }
+.scatter-axis--v { top: 0; bottom: 0; width: 1px; }
+.scatter-axis--h { left: 0; right: 0; height: 1px; }
+.scatter-quad {
+  position: absolute; font-family: var(--font-mono); font-size: 8px;
+  color: var(--ink-faint); letter-spacing: .06em; max-width: 45%;
+}
+.scatter-quad--tl { top: 5px; left: 7px; }
+.scatter-quad--tr { top: 5px; right: 7px; text-align: right; }
+.scatter-quad--bl { bottom: 5px; left: 7px; }
+.scatter-quad--br { bottom: 5px; right: 7px; text-align: right; }
+.scatter-dot {
+  position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%; background: hsl(var(--hue) 62% 55%);
+  box-shadow: 0 0 0 1px hsl(var(--hue) 62% 70%);
+}
+.scatter-label {
+  position: absolute; left: 50%; bottom: 13px; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 8px; color: var(--ink-dim);
+  white-space: nowrap; pointer-events: none;
+}
+.scatter-scale {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono); font-size: 8.5px; color: var(--ink-faint);
+}
+
+/* --- the schedule swap ------------------------------------------------ */
+.swap-cell {
+  display: block; min-width: 20px; height: 17px; border-radius: 3px;
+  font-family: var(--font-mono); font-size: 9px; line-height: 17px;
+  text-align: center; color: var(--ink); background: rgba(255,255,255,.04);
+}
+.swap-cell--up   { background: rgba(0,208,132, calc(.12 + var(--weight) * .0045)); }
+.swap-cell--down { background: rgba(255,77,94, calc(.10 + var(--weight) * .0045)); }
+.swap-cell--own  { background: rgba(255,255,255,.07); color: var(--ink-faint); }
+
+/* A phone gets the same panels, a little tighter. Nothing is hidden: a chart
+ * with a column removed is a different chart, and the reader cannot tell. */
+@media (max-width: 619px) {
+  .seed-row, .clock-row, .clock-axis { grid-template-columns: 46px minmax(0, 1fr) 34px; }
+  .scatter { height: 180px; }
+  .pip { min-width: 13px; height: 14px; }
+  .heat { min-width: 30px; font-size: 9px; }
+}

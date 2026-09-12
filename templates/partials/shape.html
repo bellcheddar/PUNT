@@ -1,0 +1,51 @@
+{# One line per team across the settled weeks, all drawn to a single shared
+   scale so the ten are actually comparable. The dashed rule is that team's own
+   average, so the shape reads against themselves as well as against the league. #}
+{% if shape.rows %}
+<table class="rows shape-rows">
+  <thead><tr><th>Team</th><th>Week {{ shape.weeks | first }}&ndash;{{ shape.weeks | last }}</th><th class="num">Avg</th><th class="num">Trend</th></tr></thead>
+  <tbody>
+  {% for row in shape.rows %}
+    <tr class="tappable" data-team="{{ row.id }}">
+      {# The abbreviation, like every other panel in this section. The full name
+         truncated to "Statisticall..." is the defect CLAUDE.md already lists as
+         having been found in a screenshot once, and a four-letter code that
+         always fits is better than a name that sometimes does. #}
+      <td title="{{ row.team }}"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+      <td class="spark-cell">
+        <svg class="spark" viewBox="0 0 {{ shape.width }} {{ shape.height }}"
+             preserveAspectRatio="none" role="img"
+             aria-label="{{ row.team }}: {{ row.scores | join(', ') }}">
+          <line x1="1.5" y1="{{ row.mean_y }}" x2="{{ shape.width - 1.5 }}" y2="{{ row.mean_y }}"
+                stroke="var(--border-bright)" stroke-width=".4" stroke-dasharray="2 2"/>
+          {% if row.best_path %}
+          {# What they could have started. The gap is the season's bench regret,
+             drawn rather than totalled. #}
+          <polyline points="{{ row.best_path }}" fill="none" stroke="var(--ink-faint)"
+                    stroke-width=".5" stroke-dasharray="1.5 1.5" vector-effect="non-scaling-stroke"/>
+          {% endif %}
+          <polygon points="{{ row.area }}" fill="hsl({{ row.hue }} 62% 50%)" opacity=".13"/>
+          <polyline points="{{ row.path }}" fill="none" stroke="hsl({{ row.hue }} 62% 58%)"
+                    stroke-width="1" stroke-linejoin="round" stroke-linecap="round"
+                    vector-effect="non-scaling-stroke"/>
+        </svg>
+      </td>
+      <td class="num">{{ row.mean }}</td>
+      <td class="num {% if row.trend > 4 %}pos{% elif row.trend < -4 %}neg{% endif %}">{{ row.trend | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="panel-note">
+  Weeks {{ shape.weeks | first }} to {{ shape.weeks | last }}, all on one scale
+  ({{ shape.floor }} to {{ shape.ceiling }}). Dashed rule is that team's own average;
+  {% if shape.has_optimal %}the faint line above it is what they could have started.
+  {% else %}the faint line appears once PUNT has recorded a few weeks of lineups.{% endif %}
+  Trend is the last three weeks against the three before.
+</p>
+{% else %}
+<div class="empty">
+  <strong>No season yet</strong>
+  A shape needs a few settled weeks behind it. This fills in as the season does.
+</div>
+{% endif %}

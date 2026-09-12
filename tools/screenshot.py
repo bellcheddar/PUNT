@@ -37,7 +37,12 @@ BASE_FOR_HARNESS = ["http://127.0.0.1:8019"]
 #: chooser get their own shots without it.
 STEADY = "punt=steady&team=5"
 
-#: (filename stem, path, viewport width, viewport height, alt text, steady?)
+#: (filename stem, path, viewport width, viewport height, alt text, steady?,
+#: and optionally how far down the page to start). The offset exists because the
+#: harness renders the route in an iframe with no way to scroll it: a capture of
+#: a panel two thousand pixels down the page is a capture of the top of the page
+#: unless the frame is made tall enough to contain it and the image cropped
+#: afterwards. Which is what `top` does.
 SHOTS = [
     # The whole page on a phone, and it has to be tall: PUNT is one document
     # now, and an 844 px capture shows the cards and nothing else, which makes
@@ -46,6 +51,7 @@ SHOTS = [
     # load face-up -- and a screenshot of a feature that no longer exists is
     # worse than none, because it is a confident claim that happens to be false.
     ("home", "/", 390, 2300, "PUNT on a phone: a live ticker of what has just moved, ten manager cards tiered by form, the week's matchups with live scores, bench regret, who is in trouble, and the commentary feed, all on one page", True),
+    ("season", "/", 1280, 1500, "The season panels: a sparkline of every team's weekly scores, the ten-by-ten all-play grid, the finishing-seed distribution, and what everybody has left to play", True, 2760),
     ("album", "/album", 390, 900, "Ten manager cards, two to a row, each tinted in that team's own colour and tiered epic, rare, common or cursed, with the form rating printed under the score", True),
     ("desktop", "/", 1280, 1560, "The same page on a desktop: the LATEST ticker along the top, five cards to a row, the week's matchups two to a row, and the panels paired left and right", True),
     ("chooser", "/", 390, 1000, "First run: pick which of the ten managers is holding this phone. Kept locally, with no account to make", False),
@@ -57,7 +63,8 @@ SHOTS = [
 ]
 
 
-def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Path:
+def capture(url: str, width: int, height: int, out: Path, scale: int = 2,
+            top: int = 0) -> Path:
     """Render one route at a real phone width and save a PNG.
 
     The route decides which overlays it shows, via `?punt=steady`, rather than
@@ -65,6 +72,13 @@ def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Pat
     not reliably visible to the iframe under `--screenshot`, and every capture
     came out showing a first-run overlay.
     """
+    # The iframe has to hold everything down to the BOTTOM of the crop, so this
+    # has to happen before the harness is written and not after it. Getting that
+    # order wrong renders a frame of the requested height, screenshots a window
+    # taller than it, and crops the harness's own background: a perfectly plain
+    # image that the uniform-image guard then rejects, which is the only reason
+    # it was noticed at all.
+    height = top + height
     harness = f"""<!DOCTYPE html><meta charset="utf-8">
 <style>
   html,body {{ margin:0; padding:0; background:#0d1017; }}
@@ -96,7 +110,9 @@ def capture(url: str, width: int, height: int, out: Path, scale: int = 2) -> Pat
     from PIL import Image
 
     image = Image.open(out)
-    image = image.crop((0, 0, width * scale, height * scale))
+    # The frame is rendered `top + height` tall and the top slice discarded, so
+    # a panel far down the page can be captured without a scrollbar anywhere.
+    image = image.crop((0, top * scale, width * scale, height * scale))
     # Downscale to about 1400 px: a 3x grab is several megabytes and GitHub will
     # not thank you for it.
     if image.width > 1400:
@@ -161,7 +177,7 @@ def check_overflow(base: str, width: int = 390) -> int:
     DOM is same-origin only: a `file://` harness reads nothing, and
     `--disable-web-security` with a throwaway profile hangs Chrome outright.
     """
-    routes = sorted({r for _, r, _, _, _, _ in SHOTS if not r.startswith("/big-board")})
+    routes = sorted({shot[1] for shot in SHOTS if not shot[1].startswith("/big-board")})
     frames = "".join(f'<iframe data-route="{r}" src="{r}"></iframe>' for r in routes)
     probe = f"""<!DOCTYPE html><meta charset="utf-8">
 <style>html,body{{margin:0}}iframe{{width:{width}px;height:1200px;border:0;display:block}}</style>
@@ -173,8 +189,22 @@ window.addEventListener('load', () => {{
     const d = f.contentDocument;
     if (!d) return f.dataset.route + '  (not readable)';
     const w = d.documentElement.clientWidth;
+    // An element inside a horizontal scroller is allowed to be wider than the
+    // screen: that is the sanctioned escape hatch for a table or a chart, and
+    // the ten-column matrices use it. What is never allowed is the PAGE
+    // scrolling sideways, which is the `scroll=` figure beside this and is
+    // checked separately. Without this the checker fails on every panel that
+    // scrolls correctly, and a check that cries wolf gets switched off.
+    const scrolls = e => {{
+      for (let n = e.parentElement; n && n !== d.body; n = n.parentElement) {{
+        const overflow = d.defaultView.getComputedStyle(n).overflowX;
+        if (overflow === 'auto' || overflow === 'scroll') return true;
+      }}
+      return false;
+    }};
     const wide = [...d.querySelectorAll('body *')]
       .filter(e => Math.round(e.getBoundingClientRect().right) > w + 1)
+      .filter(e => !scrolls(e))
       .map(e => e.tagName + '.' + (e.className || '-').toString().split(' ')[0])
       .filter((v, i, a) => a.indexOf(v) === i).slice(0, 6);
     return f.dataset.route.padEnd(12) + ' client=' + w + ' scroll=' + d.documentElement.scrollWidth +
@@ -246,11 +276,17 @@ def main() -> int:
         print(f"  {path}")
         return 0
 
-    for stem, path, width, height, alt, steady in SHOTS:
+    for stem, path, width, height, alt, steady, *rest in SHOTS:
+        top = rest[0] if rest else 0
         url = f"{args.base}{path}"
         if steady:
             url += ("&" if "?" in path else "?") + STEADY
-        target = capture(url, width, height, out_dir / f"{stem}.png")
+        # A shot with an offset renders the whole page down to the crop, so at
+        # 2x a 1500px panel 2760px down the page asks Chrome for an 8600px
+        # window and it quietly gives back a blank one. These go at 1x, which is
+        # plenty for a panel of small type and keeps the file under a megabyte.
+        target = capture(url, width, height, out_dir / f"{stem}.png",
+                         scale=1 if top else 2, top=top)
         size = target.stat().st_size / 1000
         print(f"  {target}  {width}x{height}  {size:.0f} kB  -- {alt}")
     return 0
