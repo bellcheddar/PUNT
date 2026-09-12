@@ -17,8 +17,8 @@
   </thead>
   <tbody>
   {% for row in swap.rows %}
-    <tr class="tappable" data-team="{{ row.id }}">
-      <td class="matrix-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_panel', name='swap', team_id=row.id) }}">
+      <td class="matrix-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
       {% for cell in row.cells %}
       <td class="matrix-cell">
         <span class="swap-cell {% if cell.own %}swap-cell--own{% elif cell.diff > 0 %}swap-cell--up{% elif cell.diff < 0 %}swap-cell--down{% endif %}"
@@ -32,11 +32,12 @@
   </tbody>
 </table>
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-swap" hx-preserve="true">
+  <summary>Details</summary>
   Rows are whose scores, columns are whose schedule, over {{ swap.weeks }} settled
   week{{ '' if swap.weeks == 1 else 's' }}. The number is wins gained or lost against that
   team's real record. Green means somebody else's fixtures would have been kinder.
-</p>
+</details>
 {% else %}
 <div class="empty">
   <strong>Not enough season yet</strong>

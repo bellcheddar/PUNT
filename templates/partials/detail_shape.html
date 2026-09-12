@@ -1,0 +1,38 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=d.wins ~ '-' ~ d.losses ~ ' · ' ~ d.mean ~ ' a week',
+        figure=d.swing, figure_label='points between best and worst' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Average</dt><dd>{{ d.mean }}</dd></div>
+  <div><dt>Best week</dt><dd>{{ d.high }}</dd></div>
+  <div><dt>Worst week</dt><dd>{{ d.low }}</dd></div>
+  <div><dt>Last three</dt><dd class="{% if d.row.trend > 4 %}pos{% elif d.row.trend < -4 %}neg{% endif %}">{{ d.row.trend | signed }}</dd></div>
+</dl>
+
+<h4 class="sheet-group">Week by week</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for week in d.weeks %}
+    <tr>
+      <td class="slot">{{ week.week }}</td>
+      <td>
+        {% if week.opponent %}{{ week.opponent }}{% else %}no fixture{% endif %}
+        {% if week.against is not none %}<span class="sub">they scored {{ week.against }}</span>{% endif %}
+      </td>
+      <td class="num {% if week.won %}pos{% elif week.won is false %}neg{% endif %}">{{ week.score }}
+        {% if week.left is not none %}<span class="sub">left {{ week.left }}</span>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="sheet-note">
+  The faint figure is what the optimal lineup would have scored that week, which
+  PUNT only knows for weeks it was running for.
+</p>
+{% else %}
+<div class="empty"><strong>No season for that team</strong>Nothing settled yet.</div>
+{% endif %}

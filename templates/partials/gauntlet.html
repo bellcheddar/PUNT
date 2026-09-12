@@ -3,7 +3,7 @@
 {% if gauntlet.available %}
 <div class="gaunt-rows">
   {% for row in gauntlet.rows %}
-  <div class="gaunt-row tappable" data-team="{{ row.id }}">
+  <div class="gaunt-row tappable" data-sheet="{{ url_for('api.detail_panel', name='gauntlet', team_id=row.id) }}">
     <div class="gaunt-head">
       <span><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</span>
       <span class="num {% if row.harder %}neg{% else %}pos{% endif %}">{{ row.average }} avg</span>
@@ -24,12 +24,13 @@
   </div>
   {% endfor %}
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-gauntlet" hx-preserve="true">
+  <summary>Details</summary>
   {{ gauntlet.weeks_left }} week{{ '' if gauntlet.weeks_left == 1 else 's' }} left. Each mark is
   an opponent's average, each bar one standard deviation either side, on a scale from
   {{ gauntlet.floor }} to {{ gauntlet.ceiling }}. The league averages {{ gauntlet.league }}:
   red means a harder run-in than that. A wide bar is somebody you might catch on a bad week.
-</p>
+</details>
 {% else %}
 <div class="empty">
   <strong>Nobody has a record yet</strong>

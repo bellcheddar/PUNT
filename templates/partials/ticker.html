@@ -10,7 +10,10 @@
   <div class="wheel-reel" data-reel>
     {% for item in ticker %}
     <div class="wheel-row wheel-row--{{ 'good' if item.good else 'bad' if item.good is false else 'flat' }}"
-         {% if item.team_id %}data-sheet="{{ url_for('api.partial_team', team_id=item.team_id) }}"{% endif %}>
+         {# A summary line is not a change: there is nothing in the ticker
+            buffer behind it, so it opens the team instead of a sheet that
+            would correctly report the line as having scrolled away. #}
+         data-sheet="{% if item.summary %}{{ url_for('api.partial_team', team_id=item.team_id) }}{% else %}{{ url_for('api.detail_change', change_id=item.id) }}{% endif %}">
       <span class="dot" style="--hue: {{ item.hue }}"></span>
       <span class="wheel-kind">{{ item.kind }}</span>
       <span class="wheel-text">{{ item.text }}</span>
@@ -28,3 +31,7 @@
   </div>
 </div>
 {% endif %}
+<details class="panel-note" id="note-ticker" hx-preserve="true">
+  <summary>Details</summary>
+  Everything that has moved, newest first. Tap a line for the detail.
+</details>

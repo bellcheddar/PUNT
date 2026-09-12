@@ -17,8 +17,8 @@
   </thead>
   <tbody>
   {% for row in grid.rows %}
-    <tr class="tappable" data-team="{{ row.id }}">
-      <td class="matrix-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_panel', name='grid', team_id=row.id) }}">
+      <td class="matrix-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
       {% for cell in row.cells %}
       <td class="matrix-cell">
         <span class="pip {% if cell.beaten is none %}pip--self{% elif cell.beaten %}pip--won{% else %}pip--lost{% endif %}{% if cell.real %} pip--real{% endif %}"
@@ -32,11 +32,12 @@
   </tbody>
 </table>
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-grid" hx-preserve="true">
+  <summary>Details</summary>
   Green means that row's team outscored that column's this week. The ringed cell is
   the fixture they actually drew: a row of green next to a loss is the unluckiest
   week in the league.
-</p>
+</details>
 {% else %}
 <div class="empty"><strong>No scores yet</strong>The grid fills in once the week has started.</div>
 {% endif %}

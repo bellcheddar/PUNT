@@ -4,7 +4,7 @@
 <section class="panel">
   <h2 class="panel-title">
     Playoff odds
-    {% if multiverse.available %}<span class="panel-note">{{ multiverse.weeks_left }} week{{ '' if multiverse.weeks_left == 1 else 's' }} left</span>{% endif %}
+    {% if multiverse.available %}<span class="panel-tag">{{ multiverse.weeks_left }} week{{ '' if multiverse.weeks_left == 1 else 's' }} left</span>{% endif %}
   </h2>
   <div hx-get="{{ url_for('api.partial_panel', name='odds', week=chosen_week, full=1) }}"
        hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">

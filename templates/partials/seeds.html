@@ -4,8 +4,8 @@
 {% if seeds.available %}
 <div class="seed-rows">
   {% for row in seeds.rows %}
-  <div class="seed-row tappable" data-sheet="{{ url_for('api.detail_odds', team_id=row.id) }}">
-    <span class="seed-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</span>
+  <div class="seed-row tappable" data-sheet="{{ url_for('api.detail_panel', name='seeds', team_id=row.id) }}">
+    <span class="seed-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</span>
     <span class="seed-track">
       {% for seed in row.seeds if seed.share > 0 %}
       <span class="seed-seg {% if seed.made_it %}seed-seg--in{% else %}seed-seg--out{% endif %}"
@@ -17,11 +17,12 @@
   </div>
   {% endfor %}
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-seeds" hx-preserve="true">
+  <summary>Details</summary>
   {{ seeds.draws }} simulated seasons, split by where each team finishes. Brighter is a
   better seed; grey is missing out. Top {{ seeds.places }} make it. A narrow bar is a
   settled season, a wide one is a team whose whole year is still open.
-</p>
+</details>
 {% else %}
 <div class="empty">
   <strong>No season grid</strong>

@@ -10,11 +10,12 @@
        hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
     {% with full = true %}{% include "partials/trouble.html" %}{% endwith %}
   </div>
-  <p class="panel-note">
+  <details class="panel-note" id="note-swing-prob" hx-preserve="true">
+    <summary>Details</summary>
     Monte Carlo, re-run every poll. Lumpy on purpose: a touchdown is a six-point
     step, so a manager needing 22 from one player is a long shot rather than a
     dead certainty either way.
-  </p>
+  </details>
 </section>
 
 <section class="panel">

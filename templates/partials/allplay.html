@@ -14,11 +14,12 @@
     {% endfor %}
   </tbody>
 </table>
-<p class="panel-note">
+<details class="panel-note" id="note-allplay" hx-preserve="true">
+  <summary>Details</summary>
   All-play is this week only: a season grid needs the schedule feed, which lands
   with the Multiverse tab. Luck is wins minus what an all-play record deserved,
   in wins, so positive means the fixture list has been kind.
-</p>
+</details>
 {% else %}
 <div class="empty"><strong>Nothing to compare yet</strong>All-play needs a week with scores in it.</div>
 {% endif %}

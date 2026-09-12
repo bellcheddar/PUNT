@@ -11,7 +11,7 @@
   <span class="scatter-quad scatter-quad--bl">honest</span>
   <span class="scatter-quad scatter-quad--br">the worst place to be</span>
   {% for row in volatility.rows %}
-  <span class="scatter-dot tappable" data-team="{{ row.id }}"
+  <span class="scatter-dot tappable" data-sheet="{{ url_for('api.detail_panel', name='volatility', team_id=row.id) }}"
         style="left: {{ row.x }}%; top: {{ row.y }}%; --hue: {{ row.hue }}"
         title="{{ row.team }}: {{ row.mean }} average, plus or minus {{ row.sigma }}, from {{ row.low }} to {{ row.high }}">
     <span class="scatter-label">{{ row.abbrev }}</span>
@@ -22,11 +22,12 @@
   <span>{{ volatility.sigma_floor }} steady</span>
   <span>wild {{ volatility.sigma_ceiling }}</span>
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-volatility" hx-preserve="true">
+  <summary>Details</summary>
   Up the page is a higher average ({{ volatility.mean_floor }} to {{ volatility.mean_ceiling }}),
   right is a wilder one. The crosshair is the league's own average and spread, so every team
   is placed against the room rather than against a round number.
-</p>
+</details>
 {% else %}
 <div class="empty">
   <strong>Not enough season yet</strong>

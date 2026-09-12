@@ -95,7 +95,7 @@
     const tone = change.good === true ? 'good' : change.good === false ? 'bad' : 'flat';
     row.className = `wheel-row wheel-row--${tone}`;
     row.dataset.change = change.id;
-    if (change.team_id) row.dataset.sheet = `/partials/team/${change.team_id}`;
+    row.dataset.sheet = `/partials/detail/change/${change.id}`;
     const dot = document.createElement('span');
     dot.className = 'dot';
     dot.style.setProperty('--hue', change.hue);

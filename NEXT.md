@@ -5,14 +5,14 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 346 tests, 1 skipped, all offline. Running on the demo
+All six phases built. 372 tests, 1 skipped, all offline. Running on the demo
 recording until the league credentials are handed over: see
 [docs/credentials.md](credentials.md).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 346 tests, no network, no cookies
+python3 -m pytest                             # 372 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -28,6 +28,27 @@ python3 tools/perf.py                         # the blocking path
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## Eight season panels, and what they open
+
+Under their own rule below the scores. Each row opens its own sheet -- eight of
+them plus one for a ticker line -- built on the panel's own view model rather
+than beside it, so a sheet cannot quietly disagree with the figure that was
+tapped to open it.
+
+Every panel now carries a one-line note collapsed behind a `Details` expander,
+with `hx-preserve` and a stable id on each: the note lives inside the fragment
+its panel re-renders every thirty seconds, and without that an opened note snaps
+shut mid-sentence on the next poll.
+
+`static/js/pulse.js` marks what changed on each swap -- a wash for a row whose
+numbers moved, a lift for a card that scored, a slide for a card that changed
+position, a fade for a row that is new. Four treatments because four different
+things change, and a single flash for all of them says less than none.
+
+The music bed is the orchestral theme everywhere now, on the wall and in the
+hand. It used to be the watch-party loop on a phone, which was the right call
+for a LOOP and this does not loop: it plays once.
 
 ## Eight season panels
 
@@ -168,7 +189,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 346 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 372 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

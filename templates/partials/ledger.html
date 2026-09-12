@@ -12,8 +12,8 @@
   </thead>
   <tbody>
   {% for row in ledger.rows %}
-    <tr class="tappable" data-team="{{ row.id }}">
-      <td class="ledger-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</td>
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_panel', name='ledger', team_id=row.id) }}">
+      <td class="ledger-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
       {% for cell in row.cells %}
       <td class="ledger-cell">
         {# The points, coloured by how they compare with the league. The cell
@@ -36,12 +36,13 @@
   </tbody>
 </table>
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-ledger" hx-preserve="true">
+  <summary>Details</summary>
   Each figure is the points that slot has scored. The colour is how it compares with the
   league's median for the same slot, so a quarterback is only ever measured against
   quarterbacks: green is carrying the team, red is the thing to trade for, and no colour
   is a slot doing exactly what everybody else's is. Tap a row for the lineup behind it.
-</p>
+</details>
 {% else %}
 <div class="empty">
   <strong>Not enough has been played</strong>

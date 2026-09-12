@@ -1,0 +1,35 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle='best at ' ~ d.best.slot ~ ' · worst at ' ~ d.worst.slot,
+        figure=d.total, figure_label='from the starting lineup' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<p class="sheet-note">
+  <b>{{ d.best.slot }}</b> is carrying them, at {{ d.best.diff | signed }} against the
+  league's median for the slot. <b>{{ d.worst.slot }}</b> is the one to trade for, at
+  {{ d.worst.diff | signed }}.
+</p>
+
+{% for cell in d.cells %}
+<h4 class="sheet-group">
+  {{ cell.slot }} &middot; {{ cell.points }}
+  <span class="{% if cell.diff > 0 %}pos{% elif cell.diff < 0 %}neg{% endif %}">{{ cell.diff | signed }}</span>
+  against a median of {{ cell.median }}
+</h4>
+{% if cell.players %}
+<table class="rows sheet-roster">
+  <tbody>
+  {% for player in cell.players %}
+    <tr>
+      <td>{{ player.name }}<span class="sub">{{ player.pro_team }}</span></td>
+      <td class="num">{{ player.points | points }}<span class="sub">{{ 'final' if player.done else 'proj ' ~ (player.projected | points) }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endfor %}
+{% else %}
+<div class="empty"><strong>No lineup for that team</strong>The ledger needs a week with rosters in it.</div>
+{% endif %}

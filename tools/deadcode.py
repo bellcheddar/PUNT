@@ -756,6 +756,14 @@ def drive_a_sunday() -> None:
         for team in view_of.teams:
             regret_detail(view_of, team.id)
             trouble_detail(view_of, team.id)
+            # The eight season sheets, and one for a team that is not there.
+            shape_detail(view_of, team.id, history)
+            grid_detail(view_of, team.id)
+            gauntlet_detail(view_of, team.id)
+            clock_detail(view_of, team.id)
+            ledger_detail(view_of, team.id)
+            volatility_detail(view_of, team.id)
+            swap_detail(view_of, team.id)
             odds_detail(view_of, team.id, draws=40)
         for pro_team_id in view_of.games:
             game_detail(view_of, pro_team_id)
@@ -1000,9 +1008,11 @@ def drive_a_sunday() -> None:
     # reported four lines of `factpack` and four of `recap` as dead, which they
     # were, because the driver had thrown away the week they describe.
     from views.viewmodels import (  # noqa: PLC0415
-        _elapsed, _pace, _stake_phrase, allplay_view, clock_view, game_detail,
-        gauntlet_view, ledger_view, odds_detail, regret_detail, seeds_view,
-        shape_view, stored_moments, swap_view, trouble_detail, volatility_view,
+        _elapsed, _pace, _stake_phrase, allplay_view, change_detail, clock_detail,
+        clock_view, game_detail, gauntlet_detail, gauntlet_view, grid_detail,
+        ledger_detail, ledger_view, odds_detail, regret_detail, seeds_detail,
+        seeds_view, shape_detail, shape_view, stored_moments, swap_detail,
+        swap_view, trouble_detail, volatility_detail, volatility_view,
     )
 
     # A store that cannot be opened at all, used by the shape overlay below and
@@ -1025,6 +1035,16 @@ def drive_a_sunday() -> None:
         swap_view(view_of)
     if snapshot is not None:
         seeds_view(snapshot, draws=40)
+        seeds_detail(snapshot, snapshot.teams[0].id)
+        for missing in (shape_detail, grid_detail, gauntlet_detail, clock_detail,
+                        ledger_detail, volatility_detail, swap_detail, seeds_detail):
+            missing(snapshot, 9999)
+        # One line of the ticker, and one that has scrolled away.
+        recent = feed.ticker.recent(5)
+        if recent:
+            change_detail(feed, recent[0].id, snapshot)
+        change_detail(feed, "no-such-change", snapshot)
+        change_detail(None, "anything")
         # A league with no season grid: five of the eight read it and have to
         # say so rather than draw an empty chart.
         bare = copy.copy(snapshot)

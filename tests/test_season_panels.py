@@ -14,6 +14,7 @@ page entirely.
 from __future__ import annotations
 
 import copy
+import re
 
 import pytest
 
@@ -267,3 +268,73 @@ def test_the_kickoff_can_come_off_the_competition():
             {"team": {"id": "2", "abbreviation": "BUF"}, "score": "0"}]}],
     }]})
     assert states and all(s.window == "EARLY" for s in states.values())
+
+
+# -- the detail sheets ------------------------------------------------------
+
+DETAIL_PANELS = ["shape", "grid", "seeds", "gauntlet", "clock", "ledger",
+                 "volatility", "swap"]
+
+
+@pytest.mark.parametrize("name", DETAIL_PANELS)
+def test_every_panel_opens_its_own_sheet(client, name, no_network):
+    """Eight panels, eight sheets. "More about this row" means something
+    different in each: a shape row is about a season, a clock row is about a
+    Sunday afternoon, a swap row is about a fixture list."""
+    response = client.get(f"/partials/detail/panel/{name}/1")
+    assert response.status_code == 200
+    assert response.data.strip()
+
+
+@pytest.mark.parametrize("name", DETAIL_PANELS)
+def test_a_sheet_for_a_team_that_is_not_there(client, name, no_network):
+    """A detail URL outlives the row it was opened from."""
+    response = client.get(f"/partials/detail/panel/{name}/9999")
+    assert response.status_code == 200
+    assert b"empty" in response.data, f"{name} rendered a broken sheet, not an empty state"
+
+
+def test_an_unknown_sheet_is_a_404_not_a_template_error(client, no_network):
+    """The name goes into a template path."""
+    assert client.get("/partials/detail/panel/bogus/1").status_code == 404
+    assert client.get("/partials/detail/panel/..%2F..%2Fbase/1").status_code == 404
+
+
+@pytest.mark.parametrize("name", DETAIL_PANELS)
+def test_the_sheet_agrees_with_the_panel(afternoon, name):
+    """Each sheet is built on its panel's own view model rather than beside it,
+    so it cannot quietly disagree with the figure that was tapped to open it."""
+    from views import viewmodels as vm
+
+    panel = {"shape": vm.shape_view, "grid": vm.allplay_view, "seeds": vm.seeds_view,
+             "gauntlet": vm.gauntlet_view, "clock": vm.clock_view,
+             "ledger": vm.ledger_view, "volatility": vm.volatility_view,
+             "swap": vm.swap_view}[name](afternoon)
+    if not panel.get("rows"):
+        pytest.skip(f"{name} has nothing to show in this snapshot")
+    team_id = panel["rows"][0]["id"]
+    sheet = {"shape": vm.shape_detail, "grid": vm.grid_detail, "seeds": vm.seeds_detail,
+             "gauntlet": vm.gauntlet_detail, "clock": vm.clock_detail,
+             "ledger": vm.ledger_detail, "volatility": vm.volatility_detail,
+             "swap": vm.swap_detail}[name](afternoon, team_id)
+    assert sheet, f"{name} sheet is empty for a team the panel lists"
+    assert sheet["row"]["id"] == team_id
+    assert sheet["row"]["team"] == panel["rows"][0]["team"]
+
+
+def test_the_panel_notes_are_collapsed(client, no_network):
+    """Fifteen paragraphs of small print down a page about live scores is
+    fifteen things between the reader and the next set of numbers.
+
+    `hx-preserve` and a stable id on each, because the note lives inside the
+    fragment its panel re-renders every thirty seconds: without it a note
+    somebody opened snaps shut mid-sentence on the next poll.
+    """
+    body = client.get("/?punt=steady").get_data(as_text=True)
+    notes = re.findall(r'<details class="panel-note"[^>]*>', body)
+    assert len(notes) >= 10, "the notes are not collapsed"
+    for note in notes:
+        assert 'hx-preserve="true"' in note, "a note will snap shut on the next poll"
+        assert 'id="note-' in note, "hx-preserve needs a stable id"
+    ids = re.findall(r'<details class="panel-note" id="([^"]+)"', body)
+    assert len(ids) == len(set(ids)), f"two notes share an id: {ids}"

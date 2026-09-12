@@ -1,0 +1,42 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=d.row.quadrant,
+        figure=d.row.mean, figure_label='a week, plus or minus ' ~ d.row.sigma %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Best week</dt><dd>{{ d.row.high }}</dd></div>
+  <div><dt>Worst week</dt><dd>{{ d.row.low }}</dd></div>
+  <div><dt>Between them</dt><dd>{{ d.swing }}</dd></div>
+  <div><dt>Typical weeks</dt><dd>{{ d.typical }} of {{ d.weeks | length }}</dd></div>
+  <div><dt>League average</dt><dd>{{ d.mid_mean }}</dd></div>
+  <div><dt>League spread</dt><dd>{{ d.mid_sigma }}</dd></div>
+</dl>
+
+<p class="sheet-note">
+  {{ d.typical }} of their {{ d.weeks | length }} weeks land within one standard
+  deviation of their own average, which is the plain-English version of the
+  {{ d.row.sigma }} above: it is how much of the time you can guess what they
+  are going to score.
+</p>
+
+<h4 class="sheet-group">Every week, biggest first</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for week in d.weeks %}
+    <tr>
+      <td class="slot">wk {{ week.week }}</td>
+      <td>
+        <span class="spread-bar" style="--off: {{ ([100, (week.against_mean | abs) / (d.swing or 1) * 100] | min) | round }}; --side: {{ 1 if week.against_mean >= 0 else -1 }}"></span>
+      </td>
+      <td class="num {% if week.against_mean > 0 %}pos{% elif week.against_mean < 0 %}neg{% endif %}">{{ week.score }}
+        <span class="sub">{{ week.against_mean | signed }}</span>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>Not enough season</strong>Volatility needs at least two settled weeks.</div>
+{% endif %}

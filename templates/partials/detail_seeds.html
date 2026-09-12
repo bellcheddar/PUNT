@@ -1,0 +1,40 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle='likeliest finish: ' ~ d.row.likeliest,
+        figure=(d.row.odds * 100) | round | int ~ '%', figure_label='make the playoffs' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Best case</dt><dd>{{ d.ceiling }}{{ 'st' if d.ceiling == 1 else 'nd' if d.ceiling == 2 else 'rd' if d.ceiling == 3 else 'th' }}</dd></div>
+  <div><dt>Worst case</dt><dd>{{ d.floor }}th</dd></div>
+  <div><dt>Wins expected</dt><dd>{{ d.mean_wins }}</dd></div>
+  <div><dt>Weeks left</dt><dd>{{ d.remaining }}</dd></div>
+  {% if d.magic is not none %}
+  <div><dt>Magic number</dt><dd>{{ d.magic }} more win{{ '' if d.magic == 1 else 's' }}</dd></div>
+  {% endif %}
+  {% if d.row.clinched %}<div><dt>Status</dt><dd class="pos">in</dd></div>{% endif %}
+  {% if d.row.eliminated %}<div><dt>Status</dt><dd class="neg">out</dd></div>{% endif %}
+</dl>
+
+<h4 class="sheet-group">Where they finish, across {{ d.draws }} seasons</h4>
+<div class="finish-bars">
+  {% for seed in d.seeds %}
+  <div class="finish-bar">
+    <span class="finish-rank">{{ seed.seed }}</span>
+    <span class="bar-track">
+      <span class="finish-fill {% if seed.made_it %}finish-fill--in{% endif %}"
+            style="width: {{ (seed.share * 100) | round(1) }}%"></span>
+    </span>
+    <span class="finish-pct num">{{ (seed.share * 100) | round | int }}%</span>
+  </div>
+  {% endfor %}
+</div>
+<p class="sheet-note">
+  Top {{ d.places }} make it, so the lit bars are the seasons that end well. A
+  team spread across five positions has everything still to play for; one sitting
+  on a single bar has already decided its year.
+</p>
+{% else %}
+<div class="empty"><strong>No odds for that team</strong>The simulation needs a season grid.</div>
+{% endif %}

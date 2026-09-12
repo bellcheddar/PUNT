@@ -31,8 +31,11 @@
   {% endfor %}
   </tbody>
 </table>
-<p class="panel-note">Points still to come from every starter in each fixture. Tap a
-game for who they belong to and which head-to-heads it swings.</p>
+<details class="panel-note" id="note-cheer" hx-preserve="true">
+  <summary>Details</summary>
+  Points still to come from every starter in each fixture. Tap a
+game for who they belong to and which head-to-heads it swings.
+</details>
 {% else %}
 <div class="empty">
   <strong>No games this week</strong>

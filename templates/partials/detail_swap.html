@@ -1,0 +1,29 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle='really ' ~ d.own ~ ' over ' ~ d.weeks ~ ' weeks',
+        figure=d.better, figure_label='schedules would have been kinder' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<p class="sheet-note">
+  Their own scores, week for week, against whoever each of the others actually
+  played. Nothing about how they scored changes: only the opponents.
+  <b>{{ d.kindest.team }}</b>'s fixtures would have made them {{ d.kindest.record }};
+  <b>{{ d.cruellest.team }}</b>'s would have made them {{ d.cruellest.record }}.
+</p>
+
+<h4 class="sheet-group">With each schedule</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for cell in d.cells %}
+    <tr class="tappable" data-team="{{ cell.id }}">
+      <td>{{ cell.team }}</td>
+      <td class="num">{{ cell.record }}</td>
+      <td class="num {% if cell.diff > 0 %}pos{% elif cell.diff < 0 %}neg{% endif %}">{{ cell.diff | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>Not enough season</strong>Swapping schedules needs weeks to swap.</div>
+{% endif %}

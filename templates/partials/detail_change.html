@@ -1,0 +1,41 @@
+{% if d %}
+{% with hue=d.hue, monogram=d.monogram, logo=d.logo, title=d.team,
+        subtitle=d.record ~ ' · ' ~ d.change.kind | lower,
+        figure=d.change.value, figure_label='what moved',
+        figure_class=('pos' if d.change.good else 'neg' if d.change.good is false else '') %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<p class="sheet-lead">{{ d.change.text }}</p>
+{% if d.meaning %}<p class="sheet-note">{{ d.meaning }}</p>{% endif %}
+
+{% if d.context %}
+<dl class="sheet-stats">
+  <div><dt>Score now</dt><dd>{{ d.context.score }}</dd></div>
+  <div><dt>Projected</dt><dd>{{ d.context.projected }}</dd></div>
+  <div><dt>Playing</dt><dd>{{ d.context.opponent }}</dd></div>
+  <div><dt>Margin</dt><dd class="{% if d.context.margin >= 0 %}pos{% else %}neg{% endif %}">{{ d.context.margin | signed }}</dd></div>
+  <div><dt>Still to play</dt><dd>{{ d.context.in_play }}</dd></div>
+</dl>
+{% endif %}
+
+{% if d.also %}
+<h4 class="sheet-group">Their afternoon so far</h4>
+<ul class="feed">
+  {% for other in d.also %}
+  <li class="feed-item tappable" data-sheet="{{ url_for('api.detail_change', change_id=other.id) }}">
+    <span class="feed-kind">{{ other.kind }}</span>
+    <span class="feed-text">{{ other.text }}</span>
+    {% if other.value %}
+    <span class="feed-delta {% if other.good %}pos{% elif other.good is false %}neg{% endif %}">{{ other.value }}</span>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% else %}
+<div class="empty">
+  <strong>That line has scrolled away</strong>
+  The ticker keeps the last forty changes, and this one is older than that.
+</div>
+{% endif %}

@@ -975,11 +975,50 @@ main { padding: 12px 14px 24px; }
 .pack--ripped .pack-foil { transform: scaleY(1.16) translateY(-8%); opacity: 0; }
 .pack--ripped .pack-button { opacity: 0; transition: opacity 200ms ease; }
 
-.panel-note {
+/* A small label inside a panel title: "4 weeks left" beside Playoff odds. */
+.panel-tag {
   float: right;
   font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em;
   color: var(--ink-faint); text-transform: none;
 }
+
+.panel-note {
+  /* Collapsed by default. Every panel carries one and fifteen paragraphs of
+   * small print down a page whose subject is live scores is fifteen things
+   * between the reader and the next set of numbers. The text is worth having
+   * and it is worth having out of the way. */
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink-faint);
+  margin: 9px 0 0;
+}
+.panel-note > summary {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  /* A real target. 9.5px of text is a four pixel tall tap area otherwise. */
+  padding: 4px 0;
+}
+.panel-note > summary::-webkit-details-marker { display: none; }
+.panel-note > summary::after {
+  content: "";
+  width: 0; height: 0;
+  border-left: 4px solid currentColor;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+  transition: transform 140ms ease;
+}
+.panel-note[open] > summary::after { transform: rotate(90deg) translateX(-1px); }
+.panel-note > summary:hover { color: var(--ink-dim); }
+.panel-note > summary:focus-visible { outline: 2px solid var(--brand-bright); outline-offset: 2px; }
+.panel-note[open] > summary { margin-bottom: 2px; }
 
 /* The playoff line. A single rule, so the table shows the cut rather than
  * making somebody count down it. */
@@ -1400,9 +1439,17 @@ main { padding: 12px 14px 24px; }
  * `height: 0` takes the right-hand stack out of the row's sizing entirely, so
  * the row comes to the left column's height; `min-height: 100%` then gives it
  * that height back to lay out in. Only above the breakpoint: with one column
- * there is nothing to line up with and a zero-height stack would collapse. */
+ * there is nothing to line up with and a zero-height stack would collapse.
+ *
+ * And only on the block it was written for, which is why it is opted into by a
+ * class rather than applied to every `.columns`. It works there because that
+ * right-hand column ends in Cheer, which scrolls inside itself and so can be
+ * given any height at all. The season block below it cannot: its panels have no
+ * internal scroller, so clamping the column to the left one squashed the last
+ * panel to the height of its own title and the content fell out of the bottom
+ * of the box and across the footer. */
 @media (min-width: 620px) {
-  .columns > .column-stack:last-child { height: 0; min-height: 100%; }
+  .columns--pinned > .column-stack:last-child { height: 0; min-height: 100%; }
 }
 .column-stack > .panel:last-child > .scroll-wrap,
 .column-stack > .panel:last-child > .feed-wrap {
@@ -1839,10 +1886,15 @@ main { padding: 12px 14px 24px; }
  * of the row. */
 .shape-rows { table-layout: fixed; }
 .shape-rows td { padding: 4px 6px; vertical-align: middle; }
+/* The team name, in full. It used to be the four-letter code, which always fits
+ * and which nobody in the league calls anybody. The name wraps rather than
+ * truncating when the column is narrow: "Statisticall..." is the defect
+ * CLAUDE.md already lists as having been found in a screenshot, and two lines of
+ * a real name is better than one line of half of one. */
 .shape-rows th:first-child, .shape-rows td:first-child {
-  width: 62px; max-width: 62px; white-space: nowrap;
-  font-family: var(--font-mono); font-size: 10.5px;
+  width: 122px; max-width: 122px; font-size: 11.5px; line-height: 1.25;
 }
+.row-name { overflow-wrap: anywhere; }
 .shape-rows th.num, .shape-rows td.num { width: 46px; }
 .spark-cell { padding-inline: 8px !important; }
 .spark {
@@ -1867,9 +1919,12 @@ main { padding: 12px 14px 24px; }
 .matrix, .ledger { width: auto; min-width: 100%; }
 .matrix-head { width: 20px; text-align: center !important; padding: 2px 0 !important; }
 .matrix-head .dot { margin: 0; }
+/* `nowrap` inside a horizontal scroller: the matrix already scrolls, so a long
+ * name widens the table rather than wrapping the row to two lines and pushing
+ * every pip out of alignment with its column header. */
 .matrix-name {
-  font-family: var(--font-mono); font-size: 10px; white-space: nowrap;
-  padding-right: 6px !important;
+  font-size: 11.5px; white-space: nowrap;
+  padding-right: 10px !important;
 }
 .matrix-cell { padding: 1px !important; }
 .pip {
@@ -1887,12 +1942,12 @@ main { padding: 12px 14px 24px; }
 /* --- seed roulette ---------------------------------------------------- */
 .seed-rows { display: grid; gap: 5px; }
 .seed-row {
-  display: grid; grid-template-columns: 62px minmax(0, 1fr) 40px;
+  display: grid; grid-template-columns: 118px minmax(0, 1fr) 40px;
   gap: 8px; align-items: center;
 }
 .seed-name {
-  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-dim);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 11.5px; color: var(--ink-dim);
+  overflow-wrap: anywhere; line-height: 1.25;
 }
 .seed-track {
   display: flex; height: 11px; border-radius: 3px; overflow: hidden;
@@ -1936,12 +1991,12 @@ main { padding: 12px 14px 24px; }
 /* --- the scoring clock ------------------------------------------------ */
 .clock-rows { display: grid; gap: 4px; }
 .clock-row, .clock-axis {
-  display: grid; grid-template-columns: 58px minmax(0, 1fr) 40px;
+  display: grid; grid-template-columns: 118px minmax(0, 1fr) 40px;
   gap: 8px; align-items: end;
 }
 .clock-name {
-  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-dim);
-  white-space: nowrap; align-self: center;
+  font-size: 11.5px; color: var(--ink-dim);
+  overflow-wrap: anywhere; line-height: 1.25; align-self: center;
 }
 .clock-track { display: flex; gap: 3px; height: 34px; align-items: flex-end; }
 .clock-slot {
@@ -1963,8 +2018,8 @@ main { padding: 12px 14px 24px; }
 .ledger th, .ledger td { padding: 2px 3px; }
 .ledger-head { text-align: center !important; font-size: 8.5px !important; }
 .ledger-name {
-  font-family: var(--font-mono); font-size: 10px; white-space: nowrap;
-  padding-right: 6px !important;
+  font-size: 11.5px; white-space: nowrap;
+  padding-right: 10px !important;
 }
 .ledger-cell { padding: 1px !important; }
 .heat {
@@ -2024,8 +2079,96 @@ main { padding: 12px 14px 24px; }
 /* A phone gets the same panels, a little tighter. Nothing is hidden: a chart
  * with a column removed is a different chart, and the reader cannot tell. */
 @media (max-width: 619px) {
-  .seed-row, .clock-row, .clock-axis { grid-template-columns: 46px minmax(0, 1fr) 34px; }
+  .seed-row, .clock-row, .clock-axis { grid-template-columns: 92px minmax(0, 1fr) 34px; }
   .scatter { height: 180px; }
   .pip { min-width: 13px; height: 14px; }
   .heat { min-width: 30px; font-size: 9px; }
+}
+
+/* --- the season detail sheets ------------------------------------------ */
+/* The one sentence a sheet opens with, before the small print. */
+.sheet-lead { font-size: 15px; line-height: 1.45; margin: 0 0 8px; }
+
+/* The seed distribution, as bars rather than the strip the panel uses: a sheet
+ * has the room to put every finishing position on its own line with a figure. */
+.finish-bars { display: grid; gap: 4px; margin: 0 0 12px; }
+.finish-bar {
+  display: grid; grid-template-columns: 18px minmax(0, 1fr) 38px;
+  gap: 8px; align-items: center;
+}
+.finish-rank {
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); text-align: right;
+}
+.finish-fill { display: block; height: 100%; background: rgba(255,255,255,.10); }
+.finish-fill--in { background: linear-gradient(90deg, var(--brand), var(--brand-bright)); }
+.finish-pct { font-size: 10.5px; color: var(--ink-dim); }
+
+/* A week's distance from that team's own average, as a bar either side of a
+ * centre line. Dearer than a number and much faster to read down a column. */
+.spread-bar {
+  display: block; position: relative; height: 7px;
+  background: rgba(255,255,255,.05); border-radius: 3px;
+}
+.spread-bar::after {
+  content: ""; position: absolute; top: 0; bottom: 0;
+  left: 50%; width: calc(var(--off) * 0.5%);
+  border-radius: 3px;
+  background: var(--green);
+  transform-origin: left center;
+}
+/* Below average grows the other way, from the same centre line. */
+.spread-bar[style*="--side: -1"]::after {
+  left: auto; right: 50%; background: var(--red);
+}
+.verdict-good { color: var(--green); }
+.verdict-bad { color: var(--red); }
+
+/* --- showing that something changed --------------------------------------
+ * Four treatments for four different kinds of change: see static/js/pulse.js
+ * for why it is four and not one. All of them are `transform`, `opacity` and
+ * `background-color` only -- no filters, no blend modes, nothing that costs a
+ * compositor layer -- because this runs every thirty seconds for four hours on
+ * a phone somebody is holding.
+ *
+ * Deliberately short and deliberately quiet. The brief was subtle: the job is
+ * to catch the eye of somebody who has just looked up, not to announce itself
+ * to somebody who is already reading. */
+@keyframes punt-wash-up {
+  0%   { background-color: rgba(0,208,132,.22); }
+  100% { background-color: transparent; }
+}
+@keyframes punt-wash-down {
+  0%   { background-color: rgba(255,77,94,.20); }
+  100% { background-color: transparent; }
+}
+@keyframes punt-lift {
+  0%   { transform: translateY(0) scale(1); }
+  35%  { transform: translateY(-3px) scale(1.012); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes punt-slide {
+  0%   { transform: translateY(7px); opacity: .55; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes punt-arrive {
+  0%   { opacity: 0; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.is-up   { animation: punt-wash-up 1100ms ease-out 1; }
+.is-down { animation: punt-wash-down 1100ms ease-out 1; }
+/* The card lifts off the table rather than washing: it is an object, and a
+ * coloured flood across a foil card fights the foil. */
+.is-lifted { animation: punt-lift 520ms cubic-bezier(.34, 1.42, .52, 1) 1; }
+/* A card that has changed position in the album slides into its new one, so the
+ * movement itself is the message. */
+.is-moved  { animation: punt-slide 420ms cubic-bezier(.22, .68, .36, 1) 1; }
+.is-new    { animation: punt-arrive 400ms ease-out 1; }
+
+/* A wash needs somewhere to land: table rows are transparent, and an animation
+ * to `transparent` from `transparent` is nothing at all. */
+tr.is-up, tr.is-down { background-clip: padding-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  .is-up, .is-down, .is-lifted, .is-moved, .is-new { animation: none; }
 }

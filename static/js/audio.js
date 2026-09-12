@@ -92,13 +92,16 @@
     // The bed is a separate file rather than a sprite region: Howler loops a
     // whole file cleanly and loops a region with an audible gap at the seek.
     //
-    // Two of them, and which one you get depends on where you are. The Big
-    // Board is the television on the wall of a bar, so it gets the orchestral
-    // Sunday-night theme; a phone in somebody's hand gets the 128 bpm
-    // watch-party loop, because forty-five seconds of brass on repeat is
-    // splendid across a room and exhausting six inches from your ear.
-    const onTheWall = document.documentElement.dataset.tv === '1';
-    const stem = onTheWall ? 'bed-epic' : 'bed-party';
+    // The orchestral Sunday-night theme everywhere, on the wall and in the hand.
+    // It used to be the 128 bpm watch-party loop on a phone, on the reasoning
+    // that brass across a room and brass six inches from your ear are different
+    // propositions -- which is true of a LOOP, and this does not loop. It plays
+    // once. One pass of the theme is the thing that says the afternoon has
+    // started, and that is worth the same on both.
+    //
+    // `bed-party` is still built, still credited and still shipped: it is what
+    // the second one is for, and the switch back is this line.
+    const stem = 'bed-epic';
     // Once, not on a loop. It is a theme, and a theme that comes round again
     // every forty-five seconds for four hours stops being a theme and becomes a
     // thing people ask you to turn off. The stings and the commentary carry the

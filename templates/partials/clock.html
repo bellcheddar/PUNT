@@ -4,8 +4,8 @@
 {% if clock.available %}
 <div class="clock-rows">
   {% for row in clock.rows %}
-  <div class="clock-row tappable" data-team="{{ row.id }}">
-    <span class="clock-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.abbrev }}</span>
+  <div class="clock-row tappable" data-sheet="{{ url_for('api.detail_panel', name='clock', team_id=row.id) }}">
+    <span class="clock-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</span>
     <span class="clock-track">
       {% for part in row.parts %}
       <span class="clock-slot" title="{{ part.label }}: {{ part.points }} banked{% if part.to_come %}, {{ part.to_come }} still to come{% endif %} from {{ part.players }} starter{{ '' if part.players == 1 else 's' }}">
@@ -28,10 +28,11 @@
     <span class="clock-settled"></span>
   </div>
 </div>
-<p class="panel-note">
+<details class="panel-note" id="note-clock" hx-preserve="true">
+  <summary>Details</summary>
   Solid is banked, faded is still on the field. The figure on the right is how much of
   that team's week is already decided: 100% means they can only watch.
-</p>
+</details>
 {% else %}
 <div class="empty">
   <strong>No kickoff times yet</strong>

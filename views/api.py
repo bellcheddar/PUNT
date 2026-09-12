@@ -35,6 +35,15 @@ from views.viewmodels import (
     shape_view,
     swap_view,
     volatility_view,
+    change_detail,
+    clock_detail,
+    gauntlet_detail,
+    grid_detail,
+    ledger_detail,
+    seeds_detail,
+    shape_detail,
+    swap_detail,
+    volatility_detail,
     stored_moments,
     ticker_view,
     swing_view,
@@ -168,6 +177,43 @@ PANELS = {
     "volatility": lambda snap, live: {"volatility": volatility_view(snap)},
     "swap": lambda snap, live: {"swap": swap_view(snap)},
 }
+
+
+#: The detail sheet behind each season panel. Same shape as `PANELS`, and for
+#: the same reason: nine routes that differ only in which view model they build
+#: and which template they render is nine copies of one route.
+DETAILS = {
+    "shape": lambda snap, team_id: shape_detail(snap, team_id, state().store()),
+    "grid": grid_detail,
+    "seeds": seeds_detail,
+    "gauntlet": gauntlet_detail,
+    "clock": clock_detail,
+    "ledger": ledger_detail,
+    "volatility": volatility_detail,
+    "swap": swap_detail,
+}
+
+
+@bp.route("/partials/detail/panel/<name>/<int:team_id>")
+def detail_panel(name: str, team_id: int):
+    """One team, as the panel that was tapped sees them.
+
+    Built on the panel's own view model rather than beside it, so a sheet cannot
+    quietly disagree with the figure that was tapped to open it.
+    """
+    if name not in DETAILS:
+        abort(404)
+    snap = snapshot(_week_param())
+    return render_template(f"partials/detail_{name}.html",
+                           d=DETAILS[name](snap, team_id), snap=snap)
+
+
+@bp.route("/partials/detail/change/<change_id>")
+def detail_change(change_id: str):
+    """One line of the ticker, in full."""
+    snap = snapshot(_week_param())
+    return render_template("partials/detail_change.html",
+                           d=change_detail(state().live, change_id, snap), snap=snap)
 
 
 @bp.route("/partials/panel/<name>")

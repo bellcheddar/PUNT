@@ -1717,3 +1717,264 @@ def swap_view(snap: LeagueSnapshot) -> dict[str, Any]:
     rows.sort(key=lambda r: -r["swing"])
     return {"available": bool(rows), "rows": rows, "weeks": len(grid),
             "order": [_team_row(t) for t in order]}
+
+
+# --------------------------------------------------------------------------
+# the season detail sheets
+#
+# Each is the panel's own view model plus the depth a full sheet has room for.
+# Built on the panel rather than beside it on purpose: a sheet that recomputed
+# its figures would be a second opinion of the number that was tapped, and two
+# numbers for the same thing on one screen is worse than one number nobody can
+# see. The extra depth is the part a row cannot hold.
+# --------------------------------------------------------------------------
+
+def _row_for(view: dict[str, Any], team_id: int) -> dict[str, Any] | None:
+    return next((r for r in view.get("rows", []) if r["id"] == team_id), None)
+
+
+def shape_detail(snap: LeagueSnapshot, team_id: int, store=None) -> dict[str, Any]:
+    """One team's season, week by week, with who they played and what happened."""
+    row = _row_for(shape_view(snap, store), team_id)
+    if row is None:
+        return {}
+    weeks = sorted(snap.settled_weeks)
+    optimal = _optimal_by_week(store, snap) if store is not None else {}
+    played = []
+    for index, score in enumerate(row["scores"]):
+        week = weeks[index] if index < len(weeks) else None
+        opponent = opponent_score = None
+        for matchup in snap.settled_weeks.get(week, []) if week else []:
+            for side, other in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
+                if side.team_id == team_id:
+                    team = snap.team(other.team_id)
+                    opponent = team.name if team else "?"
+                    opponent_score = round(other.total, 1)
+        best = optimal.get((week, team_id))
+        played.append({
+            "week": week, "score": score, "opponent": opponent,
+            "against": opponent_score,
+            "won": None if opponent_score is None else score > opponent_score,
+            "best": best,
+            "left": round(best - score, 1) if best is not None else None,
+        })
+    return {
+        "row": row, "weeks": played,
+        "high": row["high"], "low": row["low"], "mean": row["mean"],
+        "swing": round(row["high"] - row["low"], 1),
+        "wins": sum(1 for w in played if w["won"]),
+        "losses": sum(1 for w in played if w["won"] is False),
+    }
+
+
+def grid_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """This week against everybody, and the one fixture that counted."""
+    view = allplay_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    beaten = [c for c in row["cells"] if c["beaten"] is True]
+    lost = [c for c in row["cells"] if c["beaten"] is False]
+    real = next((c for c in row["cells"] if c["real"]), None)
+    return {
+        "row": row, "week": view["week"], "real": real,
+        "beaten": sorted(beaten, key=lambda c: -c["margin"]),
+        "lost": sorted(lost, key=lambda c: c["margin"]),
+        # The gap between the week they had and the week the fixture list gave
+        # them, which is the whole argument this panel exists to settle.
+        "unlucky": bool(real and not row["won"] and len(beaten) > len(lost)),
+        "fortunate": bool(real and row["won"] and len(lost) > len(beaten)),
+    }
+
+
+def seeds_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """Where one team finishes, across every simulated season."""
+    view = seeds_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    odds = playoff_odds(snap).get(team_id)
+    live = [s for s in row["seeds"] if s["share"] > 0]
+    return {
+        "row": row, "places": view["places"], "draws": view["draws"],
+        "seeds": live,
+        "magic": getattr(odds, "magic_number", None),
+        "mean_wins": round(getattr(odds, "mean_wins", 0.0), 1),
+        "remaining": getattr(odds, "remaining", 0),
+        "ceiling": min((s["seed"] for s in live), default=0),
+        "floor": max((s["seed"] for s in live), default=0),
+    }
+
+
+def gauntlet_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """Every fixture a team has left, in the order it arrives."""
+    view = gauntlet_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    fixtures = row["fixtures"]
+    return {
+        "row": row, "league": view["league"], "fixtures": fixtures,
+        "toughest": max(fixtures, key=lambda f: f["mean"]),
+        "kindest": min(fixtures, key=lambda f: f["mean"]),
+        # The one you can least afford to catch on its good day.
+        "wildest": max(fixtures, key=lambda f: f["sigma"]),
+    }
+
+
+def clock_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """Every starter, grouped by the window his game kicks off in."""
+    view = clock_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    side = None
+    for matchup in snap.live_matchups or snap.matchups:
+        for candidate in (matchup.home, matchup.away):
+            if candidate.team_id == team_id:
+                side = candidate
+    groups: dict[str, list[dict[str, Any]]] = {p["window"]: [] for p in row["parts"]}
+    for player in (side.starters if side else []):
+        game = snap.games.get(player.pro_team_id)
+        if game is None or game.window not in groups:
+            continue
+        groups[game.window].append({
+            "name": player.name, "slot": player.slot, "pro_team": player.pro_team,
+            "points": round(player.points, 2), "remaining": round(player.remaining, 2),
+            "done": player.game_over, "when": ("final" if game.finished
+                                               else f"Q{game.period} {game.clock}" if game.live
+                                               else "not started"),
+        })
+    parts = []
+    for part in row["parts"]:
+        parts.append({**part, "players": sorted(
+            groups.get(part["window"], []), key=lambda p: -p["points"])})
+    return {"row": row, "parts": [p for p in parts if p["players"]],
+            "banked": row["banked"], "to_come": row["to_come"],
+            "settled": row["settled"]}
+
+
+def ledger_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """Each slot, the players in it, and the league's median for the same slot."""
+    view = ledger_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    side = None
+    for matchup in snap.live_matchups or snap.matchups:
+        for candidate in (matchup.home, matchup.away):
+            if candidate.team_id == team_id:
+                side = candidate
+    by_slot: dict[str, list[dict[str, Any]]] = {}
+    for player in (side.starters if side else []):
+        by_slot.setdefault(player.slot, []).append({
+            "name": player.name, "pro_team": player.pro_team,
+            "points": round(player.points, 2), "projected": round(player.projected, 2),
+            "done": player.game_over,
+        })
+    cells = [{**cell, "players": by_slot.get(cell["slot"], [])} for cell in row["cells"]]
+    return {"row": row, "cells": cells, "median": view["median"],
+            "best": row["best"], "worst": row["worst"], "total": row["total"]}
+
+
+def volatility_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """One team's weekly spread, and what kind of season that makes it."""
+    view = volatility_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    record = _records(snap).get(team_id)
+    scores = [round(v, 1) for v in (record.weekly if record else [])]
+    weeks = sorted(snap.settled_weeks)[:len(scores)]
+    ordered = sorted(
+        ({"week": weeks[i] if i < len(weeks) else None, "score": s,
+          "against_mean": round(s - row["mean"], 1)} for i, s in enumerate(scores)),
+        key=lambda w: -w["score"])
+    return {
+        "row": row, "weeks": ordered,
+        "mid_mean": view["mid_mean"], "mid_sigma": view["mid_sigma"],
+        "swing": round(row["high"] - row["low"], 1),
+        # How many weeks land within one standard deviation: the plain-English
+        # version of a sigma nobody outside a lab reads as a quantity.
+        "typical": sum(1 for w in ordered if abs(w["against_mean"]) <= row["sigma"]),
+    }
+
+
+def swap_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """This team's record under every other schedule in the league."""
+    view = swap_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    others = [c for c in row["cells"] if not c["own"]]
+    return {
+        "row": row, "weeks": view["weeks"],
+        "cells": sorted(others, key=lambda c: -c["wins"]),
+        "kindest": row["kindest"], "cruellest": row["cruellest"],
+        "own": row["own"],
+        # How many of the other nine schedules would have been better than the
+        # one they got. That is the number the argument is actually about.
+        "better": sum(1 for c in others if c["diff"] > 0),
+        "worse": sum(1 for c in others if c["diff"] < 0),
+    }
+
+
+#: What each kind of ticker line means, in one sentence, because the strip shows
+#: the line and never has room to say why that line exists.
+CHANGE_MEANING = {
+    "SCORE": "A team's total moved by enough to be worth looking up for.",
+    "WIN": "The live chance of winning this week's head-to-head moved by five points or more.",
+    "PLAYOFF": "The chance of making the playoffs moved, across 2,500 simulated seasons.",
+    "SEED": "A team clinched a playoff place or was eliminated from the race.",
+    "FORM": "A team moved at least two places in the album, which is ranked on form rather than points.",
+    "HOT": "A starter passed 1.6 times what he was due by now, prorated by how much of his game has been played.",
+    "COLD": "A starter fell below 45% of what he was due by now.",
+    "BENCH": "Somebody on the bench scored, so the points left there went up.",
+    "FINAL": "Every starter's game has finished. That score cannot move again.",
+    "SAID": "The commentary engine detected a play and had something to say about it.",
+}
+
+
+def change_detail(live, change_id: str, snap: LeagueSnapshot | None = None) -> dict[str, Any]:
+    """One line of the ticker, in full.
+
+    The strip is one row of thirteen words and it rotates every four seconds, so
+    everything about why the line is there has to live here instead: what moved,
+    by how much, what that kind of line means, and what else has happened to the
+    same team this afternoon.
+    """
+    if live is None:
+        return {}
+    change = next((c for c in live.ticker.recent(200) if c.id == change_id), None)
+    if change is None:
+        return {}
+    team = snap.team(change.team_id) if snap is not None else None
+    same_team = [c.to_json() for c in live.ticker.recent(200)
+                 if c.team_id == change.team_id and c.id != change.id][:8]
+
+    context: dict[str, Any] = {}
+    if snap is not None and team is not None:
+        for matchup in snap.live_matchups or snap.matchups:
+            for side, other in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
+                if side.team_id != team.id:
+                    continue
+                opponent = snap.team(other.team_id)
+                context = {
+                    "score": round(side.total, 1),
+                    "projected": round(side.live_projection, 1),
+                    "in_play": side.in_play,
+                    "opponent": opponent.name if opponent else "?",
+                    "opponent_score": round(other.total, 1),
+                    "margin": round(side.total - other.total, 1),
+                }
+    return {
+        "change": change.to_json(),
+        "meaning": CHANGE_MEANING.get(change.kind, ""),
+        "team": team.name if team else change.team,
+        "hue": team.hue if team else change.hue,
+        "logo": f"/img/team/{team.id}" if team and team.logo else "",
+        "monogram": team.monogram if team else "?",
+        "record": team.record if team else "",
+        "context": context,
+        "also": same_team,
+    }

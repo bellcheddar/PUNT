@@ -1,0 +1,34 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=d.banked ~ ' banked · ' ~ d.to_come ~ ' still to come',
+        figure=d.settled ~ '%', figure_label='of their week decided' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<p class="sheet-note">
+  {% if d.settled == 100 %}
+    Everybody has played. This score cannot move again.
+  {% elif d.settled >= 80 %}
+    Nearly all of it is in the bank: there is not much left to go wrong.
+  {% else %}
+    Most of this week has not happened yet, which cuts both ways.
+  {% endif %}
+</p>
+
+{% for part in d.parts %}
+<h4 class="sheet-group">{{ part.label }} &middot; {{ part.points }} banked{% if part.to_come %}, {{ part.to_come }} to come{% endif %}</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for player in part.players %}
+    <tr>
+      <td class="slot">{{ player.slot }}</td>
+      <td>{{ player.name }}<span class="sub">{{ player.pro_team }} &middot; {{ player.when }}</span></td>
+      <td class="num">{{ player.points | points }}<span class="sub">{{ 'final' if player.done else '+' ~ (player.remaining | points) }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endfor %}
+{% else %}
+<div class="empty"><strong>No kickoff times</strong>The windows come from the NFL scoreboard.</div>
+{% endif %}

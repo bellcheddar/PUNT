@@ -1,0 +1,56 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle='week ' ~ d.week ~ ' · ' ~ d.row.score ~ ' points',
+        figure=d.row.wins ~ '-' ~ d.row.losses, figure_label='against the whole league' %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+{% if d.unlucky %}
+<p class="sheet-note verdict-bad">
+  They would have beaten {{ d.beaten | length }} of the other
+  {{ d.beaten | length + d.lost | length }} this week, and drew the one they did not.
+</p>
+{% elif d.fortunate %}
+<p class="sheet-note verdict-good">
+  They would have lost to {{ d.lost | length }} of the other
+  {{ d.beaten | length + d.lost | length }} this week, and drew one of the rest.
+</p>
+{% endif %}
+
+{% if d.real %}
+<dl class="sheet-stats">
+  <div><dt>Actually played</dt><dd>{{ d.real.abbrev }}</dd></div>
+  <div><dt>Margin</dt><dd class="{% if d.row.won %}pos{% else %}neg{% endif %}">{{ d.real.margin | signed }}</dd></div>
+</dl>
+{% endif %}
+
+{% if d.beaten %}
+<h4 class="sheet-group">Would have beaten</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for cell in d.beaten %}
+    <tr class="tappable" data-team="{{ cell.id }}">
+      <td>{{ cell.abbrev }}{% if cell.real %} <span class="sub">the fixture that counted</span>{% endif %}</td>
+      <td class="num pos">{{ cell.margin | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if d.lost %}
+<h4 class="sheet-group">Would have lost to</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for cell in d.lost %}
+    <tr class="tappable" data-team="{{ cell.id }}">
+      <td>{{ cell.abbrev }}{% if cell.real %} <span class="sub">the fixture that counted</span>{% endif %}</td>
+      <td class="num neg">{{ cell.margin | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% else %}
+<div class="empty"><strong>No scores for that team</strong>The grid needs a week in progress.</div>
+{% endif %}

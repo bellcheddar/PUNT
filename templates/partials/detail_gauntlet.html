@@ -1,0 +1,36 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=d.fixtures | length ~ ' to play · league averages ' ~ d.league,
+        figure=d.row.average, figure_label='their opponents average',
+        figure_class=('neg' if d.row.harder else 'pos') %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<p class="sheet-note">
+  {% if d.row.harder %}
+    A harder run-in than the league's, by {{ d.row.gap }} points a week.
+  {% else %}
+    An easier run-in than the league's, by {{ d.row.gap | abs | round(1) }} points a week.
+  {% endif %}
+  The one to worry about is <b>{{ d.toughest.team }}</b>; the one that swings most
+  either way is <b>{{ d.wildest.team }}</b>.
+</p>
+
+<h4 class="sheet-group">Still to play</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for fixture in d.fixtures %}
+    <tr class="tappable" data-team="{{ fixture.id }}">
+      <td class="slot">wk {{ fixture.week }}</td>
+      <td>
+        <span class="dot" style="--hue: {{ fixture.hue }}"></span>{{ fixture.team }}
+        <span class="sub">plus or minus {{ fixture.sigma }} a week</span>
+      </td>
+      <td class="num {% if fixture.mean > d.league %}neg{% else %}pos{% endif %}">{{ fixture.mean }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>Nothing left for that team</strong>Their season is done.</div>
+{% endif %}
