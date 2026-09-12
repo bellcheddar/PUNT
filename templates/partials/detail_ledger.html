@@ -1,7 +1,7 @@
 {% if d %}
 {% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
         subtitle='best at ' ~ d.best.slot ~ ' · worst at ' ~ d.worst.slot,
-        figure=d.total, figure_label='from the starting lineup' %}
+        figure=d.total, figure_label='started' %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
 

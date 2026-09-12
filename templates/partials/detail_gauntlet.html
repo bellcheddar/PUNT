@@ -1,7 +1,7 @@
 {% if d %}
 {% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
         subtitle=d.fixtures | length ~ ' to play · league averages ' ~ d.league,
-        figure=d.row.average, figure_label='their opponents average',
+        figure=d.row.average, figure_label='opponents average',
         figure_class=('neg' if d.row.harder else 'pos') %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}

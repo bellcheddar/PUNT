@@ -1,7 +1,7 @@
 {% if d %}
 {% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
         subtitle='week ' ~ d.week ~ ' · ' ~ d.row.score ~ ' points',
-        figure=d.row.wins ~ '-' ~ d.row.losses, figure_label='against the whole league' %}
+        figure=d.row.wins ~ '-' ~ d.row.losses, figure_label='all-play' %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
 

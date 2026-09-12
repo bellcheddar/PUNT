@@ -728,10 +728,19 @@ def drive_a_sunday() -> None:
     # nothing renders is dead however many engines compute it. Driving only the
     # engine produced a report full of false positives -- `Team.monogram` and
     # `Side.bench` looked dead and are used on every card.
+    # Everything the drive calls, imported once at the top of it. The detail
+    # sheets used to be imported further down, next to the block that drives
+    # their edge cases, and Python then treats the name as a local for the WHOLE
+    # function: the loop above that calls them raised UnboundLocalError, which
+    # reads as a missing function rather than as a misplaced import.
     from views.viewmodels import (
-        album_view, cheer_view, game_detail, matchup_view, moment_detail,
-        moments_view, multiverse_view, odds_detail, receipts_view,
-        regret_detail, swing_view, trouble_detail, watch_now,
+        album_view, cheer_view, change_detail, clock_detail, clock_view,
+        game_detail, gauntlet_detail, gauntlet_view, grid_detail, ledger_detail,
+        ledger_view, matchup_view, moment_detail, moments_view, multiverse_view,
+        odds_detail, receipts_view, regret_detail, seeds_detail, seeds_view,
+        shape_detail, shape_view, stored_moments, swap_detail, swap_view,
+        swing_view, trouble_detail, volatility_detail, volatility_view,
+        watch_now,
     )
 
     for view_of in [snapshot] + afternoons:
@@ -1008,11 +1017,7 @@ def drive_a_sunday() -> None:
     # reported four lines of `factpack` and four of `recap` as dead, which they
     # were, because the driver had thrown away the week they describe.
     from views.viewmodels import (  # noqa: PLC0415
-        _elapsed, _pace, _stake_phrase, allplay_view, change_detail, clock_detail,
-        clock_view, game_detail, gauntlet_detail, gauntlet_view, grid_detail,
-        ledger_detail, ledger_view, odds_detail, regret_detail, seeds_detail,
-        seeds_view, shape_detail, shape_view, stored_moments, swap_detail,
-        swap_view, trouble_detail, volatility_detail, volatility_view,
+        _elapsed, _pace, _stake_phrase, allplay_view,
     )
 
     # A store that cannot be opened at all, used by the shape overlay below and
@@ -1067,6 +1072,17 @@ def drive_a_sunday() -> None:
         blind = copy.copy(snapshot)
         blind.games = {}
         clock_view(blind)
+        # The ledger before the early games kick off. Built by zeroing the
+        # starters rather than by reaching for an early snapshot, because the
+        # driver's earliest sample is already past the gate and "the first one
+        # in the list is probably early enough" is how a check ends up never
+        # running the branch it was added for.
+        kickoff = copy.deepcopy(snapshot)
+        for matchup in kickoff.live_matchups or kickoff.matchups:
+            for side in (matchup.home, matchup.away):
+                for player in side.players:
+                    player.points = 0.0
+        ledger_view(kickoff)
         shape_view(snapshot, history)
         shape_view(snapshot, broken)
 

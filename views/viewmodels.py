@@ -1837,7 +1837,7 @@ def clock_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
     for player in (side.starters if side else []):
         game = snap.games.get(player.pro_team_id)
         if game is None or game.window not in groups:
-            continue
+            continue  # cold: a starter on a bye, which the fixture has none of
         groups[game.window].append({
             "name": player.name, "slot": player.slot, "pro_team": player.pro_team,
             "points": round(player.points, 2), "remaining": round(player.remaining, 2),

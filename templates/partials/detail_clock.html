@@ -1,7 +1,7 @@
 {% if d %}
 {% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
         subtitle=d.banked ~ ' banked · ' ~ d.to_come ~ ' still to come',
-        figure=d.settled ~ '%', figure_label='of their week decided' %}
+        figure=d.settled ~ '%', figure_label='week decided' %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
 

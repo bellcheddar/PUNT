@@ -1,7 +1,7 @@
 {% if d %}
 {% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
         subtitle=d.wins ~ '-' ~ d.losses ~ ' · ' ~ d.mean ~ ' a week',
-        figure=d.swing, figure_label='points between best and worst' %}
+        figure=d.swing, figure_label='best to worst' %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
 

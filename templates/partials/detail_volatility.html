@@ -1,7 +1,7 @@
 {% if d %}
 {% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
         subtitle=d.row.quadrant,
-        figure=d.row.mean, figure_label='a week, plus or minus ' ~ d.row.sigma %}
+        figure=d.row.mean, figure_label='a week, +/- ' ~ d.row.sigma %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
 
