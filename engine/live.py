@@ -377,7 +377,12 @@ class LiveFeed:
                                 "player": player.name,
                                 "player_id": player.id,
                                 "points": round(player.points, 2),
-                                "manager": team.manager if team else "?",
+                                # The TEAM, never the person. This is broadcast
+                                # over SSE and painted across the whole screen
+                                # in letters an inch high, which made it the
+                                # single most visible place a real ESPN display
+                                # name appeared anywhere in the app.
+                                "team": team.name if team else "?",
                                 "team_id": side.team_id,
                             })
             # Nobody in the league owns anybody on this drive, so nobody in the

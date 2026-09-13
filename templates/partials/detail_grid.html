@@ -19,7 +19,7 @@
 
 {% if d.real %}
 <dl class="sheet-stats">
-  <div><dt>Actually played</dt><dd>{{ d.real.abbrev }}</dd></div>
+  <div><dt>Actually played</dt><dd>{{ d.real.team }}</dd></div>
   <div><dt>Margin</dt><dd class="{% if d.row.won %}pos{% else %}neg{% endif %}">{{ d.real.margin | signed }}</dd></div>
 </dl>
 {% endif %}
@@ -30,7 +30,7 @@
   <tbody>
   {% for cell in d.beaten %}
     <tr class="tappable" data-team="{{ cell.id }}">
-      <td>{{ cell.abbrev }}{% if cell.real %} <span class="sub">the fixture that counted</span>{% endif %}</td>
+      <td>{{ cell.team }}{% if cell.real %} <span class="sub">the fixture that counted</span>{% endif %}</td>
       <td class="num pos">{{ cell.margin | signed }}</td>
     </tr>
   {% endfor %}
@@ -44,7 +44,7 @@
   <tbody>
   {% for cell in d.lost %}
     <tr class="tappable" data-team="{{ cell.id }}">
-      <td>{{ cell.abbrev }}{% if cell.real %} <span class="sub">the fixture that counted</span>{% endif %}</td>
+      <td>{{ cell.team }}{% if cell.real %} <span class="sub">the fixture that counted</span>{% endif %}</td>
       <td class="num neg">{{ cell.margin | signed }}</td>
     </tr>
   {% endfor %}

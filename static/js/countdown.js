@@ -36,7 +36,8 @@
   function open(detail) {
     close('stop');
     const involved = detail.involved || [];
-    const managers = [...new Set(involved.map((p) => p.manager))];
+    // Teams, never people: this line is painted across the whole screen.
+    const teams = [...new Set(involved.map((p) => p.team))];
 
     overlay = document.createElement('div');
     overlay.className = 'countdown';
@@ -45,7 +46,7 @@
       <div class="countdown-inner">
         <div class="countdown-pulse" aria-hidden="true"></div>
         <div class="countdown-label">INSIDE THE FIVE</div>
-        <div class="countdown-who">${managers.join(' &middot; ')}</div>
+        <div class="countdown-who">${teams.join(' &middot; ')}</div>
         <div class="countdown-detail">
           ${involved.map((p) => p.player).slice(0, 3).join(', ')}
           ${detail.pro_team ? `&middot; ${detail.pro_team} v ${detail.opponent || '?'}` : ''}

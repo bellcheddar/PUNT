@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 442 tests, offline
+python3 -m pytest                              # 444 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -63,11 +63,19 @@ score and the slot, which is the half the Receipts tab exists to show. The code 
 every time. The last two sat in the committed captures for days.
 
 **And look at them with long names.** `python3 tools/stress_names.py` serves the demo with
-managers named the way ESPN display names actually are. The fixture's are Bex, Gus, Sam:
-median four characters, longest ten. The first real league had a median of fourteen and a
-longest of sixteen, so every layout decision and every overflow check here was made against
-the easy case. The two defects above were found that way -- neither is a long-name bug,
-long names are just what made anybody look.
+team names the length a real league actually uses. The fixture's run to about fifteen
+characters; the live league has "The Last Great LoHo GM" and "What else can Gano wrong",
+so every layout decision here was made against the easy case. Two defects were found that
+way: a number cut in half in the bench-regret table, and the swap line losing the benched
+player, his score and the slot. Neither is a long-name bug; long names are just what made
+anybody look.
+
+**No real person's name reaches a surface.** ESPN's `mTeam` carries each manager's account
+display name, and this app serves a public page and a public JSON endpoint. The name is
+dropped in `views/viewmodels.py` and never enters a view model, which is the chokepoint:
+do not add it back to one "just for this panel", because there is then no single place to
+check. `tests/test_privacy.py` holds the line from outside, and `/api/state` published all
+ten of them for months before anybody looked.
 
 ## Hard rules
 

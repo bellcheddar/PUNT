@@ -1,8 +1,8 @@
 <h1>🏈 PUNT</h1>
 <blockquote>
-<p><strong>Play-by-play, uproar, numbers and trash-talk: a fantasy football companion built for a bar, not a spreadsheet.</strong></p>
+<p><strong>Everything that makes a fantasy football Sunday funny, on one screen, for the whole room.</strong></p>
 </blockquote>
-<p><a href="https://punt.mdeller.com"><img alt="live" src="https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&amp;logoColor=white"></a> <img alt="python" src="https://img.shields.io/badge/python-3.12.3-3776AB?logo=python&amp;logoColor=white"> <img alt="flask" src="https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&amp;logoColor=white"> <img alt="gunicorn" src="https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&amp;logoColor=white"> <img alt="nginx" src="https://img.shields.io/badge/nginx-1.24.0-009639?logo=nginx&amp;logoColor=white"> <img alt="sqlite" src="https://img.shields.io/badge/sqlite-3.45.1-003B57?logo=sqlite&amp;logoColor=white"> <img alt="htmx" src="https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&amp;logoColor=white"> <img alt="howler" src="https://img.shields.io/badge/howler.js-2.2.4-9b51e0"> <img alt="requests" src="https://img.shields.io/badge/requests-2.34.2-467FF7"> <img alt="pyyaml" src="https://img.shields.io/badge/PyYAML-6.0.3-467FF7"> <img alt="tests" src="https://img.shields.io/badge/pytest-396%20passing-00897B?logo=pytest&amp;logoColor=white"> <img alt="data" src="https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0"> <img alt="audio" src="https://img.shields.io/badge/audio-CC0%20%C2%B7%20CC--BY%204.0-00897B"> <img alt="licence" src="https://img.shields.io/badge/licence-MIT-00d084"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
+<p><a href="https://punt.mdeller.com"><img alt="live" src="https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&amp;logoColor=white"></a> <img alt="python" src="https://img.shields.io/badge/python-3.12.3-3776AB?logo=python&amp;logoColor=white"> <img alt="flask" src="https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&amp;logoColor=white"> <img alt="gunicorn" src="https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&amp;logoColor=white"> <img alt="nginx" src="https://img.shields.io/badge/nginx-1.24.0-009639?logo=nginx&amp;logoColor=white"> <img alt="sqlite" src="https://img.shields.io/badge/sqlite-3.45.1-003B57?logo=sqlite&amp;logoColor=white"> <img alt="htmx" src="https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&amp;logoColor=white"> <img alt="howler" src="https://img.shields.io/badge/howler.js-2.2.4-9b51e0"> <img alt="requests" src="https://img.shields.io/badge/requests-2.34.2-467FF7"> <img alt="pyyaml" src="https://img.shields.io/badge/PyYAML-6.0.3-467FF7"> <img alt="tests" src="https://img.shields.io/badge/pytest-444%20passing-00897B?logo=pytest&amp;logoColor=white"> <img alt="data" src="https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0"> <img alt="audio" src="https://img.shields.io/badge/audio-CC0%20%C2%B7%20CC--BY%204.0-00897B"> <img alt="licence" src="https://img.shields.io/badge/licence-MIT-00d084"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
 <table class="emd-info-table">
 <tr>
 <td>🌐 <b>App</b></td><td><a href="https://punt.mdeller.com" target="_blank" rel="noopener noreferrer">punt.mdeller.com</a></td>
@@ -12,305 +12,226 @@
 </table>
 
 <hr>
-<p><img alt="PUNT on a phone: ten manager cards tiered by form, the week's matchups with live scores, bench regret, who is in trouble, and the commentary feed, all on one page" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/home.png"></p>
-<p>The ESPN app is a spreadsheet with a logo. PUNT is the opposite: a mobile-first companion for a ten-team bar league that exists to make a Sunday afternoon louder. It reads the same undocumented ESPN fantasy API the app does, turns polling into discrete <strong>Moments</strong>, and renders them as a sticker album of collectible manager cards with horns, commentary and a bar-screen mode. Lineups are still set in ESPN; PUNT is read-only.</p>
-<p><strong>Why it matters:</strong> the numbers that make fantasy football funny (points left on the bench, a one-in-twenty comeback, a starter who finished on zero) are all computable and none of them are shown by the official app, which is optimised for a manager alone on a sofa rather than for ten people in a room. Every design decision here resolves in favour of the room: audio on unless muted, no settings screen, no accounts, one URL, one page. It is useful for anyone running a private ESPN league who wants a shared screen worth looking at: a commissioner setting up a weekly ritual, a league that already has a group chat full of receipts, or anyone who wants a worked example of consuming ESPN's undocumented fantasy endpoints without a browser extension.</p>
+<p><img alt="PUNT on a phone: a live ticker of what has just moved, ten team cards ranked by form, the week's matchups with live scores, bench regret, who is in trouble, and the commentary feed, all on one page" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/home.png"></p>
+<p>The ESPN app is a spreadsheet with a logo. PUNT is the opposite: one page that answers the questions people actually shout at each other on a Sunday. Who is winning. Who has already blown it. Which television should we be watching. It reads your real ESPN league, so there is nothing to set up and nothing to keep up to date, and it never touches your lineup: you still set that in ESPN.</p>
+<p><strong>Why it matters:</strong> the funniest numbers in fantasy football are the ones nobody shows you. How many points you left on your bench. Whether you would have beaten eight of the other nine this week and happened to draw the ninth. Whether you are actually good or just got the kind schedule. All of that is sitting in the data already, and the official app never does the arithmetic, because it is built for one person alone on a sofa rather than for ten people in a room. It is useful for anyone running a private ESPN league who wants a screen worth gathering round.</p>
 <h2>📸 What it looks like</h2>
-<p>Everything is on one page. It used to be five tabs, and they were plain links, so every tab change was a new document: audio needs a user gesture per document, which meant the tap that changed tabs was also the tap that unlocked the sound, and the browser tore the document down mid fade-in. One document fixes that by construction, and the panels turn out to fit beside each other anyway.</p>
-<p><img alt="The same page on a desktop: five cards to a row, the week's matchups two to a row, and the panels paired left and right" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/desktop.png"></p>
+<p><img alt="The same page on a desktop: the LATEST ticker along the top, five cards to a row, the week's matchups two to a row, and the panels paired left and right" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/desktop.png"></p>
+<p>Everything is on one page, and every panel refreshes itself every thirty seconds. Tap anything for the detail behind it.</p>
+<div class="emd-table-wrap"><table class="emd-data-table">
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label=""><strong>Latest</strong></td>
+<td data-label="">A ticker along the top of everything that has just moved: scores, chances, somebody's bench filling up</td>
+</tr>
+<tr>
+<td data-label=""><strong>The cards</strong></td>
+<td data-label="">One collectible card per team, ranked by form rather than by points, and re-tiered every week</td>
+</tr>
+<tr>
+<td data-label=""><strong>Live</strong></td>
+<td data-label="">The week's matchups, with a projection of where each is heading</td>
+</tr>
+<tr>
+<td data-label=""><strong>Bench regret</strong></td>
+<td data-label="">Points left on the bench, and the exact swap that cost them</td>
+</tr>
+<tr>
+<td data-label=""><strong>Who is in trouble</strong></td>
+<td data-label="">Anybody behind, with their live chance of turning it round</td>
+</tr>
+<tr>
+<td data-label=""><strong>Commentary</strong></td>
+<td data-label="">A running call of the afternoon, with horns</td>
+</tr>
+<tr>
+<td data-label=""><strong>Cheer</strong></td>
+<td data-label="">Every NFL game this week, and how much of your league's fortune is riding on it</td>
+</tr>
+<tr>
+<td data-label=""><strong>Playoff odds</strong></td>
+<td data-label="">From 2,500 simulated seasons against the real fixture list</td>
+</tr>
+</tbody>
+</table></div>
+<p>And eight more that answer a slower question: what kind of season is this?</p>
 <p><img alt="The season panels: a sparkline of every team's weekly scores, the ten-by-ten all-play grid, the finishing-seed distribution, and what everybody has left to play" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/season.png"></p>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
 <tr>
-<th>The album</th>
-<th>The receipts</th>
-<th>The bar screen</th>
+<th></th>
+<th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td data-label="The album"><img alt="Ten manager cards, two to a row, each tinted in that team's own colour and tiered epic, rare, common or cursed, with the form rating printed under the score" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/album.png"></td>
-<td data-label="The receipts"><img alt="Every manager ranked by points left on the bench, with the exact swap that cost them" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/receipts.png"></td>
-<td data-label="The bar screen"><img alt="The Big Board in TV mode: the whole slate on the bar screen" src="https://raw.githubusercontent.com/bellcheddar/PUNT/main/docs/screenshots/big-board.png"></td>
+<td data-label=""><strong>Season shape</strong></td>
+<td data-label="">Every team's weekly scores as a line, so you can see form rather than a league table</td>
+</tr>
+<tr>
+<td data-label=""><strong>The all-play grid</strong></td>
+<td data-label="">Who you would have beaten this week, with the one fixture that counted ringed</td>
+</tr>
+<tr>
+<td data-label=""><strong>Seed roulette</strong></td>
+<td data-label="">Not just whether you make the playoffs, but where you finish</td>
+</tr>
+<tr>
+<td data-label=""><strong>The gauntlet</strong></td>
+<td data-label="">Who you have left to play, by how much they score and how reliably</td>
+</tr>
+<tr>
+<td data-label=""><strong>Scoring clock</strong></td>
+<td data-label="">Whether your week is decided by six o'clock or you are sweating until Monday night</td>
+</tr>
+<tr>
+<td data-label=""><strong>Position ledger</strong></td>
+<td data-label="">Which part of your lineup is carrying you, against the league's median for the same slot</td>
+</tr>
+<tr>
+<td data-label=""><strong>Boom or metronome</strong></td>
+<td data-label="">Are you good, or just consistent?</td>
+</tr>
+<tr>
+<td data-label=""><strong>Schedule swap</strong></td>
+<td data-label="">Your own scores, replayed against everybody else's fixtures. This ends the luck argument</td>
 </tr>
 </tbody>
 </table></div>
-<p>Every panel is also its own route (<code>/album</code>, <code>/cheer</code>, <code>/swing</code>, <code>/receipts</code>, <code>/multiverse</code>), which is what the screenshots use and what <code>?tv=1</code> narrows to. Everything above is the synthetic Sunday that ships with the repository: no real athlete, franchise or person appears in it.</p>
-<h2>⚡ The engine</h2>
-<p>Polls produce state. Nobody cheers at "Dax Ashgrove now has 18.4 points". <code>engine/</code> turns consecutive polls into <strong>Moments</strong>, which is what the audio, the commentary and the cards all consume.</p>
-<pre><code class="language-bash">python3 tools/timeline.py                       # the whole Sunday, moment by moment
-python3 tools/timeline.py --kinds DOOM,BENCH_DISASTER
-python3 tools/timeline.py --summary
-</code></pre>
-<p>The demo Sunday produces 242 Moments across 10.9 hours:</p>
-<pre><code class="language-text">16:10  DOOM            0.85  Wren       2.1% with 59.1 to find
-16:30  CLINCH          0.75  Sam        61.9 up, 98% safe
-17:05  BENCH_DISASTER  0.76  Priya      Delroy Marchbank (21.4) benched, Ash Greenhalgh (0.0) in the FLEX
-18:32  LEAD_CHANGE     0.78  Noor       in front by 1.2
-19:02  BENCH_DISASTER  0.92  Priya      Wilder Braithwaite (41.2) benched, Yusuf Marchbank (9.9) in the WR
-19:05  GOOSE_EGG       0.70  Gus        Silas Stonebridge finished on nothing, projected 11.5
-22:01  LEAD_CHANGE     0.52  Bex        in front by 1.6
-</code></pre>
-<p>Three properties are design constraints rather than niceties:</p>
-<ul>
-<li><strong>Idempotent, including across a restart.</strong> A Moment's id is a hash of the play's own facts (the player, his cumulative total after it, and the week), never of the poll or the process that observed it. Two processes a week apart agree on the id. A crash at 4pm therefore does not replay the afternoon through a bar's PA.</li>
-<li><strong>Magnitude-scaled.</strong> Every Moment carries a 0 to 1 magnitude that the audio and animation layers scale off, so a two-point reception and a sixty-yard touchdown do not get the same horn.</li>
-<li><strong>Bench-aware.</strong> <code>BENCH_DISASTER</code> is invisible in the score, so it has its own detection path off the optimal lineup rather than falling out of a points delta.</li>
-</ul>
-<h3>🎯 Two numbers that are not the score</h3>
-<p>Both exist because the obvious number turned out to measure something else.</p>
-<p><strong>Form</strong>, out of 100, is what the ten cards are ranked on. Ordering an album by points at three in the afternoon mostly ranks managers by how many of their players happened to kick off at one o'clock, which is not a thing anybody did. Four parts, weighted, summing to one:</p>
-<div class="emd-table-wrap"><table class="emd-data-table">
-<thead>
-<tr>
-<th>Part</th>
-<th>Weight</th>
-<th>What it asks</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Part">Pace</td>
-<td data-label="Weight">0.35</td>
-<td data-label="What it asks">points against what was <em>due by now</em>: every starter's projection prorated by how much of his real NFL game has been played</td>
-</tr>
-<tr>
-<td data-label="Part">Winning</td>
-<td data-label="Weight">0.25</td>
-<td data-label="What it asks">the live chance of taking the head-to-head, because a 60-point week is a bad week if the opponent has 90</td>
-</tr>
-<tr>
-<td data-label="Part">Lineup</td>
-<td data-label="Weight">0.20</td>
-<td data-label="What it asks">the share of the best possible score that was actually started</td>
-</tr>
-<tr>
-<td data-label="Part">Scale</td>
-<td data-label="Weight">0.20</td>
-<td data-label="What it asks">this score against the best in the league, because a big score is still an achievement</td>
-</tr>
-</tbody>
-</table></div>
-<p>Pace is capped at twice the prorated projection before it is normalised: without a cap, one kickoff return in the first quarter, when the denominator is tiny, pins that team at the top of the album until teatime. Before the first snap every part that measures performance is neutral rather than zero, because nothing has been measured yet.</p>
-<p><strong>At stake</strong>, on the Cheer panel, is the fantasy points still to come out of one NFL fixture. It replaced a column that read <code>STAKE</code> on all sixteen rows, which is a label and not information: a room deciding which of fourteen televisions to look at learned nothing from it. Each row is also banded by consequence rather than by size, on whether both halves of somebody's head-to-head have a starter in that game: the difference between a fixture worth a lot of points to one manager who is already forty ahead, and a fixture that decides the week. Tapping one opens both: who is exposed, and which head-to-heads it swings.</p>
-<h3>Optimal lineup, and why greedy is wrong</h3>
-<p>Bench regret is the headline number of the whole app, so it is computed exactly, by maximum-weight bipartite matching between players and slots rather than by sorting and filling. Greedy fails on the case that matters: a flex-eligible player put in the flex because he was the highest scorer left, when he was the only legal option for a slot further down the list.</p>
-<pre><code class="language-bash">python3 -m pytest tests/test_scoring.py -k oracle    # against brute force and a bitmask DP
-</code></pre>
-<p>Slot eligibility comes from ESPN's own <code>eligibleSlots</code> rather than a guess at what a position can fill. The guess and the truth happen to agree on this league's slots, so the bug was latent and never live: no bench-regret figure anybody saw was ever wrong. It is still worth having fixed, because the answer lives in the league's settings where a commissioner can change it between seasons in four clicks, at which point a guess would report 6 points of regret where the truth is 20, silently.</p>
-<h3>Win probability</h3>
-<p>Monte Carlo, re-run every poll, seeded from the matchup and the current scores so two identical polls return an identical number (a probability that flickers by a point every thirty seconds is indistinguishable, to somebody watching, from something happening).</p>
-<p>Simulation rather than a closed form because the tails are what the product uses. Fantasy scoring is lumpy (a touchdown is a six-point step), so a manager needing 22 points from a player projected for 8 is a long shot rather than a zero. A normal approximation puts almost no weight there, which would make the Legendary card (a win from under 10%) impossible to mint and would fire DOOM far too early.</p>
-<h2>🗓️ The season, not just the Sunday</h2>
-<p>Three things that are one feature seen from three sides.</p>
-<p><strong>The week rolls over on its own.</strong> The scoring period was always read from ESPN, and <code>mSettings</code> was always cached for a day: so the period changed on a Tuesday morning and PUNT carried on serving the Sunday that had already finished until some time on Wednesday. Nothing looked broken, so nobody would have restarted it. The TTL is ten minutes now, and <code>tests/test_weeks.py</code> asserts it stays under fifteen. When the period moves, the live feed empties all six of its per-week stores: the Moment buffer, the chosen lines, the red-zone overlays, the notable list, the per-kind counts and the win-probability lows. Three of those six used to be missed, which looks fine on the Tuesday and puts last Sunday's commentary under this Sunday's scores a fortnight later, when the two-hour buffer finally has something to push out. The dedupe set is deliberately kept, because every Moment id is hashed with its week.</p>
-<p><strong>Every week is written down</strong>, to <code>data/state/history.sqlite3</code> (gitignored; <code>engine/history.py</code> is the whole of it). Not a cache of ESPN, which will serve a past box score for as long as the league exists. It is the half ESPN cannot give back: the Moments the engine detected as they happened, the commentary it chose, and what the optimal lineup <em>was</em> before anybody edited a roster. Written on every poll, because there is no reliable final whistle, and once more at the rollover before the buffer is emptied.</p>
-<p><strong>The week is selectable</strong> from a menu on the league line in the header. The live week is the empty value in that menu rather than its own number, so a URL with no week in it follows the season and a bookmark of week 11 is not still week 11 in December. An archived page says so in a banner and does not open the SSE stream: everything else on the page looks identical whether it is moving or finished.</p>
-<p>The header also shows the season being played rather than the year the league was created. ESPN keeps the original name forever, so "Logan House 2023" reads as "Logan House 2026".</p>
-<h2>🔊 The commentary and the noise</h2>
-<p>Live play calls come from a deterministic phrase bank, not a model. The latency budget is under 100 ms and the requirement is that a line can never invent a score; a model fails both, and is perfectly capable of announcing a touchdown that did not happen. Every number in every line is substituted from the Moment that triggered it, so there is nowhere for an invented one to come from.</p>
-<pre><code class="language-bash">python3 tools/transcript.py                    # the afternoon's commentary
-python3 tools/transcript.py --stats            # the repeat rate across a whole Sunday
-python3 tools/phrase_lint.py                   # validate the bank
-python3 tools/make_audio.py                    # rebuild the sprite from the manifest
-python3 tools/make_licences.py --check         # fail the build if the credits have drifted
-</code></pre>
-<p>Lines are chosen on the <strong>server</strong> and pushed with the Moment. Ten phones in one room have to hear the same sentence for the same touchdown; picking client-side would give ten different ones.</p>
-<h3>Where the sound comes from</h3>
-<p>Fourteen effects and two music beds, sourced from Freesound rather than synthesised. The rule used to be that everything was made from oscillators, which kept the credits from drifting because nothing in them was anybody else's. It also cost the audio: the synthesised horns carried under 8% of their energy above 2 kHz, which is what "dull, like a tone through a blanket" measures as, and a convincing crowd roar cannot be made out of oscillators.</p>
-<p>Sampled sound is allowed now, and the safety is kept differently. <code>data/audio_sources.json</code> is what both the sprite builder and the credits read, each entry pinned by sha256, so a sound cannot reach the sprite without a licence line, and <code>tools/make_licences.py --check</code> fails the build if the two disagree.</p>
-<div class="emd-table-wrap"><table class="emd-data-table">
-<thead>
-<tr>
-<th>Asset class</th>
-<th>Licence</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Asset class">The fourteen effects</td>
-<td data-label="Licence"><strong>CC0</strong> only</td>
-<td data-label="Why">An attribution clause would put an obligation on everyone who clones a public repo, and a non-commercial one would make it undistributable</td>
-</tr>
-<tr>
-<td data-label="Asset class">The two music beds</td>
-<td data-label="Licence">CC0 or <strong>CC-BY 4.0</strong></td>
-<td data-label="Why">The Sunday-night theme is the one exception worth making, and the credit is generated from the manifest into <code>static/audio/LICENCES.md</code> and rendered in the page footer, where the work is actually heard</td>
-</tr>
-</tbody>
-</table></div>
-<p>Broadcast themes, fight songs and stadium recordings are all copyrighted compositions owned by the networks. Nothing here is one.</p>
-<p>Speech is cached by the hash of exactly what is spoken, and synthesis starts when the <em>server</em> picks the line rather than when a phone asks for the file, which hides the latency behind the SSE round trip.</p>
-<h3>Three things that were measured, not assumed</h3>
-<ul>
-<li><strong>Repetition.</strong> The first transcript run showed 236 lines from 75 distinct phrases with the closest repeat exactly 8 Moments apart, which is <code>cooldown: 240</code> divided by the 30 s poll: the mechanism working perfectly at a badly chosen setting. Retuning the cooldowns before writing any more lines moved the closest repeat to 26 Moments; growing the bank to 410 took the repeat rate from 68% to 43% and the worst line from 11 uses to 5. Tuning the cheap parameter first was worth roughly half the improvement and cost nothing.</li>
-<li><strong>Clipping.</strong> Web Audio hard-clips at the destination, and the spec's nominal bus levels sum to 1.42 with music fully ducked. Rescaled so all four buses ducked under a play call sum to exactly 1.0, with a test that reads the levels out of the JavaScript and asserts both that and the priority order, because the first attempt satisfied the sum and silently inverted the order.</li>
-<li><strong>Clicks at the loop seam.</strong> Trimming every sound at an 8 ms zero-crossing window left a discontinuity the ear hears as a tick every eight seconds for four hours. Appending 14 ms of silence (longer than the trim window) fixes it. The first version of the check compared the first sample to the last, which is one ordinary sample step, and flagged a perfectly good loop.</li>
-</ul>
-<h2>🚀 Quick start</h2>
-<p>A fresh clone runs the whole app with <strong>no ESPN account, no cookies and no configuration</strong>. It falls back to a recorded Sunday committed to the repository, and says so in a banner on every page.</p>
+<p>Everything above is the invented Sunday that ships with the repository. No real person, athlete or franchise appears in it.</p>
+<h2>🔒 Nobody's name appears anywhere</h2>
+<p>Teams have names; people do not. ESPN hands over every manager's account display name, and PUNT throws it away before it reaches a page, an API response or the weekly write-up. The league is called by its team names throughout, which is how it talks about itself anyway.</p>
+<h2>🚀 Try it without an account</h2>
+<p>A fresh clone runs the whole thing with <strong>no ESPN account, no cookies and no configuration</strong>. It replays a recorded Sunday that ships with the repository, and says so in a banner on every page.</p>
 <pre><code class="language-bash">git clone https://github.com/bellcheddar/PUNT.git
 cd PUNT
 python3 -m venv .venv &amp;&amp; source .venv/bin/activate
 pip install -r requirements.txt
 
-python3 -m app                    # http://127.0.0.1:8011
+python3 -m app                    # then open http://127.0.0.1:8011
 </code></pre>
-<p>Watch a whole recorded Sunday go past in the terminal instead:</p>
-<pre><code class="language-bash">python3 tools/replay_check.py --speed 1800     # ten hours in twenty seconds
-python3 tools/replay_check.py --once           # just the final scores
-python3 tools/replay_check.py --list           # what recordings are available
-</code></pre>
-<p>To point it at a real league, copy <code>.env.example</code> to <code>.env</code> and fill in <code>LEAGUE_ID</code>, <code>ESPN_S2</code> and <code>ESPN_SWID</code>. Both cookies come from a browser logged into ESPN (devtools, Application, Cookies, <code>espn.com</code>); <code>SWID</code> includes its braces. They rotate every few months, and when they do the app keeps serving cached data behind a commissioner banner rather than breaking.</p>
-<h2>🧱 Stack</h2>
+<p>To point it at your own league, copy <code>.env.example</code> to <code>.env</code> and fill in <code>LEAGUE_ID</code>, <code>ESPN_S2</code> and <code>ESPN_SWID</code>. Both cookies come from a browser logged into ESPN (devtools, Application, Cookies, <code>espn.com</code>); <code>SWID</code> includes its braces. They expire every few months, and when they do the app keeps showing the last good data behind a banner rather than breaking.</p>
+<h2>⚡ How it works</h2>
+<p>Polling gives you a column of numbers. Nobody cheers at "Dax Ashgrove now has 18.4 points". So PUNT compares each poll with the last one and turns the difference into a <strong>Moment</strong> -- a touchdown, a lead change, a disaster on somebody's bench -- and the horns, the commentary and the cards all hang off those. A recorded Sunday produces 242 of them across eleven hours.</p>
+<p>A few things are worth knowing about the numbers:</p>
+<ul>
+<li><strong>Bench regret is exact.</strong> Working out the best lineup you could have started is a harder problem than it looks, because a player who can fill two positions has to be put in the right one. PUNT solves it properly rather than by sorting and hoping, so the headline number of the whole app is never approximately right.</li>
+<li><strong>Win probability is simulated, not estimated.</strong> Fantasy scoring is lumpy: a touchdown is a six-point jump, not a smooth trickle. Simulating thousands of finishes gets the long shots right, and the long shots are the whole point -- needing 22 points from one player is unlikely, not impossible.</li>
+<li><strong>Form is not the score.</strong> Ranking ten cards by points at three in the afternoon mostly ranks people by how many of their players happened to kick off at one o'clock. Form mixes how far ahead of expectations your players are running, your live chance of winning, how much of your best possible lineup you actually started, and the raw total.</li>
+<li><strong>The commentary cannot make things up.</strong> Every line comes from a bank of 410 written phrases, and every number in a line is substituted from the play that triggered it. A language model in that path would be too slow and perfectly capable of announcing a touchdown that never happened.</li>
+</ul>
+<h2>🗓️ It follows the season on its own</h2>
+<p>The week rolls over by itself, every result is recorded as it happens, and there is a menu in the header for looking back at any week PUNT has seen. The record it keeps is not a copy of ESPN's -- ESPN will give you an old box score forever. It is the half ESPN cannot: what was said at the time, what the engine spotted as it happened, and what your best possible lineup <em>was</em> before anybody touched a roster afterwards.</p>
+<h2>🔊 The sound</h2>
+<p>Fourteen effects and two music beds, all sourced under permissive licences and credited in <a href="static/audio/LICENCES.md"><code>static/audio/LICENCES.md</code></a>, which is generated from the manifest so it cannot drift. The orchestral theme plays once when you arrive; it does not loop, because a theme that comes round every forty-five seconds for four hours stops being a theme.</p>
+<p>Commentary lines are chosen on the server and pushed to every phone, so ten people in one room hear the same sentence for the same touchdown.</p>
+<h2>🧱 Built with</h2>
+<p>Flask and server-rendered HTML, with htmx for the thirty-second refresh and a live stream for anything that should not wait. No React, no build step, no npm. The whole JavaScript payload is htmx and Howler, both vendored rather than pulled from a CDN, because the target environment is a bar's wifi.</p>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
 <tr>
 <th>Layer</th>
 <th>Choice</th>
-<th>Why</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td data-label="Layer">Backend</td>
-<td data-label="Choice">Flask, blueprint per response kind</td>
-<td data-label="Why">Matches the conventions of the other apps on the same box</td>
-</tr>
-<tr>
-<td data-label="Layer">Templating</td>
-<td data-label="Choice">Jinja2, server-rendered</td>
-<td data-label="Why">First paint is HTML, no hydration cost on a phone</td>
+<td data-label="Choice">Flask, one blueprint per kind of response</td>
 </tr>
 <tr>
 <td data-label="Layer">Liveness</td>
-<td data-label="Choice">htmx polling (30 s) plus SSE for instant events</td>
-<td data-label="Why">No front-end framework, no build step</td>
+<td data-label="Choice">htmx polling (30 s) plus server-sent events for instant ones</td>
 </tr>
 <tr>
 <td data-label="Layer">History</td>
 <td data-label="Choice">SQLite, one file, standard library</td>
-<td data-label="Why">Ten people do not need a database server</td>
 </tr>
 <tr>
 <td data-label="Layer">Audio</td>
 <td data-label="Choice">Howler.js over Web Audio</td>
-<td data-label="Why">Sprites, mobile unlock handling, per-bus volume</td>
 </tr>
 <tr>
 <td data-label="Layer">Animation</td>
-<td data-label="Choice">CSS transforms and Web Animations API</td>
-<td data-label="Why">GPU-composited only: <code>transform</code> and <code>opacity</code>, never <code>top</code>/<code>width</code></td>
+<td data-label="Choice">CSS transforms only, so it stays smooth on a phone</td>
 </tr>
 <tr>
-<td data-label="Layer">Text</td>
-<td data-label="Choice">Deterministic phrase bank, plus a small local model for the weekly recap</td>
-<td data-label="Why">A model in the live path is both too slow and able to invent a score</td>
-</tr>
-<tr>
-<td data-label="Layer">Cache</td>
-<td data-label="Choice">In-process TTL cache with single-flight</td>
-<td data-label="Why">Ten phones must produce one upstream poll, not ten</td>
+<td data-label="Layer">Simulation</td>
+<td data-label="Choice">Monte Carlo, memoised per poll so ten phones cost one run</td>
 </tr>
 </tbody>
 </table></div>
-<p>No React, no Vue, no npm, no build step. The whole JS payload is htmx (16 kB gzipped) and howler.js, both vendored rather than pulled from a CDN because the target environment is a bar's shared wifi.</p>
-<h2>🗂️ Repository layout</h2>
+<h2>🗂️ What is in here</h2>
 <pre><code class="language-text">PUNT/
-├── app.py                      # factory, blueprint registration
-├── config.py                   # env-driven config, plus the startup secret audit
-├── espn/
-│   ├── feeds.py                # every endpoint, view name and TTL, in one table
-│   ├── client.py               # cookie auth, backoff, LeagueRepository
-│   ├── cache.py                # TTL cache with single-flight
-│   ├── models.py               # total parsers: Team, Player, Matchup, GameState
-│   └── replay.py               # recorder and replay transport
-├── engine/                     # events, scoring, simulation, commentary, speech
-│   └── history.py              # every week as it happened, in one SQLite file
-├── data/
-│   ├── phrases/                # YAML phrase banks
-│   ├── audio_sources.json      # the audio manifest: every sound, pinned and licensed
-│   ├── state/                  # gitignored: the dedupe set and the season's history
-│   └── recordings/             # captured payloads; the demo Sunday is committed
-├── static/                     # css, vendored js, audio sprite, generated icons
-├── templates/                  # base, tabs/, partials/
-├── views/                      # blueprints, split by response kind
-├── tools/                      # twenty of them; see Tests below
-└── tests/
+├── app.py            # the application factory
+├── config.py         # everything env-driven, plus a startup secret audit
+├── espn/             # talking to ESPN: endpoints, cache, parsers, replay
+├── engine/           # events, scoring, simulation, commentary, history, ticker
+├── views/            # routes and view models; the only place a page gets data
+├── templates/        # one partial per panel, shared by every route that shows it
+├── static/           # css, vendored js, audio, generated icons
+├── data/             # phrase banks, the audio manifest, the recorded Sunday
+├── tools/            # twenty of them: replay, screenshots, linting, dead code
+└── tests/            # 442, all offline
 </code></pre>
-<p><code>views/</code> is split by <strong>response kind</strong> (pages, htmx partials, JSON, media, admin) rather than by panel, because caching, error handling and degradation differ per kind and not per panel: a broken partial swaps in a stale banner, a broken page renders an empty state, and a broken API call returns a 200 with <code>problems</code> populated.</p>
-<h2>🔌 The data layer</h2>
-<p>Cookies live server-side only. A browser cannot send them cross-origin, which is the whole reason this app has a server: the Flask process holds them and the ten phones hold nothing.</p>
+<h2>🔌 Talking to ESPN</h2>
+<p>There is no public API, so PUNT reads the same undocumented endpoints the ESPN app does, with your own cookies, read-only, no faster than every thirty seconds. Cookies live on the server and never reach a browser.</p>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
 <tr>
 <th>Feed</th>
-<th>Cache TTL</th>
-<th>Purpose</th>
+<th>Cached for</th>
+<th>What it gives</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td data-label="Feed"><code>mSettings</code></td>
-<td data-label="Cache TTL">10 min</td>
-<td data-label="Purpose">Scoring items, playoff seeds, roster slots, the members block, and <code>scoringPeriodId</code></td>
+<td data-label="Cached for">10 min</td>
+<td data-label="What it gives">Scoring rules, roster slots, and which week it is</td>
 </tr>
 <tr>
 <td data-label="Feed"><code>mTeam</code></td>
-<td data-label="Cache TTL">6 hours</td>
-<td data-label="Purpose">Team names, abbreviations, uploaded logos, owner display names</td>
+<td data-label="Cached for">6 hours</td>
+<td data-label="What it gives">Team names, logos, records</td>
 </tr>
 <tr>
 <td data-label="Feed"><code>mMatchup</code></td>
-<td data-label="Cache TTL">1 hour</td>
-<td data-label="Purpose">Season grid, for all-play, luck and simulations</td>
+<td data-label="Cached for">1 hour</td>
+<td data-label="What it gives">The season's fixture list</td>
 </tr>
 <tr>
 <td data-label="Feed"><code>mMatchupScore</code> + <code>mBoxscore</code></td>
-<td data-label="Cache TTL">30 s</td>
-<td data-label="Purpose">Per-slot player points and projected remainder</td>
+<td data-label="Cached for">30 s</td>
+<td data-label="What it gives">Live scores, per player</td>
 </tr>
 <tr>
 <td data-label="Feed"><code>mRoster</code></td>
-<td data-label="Cache TTL">5 min (30 s live)</td>
-<td data-label="Purpose">Starters versus bench, the basis of bench regret</td>
+<td data-label="Cached for">5 min</td>
+<td data-label="What it gives">Starters and bench</td>
 </tr>
 <tr>
 <td data-label="Feed"><code>kona_player_info</code></td>
-<td data-label="Cache TTL">15 min</td>
-<td data-label="Purpose">Projections, injury flags, ownership</td>
+<td data-label="Cached for">15 min</td>
+<td data-label="What it gives">Projections and injuries</td>
 </tr>
 <tr>
 <td data-label="Feed">NFL scoreboard (public)</td>
-<td data-label="Cache TTL">20 s</td>
-<td data-label="Purpose">Possession, down and distance, red zone, clock</td>
+<td data-label="Cached for">20 s</td>
+<td data-label="What it gives">Clock, possession, red zone, kickoff times</td>
 </tr>
 </tbody>
 </table></div>
-<p>The <code>mSettings</code> TTL is minutes rather than the season it used to be for one reason: it carries <code>scoringPeriodId</code>, which decides which week the entire application is showing. Everything else in that payload is set once in August.</p>
-<p>Three rules the whole layer is built around:</p>
-<ul>
-<li><strong>Every parser is total.</strong> It accepts any JSON at all and returns a valid object, recording what it could not understand in <code>.problems</code> rather than raising. ESPN changes payload shapes without notice, and a <code>KeyError</code> here takes down a whole request while a degraded <code>Player</code> takes down one row of one panel, which then says so.</li>
-<li><strong>Ten phones, one poll.</strong> The TTL cache holds a per-key lock across the fetch, so the moment of highest concurrency is not the moment the cache stops working. A failed refresh serves the stale value rather than raising.</li>
-<li><strong>Team identity is resolved live.</strong> There is no manager list in this repository. Names, logos and abbreviations come from <code>mTeam</code> on every load, so a mid-season rename appears without a deploy. Card colours are hashed from the team id, so every phone agrees with no shared state and the colour survives a rename.</li>
-</ul>
-<p><strong><code>mSchedule</code> is not a real ESPN view.</strong> It was asked for from the first commit and ESPN simply ignored it, and the synthetic fixture answered to whatever PUNT asked, which hid the mistake for the whole build. The season grid comes from <code>mMatchup</code>; the feed keeps the old name as its cache key.</p>
-<h2>🎬 The replay harness</h2>
-<p>Development happens on Tuesdays, when nothing is live. Without a replay harness nothing downstream of the fetch layer is testable at all: no event detection, no commentary, no audio timing. It is the first milestone for that reason.</p>
-<pre><code class="language-bash">RECORD=1 python3 -m app                                     # capture a live Sunday
-REPLAY=2025-11-16-134500 REPLAY_SPEED=60 python3 -m app     # replay it at 60x
-</code></pre>
-<p>A recording is a directory of raw upstream payloads plus a manifest of when each arrived. <code>ReplayTransport</code> implements the same protocol as the live client, so every layer above it (the cache included) cannot tell the difference.</p>
-<p><strong>The committed fixture is synthetic, deliberately.</strong> A capture of a real Sunday is roughly 480 polls of a payload approaching a megabyte, and it carries ten real people's ESPN display names and account GUIDs. This is a public repository. <code>tools/make_fixture.py</code> instead generates a seeded, invented ten-team Sunday containing one of every event the engine has to detect: a planted bench disaster (41.2 points benched in favour of a starter who managed 1.4), a goose egg, a manager mathematically out of it by mid-afternoon, and a Sunday-night lead change. That is what the tests assert against, rather than hoping a real week happened to contain them.</p>
-<pre><code class="language-bash">python3 tools/make_fixture.py            # regenerate, seeded and byte-stable
-python3 tools/make_fixture.py --check    # verify the committed fixture is current
-</code></pre>
-<p>It also has to be stress-tested with long names. The fixture's managers are Bex, Gus and Sam: median four characters. The first real league had a median of fourteen, so every layout decision was made against the easy case.</p>
-<pre><code class="language-bash">python3 tools/stress_names.py            # the demo, served with real-length names
-</code></pre>
+<p>Two rules hold this together. <strong>Every parser is total</strong>: it accepts any JSON at all and records what it could not understand rather than raising, so a change at ESPN's end costs one row of one panel instead of the whole page. And <strong>ten phones make one request</strong>: the cache holds a lock across the fetch, so the busiest moment is not the moment the cache stops working.</p>
+<p>The <code>mSettings</code> cache is minutes rather than the season it once was, for one reason: it carries the current week number. Cached for a day, the week rolled over on a Tuesday morning and PUNT carried on showing the Sunday that had already finished until Wednesday, with nothing looking broken.</p>
 <h2>⚙️ Configuration</h2>
-<p>Everything is read from the environment and nowhere else, which is what makes the startup secret audit meaningful: if a cookie can only enter the process through <code>config.py</code>, there is exactly one place it can leak from. On boot, PUNT scans the public static tree for its own cookie values and refuses to start if it finds one.</p>
+<p>Everything comes from the environment and nowhere else, which is what makes the startup audit meaningful: if a cookie can only enter through <code>config.py</code>, there is one place it can leak from. On boot PUNT scans its own public files for its own cookie values and refuses to start if it finds one.</p>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
 <tr>
@@ -323,7 +244,7 @@ python3 tools/make_fixture.py --check    # verify the committed fixture is curre
 <tr>
 <td data-label="Variable"><code>LEAGUE_ID</code></td>
 <td data-label="Default">—</td>
-<td data-label="Notes">The numeric id in the ESPN fantasy URL</td>
+<td data-label="Notes">The number in your ESPN fantasy URL</td>
 </tr>
 <tr>
 <td data-label="Variable"><code>SEASON</code></td>
@@ -333,22 +254,17 @@ python3 tools/make_fixture.py --check    # verify the committed fixture is curre
 <tr>
 <td data-label="Variable"><code>ESPN_S2</code>, <code>ESPN_SWID</code></td>
 <td data-label="Default">—</td>
-<td data-label="Notes">Session cookies. Never committed, never logged, never rendered</td>
+<td data-label="Notes">Session cookies. Never committed, logged or rendered</td>
 </tr>
 <tr>
 <td data-label="Variable"><code>ROAST_LEVEL</code></td>
 <td data-label="Default"><code>1</code></td>
-<td data-label="Notes">0 safe, 1 teasing, 2 savage. Applies to the phrase bank</td>
+<td data-label="Notes">0 safe, 1 teasing, 2 savage</td>
 </tr>
 <tr>
 <td data-label="Variable"><code>POLL_SECONDS</code></td>
 <td data-label="Default"><code>30</code></td>
-<td data-label="Notes">30 is a floor and is enforced in code, not just documented</td>
-</tr>
-<tr>
-<td data-label="Variable"><code>RECORD</code></td>
-<td data-label="Default"><code>0</code></td>
-<td data-label="Notes">Write every upstream response to <code>data/recordings/</code></td>
+<td data-label="Notes">30 is a floor, enforced in code</td>
 </tr>
 <tr>
 <td data-label="Variable"><code>REPLAY</code>, <code>REPLAY_SPEED</code></td>
@@ -358,128 +274,88 @@ python3 tools/make_fixture.py --check    # verify the committed fixture is curre
 <tr>
 <td data-label="Variable"><code>ADMIN_TOKEN</code></td>
 <td data-label="Default">—</td>
-<td data-label="Notes">Required for <code>POST /admin/refresh-cookies</code>. Unset denies everything</td>
+<td data-label="Notes">Required for refreshing cookies. Unset denies everything</td>
 </tr>
 </tbody>
 </table></div>
 <h2>🧪 Tests</h2>
 <pre><code class="language-bash">pip install -r requirements-dev.txt
-python3 -m pytest                              # 396 tests, no network, no cookies
-python3 tools/deadcode.py                      # which lines never run during a whole Sunday
-python3 tools/screenshot.py                    # captures at a real phone width
-python3 tools/screenshot.py --check-overflow   # no horizontal overflow at 390px
-python3 tools/a11y.py                          # contrast, no browser needed
-python3 tools/a11y.py --page                   # focus rings, targets, live regions
-python3 tools/perf.py                          # payload budgets
-python3 tools/perf.py --page                   # frame cost, subresources, paint timings
+python3 -m pytest                              # 444 tests, no network, no cookies
+python3 tools/deadcode.py                      # which lines never run in a whole Sunday
+python3 tools/screenshot.py --check-overflow   # nothing spills off a phone
+python3 tools/a11y.py                          # contrast
 </code></pre>
-<p>Every test runs against the committed recording with sockets disabled by a fixture, so "replays with no network access" is an assertion rather than a claim.</p>
-<p>Two gates are worth naming. One is a single test, <code>test_full_sunday_replays_at_60x_with_no_network_and_no_cookies</code>. The other is a golden file: the whole Sunday's Moment timeline, 242 of them across 10.9 hours, compared byte for byte. Regenerate it deliberately with <code>python3 -m tests.golden_regen</code> and read the diff, because a change to detection that alters the afternoon is exactly the kind of thing somebody should have to look at.</p>
-<h3><code>tools/deadcode.py</code> reports zero, and that is the point</h3>
-<p>It is not test coverage. It drives a whole simulated Sunday, at eight points across the day, and reports what the application never reached. Everything under <code>engine/</code>, <code>espn/</code> and <code>views/viewmodels.py</code> runs; the eighty lines that cannot be reached each carry a <code># cold:</code> comment saying why. A new cold line means one of two things, and both need doing rather than noting: wire the feature up, or say why it is unreachable.</p>
-<p>It has found six features that looked finished and had never once executed, each with a passing test beside it: INJURY, the Legendary card tier, the branch that reads ESPN's real lineup eligibility, the dedupe set that stops a restart replaying the afternoon, half the phrase-trigger vocabulary, and the recap validator's rejection path. A test can keep a line warm while the application never reaches it, which is exactly what happened every time.</p>
-<p>It also lied in three ways of its own, all fixed, all general: <code>sys.settrace</code> is per-thread, so anything in a worker reports as dead; <code>if (</code> on its own line never gets a trace event, because the interpreter reports the line of the condition's first operand; and rendering the view models only at the final whistle marks every mid-afternoon branch cold.</p>
-<h3>Tests that are there because they caught something real</h3>
+<p>Every test runs against the recorded Sunday with the network disabled by a fixture, so "works with no internet" is an assertion rather than a claim.</p>
+<p>Three of the suites are unusual enough to be worth naming:</p>
 <ul>
-<li>Asserting team totals never decrease failed immediately on a <code>-2.0</code> turnover in the fixture. Fantasy scores are not monotonic; the test was wrong and the fixture was right, and the event engine has to survive the same thing.</li>
-<li>Asserting every rostered player has a game on the NFL scoreboard caught a nineteen-team early window. The odd team out had no game, so every player on it had an unknown game state, never settled, and told their manager all night that somebody was still to play.</li>
-<li>Asserting a finished game reads finished within a poll caught the two feeds being coupled in the fixture generator: a minute in which nobody scored also dropped the game-state change in the same minute, so the last game of the night stayed "in progress" for ten minutes after it ended and a settled matchup came back from the simulator at 91% instead of 100%.</li>
-<li>A test claiming "needing 22 points from one player" was a long shot got 53% back, and was wrong: the player was projected for 22. The simulator was right. It now checks the coin-flip case explicitly so the tail test is measuring something.</li>
-<li><code>/partials/moments?week=9</code> shipped broken and the whole suite said nothing, because it is the one fragment that does not come from the snapshot. There is now a test that fetches every route with every shape of week parameter, including nonsense ones.</li>
+<li><strong><code>test_freshness.py</code></strong> asks every cache to <em>miss</em>. A cache tested only for hits is one whose correctness has never been examined, and this found a real bug: a memo keyed on the number of games in a week rather than their scores, which meant an ESPN stat correction left six panels showing the pre-correction season for as long as the server ran.</li>
+<li><strong><code>test_liveness.py</code></strong> fails if any panel is added without a refresh. Three shipped frozen once: correct when the page loaded and never updated again, which no screenshot and no other test could see.</li>
+<li><strong><code>test_privacy.py</code></strong> checks every page, every fragment and both public JSON endpoints for a real person's name.</li>
 </ul>
-<h2>📱 Mobile and the installed-app illusion</h2>
-<p>The app is designed at 390 px before anything else exists, and ships as a PWA: manifest, service worker, iOS legacy meta tags, generated splash screens, safe-area insets. Fantasy data is never served stale from the service worker; only the shell is.</p>
-<p>The divergences that cost a day each if discovered late: iOS ignores most of <code>manifest.json</code> and needs the legacy meta tags, the ringer switch mutes HTML5 audio but not Web Audio, <code>DeviceOrientationEvent.requestPermission()</code> must be called from inside a user gesture <em>and</em> exists on desktop Chrome (so gate on <code>(hover: none) and (pointer: coarse)</code>, not on the method), and <code>100vh</code> changes mid-scroll on both platforms (use <code>100dvh</code>).</p>
-<p>Capturing screenshots at a phone width needs <code>tools/screenshot.py</code> rather than <code>--window-size</code>: Chrome's window has a 500 px platform minimum on macOS, so a 390 px capture is silently a crop of a 500 px layout. Everything looks broken and none of it is.</p>
-<p>The same tool runs <code>--check-overflow</code>, which loads every route in a 390 px iframe and reports any element wider than the viewport. Horizontal overflow is the failure this project keeps producing and cannot see: a table column pushed past the right edge is simply not drawn, with no scrollbar and nothing to suggest it exists.</p>
-<p><strong>Look at the screenshots.</strong> Eight separate defects here were invisible in the code and obvious in a capture: truncated team names, a demo opening on ten zeros, an HTML entity rendered literally, the TV type at phone size, every "IN" chip the wrong colour, and <code>best 80…</code> in the bench-regret table (a number cut in half, which is worse than no number, because 80.4 and 809 truncate identically).</p>
+<p>And <code>tools/deadcode.py</code>, which is not test coverage: it drives a whole simulated Sunday and reports what the app never reached. It stands at zero. It has found six features that looked finished and had never once run, each with a passing test beside it.</p>
+<h2>📱 On a phone</h2>
+<p>Designed at 390px before anything else existed, and installable: it gets a home screen icon, a splash screen and an offline shell. Live scores are never served from that offline cache -- only the shell is.</p>
 <h2>✅ To Do</h2>
-<p>Where PUNT actually is, newest first. Completed items keep their reasoning: the list doubles as the project record, and the reasoning behind a finished decision is usually the most useful part.</p>
 <h3>Built</h3>
 <ul class="emd-tasklist">
-<li><span class="emd-check">&#9989;</span> <strong>A LATEST strip along the top.</strong> A slot-machine reel, one line at a time, of what has <em>moved</em> rather than what has <em>happened</em>: score jumps, win probability, playoff odds, clinching and elimination, album positions, bench regret, players running hot or cold against what they were due by now, and the commentary folded into the same strip so the room reads one thing and not two. Green good, red bad, and the direction is carried explicitly rather than read off the sign, because two of these invert (bench regret rising is bad; an album rank falling in number is good). Thresholds were set by counting a full replayed Sunday, not by taste: 542 lines over 10.9 hours is 0.83 a minute against a strip that can show about fifteen</li>
-<li><span class="emd-check">&#9989;</span> <strong>Every panel refreshes itself.</strong> Three of them did not: bench regret, playoff odds and who is in trouble were rendered once when the page loaded and never again, so a phone left on the bar showed two o'clock's numbers at five with nothing on screen to say so. They were correct on arrival, which is why no screenshot and no test caught it. Every panel on every route now polls its own fragment, the panels are shared templates rather than a copy per tab (the Receipts tab had gone on leading every row with a username for months), and <code>tests/test_liveness.py</code> fails if a panel is added without a trigger</li>
-<li><span class="emd-check">&#9989;</span> <strong>Memoise the simulations.</strong> <code>probabilities_for</code> was called five times per page render and nothing cached it, despite a comment claiming it did since the first commit. With every panel now polling, ten phones would have meant ten playoff simulations per poll: 2,500 seasons each, 175 ms a time. Keyed on the player state that produced the answer rather than on the snapshot object, which is rebuilt per request and would have missed every time while looking like it worked. A poll window costs one simulation: the first phone pays 335 ms and every other one pays 20</li>
-<li><span class="emd-check">&#9989;</span> <strong>Follow the week automatically.</strong> The scoring period was always read from ESPN and <code>mSettings</code> was always cached for a day, so the week rolled over on a Tuesday morning and PUNT kept serving the finished Sunday until Wednesday with nothing looking broken. Ten minutes now. The live feed empties all six of its per-week stores when the period moves; three of them used to be missed, which shows up a fortnight later as last Sunday's commentary under this Sunday's scores</li>
-<li><span class="emd-check">&#9989;</span> <strong>Record every week.</strong> <code>data/state/history.sqlite3</code>, written on every poll and once more at the rollover. Not a cache of ESPN, which still has the box scores: it is the half ESPN cannot give back, the Moments as they were detected, the commentary that was chosen, and what the optimal lineup <em>was</em> before anybody edited a roster</li>
-<li><span class="emd-check">&#9989;</span> <strong>A week menu in the header.</strong> The live week is the empty value in it, so a URL with no week follows the season and a bookmark of week 11 is not still week 11 in December. An archived page says so and does not open the stream</li>
-<li><span class="emd-check">&#9989;</span> <strong>Rank the album on form, not on the score.</strong> Ordering ten cards by points at three in the afternoon mostly ranks managers by how many of their players kicked off at one o'clock</li>
-<li><span class="emd-check">&#9989;</span> <strong>Give the Cheer panel a column that varies.</strong> It read <code>STAKE</code> on all sixteen rows, which distinguished nothing. It is the points still to come out of each fixture now, banded by how many head-to-heads that game can actually swing</li>
-<li><span class="emd-check">&#9989;</span> <strong>A detail sheet per panel.</strong> Bench regret, who is in trouble, a commentary line, an NFL fixture and playoff odds each open something different, because "more about this row" means something different in each</li>
-<li><span class="emd-check">&#9989;</span> <strong>One page, no tabs.</strong> The tabs were plain links, so every tab change was a new document, and audio needs a gesture per document: the tap that changed tabs was the tap that unlocked the sound, and the browser destroyed the document mid fade-in. The music could only be heard in the gap between the tap and the page changing, which is exactly what it sounded like</li>
-<li><span class="emd-check">&#9989;</span> <strong>Real sound.</strong> Fourteen CC0 effects and two music beds from Freesound, replacing fourteen synthesised stings that carried under 8% of their energy above 2 kHz. The licence safety moved from "we made everything" to a sha256-pinned manifest that both the sprite builder and the generated credits read, with <code>--check</code> failing the build when they disagree</li>
-<li><span class="emd-check">&#9989;</span> <strong>A football for an icon.</strong> The app icon used to be the wordmark set in a webfont fetched from the running app, and <code>icon-192.png</code> shipped for a week as the brand gradient with no lettering on it at all: at that size the capture finished before the font did, and every guard passed because a gradient is not a uniform image. It is a drawn path now, so nothing can arrive late. The 16 and 32 px favicons are the silhouette alone, measured rather than assumed: four lace treatments were rendered and downsampled, and every one that kept a mark came out as a white lens with a dark blob in it, which is an eye</li>
-<li><span class="emd-check">&#9989;</span> <strong>The sticker album.</strong> Five rarity tiers, foil sheen and gyro tilt on <code>transform</code> only (no filters, no blend modes: both are frame-rate killers on mobile), and the monogram fallback for the managers who never upload a logo</li>
-<li><span class="emd-check">&#9989;</span> <strong>PWA shell.</strong> Manifest, service worker, iOS legacy meta tags, generated splash screens, safe-area insets. The first deploy precached <em>unstamped</em> URLs the page never requests, so the offline shell came up with no CSS at all</li>
-<li><span class="emd-check">&#9989;</span> <strong>The engine.</strong> Nine Moment kinds, idempotent across a restart; exact optimal lineup by maximum-weight bipartite matching, checked against an exhaustive oracle and an independent bitmask DP; Monte Carlo win probability with a lumpy per-player distribution; playoff odds from 2,500 simulated seasons against the real fixture list, with the magic number read out of the same simulation as the odds so the two cannot disagree</li>
-<li><span class="emd-check">&#9989;</span> <strong>410 phrase lines</strong>, past the 400 target. What that bought, measured across a full Sunday rather than assumed: the repeat rate fell from 68% to 43%, the worst line from 11 uses to 5, and the closest repeat moved from 8 Moments apart to 30</li>
-<li><span class="emd-check">&#9989;</span> <strong>Every line of the app runs during a simulated Sunday.</strong> <code>tools/deadcode.py</code> reports zero, and getting there found six features that looked finished and had never once executed</li>
-<li><span class="emd-check">&#9989;</span> <strong>Failure states end to end.</strong> Wifi loss, stale banners, the cookie-expiry path, a poll that raises, a half-written capture, a full disk and ten concurrent clients against one upstream poll are all driven every time <code>deadcode.py</code> runs, which is how they stopped being hypothetical. The backoff ladder in particular had two real bugs in it and was reachable from nothing</li>
-<li><span class="emd-check">&#9989;</span> <strong>Deploy to <code>punt.mdeller.com</code></strong>, with a certificate, http2, the shared long-cache snippet on the stamped assets, and an entry in the launcher. Three things were wrong and only visible once it was serving: every team logo was revalidated on every page load (nginx <code>add_header</code> APPENDS, so the vhost's <code>no-cache</code> joined the logo routes' own <code>max-age</code> and won); the offline shell precached URLs the page never requests; and <code>/api/diagnostics</code> published the last four characters of a live session cookie</li>
-<li><span class="emd-check">&#9989;</span> <strong>Self-host the fonts.</strong> A third-party font origin costs a second of first paint on exactly the shared wifi this app is designed for. Measured afterwards: 142 kB of faces actually fetched, down from 190 once <code>b, strong</code> was styled to 600 and the unused 700 weight stopped shipping</li>
-<li><span class="emd-check">&#9989;</span> <strong>Settle the superflex question.</strong> No superflex and no QB-accepting flex, so the eligibility bug was latent and never live. Still worth having fixed, because the answer lives in ESPN's settings where a commissioner can change it between seasons, and the app reads it now rather than remembering it</li>
+<li><span class="emd-check">&#9989;</span> <strong>One page, everything on it.</strong> Sixteen panels, each refreshing itself, each with its own detail sheet behind it</li>
+<li><span class="emd-check">&#9989;</span> <strong>Nobody's name anywhere.</strong> ESPN's manager display names are dropped before they can reach a page, an API response or the weekly write-up</li>
+<li><span class="emd-check">&#9989;</span> <strong>A ticker of what just moved</strong>, so a reader glancing up can see what they missed</li>
+<li><span class="emd-check">&#9989;</span> <strong>Eight season panels</strong>, for the questions a single week cannot answer</li>
+<li><span class="emd-check">&#9989;</span> <strong>It follows the season on its own</strong>: the week rolls over, every result is recorded, and any recorded week can be opened from the header</li>
+<li><span class="emd-check">&#9989;</span> <strong>Sound.</strong> Fourteen effects, two beds, all licensed and credited from a manifest that cannot drift out of date</li>
+<li><span class="emd-check">&#9989;</span> <strong>410 commentary lines</strong>, tuned by measurement: the repeat rate across a full Sunday fell from 68% to 43% and the worst line from 11 uses to 5</li>
+<li><span class="emd-check">&#9989;</span> <strong>Every line of the app runs during a simulated Sunday</strong>, and every cache is tested for missing as well as hitting</li>
+<li><span class="emd-check">&#9989;</span> <strong>Live at punt.mdeller.com</strong> on the real league</li>
 </ul>
 <h3>Outstanding</h3>
 <ul class="emd-tasklist">
-<li><span class="emd-check">&#11036;</span> <strong>A season that has happened.</strong> The eight panels above are built and live, but five of them read the settled weeks and the real league has one. They will say something by about November and very little before then. That is the data's fault, not the panels'</li>
-<li><span class="emd-check">&#11036;</span> <strong>Reconcile bench regret against two real ESPN box scores.</strong> By hand, against a week whose numbers are known. The test exists and is skipped, naming why</li>
-<li><span class="emd-check">&#11036;</span> <strong>The recap's model path.</strong> The fact pack, the validator and the retry loop are driven against stub backends on every <code>deadcode.py</code> run, so the logic is exercised; only a real local model's output is not. <code>ollama pull qwen2.5:1.5b-instruct</code></li>
-<li><span class="emd-check">&#11036;</span> <strong>Install Piper on the droplet.</strong> It is the shipping TTS backend; macOS <code>say</code> stands in locally so the pipeline is testable end to end, but it is not on the server</li>
-<li><span class="emd-check">&#11036;</span> <strong>The Big Board carousel.</strong> Auto-rotating matchups, which is what makes the larger TV type scale workable: at 2.2x a 720p screen fits two and a half of five matchups, so it currently runs at 1.6</li>
-<li><span class="emd-check">&#11036;</span> <strong>Real-device matrix.</strong> Simulators do not reproduce the iOS audio-session or gyroscope permission behaviour, which is precisely where this app is most fragile. The 60 fps card target and the mute toggle both need a real iPhone</li>
-<li><span class="emd-check">&#11036;</span> <strong>Decide whether real recordings may ever be committed.</strong> <code>.gitignore</code> tracks only <code>demo-*</code>, on the assumption that ten managers' ESPN display names should not be in a public repository</li>
+<li><span class="emd-check">&#11036;</span> <strong>A season worth showing.</strong> Five of the season panels read finished weeks, and the live league has one. They will fill in by about November. That is the calendar's fault, not the code's</li>
+<li><span class="emd-check">&#11036;</span> <strong>Check bench regret by hand</strong> against two real ESPN box scores whose numbers are already known. The test exists and is skipped, saying why</li>
+<li><span class="emd-check">&#11036;</span> <strong>The written recap.</strong> Every number in it is correct and comes from the box score, but the prose is assembled from a template: no language model is installed on the server, and the one currently named in the config cannot run on it</li>
+<li><span class="emd-check">&#11036;</span> <strong>Speech.</strong> The pipeline works locally against macOS <code>say</code>; the shipping voice is not installed on the server yet</li>
+<li><span class="emd-check">&#11036;</span> <strong>The Big Board carousel.</strong> Rotating matchups, which is what would let the TV type scale up further than it currently does</li>
+<li><span class="emd-check">&#11036;</span> <strong>Test on real phones.</strong> Simulators do not reproduce iOS audio or motion permissions, which is exactly where this app is most fragile</li>
 </ul>
 <h2>⚠️ Known risks</h2>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
 <tr>
 <th>Risk</th>
-<th>Mitigation</th>
+<th>What happens instead</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td data-label="Risk">ESPN changes hostnames or view names mid-season</td>
-<td data-label="Mitigation">Every endpoint in one module, per-panel degradation, stale banners</td>
+<td data-label="Risk">ESPN changes something</td>
+<td data-label="What happens instead">Every endpoint is in one file; each panel degrades on its own and says so</td>
 </tr>
 <tr>
-<td data-label="Risk"><code>espn_s2</code> expires on a Sunday</td>
-<td data-label="Mitigation">Cached data continues serving, commissioner banner, admin refresh route</td>
+<td data-label="Risk">Your cookies expire</td>
+<td data-label="What happens instead">Cached data keeps showing behind a banner, with a way to refresh them</td>
 </tr>
 <tr>
-<td data-label="Risk">Audio silently fails on someone's phone</td>
-<td data-label="Mitigation">The visual path is always complete; nothing is audio-only</td>
+<td data-label="Risk">Audio fails on somebody's phone</td>
+<td data-label="What happens instead">Nothing is audio-only; the visible page is always complete</td>
 </tr>
 <tr>
-<td data-label="Risk">Commentary repetition kills the joke by week 3</td>
-<td data-label="Mitigation">Cooldowns, a 410-line bank, weighted sampling</td>
+<td data-label="Risk">The commentary gets repetitive</td>
+<td data-label="What happens instead">Cooldowns, 410 lines, weighted choice, measured across a full Sunday</td>
 </tr>
 <tr>
-<td data-label="Risk">Banter lands badly on a real person</td>
-<td data-label="Mitigation"><code>ROAST_LEVEL</code>, managers only and never players, lowerable mid-season</td>
+<td data-label="Risk">A joke lands badly</td>
+<td data-label="What happens instead"><code>ROAST_LEVEL</code> turns it down mid-season; teams are teased, never people or athletes</td>
 </tr>
 <tr>
-<td data-label="Risk">A recap invents a statistic</td>
-<td data-label="Mitigation">Numeral and proper-noun validator, templated fallback</td>
-</tr>
-<tr>
-<td data-label="Risk">Ten clients hammer ESPN</td>
-<td data-label="Mitigation">One shared cache, one upstream poll regardless of client count</td>
-</tr>
-<tr>
-<td data-label="Risk">A manager uploads a broken logo, or renames to 40 characters</td>
-<td data-label="Mitigation">Server-side image proxy, monogram fallback, truncation at the measured width</td>
-</tr>
-<tr>
-<td data-label="Risk">A second gunicorn worker</td>
-<td data-label="Mitigation">The poller, the dedupe set and the Moment buffer are per-process: a second worker doubles the upstream poll rate and gives half the room a different commentary feed. One worker with threads, enforced by a test</td>
+<td data-label="Risk">Ten people refresh at once</td>
+<td data-label="What happens instead">One shared cache: ten phones make one request</td>
 </tr>
 </tbody>
 </table></div>
 <h2>📄 Licence</h2>
 <p>MIT. See <a href="LICENSE">LICENSE</a>.</p>
-<p>Audio assets carry their own licences, generated into <a href="static/audio/LICENCES.md"><code>static/audio/LICENCES.md</code></a> from the manifest: the effects are CC0, and the Sunday-night bed is CC-BY 4.0 and is credited in the page footer where it is heard.</p>
-<p>PUNT is not affiliated with, endorsed by, or connected to ESPN or the National Football League. It reads ESPN's undocumented fantasy endpoints with a league member's own credentials, at a polling rate floored at 30 seconds, and is read-only.</p>
+<p>Audio carries its own licences, generated into <a href="static/audio/LICENCES.md"><code>static/audio/LICENCES.md</code></a>: the effects are CC0 and the Sunday-night theme is CC-BY 4.0, credited in the page footer where it is heard.</p>
+<p>PUNT is not affiliated with, endorsed by, or connected to ESPN or the National Football League. It reads ESPN's undocumented fantasy endpoints with a league member's own credentials, no faster than every 30 seconds, and is read-only.</p>
 <hr>
 <h2>👤 Author</h2>
 <p><strong>Marc C. Deller, D.Phil.</strong><br>

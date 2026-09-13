@@ -22,7 +22,7 @@
       {% for cell in row.cells %}
       <td class="matrix-cell">
         <span class="pip {% if cell.beaten is none %}pip--self{% elif cell.beaten %}pip--won{% else %}pip--lost{% endif %}{% if cell.real %} pip--real{% endif %}"
-              title="{{ row.team }} {{ row.score }} v {{ cell.abbrev }}{% if cell.real %}, the fixture that counted{% endif %}"></span>
+              title="{{ row.team }} {{ row.score }} v {{ cell.team }}{% if cell.real %}, the fixture that counted{% endif %}"></span>
       </td>
       {% endfor %}
       <td class="num">{{ row.wins }}&ndash;{{ row.losses }}

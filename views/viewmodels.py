@@ -1372,7 +1372,12 @@ def allplay_view(snap: LeagueSnapshot) -> dict[str, Any]:
         for them in teams:
             beaten = None if me.id == them.id else scores[me.id] > scores[them.id]
             cells.append({
-                "id": them.id, "abbrev": them.abbrev, "beaten": beaten,
+                # The team NAME as well as the code. ESPN abbreviations are
+                # whatever the manager typed, and in the live league they are
+                # mostly bits of their own names -- "Joe", "Mill", "ROBB" --
+                # so a sheet listing them reads as a list of people.
+                "id": them.id, "team": them.name, "abbrev": them.abbrev,
+                "beaten": beaten,
                 "margin": round(scores[me.id] - scores[them.id], 1),
                 # The one cell in the row that actually counted.
                 "real": opponents.get(me.id) == them.id,

@@ -14,6 +14,10 @@
   <span class="scatter-dot tappable" data-sheet="{{ url_for('api.detail_panel', name='volatility', team_id=row.id) }}"
         style="left: {{ row.x }}%; top: {{ row.y }}%; --hue: {{ row.hue }}"
         title="{{ row.team }}: {{ row.mean }} average, plus or minus {{ row.sigma }}, from {{ row.low }} to {{ row.high }}">
+    {# The code, not the name: ten labels on one plot at 390px have nowhere to
+       go, and the full name is on the dot's own tooltip and in the sheet it
+       opens. This is the only place in the app an abbreviation is still the
+       visible label. #}
     <span class="scatter-label">{{ row.abbrev }}</span>
   </span>
   {% endfor %}

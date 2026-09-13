@@ -126,3 +126,61 @@ def test_the_chooser_leads_with_the_team(no_network):
     js = (Path(__file__).resolve().parent.parent / "static" / "js" / "identity.js").read_text("utf-8")
     assert "team.manager" not in js, "the chooser lists real names again"
     assert "team.name" in js
+
+
+def test_nothing_broadcast_over_the_stream_names_a_person(repo, managers, no_network):
+    """The gap that let the red-zone banner through.
+
+    Everything above this tests an HTTP response. The countdown overlay is not
+    one: it is pushed over server-sent events and painted across the whole
+    screen in letters an inch high, which made it the single most visible place
+    a real ESPN display name appeared -- and the only one no test was looking
+    at. Four usernames, on the bar television, during every red-zone drive.
+    """
+    import json
+    import threading
+
+    from engine.events import EventEngine
+    from engine.live import LiveFeed
+
+    snapshots = []
+    feed = LiveFeed(fetch=lambda: snapshots[-1], poll_seconds=5,
+                    engine=EventEngine(simulate_draws=60))
+    seen: list[str] = []
+    started = threading.Event()
+
+    def drain():
+        listener = feed.listen()
+        started.set()
+        for message in listener:
+            seen.append(str(message))
+            if len(seen) > 400:
+                break
+
+    worker = threading.Thread(target=drain, daemon=True)
+    worker.start()
+    started.wait(timeout=5)
+
+    # A whole afternoon, so every kind of broadcast happens at least once.
+    duration = int(repo.client.transport.recording.duration)
+    for position in range(0, duration + 1, 600):
+        repo.client.transport.clock.seek(position)
+        repo.client.cache.invalidate()
+        snapshots.append(repo.snapshot())
+        feed.poll_once()
+
+    blob = " ".join(seen)
+    assert blob, "nothing was broadcast at all, so this test proves nothing"
+    found = sorted(n for n in managers if n in blob)
+    assert not found, f"the stream broadcasts {found}"
+
+
+def test_the_countdown_overlay_reads_the_team(no_network):
+    """It is built in JavaScript from the stream payload, so the field it reads
+    has to move with the payload."""
+    from pathlib import Path
+
+    js = (Path(__file__).resolve().parent.parent / "static" / "js"
+          / "countdown.js").read_text("utf-8")
+    assert "p.manager" not in js, "the overlay lists real names again"
+    assert "p.team" in js
