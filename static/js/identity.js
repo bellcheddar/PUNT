@@ -2,7 +2,7 @@
  *
  * The only thing PUNT stores locally. There are no accounts and no login: one
  * league, one shared instance, access by URL, and each phone remembers once
- * which manager is holding it. That choice is what makes "your matchup" and
+ * which team is theirs. That choice is what makes "your matchup" and
  * "your card" mean anything without a server ever knowing who anybody is.
  *
  * Chosen once on first run. Everything degrades if it is refused or if storage
@@ -59,12 +59,12 @@
     const response = await fetch('/api/state', { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const state = await response.json();
-    // Sorted by manager, because the manager's name is what each row leads
-    // with. Sorting by team name while displaying the manager first makes an
+    // Sorted by team name, because that is what each row leads with. Sorting by
+    // one thing while displaying another makes an
     // ordered list look unordered, which on a ten-item picker is worse than no
     // sort at all.
     return (state.album || []).slice()
-      .sort((a, b) => String(a.manager).localeCompare(String(b.manager)));
+      .sort((a, b) => String(a.name).localeCompare(String(b.name)));
   }
 
   function buildChooser(list, { dismissible }) {
@@ -86,7 +86,7 @@
       button.className = 'chooser-team';
       button.style.setProperty('--hue', team.hue);
       button.innerHTML = `<span class="chooser-crest">${team.monogram}</span>`
-        + `<span class="chooser-names"><b>${team.manager}</b><span>${team.name}</span></span>`;
+        + `<span class="chooser-names"><b>${team.name}</b><span>${team.record || ''}</span></span>`;
       button.addEventListener('click', () => {
         write(team.id);
         apply();

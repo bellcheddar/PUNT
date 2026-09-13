@@ -95,7 +95,7 @@ def _walk_numbers(value: Any, into: set[str]) -> None:
 #: Keys whose string values are names a recap may use. Everything else in the
 #: pack is a label, a slot or a kind, and is not a proper noun.
 NAME_KEYS = frozenset({
-    "manager", "team", "league", "player", "benched", "started",
+    "team", "league", "player", "benched", "started",
     "opponent", "winner", "loser", "teams", "pro_team",
 })
 
@@ -141,7 +141,6 @@ def build(snapshot: LeagueSnapshot, moments: Iterable | None = None) -> FactPack
         weeks = max(1, team.wins + team.losses + team.ties)
         opponent_team = snapshot.team(opponent.team_id) if opponent else None
         teams.append({
-            "manager": team.manager,
             "team": team.name,
             "score": round(side.total, 2),
             "optimal": lineup.total,
@@ -149,7 +148,7 @@ def build(snapshot: LeagueSnapshot, moments: Iterable | None = None) -> FactPack
             "record": team.record,
             "all_play": record.record if record else "",
             "luck": luck_index(team.wins, record.win_pct, weeks) if record else 0.0,
-            "opponent": opponent_team.manager if opponent_team else "",
+            "opponent": opponent_team.name if opponent_team else "",
             "margin": round(side.total - opponent.total, 2) if opponent else 0.0,
             "won": bool(opponent and side.total > opponent.total),
         })
@@ -165,8 +164,8 @@ def build(snapshot: LeagueSnapshot, moments: Iterable | None = None) -> FactPack
         winner, loser = ((home_team, away_team) if home.total >= away.total
                          else (away_team, home_team))
         matchups.append({
-            "winner": winner.manager,
-            "loser": loser.manager,
+            "winner": winner.name,
+            "loser": loser.name,
             "margin": round(abs(home.total - away.total), 2),
             "scores": [round(home.total, 2), round(away.total, 2)],
         })
@@ -191,8 +190,8 @@ def build(snapshot: LeagueSnapshot, moments: Iterable | None = None) -> FactPack
 def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
     out: dict[str, Any] = {}
     if teams:
-        out["highest"] = {"manager": teams[0]["manager"], "score": teams[0]["score"]}
-        out["lowest"] = {"manager": teams[-1]["manager"], "score": teams[-1]["score"]}
+        out["highest"] = {"team": teams[0]["team"], "score": teams[0]["score"]}
+        out["lowest"] = {"team": teams[-1]["team"], "score": teams[-1]["score"]}
     if matchups:
         closest = min(matchups, key=lambda m: m["margin"])
         widest = max(matchups, key=lambda m: m["margin"])
@@ -201,11 +200,11 @@ def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
 
     worst_regret = max(teams, key=lambda t: t["bench_regret"], default=None)
     if worst_regret and worst_regret["bench_regret"] > 0:
-        team = next((t for t in snapshot.teams if t.manager == worst_regret["manager"]), None)
+        team = next((t for t in snapshot.teams if t.name == worst_regret["team"]), None)
         lineup = lineups.get(team.id) if team else None
         swap = lineup.worst_swap if lineup else None
         out["bench_disaster"] = {
-            "manager": worst_regret["manager"],
+            "team": worst_regret["team"],
             "regret": worst_regret["bench_regret"],
             **({"benched": swap[1].name, "benched_points": round(swap[1].points, 2),
                 "started": swap[0].name, "started_points": round(swap[0].points, 2),
@@ -220,14 +219,14 @@ def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
             for player in side.starters:
                 if best is None or player.points > best["points"]:
                     best = {"player": player.name, "points": round(player.points, 2),
-                            "manager": team.manager if team else "", "slot": player.slot}
+                            "team": team.name if team else "", "slot": player.slot}
     if best:
         out["best_player"] = best
 
     geese = [m for m in moments if m.kind == "GOOSE_EGG"]
     if geese:
         out["goose_eggs"] = [
-            {"manager": m.teams[0] if m.teams else "", "player": m.player or "",
+            {"team": m.teams[0] if m.teams else "", "player": m.player or "",
              "projected": m.context.get("projected", 0.0)}
             for m in geese
         ]
@@ -236,7 +235,7 @@ def _highlights(snapshot, teams, matchups, lineups, moments) -> dict[str, Any]:
     if swings:
         biggest = max(swings, key=lambda m: abs(m.win_prob_delta))
         out["biggest_swing"] = {
-            "manager": biggest.teams[0] if biggest.teams else "",
+            "team": biggest.teams[0] if biggest.teams else "",
             "player": biggest.player or "",
             "kind": biggest.kind.lower().replace("_", " "),
             "swing": round(abs(biggest.win_prob_delta) * 100, 1),

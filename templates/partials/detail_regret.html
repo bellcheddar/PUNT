@@ -1,6 +1,6 @@
 {% if d %}
 {% with hue=d.hue, logo=d.logo, monogram=d.monogram, title=d.team,
-        subtitle=d.manager ~ ' · ' ~ d.record, figure=d.regret | points,
+        subtitle=d.record, figure=d.regret | points,
         figure_label='left on the bench', figure_class='neg' if d.regret > 25 else '' %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}

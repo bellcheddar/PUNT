@@ -63,7 +63,7 @@ def test_the_sayable_sets_are_collected_by_walking_not_by_listing(week):
     assert f"{score:g}" in numbers and f"{score:.1f}" in numbers
 
     names = week.names()
-    assert week.highlights["highest"]["manager"] in names
+    assert week.highlights["highest"]["team"] in names
     assert week.league in names
     # Surnames too: a recap writing "Braithwaite" where the pack says "Wilder
     # Braithwaite" is not inventing anybody.
@@ -104,7 +104,7 @@ def test_an_invented_player_is_rejected(week):
 
 def test_a_true_sentence_is_accepted(week):
     best = week.highlights["best_player"]
-    text = f"{best['player']} finished on {best['points']:.1f} for {best['manager']}."
+    text = f"{best['player']} finished on {best['points']:.1f} for {best['team']}."
     assert validate(text, week) == [], validate(text, week)
 
 
@@ -200,7 +200,7 @@ def test_a_truthful_model_is_used(week):
 
         def generate(self, prompt, temperature=0.85, max_tokens=200):
             return (f"{best['player']} finished on {best['points']:.1f} for "
-                    f"{best['manager']}. It was that kind of week.")
+                    f"{best['team']}. It was that kind of week.")
 
     recap = generate(week, backend=Honest())
     assert recap.source == "model"
@@ -227,9 +227,13 @@ def test_the_prompt_carries_the_facts(week):
     from engine.recap import build_prompt
 
     prompt = build_prompt(week)
-    assert week.highlights["highest"]["manager"] in prompt
+    assert week.highlights["highest"]["team"] in prompt
     assert "Do not invent" in prompt
-    assert "Never mock the real athletes" in prompt
+    # The prompt has to forbid two different things: naming a real person, and
+    # mocking a real athlete. The first is a privacy rule and the second is a
+    # taste one, and a model given only the second will happily name people.
+    assert "Never name a person" in prompt
+    assert "never mock the real athletes" in prompt.lower()
 
 
 def test_a_recap_serialises(week):

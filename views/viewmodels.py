@@ -24,7 +24,7 @@ from espn.models import LeagueSnapshot, Matchup, Side, Team
 def _team_card(team: Team | None, side: Side | None) -> dict[str, Any]:
     if team is None:
         return {  # cold: no matchup in the fixture names a team mTeam never sent
-            "id": 0, "name": "Unknown team", "manager": "?", "abbrev": "?",
+            "id": 0, "name": "Unknown team", "abbrev": "?",
             "monogram": "?", "hue": 0, "logo": "", "record": "",
             "total": 0.0, "projected": 0.0, "starters": [], "bench": [],
             "missing": True,
@@ -32,7 +32,15 @@ def _team_card(team: Team | None, side: Side | None) -> dict[str, Any]:
     return {
         "id": team.id,
         "name": team.name,
-        "manager": team.manager,
+        # No manager name, here or anywhere below. These are ten real people's
+        # ESPN display names -- their actual usernames -- and this app serves a
+        # public page and a public JSON endpoint. `/api/state` was publishing
+        # all ten of them.
+        #
+        # Stopped at the view model rather than at each template, for the same
+        # reason the cookie audit lives in `config.py`: if the name cannot leave
+        # here, there is no second place to check. The field stays on the model,
+        # where it is needed to join ESPN's members block to a team.
         "abbrev": team.abbrev,
         "monogram": team.monogram,
         "hue": team.hue,
@@ -79,7 +87,7 @@ def matchup_view(snap: LeagueSnapshot) -> list[dict[str, Any]]:
                 "home": home,
                 "away": away,
                 "margin": abs(round(home["total"] - away["total"], 2)),
-                "leader": leader["manager"],
+                "leader": leader["name"],
                 "settled": probability.settled or matchup.winner not in ("UNDECIDED", ""),
                 "win_prob": probability.home_win,
                 "away_win_prob": probability.away_win,
@@ -329,7 +337,7 @@ def cheer_view(snap: LeagueSnapshot, team_id: int | None = None) -> list[dict[st
             team = snap.team(side.team_id)
             for player in side.starters:
                 stakes.setdefault(player.pro_team_id, []).append(
-                    (side.team_id, team.manager if team else "?", player)
+                    (side.team_id, team.name if team else "?", player)
                 )
 
     rows: list[dict[str, Any]] = []
@@ -466,7 +474,6 @@ def _fixture_stake(snap: LeagueSnapshot, pro_ids: set[int]) -> dict[str, Any]:
             entry = {
                 "team_id": side.team_id,
                 "team": team.name if team else f"team {side.team_id}",
-                "manager": team.manager if team else "",
                 "hue": team.hue if team else 0,
                 "players": [p.name for p in inside],
                 "count": len(inside),
@@ -540,7 +547,6 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
                 continue  # cold: same: every side in the fixture has a team behind it
             rows.append({
                 "id": team.id,
-                "manager": team.manager,
                 "team": team.name,
                 "hue": team.hue,
                 "score": round(side.total, 2),
@@ -555,8 +561,10 @@ def swing_view(snap: LeagueSnapshot, live=None) -> dict[str, Any]:
         by_team[matchup.home.team_id] = probability.home_win
         by_team[matchup.away.team_id] = probability.away_win
     for row in rows:
-        team_id = next((t.id for t in snap.teams if t.manager == row["manager"]), None)
-        row["win_prob"] = by_team.get(team_id)
+        # Joined on the id the row already carries. It used to match on the
+        # manager's name, which is a join on a string nothing guarantees is
+        # unique and which no longer leaves the model.
+        row["win_prob"] = by_team.get(row["id"])
 
     rows.sort(key=lambda r: (r["win_prob"] is None, r["win_prob"] or 0))
 
@@ -614,7 +622,6 @@ def receipts_view(snap: LeagueSnapshot) -> dict[str, Any]:
                 # round. `url_for` with an int converter is what finally raised
                 # it; an empty attribute never will.
                 "id": team.id,
-                "manager": team.manager,
                 "team": team.name,
                 "hue": team.hue,
                 "score": round(side.total, 2) if side else 0.0,
@@ -661,7 +668,6 @@ def multiverse_view(snap: LeagueSnapshot, draws: int = 2500) -> dict[str, Any]:
         rows.append({
             "position": position,
             "id": record.team_id,
-            "manager": team.manager if team else "?",
             "team": team.name if team else "",
             "hue": team.hue if team else 0,
             "record": record.record,
@@ -718,7 +724,7 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
         if not game.possession:
             continue
         owners = sorted({
-            (snap.team(side.team_id).manager if snap.team(side.team_id) else "?")
+            (snap.team(side.team_id).name if snap.team(side.team_id) else "?")
             for matchup in snap.matchups for side in (matchup.home, matchup.away)
             for player in side.starters if player.pro_team_id == game.pro_team_id
         })
@@ -744,7 +750,7 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
         if 0.25 < probability.home_win < 0.75:
             rows.append({
                 "kind": "close", "flag": f"{margin:.1f} IN IT",
-                "text": f"{away.manager} v {home.manager} \u00b7 "
+                "text": f"{away.name} v {home.name} \u00b7 "
                         f"{probability.home_win * 100:.0f}% either way",
                 "sort": 1 + abs(0.5 - probability.home_win),
             })
@@ -758,8 +764,8 @@ def watch_now(snap: LeagueSnapshot, limit: int = 5) -> list[dict[str, Any]]:
             # in fantasy football and the score alone does not show it.
             rows.append({
                 "kind": "alone", "flag": "LAST MAN",
-                "text": f"{team.manager} has {side.in_play} left; "
-                        f"{(snap.team(other.team_id).manager if snap.team(other.team_id) else '?')} has none",
+                "text": f"{team.name} has {side.in_play} left; "
+                        f"{(snap.team(other.team_id).name if snap.team(other.team_id) else '?')} has none",
                 "sort": 2,
             })
 
@@ -955,7 +961,7 @@ def regret_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
     might_have.sort(key=lambda r: -r["gain"])
 
     return {
-        "team": team.name, "manager": team.manager, "hue": team.hue, "id": team.id,
+        "team": team.name, "hue": team.hue, "id": team.id,
         "logo": team.logo, "monogram": team.monogram, "record": team.record,
         "actual": round(side.total, 2),
         "optimal": round(lineup.total, 2) if lineup else round(side.total, 2),
@@ -1005,7 +1011,7 @@ def trouble_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
         )
 
     return {
-        "team": team.name, "manager": team.manager, "hue": team.hue, "id": team.id,
+        "team": team.name, "hue": team.hue, "id": team.id,
         "logo": team.logo, "monogram": team.monogram,
         "opponent": opponent.name if opponent else "?",
         "opponent_id": other.team_id if other else None,
@@ -1159,7 +1165,7 @@ def odds_detail(snap: LeagueSnapshot, team_id: int, draws: int = 2500) -> dict[s
             })
 
     return {
-        "team": team.name, "manager": team.manager, "hue": team.hue, "id": team.id,
+        "team": team.name, "hue": team.hue, "id": team.id,
         "logo": team.logo, "monogram": team.monogram,
         "record": record.record if record else "",
         "points_for": round(record.points_for, 1) if record else 0.0,
@@ -1225,7 +1231,7 @@ def _plot(values, floor: float, ceiling: float, width: float, height: float,
 def _team_row(team) -> dict[str, Any]:
     """The identity every one of these rows starts with."""
     return {"id": team.id, "team": team.name, "abbrev": team.abbrev,
-            "manager": team.manager, "hue": team.hue}
+            "hue": team.hue}
 
 
 _RECORDS: "OrderedDict[tuple, dict]" = OrderedDict()

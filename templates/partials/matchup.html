@@ -24,9 +24,8 @@
        crest beside it already carries the team's colour and abbreviation. #}
     <span class="mside-id">
       <b class="mside-team">{{ side.name }}</b>
-      <b class="mside-manager">{{ side.manager }}</b>
       <span class="mside-meta">
-        <span class="mside-mgr-inline">{{ side.manager }} &middot; </span>{{ side.record }}{% if side.in_play %} &middot; {{ side.in_play }} in play{% endif %}
+        {{ side.record }}{% if side.in_play %} &middot; {{ side.in_play }} in play{% endif %}
       </span>
     </span>
     <span class="mside-score">

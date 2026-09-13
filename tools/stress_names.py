@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve the demo Sunday with names as long as a real league's.
+"""Serve the demo Sunday with team names as long as a real league's.
 
     python3 tools/stress_names.py &
     python3 tools/screenshot.py --check-overflow
@@ -33,19 +33,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import espn.models as models  # noqa: E402
 
-#: Fifteen characters each, which is what ESPN display names actually look like.
-#: Invented, like everything else in the fixture -- no real manager appears here.
+#: Longer TEAM names, because those are what the app renders. This harness used
+#: to lengthen the MANAGER names, and stopped testing anything the day the
+#: manager stopped appearing anywhere for privacy: it went on substituting
+#: diligently into a field no template reads.
+#:
+#: Twenty-two characters and up, which is what a real league looks like: the
+#: live one runs to "The Last Great LoHo GM" and "What else can Gano wrong".
+#: Invented, like everything else here; no real team appears.
 LONGER = {
-    "Bex": "Bartholomew Q.",
-    "Chidi": "Chidinma Okeke",
-    "Noor": "Noor Al-Rashidi",
-    "Ollie": "Oliver Pemberly",
-    "Priya": "Priya Ramanathan",
-    "Gus": "Augustus Fairly",
-    "Wren": "Wren Castellano",
-    "Sam": "Samantha Brooke",
-    "Theo": "Theodore Ashcro",
-    "Marguerite": "Marguerite Vale",
+    "Regret Merchants": "The Regrettable Merchants",
+    "The Wounded Ferrets": "The Grievously Wounded Ferrets",
+    "Vibes Only FC": "Strictly Vibes Only FC",
+    "Statistically Irrelevant": "Statistically Irrelevant United",
+    "Bench Mob Rule": "The Bench Mob Rules OK",
+    "Sunday Roast": "A Proper Sunday Roast",
+    "Certified Bottlers": "Fully Certified Bottlers",
+    "Late Swap Larry": "Late Swap Larry and Sons",
+    "Panic at the Flex": "Panic! At The Flex Position",
+    "Fourth and Forever": "Fourth and Forever Amen",
 }
 
 _original = models.Team.from_raw
@@ -54,9 +60,7 @@ _original = models.Team.from_raw
 @classmethod
 def _with_longer_names(cls, raw, members=None):
     team = _original.__func__(cls, raw, members)
-    # `manager` is a read-only property over `owners`, so lengthen the owner.
-    if team.owners:
-        team.owners = [LONGER.get(team.owners[0], team.owners[0]), *team.owners[1:]]
+    team.name = LONGER.get(team.name, team.name)
     return team
 
 

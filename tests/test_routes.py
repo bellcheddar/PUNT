@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -417,14 +418,21 @@ def test_the_team_name_is_the_headline_everywhere():
     headlined = 0
     for path in drawn:
         source = path.read_text("utf-8")
-        assert "row.manager" not in source, (
-            f"{path.relative_to(templates)} headlines a table row with the username"
-        )
+        # A word boundary, not a prefix: `d.managers` is a COUNT of teams with a
+        # player in a fixture and has nothing to do with anybody's name, and a
+        # substring test flags it.
+        for banned in ("row", "card", "c", "side", "d", "team"):
+            assert not re.search(rf"\b{banned}\.manager\b", source), (
+                f"{path.relative_to(templates)} renders {banned}.manager, which is "
+                f"a real person's ESPN display name on a public page"
+            )
         headlined += source.count("row.team")
     assert headlined >= 3, "no table is headlined by the team name any more"
 
+    # There is no manager element to hide any more: it was deleted rather than
+    # hidden, which matters because `display: none` still ships the name in the
+    # page source and to anything that scrapes it. The rule this used to guard
+    # (a CSS specificity trap around hiding it) cannot come back, because the
+    # thing it was hiding is gone.
     css = (ROOT_STATIC / "css" / "theme.css").read_text("utf-8")
-    assert ".mside-id b.mside-manager { display: none; }" in css, (
-        "the manager leads the live rows again; note the specificity trap, "
-        "`.mside-id b` is 0,1,1 and beats a bare class"
-    )
+    assert "mside-manager" not in css, "the hidden manager element is back"

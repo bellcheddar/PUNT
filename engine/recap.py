@@ -172,8 +172,8 @@ def templated(pack: FactPack) -> str:
     low = highlights.get("lowest")
     if high and low:
         lines.append(
-            f"Week {pack.week}. {high['manager']} put up {high['score']:.1f}, the most "
-            f"anybody managed. {low['manager']} managed {low['score']:.1f}, which was the least."
+            f"Week {pack.week}. {high['team']} put up {high['score']:.1f}, the most "
+            f"anybody managed. {low['team']} managed {low['score']:.1f}, which was the least."
         )
 
     closest = highlights.get("closest")
@@ -192,7 +192,7 @@ def templated(pack: FactPack) -> str:
     bench = highlights.get("bench_disaster")
     if bench and bench.get("benched"):
         lines.append(
-            f"{bench['manager']} left {bench['regret']:.1f} on the bench: "
+            f"{bench['team']} left {bench['regret']:.1f} on the bench: "
             f"{bench['benched']} finished on {bench['benched_points']:.1f} while "
             f"{bench['started']} started in the {bench['slot']} and managed "
             f"{bench['started_points']:.1f}."
@@ -202,12 +202,12 @@ def templated(pack: FactPack) -> str:
     if best:
         lines.append(
             f"The best single performance was {best['player']} with "
-            f"{best['points']:.1f} for {best['manager']}."
+            f"{best['points']:.1f} for {best['team']}."
         )
 
     geese = highlights.get("goose_eggs") or []
     if geese:
-        names = ", ".join(f"{g['player']} for {g['manager']}" for g in geese[:3])
+        names = ", ".join(f"{g['player']} for {g['team']}" for g in geese[:3])
         lines.append(f"Nobody at all from {names}.")
 
     doomed = highlights.get("doomed") or []
@@ -232,7 +232,8 @@ Rules, which matter more than the writing:
 - Use ONLY the numbers and names in the facts below. Do not calculate anything.
 - Do not invent a score, a name, a player or a statistic. If it is not in the \
 facts, it did not happen.
-- Tease the managers for their decisions. Never mock the real athletes.
+- Tease the TEAMS for their decisions, by team name. Never name a person, and
+  never mock the real athletes.
 - Three or four sentences. No headings, no lists, no preamble.
 
 Facts:

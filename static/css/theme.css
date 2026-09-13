@@ -1287,19 +1287,10 @@ main { padding: 12px 14px 24px; }
 .tappable:focus-visible { outline: 2px solid var(--brand-bright); outline-offset: -2px; }
 .tappable[aria-expanded='true'] { background: var(--bg-raised); }
 
-/* The TEAM name leads, everywhere. It briefly led with the manager at half
-   width because the team name truncated there -- but the answer to a name that
-   does not fit is to give it room, not to show a different name in one panel
-   and the real one everywhere else. The league calls itself by its team names;
-   the manager stays as the line underneath, and on the cards. */
-/* `.mside-id b` is 0,1,1 and `.mside-manager` is 0,1,0, so a bare class loses
-   and the manager rendered a second time under the team name. Matching the
-   element as well makes it a fair fight. */
-.mside-id b.mside-manager { display: none; }
-/* `.mside-id span` sets `display: block`, and the manager is a span INSIDE the
-   meta span -- so it became its own line and the row read "Chidi ." above
-   "2-8 . 9 in play". A descendant selector does not stop at the first match. */
-.mside-id span.mside-mgr-inline { display: inline; }
+/* The TEAM name leads, everywhere, and is now the only name anywhere: the
+   manager's element was hidden here for months before it was removed, which is
+   the worst place for a real person's ESPN username to sit. Hidden is still
+   shipped, still in the page source, and still in anything that scrapes it. */
 
 /* "MANAGER" and "SCORE" ran into each other as MANAGERSCORE once the header
    padding came down for the pair layout. A left-aligned header next to a

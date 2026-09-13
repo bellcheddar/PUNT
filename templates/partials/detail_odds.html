@@ -1,6 +1,6 @@
 {% if d %}
 {% with hue=d.hue, logo=d.logo, monogram=d.monogram, title=d.team,
-        subtitle=d.manager ~ ' · ' ~ d.record,
+        subtitle=d.record,
         figure=(d.odds | string) ~ '%', figure_label='to make the playoffs' %}
   {% include "partials/_sheet_head.html" %}
 {% endwith %}
