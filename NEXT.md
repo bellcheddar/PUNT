@@ -61,6 +61,12 @@ What a full real game day showed, and what changed because of it.
   score, starters played / on / to go, projection and margin, form, bench regret
   and how many starters are running hot. The big score is green at 60%+ to win,
   amber from 40%, red below.
+- **The deploy script was overwriting production state.** `rsync --delete` did not
+  exclude `data/state/`, so every deploy copied this Mac's demo history over the
+  real one. Found on this deploy, which replaced the real week 1 and deleted the
+  backup next to it; restored in full (274 Moments, original play times) from a
+  copy taken earlier the same morning. Excluded and tested now; server backups
+  live in `/root/punt-backups/`.
 - **Log spam.** "serving stale" logs once a minute per feed instead of once per
   request during an ESPN wobble.
 

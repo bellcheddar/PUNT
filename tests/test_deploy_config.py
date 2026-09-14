@@ -234,3 +234,18 @@ def test_verdict_chips_carry_no_colour_on_the_base_rule():
     assert base, "no base .verdict rule found"
     assert "background" not in base.group(1)
     assert "color" not in base.group(1)
+
+
+def test_a_deploy_never_touches_the_servers_state():
+    """`rsync --delete` mirrored this Mac's gitignored demo state onto the
+    droplet: a demo season landed in the real league's history, and on the
+    first real Monday the whole Sunday's history was replaced and the backup
+    beside it deleted. The exclude is what stops both the copy and the delete,
+    and `--delete-excluded` would quietly undo it."""
+    from pathlib import Path
+
+    script = (Path(__file__).resolve().parent.parent / "deploy" / "deploy.sh").read_text("utf-8")
+    command = script[script.index("rsync -az"):script.index("./ ", script.index("rsync -az"))]
+    assert "--exclude '/data/state/'" in command
+    assert "--delete-excluded" not in command
+

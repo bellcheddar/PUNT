@@ -3,7 +3,7 @@
 #   bash deploy/deploy.sh
 #
 # Reads DROPLET_SSH / DROPLET_PATH from .env. Idempotent, and excludes the venv,
-# the recordings, the derived speech cache and every secret.
+# the derived speech cache, every secret and the server's own state.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,10 +31,19 @@ python3 tools/make_fixture.py --check
 python3 tools/phrase_lint.py >/dev/null || true   # the line-count shortfall is not a blocker
 
 echo "==> Syncing to ${DROPLET_SSH}:${DROPLET_PATH}"
+# `data/state/` is the SERVER's: the season's history, the fired-Moment ids.
+# Without this exclude, `--delete` made the droplet a mirror of this Mac's
+# gitignored demo state. Every deploy copied the laptop's demo history over the
+# real league's file -- which is how a 2025 demo week got into production -- and
+# on 2026-09-14 it replaced the first real Sunday's history, deleted the backup
+# taken beside it minutes earlier, and swapped in the demo's fired-Moment ids.
+# rsync leaves excluded paths alone on the receiving side as well, so this
+# protects the directory from `--delete` too. tests/test_deploy_config.py
+# holds the line.
 rsync -az --delete ${SSH_OPTS[@]+"${SSH_OPTS[@]}"} \
   --exclude '.venv/' --exclude '__pycache__/' --exclude '*.pyc' \
   --exclude '.git/' --exclude '.env' --exclude '.pytest_cache/' \
-  --exclude 'static/audio/phrase/' \
+  --exclude 'static/audio/phrase/' --exclude '/data/state/' \
   ./ "${DROPLET_SSH}:${DROPLET_PATH}/"
 
 echo "==> Installing dependencies and restarting"

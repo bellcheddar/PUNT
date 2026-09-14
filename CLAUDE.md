@@ -111,6 +111,11 @@ ten of them for months before anybody looked.
 
 ## Things that cost an hour each, once
 
+- **`deploy.sh` used to mirror `data/state/` from this Mac.** `rsync --delete` with no
+  exclude made the droplet a copy of the laptop's gitignored demo state: a demo season
+  appeared in the real league's history, and on 2026-09-14 a deploy replaced the first real
+  Sunday's history and deleted a backup sitting beside it. It is excluded now and a test
+  holds it. **Never keep a server backup inside the deploy path**; use `/root/punt-backups/`.
 - **A cache TTL equal to the poll interval halves the refresh rate.** The poller wakes
   thirty seconds after the last poll STARTED, finds an entry stored a moment into that
   poll, aged 29.9 s, and `expired` is `age > ttl`. Every other poll was a hit and live
