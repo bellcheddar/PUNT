@@ -1,0 +1,55 @@
+{# Next week, before the lineups lock: every hole in every lineup, the best fix
+   for it on that team's own bench, and what making the fix is worth. #}
+{% if lookahead.available %}
+<p class="ahead-summary">{{ lookahead.holes }} hole{{ '' if lookahead.holes == 1 else 's' }} across the league
+  &middot; {{ lookahead.clean }} of {{ lookahead.rows | length }} lineups clean
+  &middot; {{ lookahead.fixable | points }} pts sitting on benches</p>
+<div class="ahead-games">
+  {% for game in lookahead.games %}
+  <div class="ahead-game">
+    {% for side in (game.home, game.away) %}
+    <div class="ahead-side tappable" data-sheet="{{ url_for('api.detail_panel', name='lookahead', team_id=side.id) }}">
+      <div class="ahead-head">
+        <span class="ahead-team"><span class="dot" style="--hue: {{ side.hue }}"></span>{{ side.team }}</span>
+        <span class="num ahead-win ahead-win--{{ side.tone or 'amber' }}">{{ side.win }}%</span>
+      </div>
+      <div class="ahead-proj num">{{ side.projected | points }} projected{% if side.gain > 0 %}
+        <span class="ahead-fixed">{{ side.fixed | points }} and {{ side.win_fixed }}% with the fixes</span>{% endif %}</div>
+      {% for hole in side.holes %}
+      <div class="ahead-hole">
+        <span class="hole-flag hole-flag--{{ hole.severity }}">{{ hole.label }}</span>
+        <span class="ahead-who">{{ hole.slot }} &middot; {{ hole.player }}
+          {% if hole.fix %}<span class="ahead-fix">start {{ hole.fix.player }} <b>{{ hole.fix.gain | signed }}</b></span>
+          {% else %}<span class="ahead-fix ahead-fix--none">nobody on the bench can cover it</span>{% endif %}
+        </span>
+      </div>
+      {% else %}
+      <div class="ahead-clean">No holes. Lineup is set.</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <div class="ahead-bar" role="img"
+         aria-label="{{ game.home.team }} {{ game.home.win }} percent, {{ game.away.team }} {{ game.away.win }} percent">
+      <i style="width: {{ game.home.win }}%; --hue: {{ game.home.hue }}"></i><i style="width: {{ game.away.win }}%; --hue: {{ game.away.hue }}"></i>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<details class="panel-note" id="note-lookahead" hx-preserve="true">
+  <summary>Details</summary>
+  Week {{ lookahead.week }}'s lineups as they stand. A hole is a starter on a bye, ruled out,
+  projected for nothing, or doubtful. The fix is the best healthy player on that team's own
+  bench who can fill the slot. Win chance is simulated from next week's projections; the
+  second figure is with every fix made. Tap a team for the whole lineup.
+</details>
+{% elif lookahead.reason == 'archive' %}
+<div class="empty">
+  <strong>Only from the live week</strong>
+  The look-ahead reads next week's lineups, and those only exist from the week being played now.
+</div>
+{% else %}
+<div class="empty">
+  <strong>Nothing to look ahead to</strong>
+  Next week's lineups have not been published yet, or the season is over.
+</div>
+{% endif %}

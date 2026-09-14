@@ -16,6 +16,14 @@ from flask import Blueprint, Response, abort, jsonify, render_template, request
 from views.state import snapshot, state
 from views.tabs import _team_param, _week_param
 from views.viewmodels import (
+    draft_detail,
+    draft_view,
+    lookahead_detail,
+    lookahead_view,
+    moves_detail,
+    moves_view,
+    trust_detail,
+    trust_view,
     FORM_WEIGHTS,
     album_view,
     allplay_view,
@@ -176,6 +184,11 @@ PANELS = {
     "ledger": lambda snap, live: {"ledger": ledger_view(snap)},
     "volatility": lambda snap, live: {"volatility": volatility_view(snap)},
     "swap": lambda snap, live: {"swap": swap_view(snap)},
+    # The front office: the decisions rather than the games.
+    "lookahead": lambda snap, live: {"lookahead": lookahead_view(snap)},
+    "trust": lambda snap, live: {"trust": trust_view(snap)},
+    "draft": lambda snap, live: {"draft": draft_view(snap)},
+    "moves": lambda snap, live: {"moves": moves_view(snap)},
 }
 
 
@@ -191,6 +204,10 @@ DETAILS = {
     "ledger": ledger_detail,
     "volatility": volatility_detail,
     "swap": swap_detail,
+    "lookahead": lookahead_detail,
+    "trust": trust_detail,
+    "draft": draft_detail,
+    "moves": moves_detail,
 }
 
 

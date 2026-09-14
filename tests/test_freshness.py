@@ -118,13 +118,18 @@ def test_the_records_memo_still_hits(afternoon):
 
 #: Panels that read only SETTLED weeks. These must NOT change as a Sunday
 #: progresses: a change would mean they were reading the live week by accident.
-SETTLED_ONLY = {"shape", "swap", "volatility", "gauntlet", "luck"}
+SETTLED_ONLY = {"shape", "swap", "volatility", "gauntlet", "luck",
+                # Next week's lineups and the finished weeks' projections: neither
+                # moves while this week's games are on, and a change would mean
+                # the live week had leaked into them.
+                "lookahead", "trust"}
 
 FRAGMENTS = ["/partials/album", "/partials/scorebar", "/partials/cheer",
              "/partials/watchnow"] + [
     f"/partials/panel/{name}" for name in
     ("ticker", "regret", "trouble", "odds", "allplay", "luck", "shape", "grid",
-     "seeds", "gauntlet", "clock", "ledger", "volatility", "swap")]
+     "seeds", "gauntlet", "clock", "ledger", "volatility", "swap",
+     "lookahead", "trust", "draft", "moves")]
 
 
 def _digest(client, path):

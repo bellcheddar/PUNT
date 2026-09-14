@@ -263,7 +263,8 @@ class ReplayTransport(Transport):
         return 1.0 if duration <= 0 else min(1.0, self.clock.position / duration)
 
     def fetch(
-        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None
+        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None,
+        player_ids: tuple[int, ...] | None = None,
     ) -> dict[str, Any]:
         self.reads += 1
         slot = _slot(feed.name, scoring_period if feed.per_week else None)
@@ -317,9 +318,11 @@ class RecordingTransport(Transport):
         self._meta: dict[str, Any] = {"created": stamp.isoformat(timespec="seconds")}
 
     def fetch(
-        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None
+        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None,
+        player_ids: tuple[int, ...] | None = None,
     ) -> dict[str, Any]:
-        payload = self.inner.fetch(feed, season, league_id, scoring_period)
+        extra = {"player_ids": player_ids} if player_ids else {}
+        payload = self.inner.fetch(feed, season, league_id, scoring_period, **extra)
         try:
             self._write(feed, payload, season, league_id, scoring_period)
         except OSError as exc:

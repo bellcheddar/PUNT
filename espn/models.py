@@ -82,6 +82,15 @@ def _dict(value: Any) -> dict:
     return value if isinstance(value, dict) else {}
 
 
+def _whole(value: Any, default: int = 0) -> int:
+    """An integer id or count, or `default`. ESPN sends ids as ints, but a
+    missing field and a null are both normal, and neither should end a parse."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def _list(value: Any) -> list:
     return value if isinstance(value, list) else []
 
@@ -726,6 +735,8 @@ class LeagueSettings:
     lineup_slot_counts: dict[int, int] = field(default_factory=dict)
     current_scoring_period: int = 1
     current_matchup_period: int = 1
+    #: The last scoring period of the season, so nothing looks ahead past it.
+    final_scoring_period: int = 17
     problems: list[str] = field(default_factory=list)
 
     def title_for(self, season: int) -> str:
@@ -796,6 +807,7 @@ class LeagueSettings:
             ),
             lineup_slot_counts=counts,
             current_scoring_period=_int(raw.get("scoringPeriodId"), 1),
+            final_scoring_period=_int(_dict(raw.get("status")).get("finalScoringPeriod"), 17),
             current_matchup_period=_int(
                 _dict(raw.get("status")).get("currentMatchupPeriod"), _int(raw.get("scoringPeriodId"), 1)
             ),
@@ -822,6 +834,21 @@ class LeagueSnapshot:
     #: have been a silent shadowing in a less lucky arrangement.
     season_schedule: list[Matchup] = field(default_factory=list)
     games: dict[int, GameState] = field(default_factory=dict)
+    #: The front office: what the four decision panels read. Every one of these
+    #: is optional and defaults to empty, because each comes from its own feed
+    #: and a feed that fails must cost its panel and nothing else.
+    draft: list["DraftPick"] = field(default_factory=list)
+    moves: list["Move"] = field(default_factory=list)
+    #: player id -> his weeks, for every drafted or moved player wherever he is
+    #: now. The box scores only carry rostered players, and a dropped player's
+    #: points after the drop are the whole point of the move ledger.
+    player_history: dict[int, "PlayerHistory"] = field(default_factory=dict)
+    #: team id -> next week's roster, with next week's projections and injuries.
+    next_rosters: dict[int, list[Player]] = field(default_factory=dict)
+    #: NFL team id -> its bye week.
+    byes: dict[int, int] = field(default_factory=dict)
+    #: settled week -> that week's box score matchups, starters and projections.
+    archive: dict[int, list[Matchup]] = field(default_factory=dict)
     captured_at: str = ""
     stale: bool = False
     problems: list[str] = field(default_factory=list)
@@ -912,3 +939,181 @@ def parse_teams(raw: Any, members: dict[str, str] | None = None) -> list[Team]:
 
 def parse_matchups(raw: Any, scoring_period: int) -> list[Matchup]:
     return [Matchup.from_raw(m, scoring_period) for m in _list(_dict(raw).get("schedule"))]
+
+
+
+# -- the front office --------------------------------------------------------
+
+@dataclass(frozen=True)
+class DraftPick:
+    """One pick of the draft."""
+
+    overall: int
+    round: int
+    round_pick: int
+    team_id: int
+    player_id: int
+    keeper: bool = False
+
+
+def parse_draft(raw: Any) -> list[DraftPick]:
+    """`mDraftDetail` -> every pick, in draft order."""
+    picks = []
+    for pick in _list(_dict(_dict(raw).get("draftDetail")).get("picks")):
+        pick = _dict(pick)
+        overall, player_id = _whole(pick.get("overallPickNumber")), _whole(pick.get("playerId"))
+        # Not `player_id <= 0`: ESPN gives every team defence a NEGATIVE id, and
+        # that test silently dropped the real draft's defence picks. But -1 is
+        # not a player either: it is ESPN's placeholder for a slot with nobody in
+        # it, and the real league's draft has ten of them.
+        if overall <= 0 or player_id in NO_PLAYER:
+            continue
+        picks.append(DraftPick(
+            overall=overall, round=_whole(pick.get("roundId")),
+            round_pick=_whole(pick.get("roundPickNumber")), team_id=_whole(pick.get("teamId")),
+            player_id=player_id, keeper=bool(pick.get("keeper")),
+        ))
+    return sorted(picks, key=lambda p: p.overall)
+
+
+#: Player ids that mean nobody. Zero is a missing field; -1 is ESPN's own empty
+#: slot. Every other negative id is a team defence: see `defence_team`.
+NO_PLAYER = (0, -1)
+
+#: ESPN numbers a team defence as minus (16000 + the NFL team's id): -16012 is
+#: Kansas City's. Checked against every defence on a real roster, 13 of 13.
+DEFENCE_ID_BASE = 16000
+
+
+def defence_team(player_id: int) -> str:
+    """The NFL team a defence's player id belongs to, or "" for any other id.
+
+    Needed because ESPN's player feed never returns a defence, so one that has
+    been cut since the draft has no name anywhere else.
+    """
+    return PRO_TEAMS.get(-player_id - DEFENCE_ID_BASE, "") if player_id < -DEFENCE_ID_BASE else ""
+
+
+#: Transaction types that change who is on a roster. ESPN sends DRAFT, ROSTER (a
+#: lineup change) and FUTURE_ROSTER in the same list, and none of them is a move
+#: a manager made; counting ROSTER would call every lineup tweak a pickup.
+MOVE_TYPES = {"WAIVER": "waiver", "FREEAGENT": "free agent", "TRADE_ACCEPT": "trade"}
+
+
+@dataclass(frozen=True)
+class Move:
+    """What one team gained and lost in one executed transaction.
+
+    A trade is two moves, one per side, so each team's ledger reads the same way
+    whether the players came off the wire or from a rival.
+    """
+
+    id: str
+    week: int
+    kind: str
+    team_id: int
+    added: tuple[int, ...] = ()
+    dropped: tuple[int, ...] = ()
+    at: int = 0
+
+
+def parse_moves(raw: Any) -> list[Move]:
+    """`mTransactions2` -> executed moves, oldest first. Failed claims and
+    pending ones are not moves: nothing changed hands."""
+    moves = []
+    for tx in _list(_dict(raw).get("transactions")):
+        tx = _dict(tx)
+        kind = MOVE_TYPES.get(tx.get("type"))
+        if kind is None or tx.get("status") != "EXECUTED":
+            continue
+        sides: dict[int, tuple[list[int], list[int]]] = {}
+        for item in _list(tx.get("items")):
+            item = _dict(item)
+            player_id = _whole(item.get("playerId"))
+            if player_id in NO_PLAYER:  # defences have negative ids; see `parse_draft`
+                continue  # cold: an executed item always names its player
+            to_team, from_team = _whole(item.get("toTeamId"), -1), _whole(item.get("fromTeamId"), -1)
+            if item.get("type") in ("ADD", "TRADE") and to_team > 0:
+                sides.setdefault(to_team, ([], []))[0].append(player_id)
+            if item.get("type") in ("DROP", "TRADE") and from_team > 0:
+                sides.setdefault(from_team, ([], []))[1].append(player_id)
+        for team_id, (added, dropped) in sorted(sides.items()):
+            moves.append(Move(
+                id=f"{tx.get('id')}:{team_id}", week=_whole(tx.get("scoringPeriodId")),
+                kind=kind, team_id=team_id, added=tuple(added), dropped=tuple(dropped),
+                at=_whole(tx.get("proposedDate")),
+            ))
+    return sorted(moves, key=lambda m: (m.week, m.at, m.id))
+
+
+@dataclass
+class PlayerHistory:
+    """One player's season, week by week, wherever he has been."""
+
+    id: int
+    name: str
+    position: str
+    pro_team: str
+    on_team_id: int = 0
+    points: dict[int, float] = field(default_factory=dict)
+    projected: dict[int, float] = field(default_factory=dict)
+
+
+def parse_player_history(raw: Any, season: int) -> dict[int, PlayerHistory]:
+    """`kona_player_info` filtered to chosen players -> their weekly lines.
+
+    Only the single-week split of this season. The same list carries season
+    totals and last year's weeks, and either would quietly double a player's
+    points if the filter were forgotten.
+    """
+    out: dict[int, PlayerHistory] = {}
+    for entry in _list(_dict(raw).get("players")):
+        entry = _dict(entry)
+        player = _dict(entry.get("player"))
+        player_id = _whole(player.get("id") or entry.get("id"))
+        if player_id == 0:
+            continue  # cold: ESPN never sends a pool entry without an id
+        history = PlayerHistory(
+            id=player_id, name=sanitise_user_text(player.get("fullName"), "Unknown player"),
+            position=POSITIONS.get(_whole(player.get("defaultPositionId"), -1), ""),
+            pro_team=PRO_TEAMS.get(_whole(player.get("proTeamId"), -1), ""),
+            on_team_id=_whole(entry.get("onTeamId")),
+        )
+        for stat in _list(player.get("stats")):
+            stat = _dict(stat)
+            week = _whole(stat.get("scoringPeriodId"))
+            if (stat.get("statSplitTypeId") != STAT_SPLIT_WEEK or week <= 0
+                    or _whole(stat.get("seasonId"), season) != season):
+                continue
+            total = _num(stat.get("appliedTotal"))
+            if stat.get("statSourceId") == STAT_SOURCE_ACTUAL:
+                history.points[week] = total
+            elif stat.get("statSourceId") == STAT_SOURCE_PROJECTED:
+                history.projected[week] = total
+        out[player_id] = history
+    return out
+
+
+def parse_byes(raw: Any) -> dict[int, int]:
+    """`proTeamSchedules_wl` -> NFL team id -> bye week."""
+    byes = {}
+    for team in _list(_dict(_dict(raw).get("settings")).get("proTeams")):
+        team = _dict(team)
+        week = _whole(team.get("byeWeek"))
+        if week > 0:
+            byes[_whole(team.get("id"))] = week
+    return byes
+
+
+def parse_rosters(raw: Any, scoring_period: int) -> dict[int, list[Player]]:
+    """`mRoster` for a week -> team id -> that week's players, with that week's
+    projection and each player's current injury status."""
+    rosters: dict[int, list[Player]] = {}
+    for team in _list(_dict(raw).get("teams")):
+        team = _dict(team)
+        team_id = _whole(team.get("id"))
+        if team_id <= 0:
+            continue  # cold: every team ESPN sends has an id
+        rosters[team_id] = [Player.from_entry(e, scoring_period)
+                            for e in _list(_dict(team.get("roster")).get("entries"))]
+    return rosters

@@ -13,12 +13,16 @@ blank panel waiting for a module that does not exist yet.
 from __future__ import annotations
 
 import json
+import math
+import statistics
+import threading
 from collections import OrderedDict
+from dataclasses import replace
 from typing import Any
 
 from engine.scoring import all_play, luck_index, optimal_lineup, season_records, standings
-from engine.simulate import playoff_odds, probabilities_for
-from espn.models import LeagueSnapshot, Matchup, Side, Team
+from engine.simulate import playoff_odds, probabilities_for, win_probability
+from espn.models import LeagueSnapshot, Matchup, Side, Team, defence_team
 
 
 def _team_card(team: Team | None, side: Side | None) -> dict[str, Any]:
@@ -2063,3 +2067,487 @@ def change_detail(live, change_id: str, snap: LeagueSnapshot | None = None) -> d
         "context": context,
         "also": same_team,
     }
+
+
+# -- the front office ---------------------------------------------------------
+#
+# Four panels about decisions rather than games: next week's lineups, whether
+# ESPN's projections can be trusted, the draft, and the moves since. Everything
+# above is about what happened to the lineups the managers set; these ask
+# whether they set the right ones.
+
+#: Positions in the order a lineup is read.
+FRONT_POSITIONS = ("QB", "RB", "WR", "TE", "K", "D/ST")
+
+
+def _season_points(snap: LeagueSnapshot) -> dict[int, dict[int, float]]:
+    """Player id -> week -> points, for every player the front office tracks.
+
+    Settled weeks come from the player feed, which follows a player wherever he
+    goes, waivers included. The live week comes from the box score, which moves
+    every poll, so the draft and the move ledger are live on a Sunday rather
+    than a day behind it. A player nobody rosters this week keeps whatever the
+    player feed says for it.
+    """
+    current = snap.scoring_period
+    points = {pid: {week: value for week, value in history.points.items() if week <= current}
+              for pid, history in snap.player_history.items()}
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            for player in side.players:
+                points.setdefault(player.id, {})[current] = player.points
+    return points
+
+
+def _people(snap: LeagueSnapshot) -> dict[int, dict[str, str]]:
+    """Player id -> name and position, from whichever feed has the player.
+    Team defences are only in the box scores: ESPN's player feed skips them."""
+    people = {pid: {"name": h.name, "position": h.position}
+              for pid, h in snap.player_history.items()}
+    players = [p for roster in snap.next_rosters.values() for p in roster]
+    players += [p for m in (snap.live_matchups or snap.matchups)
+                for side in (m.home, m.away) for p in side.players]
+    for player in players:
+        people[player.id] = {"name": player.name, "position": player.position}
+    return people
+
+
+def _person(people: dict[int, dict[str, str]], player_id: int) -> dict[str, str]:
+    """A player's name and position, or a defence's from its id, or "Unknown"."""
+    if player_id in people:
+        return people[player_id]
+    team = defence_team(player_id)
+    if team:
+        return {"name": f"{team} D/ST", "position": "D/ST"}
+    return {"name": "Unknown player", "position": ""}  # cold: every drafted or moved player is in a feed
+
+
+def _rostered_by(snap: LeagueSnapshot) -> dict[int, int]:
+    """Player id -> the team that has him now. Missing means nobody does."""
+    where = {pid: h.on_team_id for pid, h in snap.player_history.items() if h.on_team_id > 0}
+    for team_id, roster in snap.next_rosters.items():
+        for player in roster:
+            where[player.id] = team_id
+    for matchup in snap.live_matchups or snap.matchups:
+        for side in (matchup.home, matchup.away):
+            for player in side.players:
+                where[player.id] = side.team_id
+    return where
+
+
+def _diverging(rows: list[dict[str, Any]], key: str) -> None:
+    """Bar geometry for a signed figure, in place: length as a share of the
+    biggest in the league, and which side of zero."""
+    span = max((abs(r[key]) for r in rows), default=0.0) or 1.0
+    for row in rows:
+        row["bar"] = round(min(100.0, abs(row[key]) / span * 100), 1)
+        row["side"] = 1 if row[key] >= 0 else -1
+
+
+# -- the look-ahead -----------------------------------------------------------
+
+#: Designations that mean a starter will not play, and the label each gets.
+HOLE_OUT = {"OUT": "OUT", "INJURY_RESERVE": "IR", "SUSPENSION": "SUSP"}
+#: Designations that mean he might not.
+HOLE_DOUBT = {"DOUBTFUL": "D", "QUESTIONABLE": "Q", "DAY_TO_DAY": "DTD"}
+#: Draws per pre-game matchup. Fewer than the live figure's 2,000: nothing has
+#: happened yet, the answer only moves when a lineup does, and ten simulations
+#: a request at full size cost a third of a second.
+LOOKAHEAD_DRAWS = 800
+_AHEAD: "OrderedDict[tuple, float]" = OrderedDict()
+_AHEAD_LOCK = threading.Lock()
+
+
+def _hole(player, week: int, byes: dict[int, int]) -> tuple[str, str] | None:
+    """What is wrong with a player next week, as (label, severity), or None.
+
+    A bye beats an injury: a player on bye is out whatever his status says. A
+    projection of zero with no designation is a hole too, because it is ESPN
+    saying he will not play without saying why.
+    """
+    if byes.get(player.pro_team_id) == week:
+        return "BYE", "out"
+    if player.injury in HOLE_OUT:
+        return HOLE_OUT[player.injury], "out"
+    if player.projected <= 0:
+        return "ZERO", "out"
+    if player.injury in HOLE_DOUBT:
+        return HOLE_DOUBT[player.injury], "doubt"
+    return None
+
+
+def _ahead_win(week: int, home_id: int, away_id: int, home_players, away_players) -> float:
+    """Pre-game chance the home side wins, from the app's own simulator.
+
+    Keyed on every starter's id, slot and projection, so a lineup change or a
+    projection update misses and nothing else does.
+    """
+    key = (week, home_id, away_id,
+           tuple((p.id, p.slot_id, round(p.projected, 2)) for p in home_players),
+           tuple((p.id, p.slot_id, round(p.projected, 2)) for p in away_players))
+    with _AHEAD_LOCK:
+        if key in _AHEAD:
+            _AHEAD.move_to_end(key)
+            return _AHEAD[key]
+    matchup = Matchup(id=0, matchup_period=week,
+                      home=Side(team_id=home_id, players=list(home_players)),
+                      away=Side(team_id=away_id, players=list(away_players)))
+    value = win_probability(matchup, draws=LOOKAHEAD_DRAWS).home_win
+    with _AHEAD_LOCK:
+        _AHEAD[key] = value
+        while len(_AHEAD) > 40:
+            _AHEAD.popitem(last=False)
+    return value
+
+
+def _ahead_side(snap: LeagueSnapshot, team, roster, week: int):
+    """One team's next week: its holes, the best fix for each, and the lineup
+    as it would play with and without the fixes."""
+    starters = [p for p in roster if p.is_starter]
+    bench = [p for p in roster if not p.is_starter]
+    marked = [(p, _hole(p, week, snap.byes)) for p in starters]
+
+    # Fixes are handed out worst hole first, so a player ruled out gets the one
+    # healthy backup before a questionable starter does.
+    fixes: dict[int, Any] = {}
+    used: set[int] = set()
+    for severity in ("out", "doubt"):
+        for player, hole in marked:
+            if not hole or hole[1] != severity:
+                continue
+            now = 0.0 if severity == "out" else player.projected
+            options = [c for c in bench
+                       if c.id not in used and player.slot_id in c.eligible_slots
+                       and _hole(c, week, snap.byes) is None and c.projected > now]
+            best = max(options, key=lambda c: c.projected, default=None)
+            if best is not None:
+                used.add(best.id)
+                fixes[player.id] = best
+
+    as_is, fixed, holes, lineup = [], [], [], []
+    for player, hole in marked:
+        effective = 0.0 if hole and hole[1] == "out" else player.projected
+        playing = replace(player, projected=effective) if effective != player.projected else player
+        as_is.append(playing)
+        fix = fixes.get(player.id)
+        fixed.append(replace(fix, slot_id=player.slot_id) if fix else playing)
+        lineup.append({"slot": player.slot, "player": player.name, "position": player.position,
+                       "projected": round(effective, 1), "status": hole[0] if hole else ""})
+        if hole:
+            holes.append({
+                "slot": player.slot, "player": player.name, "position": player.position,
+                "label": hole[0], "severity": hole[1], "projected": round(effective, 1),
+                "fix": ({"player": fix.name, "projected": round(fix.projected, 1),
+                         "gain": round(fix.projected - effective, 1)} if fix else None),
+            })
+
+    projected = round(sum(p.projected for p in as_is), 1)
+    fixed_total = round(sum(p.projected for p in fixed), 1)
+    side = _team_row(team)
+    side.update({
+        "projected": projected, "fixed": fixed_total, "gain": round(fixed_total - projected, 1),
+        "holes": holes, "lineup": lineup,
+        "bench": [{"player": c.name, "position": c.position, "projected": round(c.projected, 1),
+                   "status": (_hole(c, week, snap.byes) or ("", ""))[0], "fix": c.id in used}
+                  for c in sorted(bench, key=lambda c: -c.projected)],
+    })
+    return side, as_is, fixed
+
+
+def lookahead_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Next week, before the lineups lock.
+
+    Every other panel wakes up at kickoff. The mistakes that lose weeks are made
+    on a Wednesday: a player ruled out left in a starting slot, a bye nobody
+    noticed, a questionable starter with a healthy backup sitting on the bench.
+    """
+    week = snap.scoring_period + 1
+    if snap.scoring_period != snap.settings.current_scoring_period:
+        return {"available": False, "reason": "archive", "games": [], "rows": [], "week": week}
+    pairings = [m for m in snap.season_schedule if m.matchup_period == week]
+    if not snap.next_rosters or not pairings:
+        return {"available": False, "reason": "none", "games": [], "rows": [], "week": week}
+
+    games = []
+    for pairing in pairings:
+        home_team, away_team = snap.team(pairing.home.team_id), snap.team(pairing.away.team_id)
+        home_roster = snap.next_rosters.get(pairing.home.team_id)
+        away_roster = snap.next_rosters.get(pairing.away.team_id)
+        if not (home_team and away_team and home_roster and away_roster):
+            continue  # cold: every team in the schedule has a roster and a name
+        home, home_now, home_fixed = _ahead_side(snap, home_team, home_roster, week)
+        away, away_now, away_fixed = _ahead_side(snap, away_team, away_roster, week)
+        win = _ahead_win(week, home_team.id, away_team.id, home_now, away_now)
+        home.update(win=round(win * 100), tone=win_tone(win),
+                    win_fixed=round(_ahead_win(week, home_team.id, away_team.id, home_fixed, away_now) * 100))
+        away.update(win=100 - round(win * 100), tone=win_tone(1 - win),
+                    win_fixed=round((1 - _ahead_win(week, home_team.id, away_team.id, home_now, away_fixed)) * 100))
+        games.append({"home": home, "away": away})
+    if not games:
+        return {"available": False, "reason": "none", "games": [], "rows": [], "week": week}  # cold: see above
+
+    sides = [s for g in games for s in (g["home"], g["away"])]
+    return {
+        "available": True, "reason": "", "week": week, "games": games, "rows": sides,
+        "holes": sum(len(s["holes"]) for s in sides),
+        "clean": sum(1 for s in sides if not s["holes"]),
+        "fixable": round(sum(s["gain"] for s in sides), 1),
+    }
+
+
+def lookahead_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """One team's whole lineup for next week, and who they are playing."""
+    view = lookahead_view(snap)
+    for game in view["games"]:
+        for mine, theirs in ((game["home"], game["away"]), (game["away"], game["home"])):
+            if mine["id"] == team_id:
+                return {"row": mine, "opponent": theirs, "week": view["week"]}
+    return {}
+
+
+# -- promise vs delivery ------------------------------------------------------
+
+def trust_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """How much of ESPN's projection each team's starters actually delivered.
+
+    Win probability, playoff odds and the form rating all start from ESPN's
+    projection and nothing had ever checked it. Finished weeks only: a week in
+    progress has a projection and half a score, and comparing them measures the
+    clock rather than the projection.
+    """
+    tallies: dict[int, dict[str, Any]] = {}
+    for week in sorted(snap.archive):
+        for matchup in snap.archive[week]:
+            for side in (matchup.home, matchup.away):
+                starters = side.starters
+                if not starters:
+                    continue  # cold: a finished week's box score always has its lineups
+                tally = tallies.setdefault(side.team_id, {"weeks": [], "positions": {}, "players": {}})
+                projected = sum(p.projected for p in starters)
+                actual = sum(p.points for p in starters)
+                tally["weeks"].append({"week": week, "projected": round(projected, 1),
+                                       "actual": round(actual, 1), "diff": round(actual - projected, 1)})
+                for player in starters:
+                    position = tally["positions"].setdefault(player.position, [0.0, 0.0])
+                    position[0] += player.projected
+                    position[1] += player.points
+                    line = tally["players"].setdefault(player.id, {
+                        "player": player.name, "position": player.position,
+                        "projected": 0.0, "actual": 0.0, "starts": 0})
+                    line["projected"] += player.projected
+                    line["actual"] += player.points
+                    line["starts"] += 1
+    diffs = [w["diff"] for t in tallies.values() for w in t["weeks"]]
+    if not diffs:
+        return {"available": False, "rows": [], "positions": [], "weeks": 0}
+
+    # How far apart two teams finish relative to their projections, measured
+    # from this league rather than assumed: the spread of one team's miss,
+    # times root two for two teams missing independently.
+    spread = math.sqrt(2) * statistics.pstdev(diffs) if len(diffs) > 1 else 0.0
+    positions = [p for p in FRONT_POSITIONS if any(p in t["positions"] for t in tallies.values())]
+    rows = []
+    for team in snap.teams:
+        tally = tallies.get(team.id)
+        if not tally:
+            continue  # cold: every team played every settled week
+        weeks = tally["weeks"]
+        projected = sum(w["projected"] for w in weeks)
+        actual = sum(w["actual"] for w in weeks)
+        bias = (actual - projected) / len(weeks)
+        # The win chance a bias of this size is worth in an otherwise even game.
+        win_error = ((0.5 * (1 + math.erf(bias / (spread * math.sqrt(2)))) - 0.5) * 100
+                     if spread > 0 else 0.0)
+        cells = []
+        for position in positions:
+            pair = tally["positions"].get(position)
+            pct = pair[1] / pair[0] * 100 if pair and pair[0] > 0 else None
+            cells.append({"position": position,
+                          "pct": None if pct is None else round(pct),
+                          "diff": 0 if pct is None else round(pct - 100),
+                          "weight": 0 if pct is None else min(100, round(abs(pct - 100) / 25 * 100))})
+        players = [{**line, "projected": round(line["projected"], 1), "actual": round(line["actual"], 1),
+                    "diff": round(line["actual"] - line["projected"], 1)}
+                   for line in tally["players"].values()]
+        row = _team_row(team)
+        row.update({
+            "delivered": round(actual / projected * 100, 1) if projected > 0 else 100.0,
+            "beaten": sum(1 for w in weeks if w["diff"] > 0), "weeks": len(weeks),
+            "bias": round(bias, 1), "miss": round(sum(abs(w["diff"]) for w in weeks) / len(weeks), 1),
+            "win_error": round(win_error, 1), "cells": cells,
+            "per_week": weeks, "players": players,
+            "projected": round(projected / len(weeks), 1), "actual": round(actual / len(weeks), 1),
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: -r["delivered"])
+    total_projected = sum(w["projected"] for t in tallies.values() for w in t["weeks"])
+    total_actual = sum(w["actual"] for t in tallies.values() for w in t["weeks"])
+    return {
+        "available": True, "rows": rows, "positions": positions,
+        "weeks": len(snap.archive), "spread": round(spread, 1),
+        "league": round(total_actual / total_projected * 100, 1) if total_projected > 0 else 100.0,
+    }
+
+
+def trust_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """One team against its projections: week by week, position by position,
+    and the starters ESPN has been most wrong about."""
+    view = trust_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    players = sorted(row["players"], key=lambda p: p["diff"])
+    return {
+        "row": row, "positions": view["positions"], "league": view["league"],
+        "spread": view["spread"],
+        "over": [p for p in reversed(players) if p["diff"] > 0][:3],
+        "under": [p for p in players if p["diff"] < 0][:3],
+    }
+
+
+# -- draft receipts -----------------------------------------------------------
+
+#: Picks either side that a pick is measured against: about a round. The
+#: league's own draft is the baseline, not a rankings site's idea of what a
+#: fourth-round pick is worth, which would be a number nobody in the league
+#: agreed to.
+DRAFT_WINDOW = 10
+
+
+def draft_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Every pick against what the picks around it have scored."""
+    if not snap.draft:
+        return {"available": False, "reason": "draft", "rows": [], "picks": []}
+    points = _season_points(snap)
+    totals = [round(sum(points.get(p.player_id, {}).values()), 1) for p in snap.draft]
+    if not any(totals):
+        return {"available": False, "reason": "points", "rows": [], "picks": []}
+    people, where = _people(snap), _rostered_by(snap)
+    hues = {t.id: t.hue for t in snap.teams}
+
+    picks = []
+    for i, (pick, total) in enumerate(zip(snap.draft, totals)):
+        neighbours = totals[max(0, i - DRAFT_WINDOW):i] + totals[i + 1:i + 1 + DRAFT_WINDOW]
+        expected = sum(neighbours) / len(neighbours) if neighbours else total
+        person = _person(people, pick.player_id)
+        now = where.get(pick.player_id, 0)
+        picks.append({
+            "overall": pick.overall, "round": pick.round, "pick": pick.round_pick,
+            "team_id": pick.team_id, "player": person.get("name", "Unknown player"),
+            "position": person.get("position", ""), "keeper": pick.keeper,
+            "points": total, "expected": round(expected, 1), "value": round(total - expected, 1),
+            "status": "kept" if now == pick.team_id else "elsewhere" if now else "released",
+        })
+
+    rows = []
+    for team in snap.teams:
+        mine = [p for p in picks if p["team_id"] == team.id]
+        if not mine:
+            continue  # cold: every team drafts
+        row = _team_row(team)
+        row.update({
+            "value": round(sum(p["value"] for p in mine), 1),
+            "points": round(sum(p["points"] for p in mine), 1),
+            "picks": len(mine), "kept": sum(1 for p in mine if p["status"] == "kept"),
+            "released": sum(1 for p in mine if p["status"] == "released"),
+            "steal": max(mine, key=lambda p: p["value"]), "bust": min(mine, key=lambda p: p["value"]),
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: -r["value"])
+    for rank, row in enumerate(rows, start=1):
+        row["rank"] = rank
+    _diverging(rows, "value")
+
+    # The plot, in percentages of its box so the template only places things.
+    ceiling = max(totals) or 1.0
+    last = max(p["overall"] for p in picks)
+    x = lambda overall: round((overall - 1) / max(1, last - 1) * 100, 2)  # noqa: E731
+    y = lambda value: round(100 - min(value, ceiling) / ceiling * 100, 2)  # noqa: E731
+    dots = [{"x": x(p["overall"]), "y": y(p["points"]), "hue": hues.get(p["team_id"], 0),
+             "label": f"{p['round']}.{p['pick']:02d} {p['player']}: {p['points']} pts, "
+                      f"the picks around it {p['expected']}"} for p in picks]
+    curve = " ".join(f"{x(p['overall'])},{y(p['expected'])}" for p in picks)
+    weeks = sorted({w for p in snap.draft for w in points.get(p.player_id, {})})
+    return {
+        "available": True, "reason": "", "rows": rows, "picks": picks, "dots": dots,
+        "curve": curve, "ceiling": round(ceiling, 1), "last": last, "weeks": len(weeks),
+        "window": DRAFT_WINDOW,
+        "best": max(picks, key=lambda p: p["value"]), "worst": min(picks, key=lambda p: p["value"]),
+    }
+
+
+def draft_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """One team's seventeen picks, in the order they were made."""
+    view = draft_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    return {"row": row, "picks": [p for p in view["picks"] if p["team_id"] == team_id],
+            "window": view["window"], "teams": len(view["rows"])}
+
+
+# -- the move ledger ----------------------------------------------------------
+
+def moves_view(snap: LeagueSnapshot) -> dict[str, Any]:
+    """Every pickup, drop and trade, and whether it paid.
+
+    Net is what the players a team brought in have scored since the move,
+    minus what the players it let go have scored since, wherever they went and
+    whoever started them. Counted from the week of the move, because a claim
+    processed on a Wednesday plays that week.
+    """
+    if not snap.moves:
+        return {"available": False, "rows": [], "ledger": []}
+    points, people = _season_points(snap), _people(snap)
+    names = {t.id: t.name for t in snap.teams}
+
+    def line(player_id: int, week: int) -> dict[str, Any]:
+        person = _person(people, player_id)
+        since = sum(v for w, v in points.get(player_id, {}).items() if w >= week)
+        return {"player": person.get("name", "Unknown player"),
+                "position": person.get("position", ""), "points": round(since, 1)}
+
+    ledger = []
+    for move in snap.moves:
+        added = [line(p, move.week) for p in move.added]
+        dropped = [line(p, move.week) for p in move.dropped]
+        ledger.append({
+            "id": move.id, "week": move.week, "kind": move.kind, "team_id": move.team_id,
+            "team": names.get(move.team_id, f"team {move.team_id}"),
+            "added": added, "dropped": dropped,
+            "net": round(sum(a["points"] for a in added) - sum(d["points"] for d in dropped), 1),
+        })
+
+    rows = []
+    for team in snap.teams:
+        mine = [m for m in ledger if m["team_id"] == team.id]
+        adds = [a for m in mine for a in m["added"]]
+        drops = [d for m in mine for d in m["dropped"]]
+        row = _team_row(team)
+        row.update({
+            "moves": len(mine), "net": round(sum(m["net"] for m in mine), 1),
+            "best_add": max(adds, key=lambda a: a["points"], default=None),
+            "worst_drop": max(drops, key=lambda d: d["points"], default=None),
+        })
+        rows.append(row)
+    rows.sort(key=lambda r: (-r["net"], -r["moves"]))
+    _diverging(rows, "net")
+    return {
+        "available": True, "rows": rows, "ledger": ledger, "moves": len(ledger),
+        "best": max(ledger, key=lambda m: m["net"]), "worst": min(ledger, key=lambda m: m["net"]),
+    }
+
+
+def moves_detail(snap: LeagueSnapshot, team_id: int) -> dict[str, Any]:
+    """One team's moves, newest first."""
+    view = moves_view(snap)
+    row = _row_for(view, team_id)
+    if row is None:
+        return {}
+    mine = [m for m in view["ledger"] if m["team_id"] == team_id]
+    return {
+        "row": row, "moves": list(reversed(mine)),
+        "added": round(sum(a["points"] for m in mine for a in m["added"]), 1),
+        "dropped": round(sum(d["points"] for m in mine for d in m["dropped"]), 1),
+    }
+

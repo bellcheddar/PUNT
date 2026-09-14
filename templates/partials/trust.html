@@ -1,0 +1,48 @@
+{# What ESPN projected against what each team's starters scored, by position,
+   over the finished weeks. Win chance, playoff odds and form all start from the
+   projection, and this is the only place anything checks it. #}
+{% if trust.available %}
+<div class="scroll-x">
+<table class="rows ledger trust-rows">
+  <thead>
+    <tr>
+      <th>Team</th>
+      {# The whole lineup first, beside the name: it is the headline, and as the
+         last column it sat off the right edge of a phone behind a scroll. #}
+      <th class="num">Lineup</th>
+      {% for position in trust.positions %}<th class="ledger-head">{{ position }}</th>{% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in trust.rows %}
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_panel', name='trust', team_id=row.id) }}">
+      <td class="ledger-name"><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
+      <td class="num {% if row.delivered >= 100 %}pos{% else %}neg{% endif %}">{{ row.delivered | round | int }}%<span class="sub">{{ row.beaten }}/{{ row.weeks }} beat it</span></td>
+      {% for cell in row.cells %}
+      <td class="ledger-cell">
+        {% if cell.pct is not none %}
+        <span class="heat {% if cell.diff > 0 %}heat--up{% elif cell.diff < 0 %}heat--down{% endif %}"
+              style="--weight: {{ cell.weight }}"
+              title="{{ row.team }} {{ cell.position }}: {{ cell.pct }}% of projection">{{ cell.pct }}</span>
+        {% else %}<span class="dim">&ndash;</span>{% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<details class="panel-note" id="note-trust" hx-preserve="true">
+  <summary>Details</summary>
+  Each figure is the percentage of ESPN's projection that position's starters actually scored,
+  over {{ trust.weeks }} finished week{{ '' if trust.weeks == 1 else 's' }}. Over 100 in green means
+  ESPN undersells that team; under 100 in red means it oversells. The league as a whole delivered
+  {{ trust.league }}%. Tap a team for what the gap is worth in win chance.
+</details>
+{% else %}
+<div class="empty">
+  <strong>No finished weeks yet</strong>
+  Promise vs delivery sets what ESPN projected against what each team scored, so it needs one
+  settled week before it has anything to compare. It fills in on Tuesday.
+</div>
+{% endif %}

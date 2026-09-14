@@ -1,0 +1,37 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=(d.row.rank ~ ' of ' ~ d.teams ~ ' drafts') ~ ' · ' ~ d.row.kept ~ ' of ' ~ d.row.picks ~ ' kept',
+        figure=(d.row.value | signed), figure_label='points against the picks around them',
+        figure_class=('pos' if d.row.value > 0 else 'neg' if d.row.value < 0 else '') %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Season points</dt><dd>{{ d.row.points | points }}</dd></div>
+  <div><dt>Released</dt><dd>{{ d.row.released }}</dd></div>
+  <div><dt>Best pick</dt><dd>{{ d.row.steal.value | signed }}</dd></div>
+  <div><dt>Worst pick</dt><dd>{{ d.row.bust.value | signed }}</dd></div>
+</dl>
+
+<p class="sheet-note">
+  {{ d.row.steal.player }} in round {{ d.row.steal.round }} has scored {{ d.row.steal.points | points }},
+  against {{ d.row.steal.expected | points }} for the picks around him. {{ d.row.bust.player }} in round
+  {{ d.row.bust.round }} has {{ d.row.bust.points | points }}, where the picks around him have
+  {{ d.row.bust.expected | points }}.
+</p>
+
+<h4 class="sheet-group">Every pick</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for p in d.picks %}
+    <tr>
+      <td class="slot">{{ p.round }}.{{ '%02d' % p.pick }}</td>
+      <td>{{ p.player }}<span class="sub">{{ p.position }} &middot; {{ p.status }}{% if p.keeper %} &middot; keeper{% endif %} &middot; slot {{ p.expected | points }}</span></td>
+      <td class="num">{{ p.points | points }}<span class="sub {% if p.value > 0 %}pos{% elif p.value < 0 %}neg{% endif %}">{{ p.value | signed }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>No draft for this team</strong>ESPN has no picks for it.</div>
+{% endif %}

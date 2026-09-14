@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 470 tests, offline
+python3 -m pytest                              # 511 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -116,6 +116,16 @@ ten of them for months before anybody looked.
   appeared in the real league's history, and on 2026-09-14 a deploy replaced the first real
   Sunday's history and deleted a backup sitting beside it. It is excluded now and a test
   holds it. **Never keep a server backup inside the deploy path**; use `/root/punt-backups/`.
+- **ESPN gives every team defence a negative player id**, minus (16000 + the NFL team id). Any
+  `id > 0` check silently drops them. But `-1` means an empty slot, not a player: the real draft's
+  seventeenth round is ten of them. `espn.models.NO_PLAYER` holds both, and the player feed never
+  returns defences, so a cut one is named from its id (`defence_team`).
+- **An optional feed must not share the live feeds' backoff.** `Feed.optional` exists because a
+  draft view returning 500 put the whole client into backoff and the next feed was refused. The
+  front-office feeds neither start the backoff nor flag the cookies, and `LeagueRepository`
+  does not re-ask a failed one for five minutes, because the snapshot is rebuilt per request.
+- **ESPN's `x-fantasy-filter` rejects `limit` with a 400**, and `filterStatsForExternalIds`
+  quietly returns no weekly lines. Probe a filter against the real league before trusting it.
 - **A cache TTL equal to the poll interval halves the refresh rate.** The poller wakes
   thirty seconds after the last poll STARTED, finds an entry stored a moment into that
   poll, aged 29.9 s, and `expired` is `age > ttl`. Every other poll was a hit and live

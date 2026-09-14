@@ -18,6 +18,7 @@ Three things live here:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import random
@@ -32,9 +33,14 @@ from espn.cache import Result, TTLCache
 from espn.models import (
     LeagueSettings,
     LeagueSnapshot,
+    parse_byes,
+    parse_draft,
     parse_game_states,
     parse_matchups,
     parse_members,
+    parse_moves,
+    parse_player_history,
+    parse_rosters,
     parse_teams,
 )
 
@@ -121,7 +127,8 @@ class AuthExpired(UpstreamError):
 
 class Transport(Protocol):
     def fetch(
-        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None
+        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None,
+        player_ids: tuple[int, ...] | None = None,
     ) -> dict[str, Any]:
         ...  # cold: a Protocol body: there is nothing here to run
 
@@ -155,7 +162,8 @@ class LiveTransport:
         return self._session
 
     def fetch(
-        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None
+        self, feed: feeds.Feed, season: int, league_id: str, scoring_period: int | None,
+        player_ids: tuple[int, ...] | None = None,
     ) -> dict[str, Any]:
         import requests  # noqa: PLC0415
 
@@ -163,7 +171,8 @@ class LiveTransport:
         params = feeds.params_for(feed, scoring_period)
         try:
             response = self._get_session().get(
-                url, params=params, timeout=self.timeout, headers=dict(feed.headers)
+                url, params=params, timeout=self.timeout,
+                headers=request_headers(feed, season, player_ids)
             )
         except (requests.ConnectionError, requests.Timeout) as exc:
             # Never reached ESPN: the venue's wifi, DNS, or a timeout.
@@ -206,6 +215,26 @@ class LiveTransport:
         if not isinstance(payload, dict):
             raise UpstreamError(f"{feed.name}: unexpected payload type {type(payload).__name__}")
         return payload
+
+
+def request_headers(feed: feeds.Feed, season: int,
+                    player_ids: tuple[int, ...] | None) -> dict[str, str]:
+    """The feed's own headers, plus a player filter when the call names players.
+
+    ESPN takes the filter as JSON in `x-fantasy-filter`, narrowed to single-week
+    lines: unfiltered, one player carries season totals and last year's weeks
+    in the same list. Two filters that look reasonable are not: a `limit` makes
+    the whole request a 400, and `filterStatsForExternalIds` is accepted and
+    returns no weekly lines at all. Both measured against the real league on
+    2026-09-14. The season is still checked when parsing.
+    """
+    headers = dict(feed.headers)
+    if player_ids:
+        headers["x-fantasy-filter"] = json.dumps({"players": {
+            "filterIds": {"value": list(player_ids)},
+            "filterStatsForSplitTypeIds": {"value": [1]},
+        }}, separators=(",", ":"))
+    return headers
 
 
 @dataclass
@@ -282,31 +311,53 @@ class EspnClient:
     # -- fetching ----------------------------------------------------------
 
     def get(
-        self, feed: feeds.Feed, scoring_period: int | None = None, live: bool = False
+        self, feed: feeds.Feed, scoring_period: int | None = None, live: bool = False,
+        player_ids: tuple[int, ...] | None = None,
     ) -> Result[dict[str, Any]]:
-        """Cached fetch. Never raises for a cache that has ever been filled."""
+        """Cached fetch. Never raises for a cache that has ever been filled.
+
+        `player_ids` narrows a player feed to those players. They are part of the
+        cache key: the set grows every time somebody makes a move, and an answer
+        for last week's set is missing the player who was just dropped.
+        """
         key = feed.cache_key(self.season, self.league_id, scoring_period)
+        if player_ids:
+            digest = hashlib.blake2b(",".join(map(str, player_ids)).encode(), digest_size=6)
+            key += ":ids" + digest.hexdigest()
         ttl = feed.ttl_for(live)
+        # Only passed when there are players to name, so a transport written
+        # before the filter existed keeps working for every other feed.
+        extra = {"player_ids": player_ids} if player_ids else {}
 
         def _fetch() -> dict[str, Any]:
             if self.backing_off:
                 raise UpstreamError(
                     f"in backoff for another {self.backoff_remaining:.0f}s", status=None
                 )
+            # An optional feed neither starts the shared backoff nor speaks for
+            # the cookies. The first real run of the draft feed would otherwise
+            # have been able to hold back the live scores: one 500 from a view
+            # nobody needs on a Sunday, and every feed after it refused as "in
+            # backoff" until the timer ran out.
+            core = not feed.optional
             try:
-                payload = self.transport.fetch(feed, self.season, self.league_id, scoring_period)
+                payload = self.transport.fetch(feed, self.season, self.league_id, scoring_period, **extra)
             except AuthExpired as exc:
-                self.auth.mark_expired(str(exc))
-                self._record_failure()
+                if core:
+                    self.auth.mark_expired(str(exc))
+                    self._record_failure()
                 raise
             except UpstreamError as exc:
-                self._record_failure(local=exc.local)
+                if core:
+                    self._record_failure(local=exc.local)
                 raise
             except Exception:
-                self._record_failure()
+                if core:
+                    self._record_failure()
                 raise
-            self._record_success()
-            self.auth.mark_ok()
+            if core:
+                self._record_success()
+                self.auth.mark_ok()
             return payload
 
         try:
@@ -335,11 +386,22 @@ class EspnClient:
         }
 
 
+#: Seconds before an optional feed that failed with nothing cached is asked again.
+OPTIONAL_RETRY = 300.0
+
+
 class LeagueRepository:
     """Assembles a `LeagueSnapshot`. The boundary the rest of the app sees."""
 
     def __init__(self, client: EspnClient) -> None:
         self.client = client
+        #: (feed, period, players) -> (the payload parsed, what it parsed to). The
+        #: snapshot is rebuilt on every request, and re-parsing sixteen box
+        #: scores for each of them is the cost of a feed that changes weekly.
+        self._parsed: dict[tuple, tuple[Any, Any]] = {}
+        #: (feed, period) -> when it last failed with nothing cached. See
+        #: `OPTIONAL_RETRY`.
+        self._failed: dict[tuple, float] = {}
 
     def snapshot(self, scoring_period: int | None = None, live: bool = True) -> LeagueSnapshot:
         problems: list[str] = []
@@ -406,7 +468,65 @@ class LeagueRepository:
             problems=problems,
         )
         snapshot.apply_game_states(games)
+        self._front_office(snapshot, period)
         return snapshot
+
+    def _optional(self, feed: feeds.Feed, parse, scoring_period: int | None = None,
+                  player_ids: tuple[int, ...] | None = None):
+        """Fetch and parse a feed that is allowed to be missing.
+
+        A failure parses an empty payload, so its panel says it has nothing
+        rather than the whole page reporting a problem: none of these is what
+        the Sunday runs on. Parsed once per payload, not once per request.
+        """
+        key = (feed.name, scoring_period, player_ids)
+        failed_at = self._failed.get(key[:2])
+        if failed_at is not None and time.monotonic() - failed_at < OPTIONAL_RETRY:
+            return parse({})
+        result = self.client.get(feed, scoring_period=scoring_period, player_ids=player_ids)
+        if not result.value:
+            # Nothing cached and nothing fetched. Not asked again for a while:
+            # the snapshot is rebuilt on every request, and a broken view would
+            # otherwise be requested by every panel on every phone every poll.
+            # A stale copy, by contrast, is used as it stands.
+            if result.error:
+                self._failed[key[:2]] = time.monotonic()
+            return parse({})
+        self._failed.pop(key[:2], None)
+        cached = self._parsed.get(key)
+        if cached is not None and cached[0] is result.value:
+            return cached[1]
+        parsed = parse(result.value)
+        # One entry per feed and week: a new player set replaces the old one
+        # rather than accumulating a parse for every set there has ever been.
+        self._parsed = {k: v for k, v in self._parsed.items() if k[:2] != key[:2]}
+        self._parsed[key] = (result.value, parsed)
+        return parsed
+
+    def _front_office(self, snapshot: LeagueSnapshot, period: int) -> None:
+        """The draft, the moves, next week and the finished weeks, for the four
+        decision panels. Every one of them optional."""
+        season = self.client.season
+        snapshot.draft = self._optional(feeds.DRAFT, parse_draft)
+        snapshot.moves = self._optional(feeds.TRANSACTIONS, parse_moves, scoring_period=period)
+        snapshot.byes = self._optional(feeds.PRO_SCHEDULE, parse_byes)
+        upcoming = period + 1
+        if upcoming <= snapshot.settings.final_scoring_period:
+            snapshot.next_rosters = self._optional(
+                feeds.ROSTER, lambda raw: parse_rosters(raw, upcoming), scoring_period=upcoming)
+        snapshot.archive = {
+            week: [m for m in self._optional(feeds.BOXSCORE_WEEK,
+                                             lambda raw, w=week: parse_matchups(raw, w),
+                                             scoring_period=week)
+                   if m.matchup_period == week]
+            for week in sorted(snapshot.settled_weeks) if week < period
+        }
+        players = tuple(sorted({p.player_id for p in snapshot.draft}
+                               | {pid for m in snapshot.moves for pid in m.added + m.dropped}))
+        if players:
+            snapshot.player_history = self._optional(
+                feeds.PLAYER_HISTORY, lambda raw: parse_player_history(raw, season),
+                player_ids=players)
 
 
 def build_client(cfg, cache: TTLCache | None = None) -> EspnClient:

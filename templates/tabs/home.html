@@ -185,4 +185,50 @@
 
   </div>
 </div>
+{# --- the decisions, last -------------------------------------------------
+   The games above are about what happened to the lineups the managers set.
+   These four ask whether they set the right ones: next week before it locks,
+   whether ESPN's projections can be trusted, the draft, and every move since. #}
+<h2 class="section-rule"><span>The decisions</span></h2>
+
+<div class="columns">
+  <div class="column-stack">
+
+    <section class="panel">
+      <h2 class="panel-title">Next week &middot; the look-ahead</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='lookahead', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/lookahead.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Promise vs delivery</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='trust', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/trust.html" %}
+      </div>
+    </section>
+
+  </div>
+  <div class="column-stack">
+
+    <section class="panel">
+      <h2 class="panel-title">Draft receipts</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='draft', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/draft.html" %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Move ledger</h2>
+      <div hx-get="{{ url_for('api.partial_panel', name='moves', week=chosen_week) }}"
+           hx-trigger="every {{ poll_seconds }}s" hx-swap="innerHTML">
+        {% include "partials/moves.html" %}
+      </div>
+    </section>
+
+  </div>
+</div>
 {% endblock %}

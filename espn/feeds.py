@@ -37,6 +37,12 @@ class Feed:
     #: Whether this feed sends the league cookies. Read by the client, which must
     #: not report a 403 from a public host as "your espn_s2 has expired".
     authenticated: bool = True
+    #: A league-independent read of the season itself, such as the NFL schedule.
+    season_level: bool = False
+    #: Not what a Sunday runs on. A failure here must not start the backoff the
+    #: live feeds share, or flag the cookies as expired: a draft view that 500s
+    #: would otherwise hold back the scores for the length of the backoff.
+    optional: bool = False
     headers: dict[str, str] = field(default_factory=dict)
     purpose: str = ""
 
@@ -102,25 +108,58 @@ SCOREBOARD = Feed(
     purpose="Per-slot player points and projected remainder: the live feed",
 )
 ROSTER = Feed(
-    name="mRoster", views=("mRoster",), ttl=300, live_ttl=30, per_week=True,
+    name="mRoster", views=("mRoster",), ttl=300, live_ttl=30, per_week=True, optional=True,
     purpose="Starters vs bench, the basis of bench regret",
 )
 PLAYERS = Feed(
     name="kona_player_info", views=("kona_player_info",), ttl=900,
     purpose="Projections, injury flags, ownership across the whole player universe",
 )
+#: The front office. Everything below changes a few times a week at most, so the
+#: TTLs are long: none of it is worth an upstream call per poll, and every one of
+#: them is allowed to fail on its own without taking a panel beyond its own.
+DRAFT = Feed(
+    name="mDraftDetail", views=("mDraftDetail",), ttl=21_600, optional=True,
+    purpose="Every pick of the draft: round, pick, team, player, keeper",
+)
+#: Per week only because ESPN files the request under a scoring period; the
+#: response carries every transaction of the season whichever one is asked for.
+TRANSACTIONS = Feed(
+    name="mTransactions2", views=("mTransactions2",), ttl=900, per_week=True, optional=True,
+    purpose="Waiver claims, free-agent adds, drops and trades",
+)
+#: The same views as the live score feed under a different name, so a finished
+#: week is cached for hours rather than refetched every thirty seconds.
+BOXSCORE_WEEK = Feed(
+    name="mBoxscoreWeek", views=("mMatchupScore", "mBoxscore"), ttl=21_600, per_week=True, optional=True,
+    purpose="A finished week: who started, what each was projected and what each scored",
+)
+#: Filtered to named players per request (see `EspnClient.get`), because the
+#: box scores only carry rostered players and a dropped player's points after
+#: the drop are the half of a move nobody ever sees.
+PLAYER_HISTORY = Feed(
+    name="kona_player_history", views=("kona_player_info",), ttl=3_600, optional=True,
+    purpose="Week-by-week points and projections for drafted and moved players",
+)
+PRO_SCHEDULE = Feed(
+    name="proTeamSchedules_wl", views=("proTeamSchedules_wl",), ttl=86_400, season_level=True, optional=True,
+    purpose="NFL bye weeks",
+)
 NFL = Feed(
     name="nfl_scoreboard", ttl=20, absolute_url=NFL_SCOREBOARD, authenticated=False,
     purpose="Possession, down and distance, red zone, clock",
 )
 
-ALL_FEEDS: tuple[Feed, ...] = (SETTINGS, TEAM, SCHEDULE, SCOREBOARD, ROSTER, PLAYERS, NFL)
+ALL_FEEDS: tuple[Feed, ...] = (SETTINGS, TEAM, SCHEDULE, SCOREBOARD, ROSTER, PLAYERS, NFL,
+                               DRAFT, TRANSACTIONS, BOXSCORE_WEEK, PLAYER_HISTORY, PRO_SCHEDULE)
 BY_NAME: dict[str, Feed] = {f.name: f for f in ALL_FEEDS}
 
 
 def url_for(feed: Feed, season: int, league_id: str) -> str:
     if feed.absolute_url:
         return feed.absolute_url
+    if feed.season_level:
+        return BASE + f"/seasons/{season}"
     return BASE + LEAGUE_PATH.format(season=season, league_id=league_id)
 
 

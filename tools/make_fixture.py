@@ -784,6 +784,241 @@ def team_payload(rng: random.Random, standings: dict[int, dict]) -> dict:
     return payload
 
 
+# -- the front office ----------------------------------------------------------
+#
+# What the four decision panels read: the draft, the moves since, next week's
+# rosters, the NFL byes and a box score for every settled week. Invented to the
+# same rules as everything else here -- consistent with itself, seeded, and
+# planted with one of every case the panels have to handle.
+
+OFFICE_SEED = SEED + 404
+NEXT_PERIOD = SCORING_PERIOD + 1
+DRAFT_ROUNDS = 17
+#: Picks a team made that are no longer on its roster: three replaced by waiver
+#: claims and one simply cut. 16 - PICKUPS + GONE is the seventeen rounds.
+GONE_PER_TEAM = 4
+PICKUPS_PER_TEAM = 3
+#: Draft-day value by position, relative to projection. Quarterbacks score the
+#: most and go later than that suggests; kickers and defences go last.
+DRAFT_WEIGHT = {1: 0.62, 2: 1.12, 3: 1.05, 4: 0.9, 5: 0.2, 16: 0.25}
+#: How far ahead of what each team's starters actually deliver ESPN projects
+#: them. Positive is a projection that oversells the team. Planted wide so
+#: Promise vs delivery has a clear best and worst.
+PROJECTION_BIAS = {1: -0.10, 2: 0.04, 3: 0.12, 4: -0.02, 5: 0.07,
+                   6: -0.14, 7: 0.02, 8: -0.05, 9: 0.09, 10: 0.0}
+#: Next week's injuries: (team, roster index, status). Starters are indexes 0-8
+#: in `STARTER_SLOTS` order. One of each designation, and one on a bench, so
+#: the look-ahead has to know an injured backup is no fix.
+HOLES = [(1, 3, "OUT"), (3, 0, "QUESTIONABLE"), (9, 1, "DOUBTFUL"),
+         (5, 6, "INJURY_RESERVE"), (1, 10, "OUT")]
+#: A starter ESPN projects for nothing, with no designation to explain it.
+ZERO_HOLE = (4, 8)
+#: The trade: team a, team b, week. One each way, both bench players.
+TRADE = (2, 7, 6)
+
+
+def front_office(rosters: dict[int, list[Athlete]], schedule, settled) \
+        -> list[tuple[str, int | None, dict]]:
+    """Every front-office payload, as (feed, scoring period or None, payload)."""
+    rng = random.Random(OFFICE_SEED)
+    team_ids = [t[0] for t in TEAMS]
+    used = {a.name for squad in rosters.values() for a in squad}
+    weeks = list(range(1, SCORING_PERIOD))
+
+    # Drafted, and gone since.
+    gone: dict[int, list[Athlete]] = {}
+    pid = 9000
+    for tid in team_ids:
+        gone[tid] = []
+        for _ in range(GONE_PER_TEAM):
+            pid += 1
+            while True:
+                name = f"{rng.choice(FIRST)} {rng.choice(LAST)}"
+                if name not in used:
+                    used.add(name)
+                    break
+            position = rng.choice([1, 2, 2, 3, 3, 4])
+            mean, spread, _ = POSITION_PROFILE[position]
+            gone[tid].append(Athlete(pid, name, position, rng.choice(list(PRO_TEAMS)), 20,
+                                     max(1.0, rng.gauss(mean, spread * 0.4)), 0.0))
+
+    # Off the wire: bench players only, so every lineup the Sunday replays stays
+    # exactly the lineup it was.
+    pickups = {tid: rng.sample([a for a in rosters[tid] if not a.is_starter], PICKUPS_PER_TEAM)
+               for tid in team_ids}
+
+    # Every player's settled weeks.
+    weekly: dict[int, dict[int, list[float]]] = {}
+    for tid in team_ids:
+        for athlete in rosters[tid] + gone[tid]:
+            mean, spread, _ = POSITION_PROFILE[athlete.position]
+            weekly[athlete.id] = {
+                week: [max(0.0, rng.gauss(mean, spread)),
+                       max(0.5, mean * (1 + PROJECTION_BIAS[tid]) * rng.uniform(0.88, 1.12))]
+                for week in weeks
+            }
+    # A settled week's starters add up to that week's settled score, or the box
+    # score and the season grid would disagree about the same week.
+    for tid in team_ids:
+        starters = [a for a in rosters[tid] if a.is_starter]
+        for week in weeks:
+            raw = [weekly[a.id][week][0] for a in starters]
+            target = settled[tid][week - 1]
+            scale = target / sum(raw) if sum(raw) > 0 else 0.0
+            values = [round(v * scale, 2) for v in raw]
+            values[0] = round(values[0] + target - sum(values), 2)
+            for athlete, value in zip(starters, values):
+                weekly[athlete.id][week][0] = value
+
+    # The draft: seventeen picks a team, kickers and defences last, snake order.
+    picks_by_team: dict[int, list[Athlete]] = {}
+    for tid in team_ids:
+        drafted = [a for a in rosters[tid] if a not in pickups[tid]] + gone[tid]
+        value = {a.id: a.projected * DRAFT_WEIGHT[a.position] + rng.uniform(-2.5, 2.5) for a in drafted}
+        picks_by_team[tid] = sorted(drafted, key=lambda a: (a.position in (5, 16), -value[a.id]))
+    trade_a, trade_b, trade_week = TRADE
+    # Each side of the trade was drafted by the other team.
+    x = next(a for a in picks_by_team[trade_a] if not a.is_starter and a in rosters[trade_a])
+    y = next(a for a in picks_by_team[trade_b] if not a.is_starter and a in rosters[trade_b])
+    ix, iy = picks_by_team[trade_a].index(x), picks_by_team[trade_b].index(y)
+    picks_by_team[trade_a][ix], picks_by_team[trade_b][iy] = y, x
+
+    picks = []
+    for rnd in range(1, DRAFT_ROUNDS + 1):
+        order = team_ids if rnd % 2 else list(reversed(team_ids))
+        for position, tid in enumerate(order, start=1):
+            athlete = picks_by_team[tid][rnd - 1]
+            picks.append({
+                "id": len(picks) + 1, "overallPickNumber": (rnd - 1) * len(team_ids) + position,
+                "roundId": rnd, "roundPickNumber": position, "teamId": tid,
+                "playerId": athlete.id, "keeper": (tid, rnd) == (4, 1),
+                "autoDraftTypeId": 0, "bidAmount": 0, "lineupSlotId": 0,
+                "nominatingTeamId": 0, "reservedForKeeper": False, "tradeLocked": False,
+            })
+    draft = {"id": int(LEAGUE_ID), "seasonId": SEASON,
+             "draftDetail": {"drafted": True, "inProgress": False, "picks": picks}}
+
+    # The moves. Each pickup cost a gone player, the last gone player was simply
+    # cut, and three records that are not moves at all ride along to be ignored.
+    txs: list[dict] = []
+
+    def item(kind: str, athlete: Athlete, from_team: int, to_team: int) -> dict:
+        return {"type": kind, "playerId": athlete.id, "fromTeamId": from_team, "toTeamId": to_team,
+                "fromLineupSlotId": -1, "toLineupSlotId": -1, "isKeeper": False, "overallPickNumber": 0}
+
+    def tx(kind: str, week: int, team: int, items: list[dict], status: str = "EXECUTED") -> None:
+        txs.append({"id": f"demo-{len(txs) + 1:04d}", "type": kind, "status": status,
+                    "scoringPeriodId": week, "teamId": team, "bidAmount": 0,
+                    "executionType": "EXECUTE", "isPending": False,
+                    "proposedDate": 1_757_000_000_000 + week * 604_800_000 + len(txs) * 60_000,
+                    "items": items})
+
+    for tid in team_ids:
+        when = sorted(rng.sample(range(2, SCORING_PERIOD), PICKUPS_PER_TEAM + 1))
+        for n, athlete in enumerate(pickups[tid]):
+            tx(rng.choice(["WAIVER", "FREEAGENT"]), when[n], tid,
+               [item("ADD", athlete, -1, tid), item("DROP", gone[tid][n], tid, -1)])
+        tx("FREEAGENT", when[-1], tid, [item("DROP", gone[tid][-1], tid, -1)])
+    tx("TRADE_ACCEPT", trade_week, trade_a,
+       [item("TRADE", y, trade_a, trade_b), item("TRADE", x, trade_b, trade_a)])
+    tx("WAIVER", 5, 3, [item("ADD", gone[1][0], -1, 3)], status="FAILED_ROSTERLIMIT")
+    tx("ROSTER", 7, 5, [item("LINEUP", rosters[5][9], 5, 5)])
+    tx("DRAFT", 1, 8, [item("DRAFT", rosters[8][0], -1, 8)])
+    transactions = {"id": int(LEAGUE_ID), "seasonId": SEASON,
+                    "scoringPeriodId": SCORING_PERIOD, "transactions": txs}
+
+    # Every drafted or moved player's weeks, wherever he is now. The season
+    # split rides along because ESPN sends one, and it has to be ignored.
+    on_team = {a.id: tid for tid in team_ids for a in rosters[tid]}
+    players = []
+    for tid in team_ids:
+        for athlete in rosters[tid] + gone[tid]:
+            stats = []
+            for week in weeks:
+                actual, projected = weekly[athlete.id][week]
+                stats.append({"seasonId": SEASON, "scoringPeriodId": week, "statSourceId": 0,
+                              "statSplitTypeId": 1, "appliedTotal": round(actual, 2)})
+                stats.append({"seasonId": SEASON, "scoringPeriodId": week, "statSourceId": 1,
+                              "statSplitTypeId": 1, "appliedTotal": round(projected, 2)})
+            stats.append({"seasonId": SEASON, "scoringPeriodId": 0, "statSourceId": 0, "statSplitTypeId": 0,
+                          "appliedTotal": round(sum(weekly[athlete.id][w][0] for w in weeks), 2)})
+            players.append({"id": athlete.id, "onTeamId": on_team.get(athlete.id, 0),
+                            "player": {"id": athlete.id, "fullName": athlete.name,
+                                       "defaultPositionId": athlete.position,
+                                       "proTeamId": athlete.pro_team_id, "stats": stats}})
+    history = {"players": players}
+
+    # Byes. Nobody's is this week, and one team's is next week: the one the
+    # Sunday Roast tight end plays for, so at least one lineup has a bye in it.
+    bye_team = rosters[6][5].pro_team_id
+    bye_weeks = [5, 6, 7, 8, 9, 10, 13, 14]
+    byes = {pro: bye_weeks[n % len(bye_weeks)] for n, pro in enumerate(sorted(PRO_TEAMS))}
+    byes[bye_team] = NEXT_PERIOD
+    pro_schedule = {"settings": {"proTeams": [
+        {"id": pro, "abbrev": PRO_TEAMS[pro][0], "byeWeek": byes[pro]} for pro in sorted(PRO_TEAMS)]}}
+
+    # Next week's rosters: next week's projections, and next week's injuries.
+    status_for = {(team, index): status for team, index, status in HOLES}
+
+    def next_entry(athlete: Athlete, tid: int, index: int) -> dict:
+        status = status_for.get((tid, index), "ACTIVE")
+        projected = round(max(0.5, athlete.projected * rng.uniform(0.85, 1.15)), 2)
+        if status in ("OUT", "INJURY_RESERVE") or byes.get(athlete.pro_team_id) == NEXT_PERIOD \
+                or (tid, index) == ZERO_HOLE:
+            projected = 0.0
+        elif status == "DOUBTFUL":
+            projected = round(projected * 0.25, 2)
+        elif status == "QUESTIONABLE":
+            projected = round(projected * 0.8, 2)
+        return {"lineupSlotId": athlete.slot, "playerId": athlete.id, "playerPoolEntry": {"player": {
+            "id": athlete.id, "fullName": athlete.name, "defaultPositionId": athlete.position,
+            "proTeamId": athlete.pro_team_id, "eligibleSlots": ELIGIBLE.get(athlete.position, [20]),
+            "injuryStatus": status,
+            "stats": [{"seasonId": SEASON, "scoringPeriodId": NEXT_PERIOD, "statSourceId": 1,
+                       "statSplitTypeId": 1, "appliedTotal": projected}]}}}
+
+    next_rosters = {"id": int(LEAGUE_ID), "seasonId": SEASON, "scoringPeriodId": NEXT_PERIOD,
+                    "teams": [{"id": tid, "roster": {"entries": [
+                        next_entry(a, tid, i) for i, a in enumerate(rosters[tid])]}}
+                        for tid in team_ids]}
+
+    # A box score for every settled week.
+    def week_entry(athlete: Athlete, week: int) -> dict:
+        actual, projected = weekly[athlete.id][week]
+        return {"lineupSlotId": athlete.slot, "playerId": athlete.id,
+                "appliedStatTotal": round(actual, 2), "playerPoolEntry": {"player": {
+                    "id": athlete.id, "fullName": athlete.name, "defaultPositionId": athlete.position,
+                    "proTeamId": athlete.pro_team_id, "eligibleSlots": ELIGIBLE.get(athlete.position, [20]),
+                    "injuryStatus": "ACTIVE",
+                    "stats": [{"scoringPeriodId": week, "statSourceId": 0, "statSplitTypeId": 1,
+                               "appliedTotal": round(actual, 2)},
+                              {"scoringPeriodId": week, "statSourceId": 1, "statSplitTypeId": 1,
+                               "appliedTotal": round(projected, 2)}]}}}
+
+    out: list[tuple[str, int | None, dict]] = [
+        ("mDraftDetail", None, draft),
+        ("mTransactions2", SCORING_PERIOD, transactions),
+        ("kona_player_history", None, history),
+        ("proTeamSchedules_wl", None, pro_schedule),
+        ("mRoster", NEXT_PERIOD, next_rosters),
+    ]
+    for week in weeks:
+        games = []
+        for n, (home, away) in enumerate(schedule[week - 1], start=1):
+            home_score, away_score = settled[home][week - 1], settled[away][week - 1]
+            games.append({
+                "id": n, "matchupPeriodId": week,
+                "winner": "HOME" if home_score > away_score else "AWAY" if away_score > home_score else "TIE",
+                "home": {"teamId": home, "totalPoints": home_score,
+                         "rosterForMatchupPeriod": {"entries": [week_entry(a, week) for a in rosters[home]]}},
+                "away": {"teamId": away, "totalPoints": away_score,
+                         "rosterForMatchupPeriod": {"entries": [week_entry(a, week) for a in rosters[away]]}},
+            })
+        out.append(("mBoxscoreWeek", week, {"id": int(LEAGUE_ID), "seasonId": SEASON,
+                                            "scoringPeriodId": week, "schedule": games}))
+    return out
+
+
 def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
     rng = random.Random(SEED)
     rosters = build_rosters(rng)
@@ -792,7 +1027,7 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
     entries: list[Entry] = []
     seq = 0
 
-    def add(feed: str, payload: dict, offset: float, per_week: bool) -> None:
+    def add(feed: str, payload: dict, offset: float, per_week: bool, period: int | None = None) -> None:
         nonlocal seq
         filename = f"{seq:04d}_{feed}.json.gz"
         payloads[filename] = payload
@@ -803,7 +1038,7 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
                 offset=offset,
                 file=filename,
                 captured_at="",
-                scoring_period=SCORING_PERIOD if per_week else None,
+                scoring_period=(period or SCORING_PERIOD) if per_week else None,
             )
         )
         seq += 1
@@ -859,6 +1094,11 @@ def generate(directory: Path) -> tuple[Recording, dict[str, dict]]:
         last_signature = signature
         add("mMatchupScore", payload, float(t), per_week=True)
 
+    # The front office, filed after everything above and drawn from its own
+    # generator, so the Sunday -- every payload, every Moment, the golden
+    # timeline -- is byte for byte what it was before these panels existed.
+    for feed, period, office_payload in front_office(rosters, schedule, settled):
+        add(feed, office_payload, 0.0, per_week=period is not None, period=period)
 
     recording = Recording(
         name=DEMO_RECORDING,

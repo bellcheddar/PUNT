@@ -238,6 +238,11 @@ def _drive_the_live_transport() -> None:
     import requests
 
     from espn import feeds
+    from espn.client import request_headers  # noqa: PLC0415
+
+    # The player filter only goes out on a live call, so build it here.
+    request_headers(feeds.PLAYER_HISTORY, 2026, (4241, -16012))
+
     from espn.client import AuthExpired, LiveTransport, UpstreamError
 
     # The SWID brace dance: ESPN sets the cookie wrapped in braces and rejects it
@@ -485,7 +490,7 @@ def _drive_the_replay_harness() -> None:
     # rather than rendering an empty page, because `scoringPeriodId` drifts.
     served.fetch(feeds.SCOREBOARD, 2025, "1", 99)
     try:
-        served.fetch(feeds.ROSTER, 2025, "1", 11)      # a feed it has none of
+        served.fetch(feeds.PLAYERS, 2025, "1", None)   # a feed it has none of
     except UpstreamError:
         pass
     served.describe()
@@ -583,7 +588,11 @@ def _drive_a_bad_upstream() -> None:
         # Every feed fails with a cold cache, so the snapshot comes back as a
         # list of problems rather than as an exception. This is the banner the
         # bar screen shows when ESPN is the thing that is broken.
-        LeagueRepository(broken).snapshot()
+        failing = LeagueRepository(broken)
+        failing.snapshot()
+        # Again, straight away: the optional feeds that failed with nothing
+        # cached are not asked for a second time inside the retry window.
+        failing.snapshot()
 
         # The ladder: a local failure and a remote one have different ceilings,
         # because plugging the cable back in should not cost five minutes.
@@ -618,6 +627,7 @@ def _drive_a_bad_upstream() -> None:
 
         odd = EspnClient(transport=Weird(), season=2025, league_id="demo", cache=TTLCache())
         odd.get(feeds.TEAM)
+        odd.get(feeds.DRAFT)          # the same surprise from a feed that is optional
 
         # Then it comes back. A success clears the counter, so the next blip
         # starts the ladder from the bottom rather than from where it left off.
@@ -739,6 +749,8 @@ def drive_a_sunday() -> None:
         ledger_view, matchup_view, moment_detail, moments_view, multiverse_view,
         odds_detail, receipts_view, regret_detail, seeds_detail, seeds_view,
         shape_detail, shape_view, stored_moments, swap_detail, swap_view,
+        draft_detail, draft_view, lookahead_detail, lookahead_view, moves_detail,
+        moves_view, trust_detail, trust_view,
         swing_view, trouble_detail, volatility_detail, volatility_view,
         watch_now,
     )
@@ -1038,7 +1050,52 @@ def drive_a_sunday() -> None:
         ledger_view(view_of)
         volatility_view(view_of)
         swap_view(view_of)
+        # The front office, which reads the live week (draft, moves) and the
+        # settled ones (trust) and next week (the look-ahead).
+        lookahead_view(view_of)
+        trust_view(view_of)
+        draft_view(view_of)
+        moves_view(view_of)
     if snapshot is not None:
+        for detail in (lookahead_detail, trust_detail, draft_detail, moves_detail):
+            detail(snapshot, snapshot.teams[0].id)
+            detail(snapshot, 9999)
+        # Each of the four with nothing to read: a past week for the look-ahead,
+        # no rosters, no finished weeks, no draft, no points yet, no moves.
+        office = copy.copy(snapshot)
+        office.scoring_period = snapshot.scoring_period - 2
+        lookahead_view(office)
+        office = copy.copy(snapshot)
+        office.next_rosters, office.archive, office.draft, office.moves = {}, {}, [], []
+        lookahead_view(office)
+        trust_view(office)
+        draft_view(office)
+        moves_view(office)
+        office = copy.copy(snapshot)
+        office.player_history, office.matchups = {}, []
+        draft_view(office)
+        # The look-ahead memo, full: forty lineups in one process is a season
+        # of Tuesdays, so the eviction is staged rather than waited for. Emptied
+        # first, so the real lineups below are inserts and not memo hits.
+        from views import viewmodels as office_models  # noqa: PLC0415
+        office_models._AHEAD.clear()
+        for n in range(41):
+            office_models._AHEAD[("padding", n)] = 0.5
+        lookahead_view(snapshot)
+        # A bye week that is not a number, which is how a malformed field
+        # reaches `_whole` and its default.
+        from espn.models import DraftPick, parse_byes, parse_draft  # noqa: PLC0415
+        parse_byes({"settings": {"proTeams": [{"id": "x", "byeWeek": "n/a"}]}})
+        # The two things the real draft has and the demo does not: an empty
+        # slot (player id -1, the whole seventeenth round in the live league)
+        # and a defence cut since the draft, which no feed can name.
+        parse_draft({"draftDetail": {"picks": [
+            {"overallPickNumber": 161, "roundId": 17, "roundPickNumber": 1, "teamId": 1, "playerId": -1}]}})
+        office = copy.copy(snapshot)
+        office.draft = list(snapshot.draft) + [DraftPick(
+            overall=len(snapshot.draft) + 1, round=18, round_pick=1,
+            team_id=snapshot.teams[0].id, player_id=-16012)]
+        draft_view(office)
         seeds_view(snapshot, draws=40)
         seeds_detail(snapshot, snapshot.teams[0].id)
         for missing in (shape_detail, grid_detail, gauntlet_detail, clock_detail,

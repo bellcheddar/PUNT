@@ -1,0 +1,46 @@
+{# Every pick against what the picks around it have scored. The league's own
+   draft is the baseline, so a dot above the line beat its slot. #}
+{% if draft.available %}
+<div class="draft-plot" role="img"
+     aria-label="All {{ draft.last }} picks by where they went and the points they have scored">
+  <svg class="draft-curve" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <polyline points="{{ draft.curve }}" />
+  </svg>
+  {% for dot in draft.dots %}
+  <span class="draft-dot" style="left: {{ dot.x }}%; top: {{ dot.y }}%; --hue: {{ dot.hue }}" title="{{ dot.label }}"></span>
+  {% endfor %}
+</div>
+<div class="scatter-scale draft-scale">
+  <span>pick 1</span><span>top {{ draft.ceiling | points }} pts</span><span>pick {{ draft.last }}</span>
+</div>
+<table class="rows draft-rows">
+  <thead>
+    <tr><th>Team</th><th>Best pick</th><th class="num-narrow">Kept</th><th class="num">Value</th></tr>
+  </thead>
+  <tbody>
+  {% for row in draft.rows %}
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_panel', name='draft', team_id=row.id) }}">
+      <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}</td>
+      <td>{{ row.steal.player }}<span class="sub">round {{ row.steal.round }} &middot; {{ row.steal.value | signed }}</span></td>
+      <td class="num num-narrow">{{ row.kept }}/{{ row.picks }}</td>
+      <td class="num {% if row.value > 0 %}pos{% elif row.value < 0 %}neg{% endif %}">{{ row.value | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<details class="panel-note" id="note-draft" hx-preserve="true">
+  <summary>Details</summary>
+  Every dot is a pick, placed by where it went and how many points it has scored this season,
+  the live week included. The line is what the {{ draft.window * 2 }} picks around each one scored,
+  so a dot above it beat its slot. Value adds that up across a team's picks; kept is how many are
+  still on the roster that drafted them. Best pick of the draft so far: {{ draft.best.player }},
+  round {{ draft.best.round }}, {{ draft.best.value | signed }}.
+</details>
+{% elif draft.reason == 'draft' %}
+<div class="empty"><strong>No draft to show</strong>ESPN has not sent this league's draft.</div>
+{% else %}
+<div class="empty">
+  <strong>Nobody has scored yet</strong>
+  Draft receipts measures every pick by the points it has scored, so it wakes up at the first kickoff.
+</div>
+{% endif %}

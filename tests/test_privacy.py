@@ -25,9 +25,11 @@ FRAGMENTS = ["/partials/album", "/partials/scorebar", "/partials/cheer",
              "/partials/team/1"] + [
     f"/partials/panel/{name}" for name in
     ("ticker", "regret", "trouble", "odds", "swings", "allplay", "luck", "shape",
-     "grid", "seeds", "gauntlet", "clock", "ledger", "volatility", "swap")] + [
+     "grid", "seeds", "gauntlet", "clock", "ledger", "volatility", "swap",
+     "lookahead", "trust", "draft", "moves")] + [
     f"/partials/detail/panel/{name}/1" for name in
-    ("shape", "grid", "seeds", "gauntlet", "clock", "ledger", "volatility", "swap")] + [
+    ("shape", "grid", "seeds", "gauntlet", "clock", "ledger", "volatility", "swap",
+     "lookahead", "trust", "draft", "moves")] + [
     "/partials/detail/regret/1", "/partials/detail/trouble/1",
     "/partials/detail/odds/1", "/partials/detail/game/1"]
 

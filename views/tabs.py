@@ -10,6 +10,10 @@ from flask import Blueprint, render_template, request
 
 from views.state import snapshot, state
 from views.viewmodels import (
+    draft_view,
+    lookahead_view,
+    moves_view,
+    trust_view,
     album_view,
     allplay_view,
     clock_view,
@@ -111,6 +115,10 @@ def today():
         ledger=ledger_view(snap),
         volatility=volatility_view(snap),
         swap=swap_view(snap),
+        lookahead=lookahead_view(snap),
+        trust=trust_view(snap),
+        draft=draft_view(snap),
+        moves=moves_view(snap),
     )
 
 

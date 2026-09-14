@@ -38,14 +38,18 @@ class Flaky:
         self.inner = inner
         self.mode = mode
         self.calls = 0
+        #: (feed, scoring period) for every call that reached here, in order.
+        self.asked: list[tuple[str, int | None]] = []
 
-    def fetch(self, feed, season, league_id, scoring_period):
+    def fetch(self, feed, season, league_id, scoring_period, player_ids=None):
         self.calls += 1
+        self.asked.append((feed.name, scoring_period))
         if self.mode == "down":
             raise UpstreamError(f"{feed.name}: connection refused", local=True)
         if self.mode == "expired":
             raise AuthExpired(f"{feed.name}: ESPN returned 401")
-        return self.inner.fetch(feed, season, league_id, scoring_period)
+        extra = {"player_ids": player_ids} if player_ids else {}
+        return self.inner.fetch(feed, season, league_id, scoring_period, **extra)
 
 
 @pytest.fixture
@@ -287,16 +291,16 @@ def test_ten_phones_produce_one_upstream_poll(flaky_app, no_network):
         thread.join()
 
     assert codes == [200] * 10
-    # A snapshot reads one feed of each kind: settings, teams, the season grid,
-    # this week's boxscore and the NFL scoreboard. Counted from the repository
-    # rather than hard-coded, so adding a feed updates the bound instead of
-    # breaking the test for the wrong reason -- which is exactly what happened
-    # when the season grid was added.
-    feeds_per_snapshot = 5
-    assert flaky.calls <= feeds_per_snapshot, (
-        f"{flaky.calls} upstream calls for ten simultaneous phones, "
-        f"expected at most {feeds_per_snapshot}"
-    )
+    # Every feed a snapshot reads is fetched once, however many phones asked.
+    # Stated as "nothing was asked for twice" rather than as a count of feeds:
+    # the comment here used to say the bound was counted from the repository
+    # while the line under it said 5, and it broke for the wrong reason twice --
+    # once for the season grid, once for the front office, which reads the draft,
+    # the transactions, next week's rosters, the byes and a box score for every
+    # finished week.
+    repeated = sorted({key for key in flaky.asked if flaky.asked.count(key) > 1})
+    assert not repeated, f"fetched more than once for ten simultaneous phones: {repeated}"
+    assert flaky.calls >= 5, "the snapshot should read at least the five core feeds"
 
 
 # --------------------------------------------------------------------------

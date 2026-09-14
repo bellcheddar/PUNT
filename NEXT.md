@@ -5,13 +5,13 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 470 tests, 1 skipped, all offline. Running on the real league
+All six phases built. 511 tests, 1 skipped, all offline. Running on the real league
 (credentials: [docs/credentials.md](credentials.md)).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 470 tests, no network, no cookies
+python3 -m pytest                             # 511 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -27,6 +27,48 @@ python3 tools/perf.py                         # the blocking path
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## The decisions (2026-09-14)
+
+Four panels under their own rule at the bottom of the page, about whether the
+managers set the right lineups rather than what happened to them. Each was
+checked against the live league's ESPN data before it was built, and each came
+from a gap in what the other panels answer rather than from a list of ideas.
+
+- **The look-ahead** reads next week's `mRoster`, injury designations and the
+  NFL byes (`proTeamSchedules_wl`, a season-level endpoint that needs no
+  cookies). A hole is a starter on a bye, ruled out, projected for zero or
+  doubtful; the fix is the best healthy bench player eligible for the slot; the
+  win chance is the app's own simulator on next week's projections, with and
+  without the fixes.
+- **Promise vs delivery** reads a box score for every settled week
+  (`mBoxscoreWeek`: the live score views under a name with a six-hour TTL).
+  ESPN still serves a finished week's projections, all 167 of them for week 1.
+- **Draft receipts** reads `mDraftDetail` and measures each pick against the ten
+  picks either side, so the baseline is the league's own draft.
+- **Move ledger** reads `mTransactions2` and the player feed filtered to every
+  drafted or moved player, because a dropped player's points after the drop
+  appear in no box score.
+
+Four traps, each found by a test or a probe before it reached the real league:
+
+- **Team defences have negative player ids.** A parser asking for `id > 0`
+  dropped the real draft's defence picks. But `-1` is not a defence: it is an
+  empty slot, and the real draft's seventeenth round is ten of them. A defence
+  cut since the draft is named from its id, minus (16000 + the NFL team id),
+  because ESPN's player feed never returns defences at all.
+- **ESPN's player filter 400s on `limit`**, and a season filter returns no
+  weekly lines. `filterIds` plus `filterStatsForSplitTypeIds` is what works.
+- **An optional feed shared the live feeds' backoff.** The first failure test
+  showed a draft 500 refusing the move feed next. Optional feeds now neither
+  start the backoff nor flag the cookies, and one that fails with nothing cached
+  is not asked again for five minutes.
+- **The ten-phones test hard-coded five feeds** under a comment saying the bound
+  was counted. It now asserts that nothing is fetched twice.
+
+The demo fixture gained the same payloads from its own seeded generator, filed
+after everything else, so the recorded Sunday and the golden timeline are
+unchanged.
 
 ## After the first real Sunday (2026-09-14)
 
@@ -246,7 +288,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 470 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 511 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

@@ -1,0 +1,31 @@
+{# Every pickup, drop and trade, and whether it paid: what came in has scored
+   since, minus what went out has scored since, wherever it went. #}
+{% if moves.available %}
+<table class="rows move-rows">
+  <thead>
+    <tr><th>Team</th><th class="num-narrow">Moves</th><th class="move-bar-head">Since</th><th class="num">Net</th></tr>
+  </thead>
+  <tbody>
+  {% for row in moves.rows %}
+    <tr class="tappable" data-sheet="{{ url_for('api.detail_panel', name='moves', team_id=row.id) }}">
+      <td><span class="dot" style="--hue: {{ row.hue }}"></span>{{ row.team }}{% if row.best_add %}<span class="sub">best add {{ row.best_add.player }}, {{ row.best_add.points | points }}</span>{% endif %}</td>
+      <td class="num num-narrow">{{ row.moves }}</td>
+      <td class="move-bar"><span class="spread-bar" style="--off: {{ row.bar }}; --side: {{ row.side }}"></span></td>
+      <td class="num {% if row.net > 0 %}pos{% elif row.net < 0 %}neg{% endif %}">{{ row.net | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<details class="panel-note" id="note-moves" hx-preserve="true">
+  <summary>Details</summary>
+  {{ moves.moves }} waiver claims, free-agent adds and trades this season. Net is the points the
+  players a team brought in have scored since the move, minus the points the players it let go
+  have scored since, wherever they went and whoever started them. Best move of the season:
+  {{ moves.best.team }} in week {{ moves.best.week }}, {{ moves.best.net | signed }}.
+</details>
+{% else %}
+<div class="empty">
+  <strong>No moves yet</strong>
+  Nobody has made a waiver claim, a free-agent add or a trade. The ledger opens with the first one.
+</div>
+{% endif %}

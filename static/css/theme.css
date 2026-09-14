@@ -2229,3 +2229,65 @@ tr.is-up, tr.is-down { background-clip: padding-box; }
 @media (prefers-reduced-motion: reduce) {
   .alert, .alert--gone { animation: none; }
 }
+
+/* ---- the front office ---------------------------------------------------- */
+
+/* The look-ahead: one card per matchup, two sides and a win bar under them. */
+.ahead-summary { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint); margin: 0 0 10px; }
+.ahead-games { display: grid; gap: 10px; }
+.ahead-game {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--border);
+}
+.ahead-side { background: var(--bg-card, var(--bg)); padding: 9px 10px 10px; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ahead-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-width: 0; }
+.ahead-team { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ahead-win { font-size: 13px; font-weight: 600; }
+.ahead-win--green { color: var(--green); }
+.ahead-win--amber { color: var(--amber); }
+.ahead-win--red   { color: var(--red); }
+.ahead-proj { font-size: 10.5px; color: var(--ink-dim); }
+.ahead-fixed { display: block; color: var(--green); }
+.ahead-hole { display: grid; grid-template-columns: auto 1fr; gap: 7px; align-items: start; font-size: 12px; }
+.ahead-who { min-width: 0; overflow-wrap: anywhere; }
+.ahead-fix { display: block; font-size: 11px; color: var(--ink-dim); }
+.ahead-fix b { font-family: var(--font-mono); font-weight: 600; color: var(--green); }
+.ahead-fix--none { color: var(--ink-faint); }
+.ahead-clean { font-size: 12px; color: var(--green); }
+.hole-flag {
+  font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .04em;
+  min-width: 34px; text-align: center; padding: 1px 0; border-radius: 4px;
+}
+.hole-flag--out   { background: rgba(255,77,94,.18); color: var(--red); }
+.hole-flag--doubt { background: rgba(252,185,0,.16); color: var(--amber); }
+.ahead-bar { grid-column: 1 / -1; display: flex; height: 5px; background: var(--border); }
+.ahead-bar i { display: block; height: 100%; background: hsl(var(--hue) 62% 52%); }
+@media (max-width: 520px) {
+  .ahead-game { grid-template-columns: 1fr; }
+}
+
+/* Draft receipts: every pick as a dot, the league's own curve through them. */
+.draft-plot {
+  position: relative; height: 150px; margin: 4px 0 2px;
+  border-left: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.draft-curve { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.draft-curve polyline {
+  fill: none; stroke: var(--ink-dim); stroke-width: 1.5; stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+.draft-dot {
+  position: absolute; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+  background: hsl(var(--hue) 62% 55%); opacity: .8;
+}
+.draft-scale { margin-bottom: 8px; }
+/* The best-pick line and the best-add line wrap rather than clip. Clipped, the
+   first capture showed "+109..." -- a figure cut in half, which CLAUDE.md already
+   lists as worse than no figure -- and player names cut off mid-surname. */
+.draft-rows td .sub, .move-rows td .sub { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.4; }
+.draft-rows td:nth-child(2) { overflow-wrap: anywhere; }
+
+/* The move ledger's bar column: the net, either side of zero. */
+.move-rows .move-bar { width: 26%; }
+.move-rows th.move-bar-head { width: 26%; }
+

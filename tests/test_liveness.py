@@ -100,6 +100,8 @@ ROW_CONTAINERS = {
     "gauntlet": "gaunt-rows", "clock": "clock-rows", "ledger": "ledger",
     "swap": "matrix", "volatility": "scatter", "regret": "rows",
     "trouble": "rows", "odds": "rows", "allplay": "rows",
+    "lookahead": "ahead-games", "trust": "trust-rows", "draft": "draft-rows",
+    "moves": "move-rows",
 }
 
 

@@ -1,0 +1,34 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=d.row.moves ~ ' move' ~ ('' if d.row.moves == 1 else 's') ~ ' this season',
+        figure=(d.row.net | signed), figure_label='points, what came in minus what went out',
+        figure_class=('pos' if d.row.net > 0 else 'neg' if d.row.net < 0 else '') %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Brought in</dt><dd class="pos">{{ d.added | points }}</dd></div>
+  <div><dt>Let go</dt><dd class="neg">{{ d.dropped | points }}</dd></div>
+  <div><dt>Best add</dt><dd>{{ d.row.best_add.points | points if d.row.best_add else '-' }}</dd></div>
+  <div><dt>Worst drop</dt><dd>{{ d.row.worst_drop.points | points if d.row.worst_drop else '-' }}</dd></div>
+</dl>
+
+{% for move in d.moves %}
+<h4 class="sheet-group">Week {{ move.week }} &middot; {{ move.kind }}
+  <span class="{% if move.net > 0 %}pos{% elif move.net < 0 %}neg{% endif %}">{{ move.net | signed }}</span></h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for p in move.added %}
+    <tr><td>in: {{ p.player }}<span class="sub">{{ p.position }}</span></td><td class="num pos">{{ p.points | points }}</td></tr>
+  {% endfor %}
+  {% for p in move.dropped %}
+    <tr><td>out: {{ p.player }}<span class="sub">{{ p.position }} &middot; points since, wherever he went</span></td><td class="num neg">{{ p.points | points }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>No moves</strong>This team has not made a waiver claim, an add or a trade.</div>
+{% endfor %}
+{% else %}
+<div class="empty"><strong>No moves for this team</strong>Nothing has changed hands.</div>
+{% endif %}

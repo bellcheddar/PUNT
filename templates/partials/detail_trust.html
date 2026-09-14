@@ -1,0 +1,59 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle=d.row.beaten ~ ' of ' ~ d.row.weeks ~ ' weeks beat the projection',
+        figure=(d.row.delivered | round | int) ~ '%', figure_label='of the projection delivered',
+        figure_class=('pos' if d.row.delivered >= 100 else 'neg') %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Projected a week</dt><dd>{{ d.row.projected | points }}</dd></div>
+  <div><dt>Scored a week</dt><dd>{{ d.row.actual | points }}</dd></div>
+  <div><dt>Gap a week</dt><dd class="{% if d.row.bias >= 0 %}pos{% else %}neg{% endif %}">{{ d.row.bias | signed }}</dd></div>
+  <div><dt>Typical miss</dt><dd>&plusmn;{{ d.row.miss | points }}</dd></div>
+  <div><dt>Win chance error</dt><dd class="{% if d.row.win_error >= 0 %}pos{% else %}neg{% endif %}">{{ d.row.win_error | signed }}</dd></div>
+  <div><dt>League delivered</dt><dd>{{ d.league }}%</dd></div>
+</dl>
+
+<p class="sheet-note">
+  In an otherwise even matchup, a lineup that runs {{ d.row.bias | abs | points }} points a week
+  {{ 'ahead of' if d.row.bias >= 0 else 'behind' }} its projection is worth about
+  {{ d.row.win_error | abs | round(1) }} points of win chance that ESPN's number
+  {{ 'does not give it' if d.row.win_error >= 0 else 'gives it and should not' }}. Measured against
+  this league's own spread: two teams' finals land {{ d.spread | points }} points apart on a typical week.
+</p>
+
+<h4 class="sheet-group">Week by week</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for week in d.row.per_week %}
+    <tr>
+      <td class="slot">wk {{ week.week }}</td>
+      <td>{{ week.actual | points }}<span class="sub">projected {{ week.projected | points }}</span></td>
+      <td class="num {% if week.diff > 0 %}pos{% elif week.diff < 0 %}neg{% endif %}">{{ week.diff | signed }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if d.over %}
+<h4 class="sheet-group">ESPN undersold</h4>
+<table class="rows sheet-roster"><tbody>
+{% for p in d.over %}
+  <tr><td>{{ p.player }}<span class="sub">{{ p.position }} &middot; {{ p.starts }} start{{ '' if p.starts == 1 else 's' }}, projected {{ p.projected | points }}</span></td>
+      <td class="num pos">{{ p.diff | signed }}</td></tr>
+{% endfor %}
+</tbody></table>
+{% endif %}
+{% if d.under %}
+<h4 class="sheet-group">ESPN oversold</h4>
+<table class="rows sheet-roster"><tbody>
+{% for p in d.under %}
+  <tr><td>{{ p.player }}<span class="sub">{{ p.position }} &middot; {{ p.starts }} start{{ '' if p.starts == 1 else 's' }}, projected {{ p.projected | points }}</span></td>
+      <td class="num neg">{{ p.diff | signed }}</td></tr>
+{% endfor %}
+</tbody></table>
+{% endif %}
+{% else %}
+<div class="empty"><strong>No finished weeks</strong>This fills in once a week has settled.</div>
+{% endif %}

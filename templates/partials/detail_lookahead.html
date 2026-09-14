@@ -1,0 +1,55 @@
+{% if d %}
+{% with hue=d.row.hue, monogram=d.row.abbrev, title=d.row.team,
+        subtitle='week ' ~ d.week ~ ' v ' ~ d.opponent.team,
+        figure=d.row.win ~ '%', figure_label='to win, as the lineup stands',
+        figure_class=('pos' if d.row.win >= 60 else 'neg' if d.row.win < 40 else '') %}
+  {% include "partials/_sheet_head.html" %}
+{% endwith %}
+
+<dl class="sheet-stats">
+  <div><dt>Projected</dt><dd>{{ d.row.projected | points }}</dd></div>
+  <div><dt>Opponent</dt><dd>{{ d.opponent.projected | points }}</dd></div>
+  <div><dt>With fixes</dt><dd>{{ d.row.fixed | points }}</dd></div>
+  <div><dt>Win with fixes</dt><dd>{{ d.row.win_fixed }}%</dd></div>
+  <div><dt>Holes</dt><dd>{{ d.row.holes | length }}</dd></div>
+  <div><dt>Their holes</dt><dd>{{ d.opponent.holes | length }}</dd></div>
+</dl>
+
+{% if d.row.holes %}
+<p class="sheet-note">
+  {% if d.row.gain > 0 %}Making every fix below adds {{ d.row.gain | points }} projected points and
+  moves the chance of winning from {{ d.row.win }}% to {{ d.row.win_fixed }}%.
+  {% else %}Nobody on the bench can cover {{ 'this hole' if d.row.holes | length == 1 else 'these holes' }},
+  so the fix is on the waiver wire.{% endif %}
+</p>
+{% endif %}
+
+<h4 class="sheet-group">The lineup</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for p in d.row.lineup %}
+    <tr>
+      <td class="slot">{{ p.slot }}</td>
+      <td>{{ p.player }}<span class="sub">{{ p.position }}{% if p.status %} &middot; {{ p.status }}{% endif %}</span></td>
+      <td class="num {% if p.status %}neg{% endif %}">{{ p.projected | points }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h4 class="sheet-group">The bench</h4>
+<table class="rows sheet-roster">
+  <tbody>
+  {% for p in d.row.bench %}
+    <tr>
+      <td>{{ p.player }}<span class="sub">{{ p.position }}{% if p.status %} &middot; {{ p.status }}{% endif %}{% if p.fix %} &middot; start him{% endif %}</span></td>
+      <td class="num {% if p.fix %}pos{% elif p.status %}dim{% endif %}">{{ p.projected | points }}</td>
+    </tr>
+  {% else %}
+    <tr><td class="dim">Nobody on the bench.</td><td></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><strong>No lineup for next week</strong>Next week's rosters are not out yet.</div>
+{% endif %}
