@@ -1814,7 +1814,11 @@ main { padding: 12px 14px 24px; }
   font-size: 8.5px;
   letter-spacing: .12em;
   color: var(--ink-faint);
-  width: 54px;
+  /* A floor, not a width. Fixed at 54px, the speaker on a line that sounded plus
+     a nine-letter label (MILESTONE, GOOSE EGG) ran 20px past the column and
+     printed underneath the sentence. The label now pushes the text along. */
+  min-width: 54px;
+  white-space: nowrap;
 }
 .wheel-text {
   flex: 1;
