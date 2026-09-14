@@ -164,3 +164,29 @@ def test_the_fragment_changes_when_the_afternoon_does(client, app, transport, pa
             f"wired to the poll, or something upstream of it is serving a "
             f"cached answer"
         )
+
+
+def test_the_live_score_feed_expires_before_the_next_poll():
+    """With the TTL equal to the poll, the poller found an entry aged 29.9 s on
+    every other wake and served it again: live scores moved once a minute on the
+    first real Sunday. The floor on the poll is 30, so the live TTL must be under
+    it with room for a slow fetch."""
+    from config import Config
+    from espn import feeds
+
+    assert feeds.SCOREBOARD.ttl_for(live=True) <= Config.poll_seconds - 5
+
+
+def test_the_win_probability_memo_misses_when_only_the_clock_moves(repo, no_network):
+    """Same scores, five more minutes played: what each player still owes has
+    changed, so the answer has to be recomputed rather than served."""
+    from engine.simulate import _state_key
+
+    snap = repo.snapshot()
+    player = (snap.live_matchups or snap.matchups)[0].home.starters[0]
+    player.game_over, player.game_elapsed = False, 0.5
+    before = _state_key(snap, "win", 100)
+    later = copy.deepcopy(snap)
+    (later.live_matchups or later.matchups)[0].home.starters[0].game_elapsed = 0.6
+    assert _state_key(later, "win", 100) != before
+    assert _state_key(copy.deepcopy(snap), "win", 100) == before, "and hits when nothing moved"

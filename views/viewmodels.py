@@ -68,7 +68,10 @@ def _player(player) -> dict[str, Any]:
         "projected": round(player.projected, 2),
         "remaining": round(player.remaining, 2),
         "injury": player.injury_short,
-        "done": player.remaining <= 0,
+        # From the game state when there is one. `remaining <= 0` alone marked
+        # a player "final" the moment he passed his projection in the second
+        # quarter, and a player projected for nothing as final before kickoff.
+        "done": player.game_over if player.game_over is not None else player.remaining <= 0,
     }
 
 
@@ -134,7 +137,17 @@ def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
             best_week.get(team.id) and card["total"] > best_week[team.id]
         )
         card["winning"] = bool(probability is not None and probability > 0.5)
+        card["win_tone"] = win_tone(probability)
         card.update(_pace(snap, side))
+        card.update(_progress(side))
+        other = matchup.side_for(matchup.away.team_id if side is matchup.home else matchup.home.team_id) \
+            if matchup and side else None
+        rival = snap.team(other.team_id) if other else None
+        # The opponent by TEAM name. Not the abbreviation: ESPN abbreviations
+        # are typed by the managers and in this league several are a first name.
+        card["opponent"] = rival.name if rival else ""
+        card["opponent_total"] = round(other.total, 2) if other else None
+        card["margin"] = round(side.total - other.total, 2) if other else None
         cards.append(card)
 
     _rate(cards)
@@ -152,6 +165,42 @@ def album_view(snap: LeagueSnapshot, live=None) -> list[dict[str, Any]]:
             season_high=card["season_high"],
         )
     return cards
+
+
+#: Where the score on a card turns from red to amber to green, by the chance of
+#: winning this week's head-to-head. Symmetric around a coin flip: inside ten
+#: points of fifty is a genuine contest and gets the in-between colour, and a
+#: team the simulation gives six in ten is winning in a way worth showing.
+WIN_TONES = ((0.60, "green"), (0.40, "amber"))
+
+
+def win_tone(probability: float | None) -> str:
+    """`green`, `amber`, `red`, or "" when there is no matchup to judge."""
+    if probability is None:
+        return ""  # cold: every fixture team has a matchup; a bye week has none
+    for floor, tone in WIN_TONES:
+        if probability >= floor:
+            return tone
+    return "red"
+
+
+def _progress(side: Side | None) -> dict[str, int]:
+    """How many starters have played, are playing, and are still to play.
+
+    From the NFL game state rather than from points: a starter on zero has
+    either not kicked off or had a bad day, and only the scoreboard knows which.
+    A starter with no game state at all -- the NFL feed down, a bye -- counts
+    as still to play, because nothing has shown he is done.
+    """
+    played = playing = to_play = 0
+    for player in side.starters if side else []:
+        if player.game_over:
+            played += 1
+        elif player.game_elapsed:
+            playing += 1
+        else:
+            to_play += 1
+    return {"played": played, "playing": playing, "to_play": to_play}
 
 
 #: What the form rating is made of. Four parts, and they answer four different
@@ -1955,6 +2004,19 @@ CHANGE_MEANING = {
     "BENCH": "Somebody on the bench scored, so the points left there went up.",
     "FINAL": "Every starter's game has finished. That score cannot move again.",
     "SAID": "The commentary engine detected a play and had something to say about it.",
+    # Commentary lines carry their Moment's kind, so the word beside a line that
+    # just sounded a horn says which horn it was.
+    "TOUCHDOWN": "A starter scored a touchdown. Every phone played the horn for it.",
+    "BIG PLAY": "A starter gained enough in one play to move his team's evening. The whoosh.",
+    "LEAD": "The team that was behind in this head-to-head is now ahead.",
+    "GOOSE EGG": "A starter's game finished and he scored nothing at all.",
+    "DOOM": "This matchup's chance of winning dropped low enough that it is slipping away.",
+    "CLINCH": "The chance of winning this head-to-head went past the point of no return.",
+    "BENCHED": "A benched player outscored the starter who played instead of him.",
+    "MILESTONE": "A team or a player passed a round number worth a chime.",
+    "INJURY": "A starter's injury status changed during his game.",
+    "RED ZONE": "A player somebody in the league is starting is on a drive inside the five. The rising tone.",
+    "NO GOOD": "That drive inside the five ended without a touchdown. The record scratch.",
 }
 
 

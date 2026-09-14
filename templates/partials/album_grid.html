@@ -6,7 +6,7 @@
      front of the content on a page somebody opens forty times on a Sunday. #}
   <article class="card card--{{ c.tier }}" style="--hue: {{ c.hue }}"
            data-reveal="{{ loop.index0 }}" data-tier="{{ c.tier }}"
-           data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points, form {{ c.form | round | int }} of 100, {{ c.tier }}">
+           data-team="{{ c.id }}" aria-label="{{ c.name }}, {{ c.total | points }} points{% if c.win_prob is not none %}, {{ (c.win_prob * 100) | round | int }}% to win{% endif %}, form {{ c.form | round | int }} of 100, {{ c.tier }}">
     <div class="card-face card-face--front">
       <div>
         <div class="card-tier">{{ c.tier }}{% if c.rank %}<span class="card-rank">#{{ c.rank }}</span>{% endif %}</div>
@@ -21,15 +21,25 @@
         <img src="{{ c.logo or url_for('media.monogram', team_id=c.id) }}" alt="" loading="lazy">
       </div>
       <div>
-        <div class="card-score">{{ c.total | points }}</div>
+        {# Coloured by the chance of winning the head-to-head, not by the size of
+           the number: 70 points losing to 95 is a red 70. #}
+        <div class="card-score{% if c.win_tone %} card-score--{{ c.win_tone }}{% endif %}">{{ c.total | points }}</div>
+        {# The card is the one-stop shop: everything a manager checks on a
+           Sunday, in the order they check it. Is it being won, against whom,
+           who is left, and what it is heading for. #}
         <div class="card-stats">
-          {{ c.record }} &middot; PROJ {{ c.projected | points }}<br>
+          {# HOT rides on the WIN line: on a 175 px card the form line has no room
+             left for it and was cutting it to "4 ...". #}
+          {% if c.win_prob is not none %}<span class="card-line"><span class="card-win card-win--{{ c.win_tone }}">WIN {{ (c.win_prob * 100) | round | int }}%</span>{% if c.beating %} &middot; {{ c.beating }} HOT{% endif %}</span>{% endif %}
+          {% if c.opponent %}<span class="card-vs">v {{ c.opponent }} {{ c.opponent_total | points }}</span>{% endif %}
+          <span class="card-line">{{ c.played }} PLAYED &middot; {{ c.playing }} ON &middot; {{ c.to_play }} TO GO</span>
+          <span class="card-line">{{ c.record }} &middot; PROJ {{ c.projected | points }}{% if c.margin is not none %} &middot; {{ c.margin | signed }}{% endif %}</span>
           {# The card is ordered by FORM and not by the big number above it, so
              the big number cannot be the only one on the card: a #2 card
              showing a higher score than the #1 beside it reads as a bug unless
              the thing it was actually ranked on is printed too. #}
-          <span class="card-form">FORM {{ c.form | round | int }}</span>
-          &middot; BENCH {{ c.bench_regret | points }}
+          <span class="card-line"><span class="card-form">FORM {{ c.form | round | int }}</span>
+          &middot; BENCH {{ c.bench_regret | points }}</span>
         </div>
       </div>
     </div>
@@ -44,5 +54,5 @@
 {% endif %}
 <details class="panel-note" id="note-album-grid" hx-preserve="true">
   <summary>Details</summary>
-  Ranked on form, not on points. Tap a card for the lineup behind it.
+  Ranked on form, not on points. Score colour is the chance of winning: green 60%+, amber 40-60%, red under 40%. HOT is starters ahead of where they should be by now. Tap a card for the lineup.
 </details>

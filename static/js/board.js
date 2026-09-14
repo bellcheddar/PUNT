@@ -75,10 +75,17 @@
     const line = moment.line || {};
     const node = document.createElement('div');
     node.className = `takeover takeover--${(moment.kind || '').toLowerCase()}`;
-    node.innerHTML = `
-      <div class="takeover-kind">${(moment.kind || '').replace(/_/g, ' ')}</div>
-      <div class="takeover-text">${line.text || moment.player || ''}</div>
-      <div class="takeover-who">${(moment.managers || []).join(' &middot; ')}</div>`;
+    // Built with textContent: the line and the team names come from ESPN. And
+    // teams, never people -- this read a `managers` field that no longer
+    // exists, so the takeover's bottom line had been blank.
+    [['takeover-kind', (moment.kind || '').replace(/_/g, ' ')],
+     ['takeover-text', line.text || moment.player || ''],
+     ['takeover-who', (moment.teams || []).join(' \u00b7 ')]].forEach(([cls, value]) => {
+      const part = document.createElement('div');
+      part.className = cls;
+      part.textContent = value;
+      node.appendChild(part);
+    });
     document.body.appendChild(node);
 
     setTimeout(() => {

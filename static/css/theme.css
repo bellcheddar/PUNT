@@ -506,6 +506,19 @@ main { padding: 12px 14px 24px; }
  * order. Not coloured by value: ten cards each tinted in their own team's hue
  * already carry as much colour as a 9px line can survive. */
 .card-form { color: var(--ink); }
+/* One fact per line, each clipped rather than wrapped: a card is 175 px wide on
+   a phone, and a long opponent name wrapping onto a second line would push the
+   whole stat block into the crest. */
+.card-stats > span:not(.card-form) { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-vs { color: var(--ink-faint); }
+/* The score is coloured by the chance of winning the head-to-head, and so is the
+   WIN figure that explains it. A text shadow keeps the colour legible on every
+   one of the ten team hues behind it. */
+.card-score--green, .card-win--green { color: var(--green); }
+.card-score--amber, .card-win--amber { color: var(--amber); }
+.card-score--red,   .card-win--red   { color: var(--red); }
+.card-score[class*="card-score--"] { text-shadow: 0 1px 6px rgba(0, 0, 0, .55); }
+.card-win { font-weight: 600; }
 
 .card-crest {
   flex: 1;
@@ -2162,4 +2175,53 @@ tr.is-up, tr.is-down { background-clip: padding-box; }
 
 @media (prefers-reduced-motion: reduce) {
   .is-up, .is-down, .is-lifted, .is-moved, .is-new { animation: none; }
+}
+
+/* Sound alerts. Every sound effect puts one of these up, saying what the sound
+   meant, because on the first real Sunday the horns went off with nothing on
+   screen to explain them. Top of the screen, under the header, one at a time. */
+.alerts {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 58px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(460px, calc(100vw - 24px));
+  z-index: 120;
+  pointer-events: none;
+}
+.alert {
+  pointer-events: auto;
+  background: #161b26;
+  border: 1px solid #2a3142;
+  border-left: 4px solid hsl(var(--hue, 210) 70% 58%);
+  border-radius: 10px;
+  padding: 9px 12px 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  animation: alert-in 260ms cubic-bezier(.2, 1.1, .4, 1);
+  cursor: pointer;
+}
+.alert--good { box-shadow: 0 10px 30px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(0, 208, 132, .35); }
+.alert--bad  { box-shadow: 0 10px 30px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 77, 94, .35); }
+.alert--gone { animation: alert-out 260ms ease forwards; }
+.alert-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.alert-kind {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink); font-weight: 600;
+}
+.alert--good .alert-kind { color: var(--green); }
+.alert--bad .alert-kind  { color: var(--red); }
+.alert-sound {
+  font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.alert-text { font-size: 13.5px; line-height: 1.4; color: var(--ink); margin-top: 3px; }
+.alert-who { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-dim); margin-top: 3px; }
+@keyframes alert-in  { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+@keyframes alert-out { to { opacity: 0; transform: translateY(-8px); } }
+
+/* A ticker line that made a noise carries a small speaker, so the wheel and the
+   banner point at the same thing. */
+.wheel-row--sound .wheel-kind::before { content: "\1F50A\00a0"; font-size: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  .alert, .alert--gone { animation: none; }
 }

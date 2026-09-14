@@ -81,6 +81,7 @@ class History:
         self.path = path
         self._lock = threading.Lock()
         self._db: sqlite3.Connection | None = None
+        self._settled_key: tuple | None = None
         self.problems: list[str] = []
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -125,7 +126,11 @@ class History:
                 rows.append((
                     season, week, side.team_id,
                     team.name if team else f"team {side.team_id}",
-                    team.manager if team else "",
+                    # Never the manager. The column predates the rule that PUNT
+                    # shows team names only, and a name kept here is a name one
+                    # `SELECT *` away from a page. Left in the schema, blank, so
+                    # an existing file opens without a migration.
+                    "",
                     round(side.total, 2),
                     round(lineup.total, 2) if lineup else round(side.total, 2),
                     round(lineup.regret, 2) if lineup else 0.0,
@@ -153,6 +158,59 @@ class History:
                 )
         except sqlite3.Error as exc:
             log.warning("could not record week %s: %s", week, exc)
+        self._settle(snapshot, now)
+
+    def _settle(self, snapshot, now: str) -> None:
+        """Write the result of every finished week, once its result exists.
+
+        `record` only ever sees the week in progress, and ESPN does not declare
+        a winner until the week is processed -- in the small hours of Tuesday,
+        after the poller has already rolled onto the next week. So on the first
+        real Sunday every stored row kept `won` empty and `settled` false for
+        good, and a stat correction to a finished week never reached the file.
+
+        The season schedule carries every settled week's final score and
+        winner, so each poll reconciles the file with it. Only the result is
+        touched: `optimal` and `regret` were measured against the lineup as it
+        was on the day and cannot be rebuilt from a box score, so an existing
+        row keeps them and a week PUNT never saw gets its score as its optimal.
+        Skipped entirely while the settled scores have not changed.
+        """
+        settled = snapshot.settled_weeks
+        if not settled:
+            return  # cold: the demo is week 11, so a Sunday replay always has ten settled weeks
+        rows, heads = [], []
+        for week, games in sorted(settled.items()):
+            heads.append((snapshot.season, week, now, snapshot.settings.name))
+            for matchup in games:
+                for side, other in ((matchup.home, matchup.away), (matchup.away, matchup.home)):
+                    team = snapshot.team(side.team_id)
+                    won = 1 if side.total > other.total else 0 if side.total < other.total else None
+                    rows.append((snapshot.season, week, side.team_id,
+                                 team.name if team else f"team {side.team_id}",
+                                 round(side.total, 2), round(side.total, 2),
+                                 other.team_id, won))
+        key = (snapshot.season, tuple(rows))
+        if key == self._settled_key:
+            return
+        try:
+            with self._lock, self._db:
+                self._db.executemany(
+                    "INSERT INTO weeks (season, week, recorded_at, settled, league) "
+                    "VALUES (?, ?, ?, 1, ?) ON CONFLICT(season, week) DO UPDATE SET settled = 1",
+                    heads,
+                )
+                self._db.executemany(
+                    "INSERT INTO team_weeks (season, week, team_id, team, score, optimal, opponent, won) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+                    "ON CONFLICT(season, week, team_id) DO UPDATE SET "
+                    "team = excluded.team, score = excluded.score, "
+                    "opponent = excluded.opponent, won = excluded.won",
+                    rows,
+                )
+            self._settled_key = key
+        except sqlite3.Error as exc:
+            log.warning("could not settle finished weeks: %s", exc)  # cold: a disk error; `record` just wrote to the same file
 
     def remember(self, season: int, week: int, moments, lines: dict[str, Any]) -> None:
         """Keep the Moments. These are the part that cannot be rebuilt later."""
@@ -223,7 +281,8 @@ class History:
             "week": week, "season": season,
             "recorded_at": head["recorded_at"] if head else "",
             "settled": bool(head["settled"]) if head else False,
-            "teams": [dict(t) for t in teams],
+            # Not `manager`, even blank: old files still hold names in it.
+            "teams": [{k: t[k] for k in t.keys() if k != "manager"} for t in teams],
             "moments": [dict(m) for m in moments],
         }
 

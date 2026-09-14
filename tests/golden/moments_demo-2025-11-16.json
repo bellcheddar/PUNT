@@ -11,7 +11,7 @@
   ],
   "player": "Trey Ashgrove",
   "delta_points": 12.7,
-  "win_prob_delta": 0.0663,
+  "win_prob_delta": 0.1775,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -67,7 +67,7 @@
   ],
   "player": "Ozzie Cadwallader",
   "delta_points": 5.9,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0663,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -95,7 +95,7 @@
   ],
   "player": "Bram Marchbank",
   "delta_points": 5.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0125,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -123,7 +123,7 @@
   ],
   "player": "Vance Oakhurst",
   "delta_points": 8.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1513,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -151,7 +151,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 2.5,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0525,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -207,7 +207,7 @@
   ],
   "player": "Cass Braithwaite",
   "delta_points": 5.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0562,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -263,7 +263,7 @@
   ],
   "player": "Juno Kettleby",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0313,
   "context": {
    "week": 11,
    "slot": "K",
@@ -291,7 +291,7 @@
   ],
   "player": "Quill Oakhurst",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0012,
+  "win_prob_delta": 0.0375,
   "context": {
    "week": 11,
    "slot": "K",
@@ -403,7 +403,7 @@
   ],
   "player": "Cass Braithwaite",
   "delta_points": 13.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.22,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -515,7 +515,7 @@
   ],
   "player": "Arlo Ziegler",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0175,
+  "win_prob_delta": 0.0526,
   "context": {
    "week": 11,
    "slot": "K",
@@ -572,7 +572,7 @@
   ],
   "player": "Gray Kettleby",
   "delta_points": 4.4,
-  "win_prob_delta": 0.025,
+  "win_prob_delta": 0.1,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -656,7 +656,7 @@
   ],
   "player": "Gray Kettleby",
   "delta_points": 6.8,
-  "win_prob_delta": 0.0888,
+  "win_prob_delta": 0.0987,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -684,7 +684,7 @@
   ],
   "player": "Hollis Dunmore",
   "delta_points": 8.94,
-  "win_prob_delta": 0.0075,
+  "win_prob_delta": 0.0837,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -703,7 +703,7 @@
  {
   "id": "901be4613f18018c7856",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.531,
+  "magnitude": 0.516,
   "teams": [
    "The Wounded Ferrets",
    "Regret Merchants"
@@ -714,7 +714,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.0313,
+  "win_prob_delta": 0.0163,
   "context": {
    "week": 11,
    "matchup": 1,
@@ -755,7 +755,7 @@
  {
   "id": "c542eb0f92ccfd52bb9f",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.588,
+  "magnitude": 0.534,
   "teams": [
    "The Wounded Ferrets",
    "Regret Merchants"
@@ -766,7 +766,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.0875,
+  "win_prob_delta": 0.0337,
   "context": {
    "week": 11,
    "matchup": 1,
@@ -788,7 +788,7 @@
   ],
   "player": "Gray Kettleby",
   "delta_points": 4.1,
-  "win_prob_delta": 0.0875,
+  "win_prob_delta": 0.0337,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -816,7 +816,7 @@
   ],
   "player": "Delroy Hartnell",
   "delta_points": 7.1,
-  "win_prob_delta": 0.0387,
+  "win_prob_delta": 0.0299,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -844,7 +844,7 @@
   ],
   "player": "Bo Ashgrove",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0175,
   "context": {
    "week": 11,
    "slot": "K",
@@ -929,7 +929,7 @@
   ],
   "player": "Bo Ashgrove",
   "delta_points": 6.0,
-  "win_prob_delta": 0.0075,
+  "win_prob_delta": 0.1212,
   "context": {
    "week": 11,
    "slot": "K",
@@ -957,7 +957,7 @@
   ],
   "player": "Gray Ilkeston",
   "delta_points": 4.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0225,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -985,7 +985,7 @@
   ],
   "player": "Zeke Eversley",
   "delta_points": 2.41,
-  "win_prob_delta": 0.0037,
+  "win_prob_delta": 0.0313,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1013,7 +1013,7 @@
   ],
   "player": "Yusuf Kettleby",
   "delta_points": 7.6,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1225,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1086,6 +1086,27 @@
   "ts": 5640
  },
  {
+  "id": "b03914668a4db5b6c874",
+  "kind": "DOOM",
+  "magnitude": 0.85,
+  "teams": [
+   "Certified Bottlers"
+  ],
+  "team_ids": [
+   7
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.0188,
+  "context": {
+   "week": 11,
+   "win_prob": 0.0362,
+   "deficit": 44.07,
+   "opponent_in_play": 9
+  },
+  "ts": 5640
+ },
+ {
   "id": "6cdde53df1a485b57aae",
   "kind": "TOUCHDOWN",
   "magnitude": 0.703,
@@ -1097,7 +1118,7 @@
   ],
   "player": "Brix Longstaff",
   "delta_points": 7.83,
-  "win_prob_delta": 0.045,
+  "win_prob_delta": 0.1113,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -1125,7 +1146,7 @@
   ],
   "player": "Jax Eastcott",
   "delta_points": 5.4,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0649,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1181,7 +1202,7 @@
   ],
   "player": "Delroy Hartnell",
   "delta_points": 7.36,
-  "win_prob_delta": 0.135,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1237,7 +1258,7 @@
   ],
   "player": "Cass Stonebridge",
   "delta_points": 2.98,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0762,
   "context": {
    "week": 11,
    "slot": "K",
@@ -1293,7 +1314,7 @@
   ],
   "player": "Fitz Marchbank",
   "delta_points": 9.7,
-  "win_prob_delta": 0.0088,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -1321,7 +1342,7 @@
   ],
   "player": "Cove Cadwallader",
   "delta_points": 5.3,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.03,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -1429,7 +1450,7 @@
   ],
   "player": "Wilder Bellweather",
   "delta_points": 9.2,
-  "win_prob_delta": 0.015,
+  "win_prob_delta": 0.1238,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1485,7 +1506,7 @@
   ],
   "player": "Sol Marchbank",
   "delta_points": 6.9,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0362,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -1541,7 +1562,7 @@
   ],
   "player": "Lonnie Ravensworth",
   "delta_points": 7.3,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1212,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -1597,7 +1618,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 10.0,
-  "win_prob_delta": 0.0287,
+  "win_prob_delta": 0.1812,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -1625,7 +1646,7 @@
   ],
   "player": "Ander Fenwick",
   "delta_points": 9.92,
-  "win_prob_delta": 0.0837,
+  "win_prob_delta": 0.1225,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1653,7 +1674,7 @@
   ],
   "player": "Cody Eversley",
   "delta_points": 5.19,
-  "win_prob_delta": 0.0587,
+  "win_prob_delta": 0.0225,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -1734,7 +1755,7 @@
   ],
   "player": "Vance Oakhurst",
   "delta_points": 2.8,
-  "win_prob_delta": 0.0213,
+  "win_prob_delta": 0.0288,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -1762,7 +1783,7 @@
   ],
   "player": "Quill Oakhurst",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.04,
   "context": {
    "week": 11,
    "slot": "K",
@@ -1818,7 +1839,7 @@
   ],
   "player": "Trey Ashgrove",
   "delta_points": 5.56,
-  "win_prob_delta": 0.0912,
+  "win_prob_delta": 0.0188,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -1875,7 +1896,7 @@
   ],
   "player": "Dax Inglewood",
   "delta_points": 7.3,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0775,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -1903,7 +1924,7 @@
   ],
   "player": "Bo Jessop",
   "delta_points": 6.0,
-  "win_prob_delta": 0.1038,
+  "win_prob_delta": 0.0738,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -1959,7 +1980,7 @@
   ],
   "player": "Brix Eversley",
   "delta_points": 4.43,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.125,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -1987,7 +2008,7 @@
   ],
   "player": "Pax Yarrowmead",
   "delta_points": 2.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.075,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -2015,7 +2036,7 @@
   ],
   "player": "Zeke Wetherby",
   "delta_points": 2.53,
-  "win_prob_delta": 0.0463,
+  "win_prob_delta": 0.0213,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -2034,7 +2055,7 @@
  {
   "id": "6b8392b08d9aec2b473d",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.529,
+  "magnitude": 0.565,
   "teams": [
    "Fourth and Forever",
    "Panic at the Flex"
@@ -2045,7 +2066,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.0288,
+  "win_prob_delta": 0.0651,
   "context": {
    "week": 11,
    "matchup": 5,
@@ -2058,7 +2079,7 @@
  {
   "id": "35844f6a8810a2009ad2",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.552,
+  "magnitude": 0.591,
   "teams": [
    "Panic at the Flex",
    "Fourth and Forever"
@@ -2069,7 +2090,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.0525,
+  "win_prob_delta": 0.0913,
   "context": {
    "week": 11,
    "matchup": 5,
@@ -2120,7 +2141,7 @@
   ],
   "player": "Marlo Jessop",
   "delta_points": 4.0,
-  "win_prob_delta": 0.0525,
+  "win_prob_delta": 0.0913,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -2148,7 +2169,7 @@
   ],
   "player": "Delroy Marchbank",
   "delta_points": 13.2,
-  "win_prob_delta": 0.1675,
+  "win_prob_delta": 0.225,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -2167,7 +2188,7 @@
  {
   "id": "652cea7f43aab982e00f",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.667,
+  "magnitude": 0.725,
   "teams": [
    "Bench Mob Rule",
    "Sunday Roast"
@@ -2178,7 +2199,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.1675,
+  "win_prob_delta": 0.225,
   "context": {
    "week": 11,
    "matchup": 3,
@@ -2229,7 +2250,7 @@
   ],
   "player": "Quill Oakhurst",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0238,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "K",
@@ -2257,7 +2278,7 @@
   ],
   "player": "Rico Eastcott",
   "delta_points": 6.7,
-  "win_prob_delta": 0.0337,
+  "win_prob_delta": 0.0662,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -2285,7 +2306,7 @@
   ],
   "player": "Silas Crowfoot",
   "delta_points": 5.45,
-  "win_prob_delta": 0.0325,
+  "win_prob_delta": 0.0938,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2313,7 +2334,7 @@
   ],
   "player": "Marlo Ravensworth",
   "delta_points": 3.4,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0924,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2398,7 +2419,7 @@
   ],
   "player": "Zeke Applewhite",
   "delta_points": 7.3,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1338,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -2411,6 +2432,30 @@
    "clock": "14:50",
    "red_zone": false,
    "down_distance": "4rd & 13"
+  },
+  "ts": 9840
+ },
+ {
+  "id": "e2291ec21f4c85611683",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.634,
+  "teams": [
+   "Fourth and Forever",
+   "Panic at the Flex"
+  ],
+  "team_ids": [
+   10,
+   9
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.1338,
+  "context": {
+   "week": 11,
+   "matchup": 5,
+   "margin": 0.37,
+   "home": 34.75,
+   "away": 35.12
   },
   "ts": 9840
  },
@@ -2439,30 +2484,6 @@
    "clock": "14:50",
    "red_zone": false,
    "down_distance": "4rd & 8"
-  },
-  "ts": 9840
- },
- {
-  "id": "e2291ec21f4c85611683",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.515,
-  "teams": [
-   "Fourth and Forever",
-   "Panic at the Flex"
-  ],
-  "team_ids": [
-   10,
-   9
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.015,
-  "context": {
-   "week": 11,
-   "matchup": 5,
-   "margin": 0.37,
-   "home": 34.75,
-   "away": 35.12
   },
   "ts": 9840
  },
@@ -2535,7 +2556,7 @@
   ],
   "player": "Bo Ashgrove",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0988,
+  "win_prob_delta": 0.02,
   "context": {
    "week": 11,
    "slot": "K",
@@ -2587,7 +2608,7 @@
   ],
   "player": "Knox Greenhalgh",
   "delta_points": 4.22,
-  "win_prob_delta": 0.1087,
+  "win_prob_delta": 0.0475,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -2656,6 +2677,30 @@
   "ts": 10200
  },
  {
+  "id": "ff50318b882b612825e6",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.657,
+  "teams": [
+   "Regret Merchants",
+   "The Wounded Ferrets"
+  ],
+  "team_ids": [
+   1,
+   2
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.1575,
+  "context": {
+   "week": 11,
+   "matchup": 1,
+   "margin": 1.73,
+   "home": 58.72,
+   "away": 56.99
+  },
+  "ts": 10200
+ },
+ {
   "id": "faabd5b796b82476cb90",
   "kind": "TOUCHDOWN",
   "magnitude": 0.619,
@@ -2667,7 +2712,7 @@
   ],
   "player": "Knox Jessop",
   "delta_points": 6.83,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1575,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -2680,30 +2725,6 @@
    "clock": "14:50",
    "red_zone": false,
    "down_distance": "1rd & 5"
-  },
-  "ts": 10200
- },
- {
-  "id": "ff50318b882b612825e6",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.51,
-  "teams": [
-   "Regret Merchants",
-   "The Wounded Ferrets"
-  ],
-  "team_ids": [
-   1,
-   2
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.01,
-  "context": {
-   "week": 11,
-   "matchup": 1,
-   "margin": 1.73,
-   "home": 58.72,
-   "away": 56.99
   },
   "ts": 10200
  },
@@ -2771,7 +2792,7 @@
   ],
   "player": "Ozzie Cadwallader",
   "delta_points": 7.91,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1913,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -2816,6 +2837,27 @@
   "ts": 10380
  },
  {
+  "id": "b8f3b537d078895b4c04",
+  "kind": "CLINCH",
+  "magnitude": 0.75,
+  "teams": [
+   "Late Swap Larry"
+  ],
+  "team_ids": [
+   8
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.005,
+  "context": {
+   "week": 11,
+   "win_prob": 0.985,
+   "lead": 60.9,
+   "opponent_in_play": 9
+  },
+  "ts": 10500
+ },
+ {
   "id": "683073045c0741f3856a",
   "kind": "TOUCHDOWN",
   "magnitude": 0.55,
@@ -2827,7 +2869,7 @@
   ],
   "player": "Otis Eastcott",
   "delta_points": 6.0,
-  "win_prob_delta": 0.0499,
+  "win_prob_delta": 0.005,
   "context": {
    "week": 11,
    "slot": "D/ST",
@@ -2855,7 +2897,7 @@
   ],
   "player": "Rico Inglewood",
   "delta_points": 2.9,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0725,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -2900,6 +2942,27 @@
   "ts": 10620
  },
  {
+  "id": "0006dbd49bb5b6b78162",
+  "kind": "DOOM",
+  "magnitude": 0.85,
+  "teams": [
+   "Vibes Only FC"
+  ],
+  "team_ids": [
+   3
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.0362,
+  "context": {
+   "week": 11,
+   "win_prob": 0.0238,
+   "deficit": 56.8,
+   "opponent_in_play": 9
+  },
+  "ts": 10680
+ },
+ {
   "id": "e8c37a4ea7a3130df9c5",
   "kind": "TOUCHDOWN",
   "magnitude": 0.583,
@@ -2911,7 +2974,7 @@
   ],
   "player": "Quinn Fairbrother",
   "delta_points": 6.4,
-  "win_prob_delta": 0.0237,
+  "win_prob_delta": 0.0362,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -2939,7 +3002,7 @@
   ],
   "player": "Xander Pemberton",
   "delta_points": 8.58,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.1688,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -2995,7 +3058,7 @@
   ],
   "player": "Gray Ilkeston",
   "delta_points": 3.25,
-  "win_prob_delta": 0.0188,
+  "win_prob_delta": 0.0775,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -3051,7 +3114,7 @@
   ],
   "player": "Rennie Bellweather",
   "delta_points": 2.93,
-  "win_prob_delta": 0.0413,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -3131,7 +3194,7 @@
   ],
   "player": "Marlo Eversley",
   "delta_points": 4.72,
-  "win_prob_delta": 0.0875,
+  "win_prob_delta": 0.0838,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3403,7 +3466,7 @@
   ],
   "player": "Cove Cadwallader",
   "delta_points": 3.56,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0138,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -3431,7 +3494,7 @@
   ],
   "player": "Jax Stonebridge",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0388,
   "context": {
    "week": 11,
    "slot": "K",
@@ -3459,7 +3522,7 @@
   ],
   "player": "Ander Wetherby",
   "delta_points": 4.5,
-  "win_prob_delta": 0.005,
+  "win_prob_delta": 0.0388,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3515,7 +3578,7 @@
   ],
   "player": "Micah Pemberton",
   "delta_points": 9.1,
-  "win_prob_delta": 0.005,
+  "win_prob_delta": 0.1475,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -3558,48 +3621,6 @@
    "down_distance": "1rd & 1"
   },
   "ts": 12240
- },
- {
-  "id": "b03914668a4db5b6c874",
-  "kind": "DOOM",
-  "magnitude": 0.85,
-  "teams": [
-   "Certified Bottlers"
-  ],
-  "team_ids": [
-   7
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.1125,
-  "context": {
-   "week": 11,
-   "win_prob": 0.0138,
-   "deficit": 59.12,
-   "opponent_in_play": 3
-  },
-  "ts": 12300
- },
- {
-  "id": "b8f3b537d078895b4c04",
-  "kind": "CLINCH",
-  "magnitude": 0.75,
-  "teams": [
-   "Late Swap Larry"
-  ],
-  "team_ids": [
-   8
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": 0.1125,
-  "context": {
-   "week": 11,
-   "win_prob": 0.9862,
-   "lead": 59.12,
-   "opponent_in_play": 5
-  },
-  "ts": 12300
  },
  {
   "id": "33b748760bb637657aea",
@@ -3670,7 +3691,7 @@
   ],
   "player": "Wes Inglewood",
   "delta_points": 4.4,
-  "win_prob_delta": 0.0213,
+  "win_prob_delta": 0.0888,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3698,7 +3719,7 @@
   ],
   "player": "Delroy Ashgrove",
   "delta_points": 11.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.2,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -3782,7 +3803,7 @@
   ],
   "player": "Micah Pemberton",
   "delta_points": 3.8,
-  "win_prob_delta": 0.1088,
+  "win_prob_delta": 0.0338,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -3810,7 +3831,7 @@
   ],
   "player": "Juno Crowfoot",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0062,
   "context": {
    "week": 11,
    "slot": "K",
@@ -3838,7 +3859,7 @@
   ],
   "player": "Cass Huddleston",
   "delta_points": 5.4,
-  "win_prob_delta": 0.0425,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -3866,7 +3887,7 @@
   ],
   "player": "Fitz Garrowby",
   "delta_points": 2.8,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0476,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -3950,7 +3971,7 @@
   ],
   "player": "Juno Crowfoot",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0025,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "K",
@@ -4006,7 +4027,7 @@
   ],
   "player": "Ash Inglewood",
   "delta_points": 10.9,
-  "win_prob_delta": 0.01,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "TE",
@@ -4090,7 +4111,7 @@
   ],
   "player": "Marlo Thackeray",
   "delta_points": 7.2,
-  "win_prob_delta": 0.0225,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -4146,7 +4167,7 @@
   ],
   "player": "Knox Thackeray",
   "delta_points": 6.5,
-  "win_prob_delta": 0.0887,
+  "win_prob_delta": 0.16,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -4226,7 +4247,7 @@
   ],
   "player": "Rennie Vaughan-Rees",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0549,
   "context": {
    "week": 11,
    "slot": "K",
@@ -4282,7 +4303,7 @@
   ],
   "player": "Jax Stonebridge",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0638,
   "context": {
    "week": 11,
    "slot": "K",
@@ -4310,7 +4331,7 @@
   ],
   "player": "Rennie Vaughan-Rees",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0988,
   "context": {
    "week": 11,
    "slot": "K",
@@ -4366,7 +4387,7 @@
   ],
   "player": "Bram Ziegler",
   "delta_points": 4.8,
-  "win_prob_delta": 0.0425,
+  "win_prob_delta": 0.1137,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -4468,6 +4489,27 @@
   "ts": 17160
  },
  {
+  "id": "20468477da9cc6fbb635",
+  "kind": "DOOM",
+  "magnitude": 0.85,
+  "teams": [
+   "Sunday Roast"
+  ],
+  "team_ids": [
+   6
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.0175,
+  "context": {
+   "week": 11,
+   "win_prob": 0.04,
+   "deficit": 37.92,
+   "opponent_in_play": 4
+  },
+  "ts": 17400
+ },
+ {
   "id": "40c11bdf74e8e4cf3b80",
   "kind": "BIG_PLAY",
   "magnitude": 0.439,
@@ -4479,7 +4521,7 @@
   ],
   "player": "Delroy Yarrowmead",
   "delta_points": 4.3,
-  "win_prob_delta": 0.0224,
+  "win_prob_delta": 0.0612,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -4498,7 +4540,7 @@
  {
   "id": "3f1963ef6658a010a3bf",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.501,
+  "magnitude": 0.52,
   "teams": [
    "The Wounded Ferrets",
    "Regret Merchants"
@@ -4509,7 +4551,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.0012,
+  "win_prob_delta": 0.02,
   "context": {
    "week": 11,
    "matchup": 1,
@@ -4559,7 +4601,7 @@
   ],
   "player": "Micah Braithwaite",
   "delta_points": 3.7,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0913,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -4576,6 +4618,27 @@
   "ts": 18360
  },
  {
+  "id": "425b26c315c49c06516c",
+  "kind": "DOOM",
+  "magnitude": 0.85,
+  "teams": [
+   "Statistically Irrelevant"
+  ],
+  "team_ids": [
+   4
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.1213,
+  "context": {
+   "week": 11,
+   "win_prob": 0.0262,
+   "deficit": -2.15,
+   "opponent_in_play": 6
+  },
+  "ts": 18420
+ },
+ {
   "id": "75bee4fd869b9d23811d",
   "kind": "TOUCHDOWN",
   "magnitude": 0.683,
@@ -4587,7 +4650,7 @@
   ],
   "player": "Jax Ashgrove",
   "delta_points": 7.6,
-  "win_prob_delta": 0.0963,
+  "win_prob_delta": 0.1213,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -4780,7 +4843,7 @@
   ],
   "player": "Marlo Inglewood",
   "delta_points": 4.8,
-  "win_prob_delta": 0.0012,
+  "win_prob_delta": 0.095,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -4808,7 +4871,7 @@
   ],
   "player": "Bram Braithwaite",
   "delta_points": 11.1,
-  "win_prob_delta": 0.0138,
+  "win_prob_delta": 0.1763,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -4836,7 +4899,7 @@
   ],
   "player": "Wes Inglewood",
   "delta_points": 5.1,
-  "win_prob_delta": 0.0388,
+  "win_prob_delta": 0.0675,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -4855,7 +4918,7 @@
  {
   "id": "a8b735122c9654f2251b",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.51,
+  "magnitude": 0.508,
   "teams": [
    "Regret Merchants",
    "The Wounded Ferrets"
@@ -4866,7 +4929,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.01,
+  "win_prob_delta": 0.0076,
   "context": {
    "week": 11,
    "matchup": 1,
@@ -4879,7 +4942,7 @@
  {
   "id": "c23b79c7e36610d1248c",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.523,
+  "magnitude": 0.594,
   "teams": [
    "The Wounded Ferrets",
    "Regret Merchants"
@@ -4890,7 +4953,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.0226,
+  "win_prob_delta": 0.0938,
   "context": {
    "week": 11,
    "matchup": 1,
@@ -4912,7 +4975,7 @@
   ],
   "player": "Rennie Vaughan-Rees",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0938,
   "context": {
    "week": 11,
    "slot": "K",
@@ -4940,7 +5003,7 @@
   ],
   "player": "Wilder Braithwaite",
   "delta_points": 2.5,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.015,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -5031,6 +5094,27 @@
   "ts": 19980
  },
  {
+  "id": "8f015e862dfaf4c89e14",
+  "kind": "DOOM",
+  "magnitude": 0.85,
+  "teams": [
+   "Panic at the Flex"
+  ],
+  "team_ids": [
+   9
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": -0.035,
+  "context": {
+   "week": 11,
+   "win_prob": 0.0375,
+   "deficit": 19.41,
+   "opponent_in_play": 5
+  },
+  "ts": 20100
+ },
+ {
   "id": "ba95ffd905f9447be638",
   "kind": "BIG_PLAY",
   "magnitude": 0.422,
@@ -5042,7 +5126,7 @@
   ],
   "player": "Micah Fenwick",
   "delta_points": 3.99,
-  "win_prob_delta": 0.0125,
+  "win_prob_delta": 0.0,
   "context": {
    "week": 11,
    "slot": "BE",
@@ -5070,7 +5154,7 @@
   ],
   "player": "Micah Braithwaite",
   "delta_points": 6.69,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.2862,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -5126,7 +5210,7 @@
   ],
   "player": "Yusuf Marchbank",
   "delta_points": 2.58,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0162,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5200,26 +5284,23 @@
   "ts": 21180
  },
  {
-  "id": "a36cf595a914e8a53f7d",
-  "kind": "LEAD_CHANGE",
-  "magnitude": 0.834,
+  "id": "76330a5a35e5122f8e20",
+  "kind": "CLINCH",
+  "magnitude": 0.75,
   "teams": [
-   "Vibes Only FC",
-   "Statistically Irrelevant"
+   "Vibes Only FC"
   ],
   "team_ids": [
-   3,
-   4
+   3
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.3338,
+  "win_prob_delta": 0.0513,
   "context": {
    "week": 11,
-   "matchup": 2,
-   "margin": 8.83,
-   "home": 82.87,
-   "away": 74.04
+   "win_prob": 1.0,
+   "lead": 8.83,
+   "opponent_in_play": 2
   },
   "ts": 21240
  },
@@ -5235,7 +5316,7 @@
   ],
   "player": "Ander Wetherby",
   "delta_points": 6.3,
-  "win_prob_delta": 0.3338,
+  "win_prob_delta": 0.0513,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -5248,6 +5329,30 @@
    "clock": "15:00",
    "red_zone": false,
    "down_distance": "3rd & 12"
+  },
+  "ts": 21240
+ },
+ {
+  "id": "a36cf595a914e8a53f7d",
+  "kind": "LEAD_CHANGE",
+  "magnitude": 0.551,
+  "teams": [
+   "Vibes Only FC",
+   "Statistically Irrelevant"
+  ],
+  "team_ids": [
+   3,
+   4
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0513,
+  "context": {
+   "week": 11,
+   "matchup": 2,
+   "margin": 8.83,
+   "home": 82.87,
+   "away": 74.04
   },
   "ts": 21240
  },
@@ -5376,7 +5481,7 @@
   ],
   "player": "Delroy Ashgrove",
   "delta_points": 3.93,
-  "win_prob_delta": 0.0462,
+  "win_prob_delta": 0.0613,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -5420,27 +5525,6 @@
    "threshold": 20.0
   },
   "ts": 21900
- },
- {
-  "id": "8f015e862dfaf4c89e14",
-  "kind": "DOOM",
-  "magnitude": 0.85,
-  "teams": [
-   "Panic at the Flex"
-  ],
-  "team_ids": [
-   9
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.0213,
-  "context": {
-   "week": 11,
-   "win_prob": 0.0425,
-   "deficit": 18.81,
-   "opponent_in_play": 5
-  },
-  "ts": 22140
  },
  {
   "id": "6b31dc1c8b0d085469f4",
@@ -5511,7 +5595,7 @@
   ],
   "player": "Marlo Inglewood",
   "delta_points": 5.97,
-  "win_prob_delta": 0.0075,
+  "win_prob_delta": 0.0212,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5539,7 +5623,7 @@
   ],
   "player": "Quinn Crowfoot",
   "delta_points": 11.45,
-  "win_prob_delta": 0.0463,
+  "win_prob_delta": 0.3312,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5558,7 +5642,7 @@
  {
   "id": "c15e62cebeba93828432",
   "kind": "LEAD_CHANGE",
-  "magnitude": 0.546,
+  "magnitude": 0.831,
   "teams": [
    "Regret Merchants",
    "The Wounded Ferrets"
@@ -5569,7 +5653,7 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.0463,
+  "win_prob_delta": 0.3312,
   "context": {
    "week": 11,
    "matchup": 1,
@@ -5591,10 +5675,10 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": 0.02,
+  "win_prob_delta": 0.0138,
   "context": {
    "week": 11,
-   "win_prob": 0.985,
+   "win_prob": 0.9925,
    "lead": 28.84,
    "opponent_in_play": 5
   },
@@ -5612,7 +5696,7 @@
   ],
   "player": "Cove Marchbank",
   "delta_points": 7.67,
-  "win_prob_delta": 0.1162,
+  "win_prob_delta": 0.1875,
   "context": {
    "week": 11,
    "slot": "FLEX",
@@ -5661,7 +5745,7 @@
   ],
   "player": "Wes Inglewood",
   "delta_points": 5.66,
-  "win_prob_delta": 0.02,
+  "win_prob_delta": 0.0138,
   "context": {
    "week": 11,
    "slot": "QB",
@@ -5839,27 +5923,6 @@
   "ts": 22740
  },
  {
-  "id": "425b26c315c49c06516c",
-  "kind": "DOOM",
-  "magnitude": 0.85,
-  "teams": [
-   "Statistically Irrelevant"
-  ],
-  "team_ids": [
-   4
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": -0.0925,
-  "context": {
-   "week": 11,
-   "win_prob": 0.0,
-   "deficit": 7.93,
-   "opponent_in_play": 1
-  },
-  "ts": 22800
- },
- {
   "id": "e99117bb67bb269e8877",
   "kind": "GOOSE_EGG",
   "magnitude": 0.7,
@@ -5929,12 +5992,33 @@
   ],
   "player": null,
   "delta_points": 0.0,
-  "win_prob_delta": -0.035,
+  "win_prob_delta": -0.0412,
   "context": {
    "week": 11,
-   "win_prob": 0.0387,
+   "win_prob": 0.0125,
    "deficit": 14.58,
    "opponent_in_play": 2
+  },
+  "ts": 27300
+ },
+ {
+  "id": "b603501e2dad5551358c",
+  "kind": "CLINCH",
+  "magnitude": 0.75,
+  "teams": [
+   "Regret Merchants"
+  ],
+  "team_ids": [
+   1
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0412,
+  "context": {
+   "week": 11,
+   "win_prob": 0.9875,
+   "lead": 14.58,
+   "opponent_in_play": 1
   },
   "ts": 27300
  },
@@ -5950,7 +6034,7 @@
   ],
   "player": "Vance Underhill",
   "delta_points": 6.8,
-  "win_prob_delta": 0.035,
+  "win_prob_delta": 0.0412,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -5978,7 +6062,7 @@
   ],
   "player": "Rennie Marchbank",
   "delta_points": 4.9,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0275,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -5993,27 +6077,6 @@
    "down_distance": "3rd & 12"
   },
   "ts": 27660
- },
- {
-  "id": "b603501e2dad5551358c",
-  "kind": "CLINCH",
-  "magnitude": 0.75,
-  "teams": [
-   "Regret Merchants"
-  ],
-  "team_ids": [
-   1
-  ],
-  "player": null,
-  "delta_points": 0.0,
-  "win_prob_delta": 0.0125,
-  "context": {
-   "week": 11,
-   "win_prob": 0.99,
-   "lead": 10.68,
-   "opponent_in_play": 1
-  },
-  "ts": 27720
  },
  {
   "id": "1a23408442561a478a9c",
@@ -6261,6 +6324,27 @@
   "ts": 32940
  },
  {
+  "id": "7c5e92b4f02c16d4715f",
+  "kind": "CLINCH",
+  "magnitude": 0.75,
+  "teams": [
+   "Bench Mob Rule"
+  ],
+  "team_ids": [
+   5
+  ],
+  "player": null,
+  "delta_points": 0.0,
+  "win_prob_delta": 0.0837,
+  "context": {
+   "week": 11,
+   "win_prob": 0.9875,
+   "lead": 21.95,
+   "opponent_in_play": 1
+  },
+  "ts": 33000
+ },
+ {
   "id": "02b0f91281a60bb12402",
   "kind": "BIG_PLAY",
   "magnitude": 0.367,
@@ -6272,7 +6356,7 @@
   ],
   "player": "Sol Ravensworth",
   "delta_points": 3.0,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0038,
   "context": {
    "week": 11,
    "slot": "K",
@@ -6385,7 +6469,7 @@
   ],
   "player": "Rennie Marchbank",
   "delta_points": 3.44,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0025,
   "context": {
    "week": 11,
    "slot": "WR",
@@ -6413,7 +6497,7 @@
   ],
   "player": "Vance Underhill",
   "delta_points": 7.81,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0025,
   "context": {
    "week": 11,
    "slot": "RB",
@@ -6462,7 +6546,7 @@
   ],
   "player": "Jax Ziegler",
   "delta_points": 7.24,
-  "win_prob_delta": 0.0,
+  "win_prob_delta": 0.0075,
   "context": {
    "week": 11,
    "slot": "RB",

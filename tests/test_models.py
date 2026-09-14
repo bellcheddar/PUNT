@@ -105,6 +105,24 @@ def test_remaining_never_goes_negative():
     assert player.remaining == 0.0
 
 
+def test_remaining_is_the_share_of_the_projection_the_clock_has_left():
+    """The projection is ESPN's pre-game figure and never moves, so what is
+    still to come is the part of it the clock has not used up. Found on the first
+    real Sunday: `projected - points` called a starter who was ahead of his
+    projection at half time finished, and credited a starter on zero with his
+    whole projection with a minute left."""
+    ahead = Player(id=1, name="a", slot_id=0, position="QB", pro_team="KC",
+                   points=30.0, projected=18.0, game_over=False, game_elapsed=0.5)
+    quiet = Player(id=2, name="b", slot_id=4, position="WR", pro_team="KC",
+                   points=0.0, projected=20.0, game_over=False, game_elapsed=0.9)
+    pregame = Player(id=3, name="c", slot_id=4, position="WR", pro_team="SF",
+                     points=0.0, projected=12.0, game_over=False, game_elapsed=0.0)
+    assert ahead.remaining == 9.0, "a hot first half does not end his afternoon"
+    assert quiet.remaining == 2.0, "a minute left is not a whole projection left"
+    assert pregame.remaining == 12.0
+    assert Side(team_id=1, total=30.0, players=[ahead, quiet, pregame]).live_projection == 53.0
+
+
 def test_completed_weeks_fall_back_to_the_settled_roster():
     """`rosterForCurrentScoringPeriod` is the live view and disappears once a
     week settles; without the fallback, last week renders empty."""

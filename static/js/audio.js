@@ -241,17 +241,8 @@
     document.addEventListener('pointerdown', once);
   });
 
-  /* Moments arrive from the SSE stream with the line the *server* chose, so ten
-   * phones in one room play the same sting for the same touchdown. A replayed
-   * moment from the backlog fills the feed but fires nothing: a horn for a
-   * touchdown that happened forty minutes ago is worse than no horn. */
-  document.addEventListener('punt:moment', (event) => {
-    const moment = event.detail || {};
-    if (moment.replayed) return;
-    const line = moment.line || {};
-    play(line.audio, { magnitude: moment.magnitude });
-    if (line.speech) speak(line.speech, line.audio ? 260 : 0);
-  });
+  /* Moments are no longer played from here. alert.js owns every sound effect
+   * so that each one arrives with a banner saying what it was. */
 
   /* Speech on the commentary bus.
    *

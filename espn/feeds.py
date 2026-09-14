@@ -89,8 +89,16 @@ SCHEDULE = Feed(
     name="mSchedule", views=("mMatchup", "mTeam"), ttl=3_600,
     purpose="Season grid for all-play, luck and simulations",
 )
+#: 20 seconds while live, and it has to be shorter than the poll rather than
+#: equal to it. With both at 30 the poller woke 30.0s after the last poll
+#: STARTED, found an entry stored a fraction of a second into that poll -- aged
+#: 29.9s, and `expired` is `age > ttl` -- and served it again. Every other poll
+#: was a cache hit, so live scores actually refreshed once a minute, and the
+#: horn for a touchdown arrived up to sixty seconds after the room saw it.
+#: Measured on the first real Sunday: the score feed was 51 seconds old.
 SCOREBOARD = Feed(
-    name="mMatchupScore", views=("mMatchupScore", "mBoxscore"), ttl=30, per_week=True,
+    name="mMatchupScore", views=("mMatchupScore", "mBoxscore"), ttl=30, live_ttl=20,
+    per_week=True,
     purpose="Per-slot player points and projected remainder: the live feed",
 )
 ROSTER = Feed(

@@ -28,7 +28,9 @@ def test_a_week_is_recorded(store, repo, no_network):
     snap = repo.snapshot()
     store.record(snap)
     weeks = store.weeks(snap.season)
-    assert [w["week"] for w in weeks] == [snap.scoring_period]
+    # The live week first, then every finished week the schedule settles.
+    assert weeks[0]["week"] == snap.scoring_period
+    assert [w["week"] for w in weeks[1:]] == sorted(snap.settled_weeks, reverse=True)
     stored = store.week(snap.season, snap.scoring_period)
     assert len(stored["teams"]) == len(snap.teams)
     assert {t["team"] for t in stored["teams"]} == {t.name for t in snap.teams}
@@ -150,6 +152,65 @@ def test_a_failing_hook_does_not_stop_the_scores(repo, no_network):
     feed.fetch = lambda: later
     assert feed.poll_once() is not None
     assert feed.week == later.scoring_period
+
+
+def test_finished_weeks_are_written_with_their_result(store, repo, no_network):
+    """ESPN names the winner after the poller has rolled on, so results only
+    ever arrive through the season schedule. The first real Sunday left every
+    stored week with `won` empty and `settled` false."""
+    snap = repo.snapshot()
+    settled = snap.settled_weeks
+    assert settled, "the demo fixture should carry finished weeks"
+    store.record(snap)
+
+    week, games = max(settled.items())
+    stored = store.week(snap.season, week)
+    assert stored["settled"] is True
+    by_team = {row["team_id"]: row for row in stored["teams"]}
+    for matchup in games:
+        home = by_team[matchup.home.team_id]
+        assert home["score"] == round(matchup.home.total, 2)
+        if matchup.home.total != matchup.away.total:
+            assert home["won"] == (1 if matchup.home.total > matchup.away.total else 0)
+
+
+def test_a_settled_week_keeps_the_regret_measured_on_the_day(store, repo, no_network):
+    """Backfilling a result must not overwrite the optimal lineup, which cannot
+    be rebuilt from a box score afterwards."""
+    snap = repo.snapshot()
+    week = max(snap.settled_weeks)
+    team_id = snap.settled_weeks[week][0].home.team_id
+    with store._db:
+        store._db.execute(
+            "INSERT INTO team_weeks (season, week, team_id, team, score, optimal, regret) "
+            "VALUES (?, ?, ?, 'x', 1, 150.5, 12.25)", (snap.season, week, team_id))
+    store.record(snap)
+    row = next(r for r in store.week(snap.season, week)["teams"] if r["team_id"] == team_id)
+    assert (row["optimal"], row["regret"]) == (150.5, 12.25)
+
+
+def test_history_holds_no_manager_names(store, repo, no_network):
+    snap = repo.snapshot()
+    store.record(snap)
+    names = {t.manager for t in snap.teams if t.manager}
+    stored = store._db.execute("SELECT manager FROM team_weeks").fetchall()
+    assert all(row[0] == "" for row in stored)
+    for week in store.weeks(snap.season):
+        for row in store.week(snap.season, week["week"])["teams"]:
+            assert "manager" not in row
+            assert not names & {str(v) for v in row.values()}
+
+
+def test_the_demo_does_not_write_into_the_real_leagues_book(monkeypatch):
+    import config
+    from views.state import PuntState
+
+    st = PuntState.__new__(PuntState)
+    st.history = None
+    monkeypatch.setattr(PuntState, "mode", property(lambda self: "demo"))
+    assert config.DEMO_HISTORY_DB != config.HISTORY_DB
+    monkeypatch.setattr("views.state.History", lambda path: path)
+    assert st.store() == config.DEMO_HISTORY_DB
 
 
 def test_stored_moments_match_the_live_shape(store, repo, no_network):

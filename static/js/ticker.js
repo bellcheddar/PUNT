@@ -102,6 +102,11 @@
     const kind = document.createElement('span');
     kind.className = 'wheel-kind';
     kind.textContent = change.kind;
+    // The speaker says this line is the one that just made a noise.
+    if (change.sound) {
+      row.classList.add('wheel-row--sound');
+      row.dataset.sound = change.sound;
+    }
     const text = document.createElement('span');
     text.className = 'wheel-text';
     // textContent, never innerHTML: the line is assembled from ESPN's team and

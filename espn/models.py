@@ -128,6 +128,10 @@ class Player:
     #: Whether this player's real NFL game has finished. Only known once the NFL
     #: scoreboard feed has been joined on; `None` means nobody has said.
     game_over: bool | None = None
+    #: How much of this player's NFL game has been played, 0 to 1, joined from
+    #: the scoreboard. `None` when there is no game state to join, in which case
+    #: nothing downstream pretends to know.
+    game_elapsed: float | None = None
     problems: list[str] = field(default_factory=list)
 
     @property
@@ -146,16 +150,31 @@ class Player:
     def remaining(self) -> float:
         """Projected points still to come.
 
-        Two things are wrong with the naive `projected - points`. It can go
-        negative, which makes a live projected total tick *down* as somebody
-        scores. And it keeps promising points from a player whose game finished
-        two hours ago: without the NFL game state joined on, a settled Sunday
-        night still reads "four players left to play" for every manager, and
-        every projection sits above every final score.
+        The projection is ESPN's PRE-GAME weekly figure and does not move during
+        a game, so what is still to come depends on how much of the game is
+        left, not on how much has already been scored. The previous formula,
+        `projected - points`, got both ends of a Sunday wrong, and the first
+        real one showed it:
+
+        * a player on zero with five minutes left was still expected to score
+          his whole projection, so a team trailing late with a quiet starter
+          kept a win probability it had no business having;
+        * a player who had already passed his projection in the second quarter
+          was treated as finished -- zero still to come -- so a team whose
+          players were having a good day was underrated, and a side whose every
+          starter was ahead of projection read as a decided result while the
+          games were still being played.
+
+        Scoring is sunk; what is left is a share of the projection proportional
+        to the time left. Pre-game that is the whole projection, and a finished
+        game owes nothing. Without a game state to join -- the scoreboard feed
+        down -- it falls back to the old figure rather than guessing a clock.
         """
         if self.game_over:
             return 0.0
-        return max(0.0, self.projected - self.points)
+        if self.game_elapsed is not None:
+            return round(max(0.0, self.projected) * max(0.0, 1.0 - self.game_elapsed), 4)
+        return max(0.0, self.projected - self.points)  # cold: the replay always joins the NFL scoreboard; this is the feed-down fallback
 
     @classmethod
     def from_entry(cls, entry: Any, scoring_period: int) -> "Player":
@@ -496,7 +515,7 @@ class Team:
     def manager(self) -> str:
         """The first owner, which is who the banter addresses. Co-owners are
         listed on the manager profile rather than shouted at from a card."""
-        return self.owners[0] if self.owners else self.name
+        return self.owners[0] if self.owners else self.name  # cold: nothing in the app reads it since history stopped storing it; the privacy tests use it to look for leaks
 
     @property
     def record(self) -> str:
@@ -839,6 +858,7 @@ class LeagueSnapshot:
                     if state is None:
                         continue
                     player.game_over = state.finished
+                    player.game_elapsed = state.elapsed
                     player.opponent = state.opponent
 
     def season_weeks(self) -> dict[int, list[Matchup]]:

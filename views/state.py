@@ -13,7 +13,7 @@ from typing import Any
 
 from flask import current_app
 
-from config import HISTORY_DB, SEEN_MOMENTS, Config
+from config import DEMO_HISTORY_DB, HISTORY_DB, SEEN_MOMENTS, Config
 from engine.commentary import Commentator, PhraseBank
 from engine.events import EventEngine
 from engine.history import History
@@ -44,7 +44,7 @@ class PuntState:
         the week selector and nothing else.
         """
         if self.history is None:
-            self.history = History(HISTORY_DB)
+            self.history = History(HISTORY_DB if self.mode == "live" else DEMO_HISTORY_DB)
         return self.history
 
     def start_live(self) -> LiveFeed:

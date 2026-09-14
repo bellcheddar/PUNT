@@ -188,7 +188,7 @@
     if (!region) return;
     const line = (moment.line && moment.line.text)
       || `${(moment.kind || '').replace(/_/g, ' ').toLowerCase()}, `
-         + `${moment.player || ''} for ${(moment.managers || []).join(' and ')}`;
+         + `${moment.player || ''} for ${(moment.teams || []).join(' and ')}`;
     region.textContent = line;
   }
 

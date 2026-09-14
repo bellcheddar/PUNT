@@ -9,7 +9,7 @@ Nothing here needs credentials, a network or a browser profile. Every one of the
 runs against the committed synthetic Sunday.
 
 ```bash
-python3 -m pytest                              # 444 tests, offline
+python3 -m pytest                              # 470 tests, offline
 python3 -m app                                 # http://127.0.0.1:8011
 python3 tools/replay_check.py --speed 1800     # watch the scores move
 python3 tools/timeline.py                      # every Moment of the day
@@ -111,6 +111,14 @@ ten of them for months before anybody looked.
 
 ## Things that cost an hour each, once
 
+- **A cache TTL equal to the poll interval halves the refresh rate.** The poller wakes
+  thirty seconds after the last poll STARTED, finds an entry stored a moment into that
+  poll, aged 29.9 s, and `expired` is `age > ttl`. Every other poll was a hit and live
+  scores moved once a minute on the first real Sunday. A live TTL must sit below the poll.
+- **ESPN's projection does not move during a game.** Anything "still to come" has to be
+  prorated by the game clock (`Player.game_elapsed`), never computed as
+  `projected - points`, which calls a hot first half finished and credits a quiet
+  player with his whole projection in the last minute.
 - **iCloud makes conflict copies.** This repository is under a synced `Documents` folder, so
   rewriting a directory in place resurrects the previous generation as `<stem> 2.<ext>`.
   Ninety-nine reached the first commit. `.gitignore` excludes them, `make_fixture.py --check`

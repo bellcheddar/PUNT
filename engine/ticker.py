@@ -77,6 +77,10 @@ class Change:
     #: Green, red, or neither. Never inferred from the sign: see the module note.
     good: bool | None
     magnitude: float = 0.0
+    #: The sprite that played on every phone for this line, or "". A sound with
+    #: no line behind it was the complaint after the first real Sunday: horns
+    #: and trombones going off with nothing on screen to say what they were for.
+    sound: str = ""
     ts: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def to_json(self) -> dict[str, Any]:
@@ -84,9 +88,19 @@ class Change:
             "id": self.id, "kind": self.kind, "team_id": self.team_id,
             "team": self.team, "hue": self.hue, "text": self.text,
             "value": self.value, "good": self.good,
-            "magnitude": round(self.magnitude, 3),
+            "magnitude": round(self.magnitude, 3), "sound": self.sound,
             "ts": self.ts.isoformat(timespec="seconds"),
         }
+
+
+#: What a commentary line is called on the wheel. The Moment's own kind rather
+#: than one catch-all, so the word beside a line that just sounded a horn says
+#: which horn it was. Short enough for the wheel's 54 pixel label column.
+MOMENT_LABELS = {
+    "TOUCHDOWN": "TOUCHDOWN", "BIG_PLAY": "BIG PLAY", "LEAD_CHANGE": "LEAD",
+    "GOOSE_EGG": "GOOSE EGG", "DOOM": "DOOM", "CLINCH": "CLINCH",
+    "BENCH_DISASTER": "BENCHED", "MILESTONE": "MILESTONE", "INJURY": "INJURY",
+}
 
 
 def change_id(*parts: Any) -> str:
@@ -166,10 +180,24 @@ class Ticker:
         fresh = [c for c in found if c.id not in self._fired]
         self._fired.update(c.id for c in fresh)
         fresh.sort(key=lambda c: -c.magnitude)
-        fresh = fresh[:PER_POLL]
+        # A line that sounded is never the one cut. The phones have already
+        # played it; dropping its line to make room would leave exactly the
+        # unexplained noise this field exists to prevent.
+        loud = [c for c in fresh if c.sound]
+        fresh = loud + [c for c in fresh if not c.sound][:max(0, PER_POLL - len(loud))]
         self.changes.extend(fresh)
         del self.changes[:-BUFFER]
         return fresh
+
+    def note(self, change: Change) -> bool:
+        """Add a line that did not come from the differ: the red-zone overlay's
+        riser and scratch, which the poller decides rather than a diff."""
+        if change.id in self._fired:
+            return False  # cold: red-zone ids carry a sequence number and cannot repeat; the guard is for any future caller
+        self._fired.add(change.id)
+        self.changes.append(change)
+        del self.changes[:-BUFFER]
+        return True
 
     # -- the individual differs ------------------------------------------
 
@@ -293,6 +321,7 @@ class Ticker:
             team = snapshot.team(moment.team_ids[0])
             line = lines.get(moment.id)
             text = line.text if line is not None else None
+            sound = (line.audio or "") if line is not None else ""
             if not text:
                 continue  # cold: silence is a valid answer from the bank, and 410
                 # lines is enough that a whole Sunday never produces one
@@ -305,13 +334,14 @@ class Ticker:
             elif moment.win_prob_delta < -0.01:
                 good = False
             out.append(Change(
-                id=change_id("SAID", moment.id), kind="SAID",
+                id=change_id("SAID", moment.id),
+                kind=MOMENT_LABELS.get(moment.kind, moment.kind.replace("_", " ")),
                 team_id=moment.team_ids[0],
                 team=team.name if team else (moment.teams[0] if moment.teams else "?"),
                 hue=team.hue if team else 0,
                 text=text,
                 value=f"{moment.delta_points:+.1f}" if moment.delta_points else "",
-                good=good, magnitude=max(0.55, moment.magnitude),
+                good=good, magnitude=max(0.55, moment.magnitude), sound=sound,
             ))
         return out
 

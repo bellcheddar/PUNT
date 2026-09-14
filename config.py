@@ -40,6 +40,13 @@ SEEN_MOMENTS = STATE_DIR / "seen-moments.json"
 #: time. Beside `data/state/`, so it is gitignored: ten real people's names and
 #: scores do not belong in a public repository.
 HISTORY_DB = STATE_DIR / "history.sqlite3"
+
+#: The demo and replays keep their own book. They record exactly as the live
+#: league does, so the week menu works on a fresh clone, but a demo season
+#: written into the real league's file is a second season of fake results
+#: sitting beside the real one -- which is what the production file held after
+#: the first real Sunday: every week of the 2025 demo.
+DEMO_HISTORY_DB = STATE_DIR / "history-demo.sqlite3"
 STATIC_DIR = REPO_ROOT / "static"
 
 #: The fixture that ships with the repo. A fresh clone with no cookies at all

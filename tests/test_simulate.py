@@ -126,3 +126,37 @@ def test_more_players_left_means_more_uncertainty():
         home_total=60.0, away_total=55.0,
     )).home_win
     assert lopsided > wide_open, "a five point lead is safer with nothing left to play"
+
+
+def test_a_side_ahead_of_projection_mid_game_is_not_yet_decided():
+    """Every starter past his projection at half time used to read as nobody
+    left to play, so the matchup was reported as settled arithmetic while all
+    four games were still on. They owe the second half of their projection."""
+    def live(pid, points, projected):
+        player = make_player(pid, points, projected, game_over=False)
+        player.game_elapsed = 0.5
+        return player
+
+    matchup = make_matchup(
+        [live(1, 30.0, 20.0), live(2, 25.0, 15.0)],
+        [live(3, 20.0, 30.0), live(4, 20.0, 30.0)],
+        home_total=55.0, away_total=40.0,
+    )
+    result = win_probability(matchup)
+    assert result.settled is False
+    assert result.home_in_play == 2
+    assert 0.5 < result.home_win < 1.0
+
+
+def test_the_clock_running_down_moves_the_number_without_a_score():
+    """Same score, less time: the leader's chances must rise, and the memo must
+    not hand back the earlier answer."""
+    def matchup_at(elapsed):
+        home = make_player(1, 20.0, 20.0, game_over=False)
+        away = make_player(2, 14.0, 20.0, game_over=False)
+        home.game_elapsed = away.game_elapsed = elapsed
+        return make_matchup([home], [away], home_total=20.0, away_total=14.0)
+
+    early = win_probability(matchup_at(0.25)).home_win
+    late = win_probability(matchup_at(0.9)).home_win
+    assert late > early

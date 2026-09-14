@@ -2,7 +2,7 @@
 
 > **Everything that makes a fantasy football Sunday funny, on one screen, for the whole room.**
 
-[![live](https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&logoColor=white)](https://punt.mdeller.com) ![python](https://img.shields.io/badge/python-3.12.3-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![gunicorn](https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white) ![nginx](https://img.shields.io/badge/nginx-1.24.0-009639?logo=nginx&logoColor=white) ![sqlite](https://img.shields.io/badge/sqlite-3.45.1-003B57?logo=sqlite&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![requests](https://img.shields.io/badge/requests-2.34.2-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-444%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![audio](https://img.shields.io/badge/audio-CC0%20%C2%B7%20CC--BY%204.0-00897B) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+[![live](https://img.shields.io/badge/live-punt.mdeller.com-00d084?logo=icloud&logoColor=white)](https://punt.mdeller.com) ![python](https://img.shields.io/badge/python-3.12.3-3776AB?logo=python&logoColor=white) ![flask](https://img.shields.io/badge/flask-3.1.3-000000?logo=flask&logoColor=white) ![gunicorn](https://img.shields.io/badge/gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white) ![nginx](https://img.shields.io/badge/nginx-1.24.0-009639?logo=nginx&logoColor=white) ![sqlite](https://img.shields.io/badge/sqlite-3.45.1-003B57?logo=sqlite&logoColor=white) ![htmx](https://img.shields.io/badge/htmx-2.0.4-3366CC?logo=htmx&logoColor=white) ![howler](https://img.shields.io/badge/howler.js-2.2.4-9b51e0) ![requests](https://img.shields.io/badge/requests-2.34.2-467FF7) ![pyyaml](https://img.shields.io/badge/PyYAML-6.0.3-467FF7) ![tests](https://img.shields.io/badge/pytest-470%20passing-00897B?logo=pytest&logoColor=white) ![data](https://img.shields.io/badge/data-ESPN%20Fantasy%20%C2%B7%20ESPN%20Scoreboard-9b51e0) ![audio](https://img.shields.io/badge/audio-CC0%20%C2%B7%20CC--BY%204.0-00897B) ![licence](https://img.shields.io/badge/licence-MIT-00d084) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -40,7 +40,7 @@ Tap anything for the detail behind it.
 | | |
 |---|---|
 | **Latest** | A ticker along the top of everything that has just moved: scores, chances, somebody's bench filling up |
-| **The cards** | One collectible card per team, ranked by form rather than by points, and re-tiered every week |
+| **The cards** | One card per team with everything on it: the score coloured green, amber or red by the chance of winning, the opponent, how many starters have played, are playing and are still to go, and a form rating the cards are ranked on |
 | **Live** | The week's matchups, with a projection of where each is heading |
 | **Bench regret** | Points left on the bench, and the exact swap that cost them |
 | **Who is in trouble** | Anybody behind, with their live chance of turning it round |
@@ -100,7 +100,7 @@ Polling gives you a column of numbers. Nobody cheers at "Dax Ashgrove now has
 18.4 points". So PUNT compares each poll with the last one and turns the
 difference into a **Moment** -- a touchdown, a lead change, a disaster on
 somebody's bench -- and the horns, the commentary and the cards all hang off
-those. A recorded Sunday produces 242 of them across eleven hours.
+those. A recorded Sunday produces 246 of them across eleven hours.
 
 A few things are worth knowing about the numbers:
 
@@ -112,7 +112,11 @@ A few things are worth knowing about the numbers:
 - **Win probability is simulated, not estimated.** Fantasy scoring is lumpy: a
   touchdown is a six-point jump, not a smooth trickle. Simulating thousands of
   finishes gets the long shots right, and the long shots are the whole point --
-  needing 22 points from one player is unlikely, not impossible.
+  needing 22 points from one player is unlikely, not impossible. And it runs on
+  the game clock: a player's pre-game projection is shared out over his game, so
+  a starter still on zero with five minutes left is not expected to deliver his
+  whole projection, and one who has already beaten it by half time still has a
+  second half to play.
 - **Form is not the score.** Ranking ten cards by points at three in the
   afternoon mostly ranks people by how many of their players happened to kick off
   at one o'clock. Form mixes how far ahead of expectations your players are
@@ -142,6 +146,12 @@ forty-five seconds for four hours stops being a theme.
 
 Commentary lines are chosen on the server and pushed to every phone, so ten
 people in one room hear the same sentence for the same touchdown.
+
+**No sound goes off without saying what it was.** Every effect puts up a banner at
+the top of the screen naming it ("Horn: points on the board", "Record scratch:
+the drive stalled") with the play and the teams, and the same line lands on the
+LATEST ticker marked with a speaker. The banner shows even when the phone is
+muted, so a silent phone still knows the room just heard a horn.
 
 ## 🧱 Built with
 
@@ -223,7 +233,7 @@ own cookie values and refuses to start if it finds one.
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest                              # 444 tests, no network, no cookies
+python3 -m pytest                              # 470 tests, no network, no cookies
 python3 tools/deadcode.py                      # which lines never run in a whole Sunday
 python3 tools/screenshot.py --check-overflow   # nothing spills off a phone
 python3 tools/a11y.py                          # contrast
@@ -268,9 +278,14 @@ from that offline cache -- only the shell is.
       missed
 - [x] **Eight season panels**, for the questions a single week cannot answer
 - [x] **It follows the season on its own**: the week rolls over, every result is
-      recorded, and any recorded week can be opened from the header
+      recorded (final scores and wins filled in once ESPN settles a week), and any
+      recorded week can be opened from the header
 - [x] **Sound.** Fourteen effects, two beds, all licensed and credited from a
       manifest that cannot drift out of date
+- [x] **Every sound explained**: a banner and a ticker line for each one
+- [x] **Cards as a one-stop shop**: win chance, opponent, played / on / to go,
+      and a score coloured by the chance of winning
+- [x] **Win probability on the game clock**, fixed after the first real Sunday
 - [x] **410 commentary lines**, tuned by measurement: the repeat rate across a
       full Sunday fell from 68% to 43% and the worst line from 11 uses to 5
 - [x] **Every line of the app runs during a simulated Sunday**, and every cache is

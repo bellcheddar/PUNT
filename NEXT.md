@@ -5,14 +5,13 @@ what is actually done and what the next session should pick up.
 
 ## Status: live at https://punt.mdeller.com since 2026-09-11.
 
-All six phases built. 444 tests, 1 skipped, all offline. Running on the demo
-recording until the league credentials are handed over: see
-[docs/credentials.md](credentials.md).
+All six phases built. 470 tests, 1 skipped, all offline. Running on the real league
+(credentials: [docs/credentials.md](credentials.md)).
 
 Nothing here needs credentials, a network or a browser profile. Watch any of it:
 
 ```bash
-python3 -m pytest                             # 444 tests, no network, no cookies
+python3 -m pytest                             # 470 tests, no network, no cookies
 PORT=8019 python3 -m app                      # then http://127.0.0.1:8019
 python3 tools/replay_check.py --speed 1800    # the scores moving
 python3 tools/timeline.py                     # every Moment of the day
@@ -28,6 +27,42 @@ python3 tools/perf.py                         # the blocking path
 `tools/deadcode.py` reports **zero** never-executed lines across `engine/`, `espn/`
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
+
+## After the first real Sunday (2026-09-14)
+
+What a full real game day showed, and what changed because of it.
+
+- **Win probability ran on the wrong clock.** A player's remaining points were
+  `projected - points`, but ESPN's projection is the pre-game figure and never
+  moves. So a starter ahead of his projection at half time counted as finished,
+  and a starter on zero with five minutes left was still owed his whole
+  projection. Remaining is now the projection times the share of his NFL game
+  still to play (`Player.game_elapsed`, joined from the scoreboard), with the old
+  figure kept only when there is no game state. The memo key carries the clock,
+  so the number moves as time runs down with no score. Golden timeline 242 -> 246
+  Moments: two more DOOM and two more CLINCH, each checked by hand against the
+  matchup at that second.
+- **Scores refreshed once a minute, not every thirty seconds.** The score feed's
+  TTL equalled the poll interval and `expired` is `age > ttl`, so every other
+  poll was a cache hit. `live_ttl=20` now.
+- **Results never reached the history file.** ESPN names winners after the
+  poller has rolled onto the next week, so `won` stayed empty and `settled`
+  false. `History._settle` reconciles every settled week from the season
+  schedule on each poll, without touching optimal or regret. The `manager`
+  column is written blank and never read back, and the demo and replays write
+  to `history-demo.sqlite3` instead of the real league's file.
+- **Sounds went off with nothing on screen.** `static/js/alert.js` is now the only
+  place a sound effect is played, and it cannot play one without a banner saying
+  what it was. Every Moment with a sound, and the red-zone riser and scratch, also
+  puts a line on the LATEST wheel with a speaker mark. Two scripts had been
+  reading the long-gone `moment.managers`, so the takeover's bottom line and the
+  screen-reader sentence were blank.
+- **The cards are a one-stop shop.** Win chance, opponent by team name and
+  score, starters played / on / to go, projection and margin, form, bench regret
+  and how many starters are running hot. The big score is green at 60%+ to win,
+  amber from 40%, red below.
+- **Log spam.** "serving stale" logs once a minute per feed instead of once per
+  request during an ESPN wobble.
 
 ## The freshness audit
 
@@ -205,7 +240,7 @@ league's own rule, so that is no longer a thing anybody has to remember.
 | `engine/history.py` | Every week as PUNT saw it happen, in one SQLite file. Not a cache of ESPN: the Moments, the lines and the optimal lineup at the time are what ESPN cannot give back. |
 | `views/`, `templates/`, `static/` | One page plus TV mode, htmx polling, SSE, PWA shell, synthesised audio, generated icons and splash screens. |
 | `data/phrases/` | Ten YAML files and a README documenting the trigger DSL and the slot vocabulary. |
-| `tests/` | 444 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
+| `tests/` | 470 tests, 1 skipped, no network, no cookies, plus a golden Moment timeline. |
 
 ## The fixture's planted storylines
 

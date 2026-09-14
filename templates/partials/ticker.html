@@ -9,7 +9,7 @@
 <div class="wheel" data-wheel aria-live="polite" aria-atomic="false">
   <div class="wheel-reel" data-reel>
     {% for item in ticker %}
-    <div class="wheel-row wheel-row--{{ 'good' if item.good else 'bad' if item.good is false else 'flat' }}"
+    <div class="wheel-row wheel-row--{{ 'good' if item.good else 'bad' if item.good is false else 'flat' }}{% if item.sound %} wheel-row--sound{% endif %}"
          {# A summary line is not a change: there is nothing in the ticker
             buffer behind it, so it opens the team instead of a sheet that
             would correctly report the line as having scrolled away. #}

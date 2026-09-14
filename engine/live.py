@@ -18,6 +18,7 @@ gunicorn config says so where somebody would be about to change it.
 
 from __future__ import annotations
 
+import itertools
 import logging
 import queue
 import threading
@@ -131,6 +132,10 @@ class LiveFeed:
         #: pro_team_id -> what we knew when the drive reached the red zone.
         #: Diffed each poll to open and close the countdown overlay.
         self._redzone: dict[int, dict[str, Any]] = {}
+        #: Numbers each red-zone line. Not the wall clock: two drives by the same
+        #: team inside one minute -- or a replay running at speed -- gave two
+        #: lines one id, and the second riser played with no line behind it.
+        self._redzone_seq = itertools.count()
 
         self._listeners: set[Listener] = set()
         self._lock = threading.Lock()
@@ -398,6 +403,9 @@ class LiveFeed:
                 "points": {p["player_id"]: p["points"] for p in info["involved"]},
                 "involved": info["involved"],
             }
+            self._redzone_line(snapshot, info["involved"], "RED ZONE", "riser", pro_team_id,
+                               f"{info['game'].abbrev} inside the five: "
+                               + ", ".join(p["player"] for p in info["involved"][:3]))
             self._broadcast({"event": "redzone", "data": {
                 "state": "enter",
                 "pro_team": info["game"].abbrev,
@@ -417,11 +425,36 @@ class LiveFeed:
                         before = opened["points"].get(player.id)
                         if before is not None and player.points - before >= self.SCORE_DELTA:
                             scored = True
+            if not scored:
+                # A scored drive says nothing here: its touchdown is a Moment
+                # with its own horn and its own line, and two lines for one
+                # play is the ticker contradicting itself.
+                self._redzone_line(snapshot, opened["involved"], "NO GOOD", "scratch", pro_team_id,
+                                   "Drive stalled inside the five: "
+                                   + ", ".join(p["player"] for p in opened["involved"][:3]),
+                                   good=False)
             self._broadcast({"event": "redzone", "data": {
                 "state": "score" if scored else "stop",
                 "involved": opened["involved"],
                 "seconds": round(time.time() - opened["at"], 1),
             }})
+
+    def _redzone_line(self, snapshot: LeagueSnapshot, involved: list[dict[str, Any]], kind: str,
+                      sound: str, pro_team_id: int, text: str, good: bool | None = None) -> None:
+        """Put the overlay's sound on the ticker, so the riser and the scratch
+        are explained in the same strip as every horn."""
+        from engine.ticker import Change, change_id  # noqa: PLC0415
+
+        first = involved[0]
+        team = snapshot.team(first["team_id"])
+        change = Change(
+            id=change_id(kind, snapshot.scoring_period, pro_team_id, next(self._redzone_seq)),
+            kind=kind, team_id=first["team_id"], team=first["team"],
+            hue=team.hue if team else 0, text=text, value="", good=good,
+            magnitude=0.8, sound=sound,
+        )
+        if self.ticker.note(change):
+            self._broadcast({"event": "change", "data": change.to_json()})
 
     def _commentate(self, moment: Moment, week: int) -> Line | None:
         """One line for this Moment, remembered so the feed and the stream agree.

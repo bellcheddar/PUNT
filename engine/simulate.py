@@ -146,7 +146,9 @@ def win_probability(
         # deterministically today, but `hash()` is salted per process for strings
         # and is explicitly not a stable API: a golden-file test of the whole
         # afternoon would then pass or fail depending on PYTHONHASHSEED.
-        key = f"{matchup.id}|{home.total:.2f}|{away.total:.2f}|{len(home_live)}|{len(away_live)}"
+        to_come = sum(p.remaining for p in home_live) - sum(p.remaining for p in away_live)
+        key = (f"{matchup.id}|{home.total:.2f}|{away.total:.2f}|{len(home_live)}|{len(away_live)}"
+               f"|{to_come:.2f}")
         seed = int.from_bytes(hashlib.blake2b(key.encode(), digest_size=8).digest(), "big")
     rng = random.Random(seed)
 
@@ -215,8 +217,12 @@ def _state_key(snapshot, kind: str, draws: int) -> tuple:
         for side in (matchup.home, matchup.away):
             parts.append((side.team_id, round(side.total, 2)))
             for player in side.starters:
+                # The game clock is part of the state: what a player still owes
+                # is prorated by it, so the same score with five minutes fewer
+                # on the clock is a different answer and must not be a memo hit.
+                elapsed = None if player.game_elapsed is None else round(player.game_elapsed, 3)
                 parts.append((player.id, round(player.points, 2),
-                              round(player.projected, 2), player.game_over))
+                              round(player.projected, 2), player.game_over, elapsed))
     return (kind, draws, snapshot.season, snapshot.scoring_period, tuple(parts))
 
 

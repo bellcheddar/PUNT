@@ -54,7 +54,12 @@
       </div>`;
     document.body.appendChild(overlay);
 
-    if (window.PUNT_AUDIO) window.PUNT_AUDIO.play('riser', { magnitude: 1 });
+    if (window.PUNT_ALERT) {
+      window.PUNT_ALERT.sound('riser', {
+        kind: 'RED_ZONE', magnitude: 1, teams,
+        text: `${detail.pro_team || 'A drive'} inside the five: ${involved.map((p) => p.player).slice(0, 3).join(', ')}`,
+      });
+    }
     if (navigator.vibrate) { try { navigator.vibrate([10, 90, 10, 90, 10]); } catch { /* ignore */ } }
 
     timeout = setTimeout(() => close('stop'), MAX_MS);
@@ -65,11 +70,16 @@
     if (overlay) {
       overlay.querySelector('.countdown-label').textContent = scored ? 'TOUCHDOWN' : 'NO GOOD';
     }
-    if (window.PUNT_AUDIO) {
-      // The horn is left to the Moment that the touchdown itself produces; this
-      // is only the resolution of the overlay, so a stalled drive gets the
-      // scratch and a scored one gets nothing extra rather than two horns.
-      if (!scored) window.PUNT_AUDIO.play('scratch', { magnitude: 0.9 });
+    // The horn is left to the Moment that the touchdown itself produces; this
+    // is only the resolution of the overlay, so a stalled drive gets the
+    // scratch and a scored one gets nothing extra rather than two horns.
+    if (!scored && window.PUNT_ALERT) {
+      const involved = detail.involved || [];
+      window.PUNT_ALERT.sound('scratch', {
+        kind: 'NO_GOOD', magnitude: 0.9, good: false,
+        teams: [...new Set(involved.map((p) => p.team))],
+        text: `Drive stalled inside the five: ${involved.map((p) => p.player).slice(0, 3).join(', ')}`,
+      });
     }
     setTimeout(() => close(scored ? 'score' : 'stop'), scored ? 700 : 900);
   }

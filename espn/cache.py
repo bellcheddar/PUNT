@@ -26,6 +26,10 @@ log = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
+#: Seconds between "serving stale" warnings for one key.
+STALE_LOG_EVERY = 60.0
+
+
 @dataclass
 class Entry(Generic[T]):
     value: T
@@ -59,6 +63,8 @@ class TTLCache:
         self.hits = 0
         self.misses = 0
         self.upstream_calls = 0
+        #: key -> when a stale serve was last logged. See `STALE_LOG_EVERY`.
+        self._warned: dict[str, float] = {}
 
     def _lock_for(self, key: str) -> threading.Lock:
         with self._guard:
@@ -104,7 +110,15 @@ class TTLCache:
                 value = fetch()
             except Exception as exc:  # noqa: BLE001 - any upstream failure, deliberately
                 if entry is not None:
-                    log.warning("fetch failed for %s, serving stale (%.0fs old): %s", key, entry.age, exc)
+                    # Once a minute per key, not once per request. During an
+                    # ESPN backoff every panel on every phone lands here, and
+                    # the first real Sunday's log was a wall of this one line
+                    # hiding the handful that said anything new.
+                    now = time.monotonic()
+                    if now - self._warned.get(key, -STALE_LOG_EVERY) >= STALE_LOG_EVERY:
+                        self._warned[key] = now
+                        log.warning("fetch failed for %s, serving stale (%.0fs old): %s",
+                                    key, entry.age, exc)
                     return Result(value=entry.value, age=entry.age, stale=True, error=str(exc))
                 raise
             self.set(key, value, ttl)
