@@ -28,6 +28,19 @@ python3 tools/perf.py                         # the blocking path
 and `views/viewmodels.py`. The eighty it cannot reach each carry a `# cold:`
 comment in the source saying why. Keep it that way: see `CLAUDE.md`.
 
+## The intro music (2026-09-14)
+
+It only ever started on the first tap, because it was begun inside that tap's
+handler. Browsers do require a gesture before sound unless they have decided to
+allow auto-play, and iOS always does, so a tap is sometimes unavoidable; but
+the page waited for one even where it was not needed, and never said it was
+waiting. `audio.js` now loads the sprite at once, starts the theme the moment
+the AudioContext runs, and shows "Tap anywhere to start the sound" until then.
+Checked in real Chrome on a real clock: normal rules give a suspended context
+and the prompt; auto-play allowed gives a running context and the theme on
+load. Not under `?punt=steady`, where a running context would stop virtual
+time settling and hang every capture tool.
+
 ## The decisions (2026-09-14)
 
 Four panels under their own rule at the bottom of the page, about whether the

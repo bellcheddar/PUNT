@@ -7,8 +7,10 @@
  * Mobile browsers are hostile here in specific, documented ways, and every one
  * of them is handled below rather than hoped about:
  *
- *   - iOS will not start an AudioContext without a user gesture, so nothing is
- *     loaded until the unlock gate fires `punt:unlock`.
+ *   - No browser plays sound before a tap, click or key press unless it has
+ *     decided to allow auto-play, and iOS never does. The sprite loads at once,
+ *     the theme starts the moment the AudioContext runs, and until then a
+ *     prompt asks for the gesture. See `start`.
  *   - The iOS ringer switch mutes HTML5 audio but not Web Audio, so every Howl
  *     is created with `html5: false`.
  *   - Autoplay is blocked everywhere, so every play is fire-and-forget. Nothing
@@ -167,30 +169,97 @@
     }
   }
 
-  // --- unlock --------------------------------------------------------------
+  // --- starting ------------------------------------------------------------
 
-  async function unlock() {
+  /* Browsers will not play sound until the page has had a tap, a click or a key
+   * press, and iOS has no exceptions at all. No page can get round that. What a
+   * page CAN do is not wait for a gesture it does not need, and say so when it
+   * does.
+   *
+   * The theme used to start only inside the first tap's handler, so it never
+   * played on its own anywhere -- including the places that allow it: desktop
+   * Chrome on a site somebody visits often, Safari set to allow auto-play, an
+   * installed app. And where a tap was needed, nothing on screen said so, which
+   * reads as "the intro music is broken".
+   *
+   * So the sprite loads at once, and the sound starts the moment the browser's
+   * AudioContext is running: straight away where auto-play is allowed, on the
+   * first gesture where it is not, with a prompt asking for that gesture in the
+   * meantime. `unlocked` stays false until the context really runs, so nothing
+   * queues up while it is blocked -- a horn started into a suspended context
+   * plays when it resumes, and a first tap would release a backlog of them.
+   */
+  const steady = new URLSearchParams(location.search).get('punt') === 'steady';
+  let starting = null;
+  let prompt = null;
+
+  function context() {
+    return window.Howler && window.Howler.ctx;
+  }
+
+  async function start() {
+    if (!starting) {
+      starting = (async () => {
+        await load();
+        const ctx = context();
+        if (!howl || !ctx) return;
+        if (ctx.state === 'running') {
+          begin();
+          return;
+        }
+        ctx.addEventListener('statechange', () => {
+          if (ctx.state === 'running') begin();
+        });
+        document.documentElement.dataset.audio = muted ? 'muted' : 'locked';
+        showPrompt();
+      })();
+    }
+    return starting;
+  }
+
+  function begin() {
     if (unlocked) return;
     unlocked = true;
-    await load();
-    if (!howl) return;
-
-    // The bed starts inside the unlock handler, which is the only place iOS
-    // will let it: the gesture that granted the context is the gesture that has
-    // to start the sound. Faded in rather than cut in, because a loop arriving
-    // at full level is startling in a quiet room.
+    hidePrompt();
+    // Faded in rather than cut in, because a theme arriving at full level is
+    // startling in a quiet room.
     if (bed) {
       musicId = bed.play();
       bed.volume(0, musicId);
       bed.fade(0, BUSES.music.volume, 1400, musicId);
     }
-
-    // A context that unlocked but produces no output is a real state on iOS
-    // (silent switch plus an element path, a Bluetooth device that grabbed the
-    // route). Checked once, a beat after the first sound, so the UI can say so
-    // rather than leaving somebody tapping a mute button that is already off.
+    // A context that runs but produces no output is a real state on iOS (a
+    // Bluetooth device that grabbed the route). Checked a beat after the first
+    // sound, so the UI can say so rather than leaving somebody tapping a mute
+    // button that is already off.
     play('tap', { magnitude: 0.4, bus: 'ui' });
     setTimeout(verifyOutput, 700);
+  }
+
+  /* The gesture. Resumes the context inside the handler, which is the only
+   * place iOS allows it; Howler does the same from its own listeners, and
+   * whichever gets there first, `statechange` starts the sound. */
+  function unlock() {
+    const ctx = context();
+    if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {});
+    start().then(() => {
+      const now = context();
+      if (now && now.state === 'running') begin();
+    });
+  }
+
+  function showPrompt() {
+    if (prompt || muted || steady || unlocked) return;
+    prompt = document.createElement('button');
+    prompt.type = 'button';
+    prompt.className = 'sound-prompt';
+    prompt.textContent = '\u{1F50A} Tap anywhere to start the sound';
+    prompt.addEventListener('click', unlock);
+    document.body.appendChild(prompt);
+  }
+
+  function hidePrompt() {
+    if (prompt) { prompt.remove(); prompt = null; }
   }
 
   function verifyOutput() {
@@ -211,6 +280,9 @@
     if (window.Howler) window.Howler.mute(value);
     if (speaking) speaking.muted = value;
     document.documentElement.dataset.audio = value ? 'muted' : (unlocked ? 'on' : 'locked');
+    // Muting hides the prompt; unmuting before the sound has started brings it
+    // back, because the unmute tap is itself the gesture and starts it anyway.
+    if (value) hidePrompt(); else if (!unlocked && starting) showPrompt();
     const button = document.querySelector('[data-mute]');
     if (button) {
       button.setAttribute('aria-pressed', String(value));
@@ -235,10 +307,20 @@
     // Once per document, not per tab: this listens on `document`, which the
     // boosted swap does not replace.
     //
-    // A desktop has no unlock gate (there is no permission to ask for), so the
-    // first real interaction is the gesture.
-    const once = () => { unlock(); document.removeEventListener('pointerdown', once); };
+    // Not under `?punt=steady`. A running AudioContext keeps the page busy, and
+    // Chrome's --virtual-time-budget then never settles: the first headless
+    // check of this change hung exactly the way CLAUDE.md says every capture
+    // tool here will. A still page loads its audio on a gesture, as before.
+    if (!steady) start();
+    // Every gesture a browser counts, not only a pointer: a keyboard user never
+    // produces a pointerdown, and never heard the theme.
+    const once = () => {
+      unlock();
+      document.removeEventListener('pointerdown', once);
+      document.removeEventListener('keydown', once);
+    };
     document.addEventListener('pointerdown', once);
+    document.addEventListener('keydown', once);
   });
 
   /* Moments are no longer played from here. alert.js owns every sound effect

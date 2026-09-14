@@ -388,6 +388,31 @@ def test_the_theme_plays_once_and_does_not_loop():
     assert "loop: true" not in source
 
 
+def test_the_theme_starts_as_soon_as_the_browser_allows_it():
+    """It used to start only inside the first tap's handler, so it never played
+    on its own even where auto-play is allowed, and where a tap was needed
+    nothing said so. Checked in real Chrome: with auto-play allowed the context
+    runs and the theme plays on load; without, the page says to tap."""
+    import re
+
+    source = (ROOT_STATIC / "js" / "audio.js").read_text("utf-8")
+    code = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+    code = re.sub(r"(?m)^\s*//.*$", "", code)
+    assert "if (!steady) start();" in code, "the sound waits for a tap it may not need"
+    assert "Tap anywhere to start the sound" in code, "a blocked page says nothing"
+    assert "addEventListener('keydown', once)" in code, "a keyboard never starts the sound"
+    # Nothing queues while blocked: sounds only play once the context runs.
+    assert re.search(r"function begin\(\) \{\s*if \(unlocked\) return;\s*unlocked = true;", code)
+
+
+def test_a_still_page_does_not_start_the_audio():
+    """A running AudioContext keeps the page busy, and --virtual-time-budget
+    never settles: the first check of the change above hung headless Chrome,
+    which is what every capture tool in this repo would have done."""
+    source = (ROOT_STATIC / "js" / "audio.js").read_text("utf-8")
+    assert "new URLSearchParams(location.search).get('punt') === 'steady'" in source
+
+
 def test_every_card_catches_the_light():
     """Common cards were matte -- the foil sat at zero opacity and that WAS the
     rarity treatment. Rarity is carried by the border, the tier colour and the
